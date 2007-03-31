@@ -1,0 +1,362 @@
+<html><head>
+<title>Boodler: Simple Soundscapes</title>
+</head>
+<body>
+
+<h2>Boodler: Simple Soundscapes</h2>
+
+Let's try to put theory into practice. (Or as we like to say,
+"practheorytice".)
+<p>
+
+Create a file in the current directory called bootest.py. 
+(It has to be where Python can import it -- either the current directory,
+or a directory in your <code>PYTHONPATH</code>, or a directory in
+<code>BOODLER_EFFECTS_PATH</code>.)
+In this file, put the following:
+
+<pre>
+from boodle.agent import *
+
+class Example(Agent):
+    name = 'plinking example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff')
+</pre>
+
+(Remember that indentation is important. The "from" and "class" lines
+must not be indented. The "name" and "def" lines must be indented the
+same distance -- it doesn't matter how far, as long as they're the same.
+The "self" line must be indented more than the previous two lines.)
+<p>
+
+Now run it:
+
+<pre>
+python boodler.py bootest.Example
+</pre>
+
+A plink! This is a working Python agent.
+<p>
+
+(If it doesn't work, go back to 
+<a href="install.html">Installation</a> and make sure your environment is
+set up correctly.)
+<p>
+
+Here is the meaning of it all:
+
+<pre>from boodle.agent import *</pre> 
+
+This loads all the necessary definitions from Boodler's own Python
+code. (This line is always necessary at the beginning of a soundscape
+file, but I will omit it in later examples.
+
+<pre>class Example(Agent):</pre>
+
+This begins the definition of an <code>Agent</code> class, which will
+be called <code>Example</code>. 
+<p>
+
+<code>Agent</code> is a general Python class, defined by Boodler, which
+contains all the code an agent needs -- methods to schedule notes, create
+channels, and so on. You are creating a specialized class, the 
+<code>Example</code> agent, which makes use of that code.
+
+<pre>    name = 'plinking example'</pre>
+
+Every agent class should have a descriptive label. 
+(This is the name which is printed
+when Boodler begins running.) Really, this line is optional -- if you
+neglect it, the agent will be labelled "unnamed agent".
+
+<pre>    def run(self):</pre>
+
+This begins the definition of the class's <code>run()</code> method.
+This is the function which Boodler calls when it is time for your
+agent to run.
+<p>
+
+The <code>run()</code> method should always have one argument, 
+<code>self</code>.
+
+<pre>        self.sched_note('environ/droplet-plink.aiff')</pre>
+
+This is the entire body of the <code>run()</code> method. It calls
+the note-scheduling function, which is called <code>self.sched_note()</code>.
+(Most Boodler functions that agents use are defined within the agent
+itself -- they are part of the general <code>Agent</code> class.
+This is why their invocations begin with <code>self.</code>)
+<p>
+
+We pass the <code>sched_note()</code> method one argument, the name
+of the sound to play. The note is played at its default pitch and full
+volume, and it is played immediately.
+<p>
+
+<h3>A second sound</h3>
+
+Say we want a quiet puff of wind before the plink noise.
+<code>environ/wind-hard.aiff</code> is a good wind sound. To play it
+more softly, we add some optional arguments to <code>sched_note()</code>:
+
+<pre>        self.sched_note('environ/wind-hard.aiff', 1, 0.5)</pre>
+
+<code>sched_note()</code> must take at least one argument, which is the
+name of the sound. If there is a second argument, it is taken as the 
+pitch of the sound -- recall that 1 means the sound is played at its
+original pitch. If there is a third argument, it is taken as the volume;
+we give 0.5, meaning half volume.
+<p>
+
+(Note that you can't give the third argument -- volume -- unless you
+also give the second -- the pitch. If you only care about volume, give
+the pitch as 1.)
+<p>
+
+So, our new agent class:
+
+<pre>
+class Example(Agent):
+    name = 'plinkwind example'
+    def run(self):
+        self.sched_note('environ/wind-hard.aiff', 1, 0.5)
+        self.sched_note('environ/droplet-plink.aiff')
+</pre>
+
+Does this work? Well, no. The plink and the wind are played at the
+<em>same</em> time. (At least, they start at the same time. Since the
+plink is short, it finishes first.)
+<p>
+
+This points out an important rule of <code>sched_note()</code>:
+it <em>schedules</em> a note to play at a given time -- by default,
+immediately. The function does not actually start the note playing,
+and it does not wait until the note is finished.
+<p>
+
+The time at which a note plays is the fourth optional argument to
+<code>sched_note()</code>. Again, you have to give the pitch and volume
+arguments before you can give the time, so let us amend our example:
+
+<pre>
+class Example(Agent):
+    name = 'wind plink example'
+    def run(self):
+        self.sched_note('environ/wind-hard.aiff', 1, 0.5)
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 2.7)
+</pre>
+
+The first sound plays at pitch 1, volume 0.5, and immediately. The second
+plays at pitch 1, volume 1, but not until 2.7 seconds have passed.
+(That is, 2.7 seconds after the <code>Example</code> agent runs.)
+Since the wind sound, as it happens, is about 2.51 seconds long, the
+plink will not be heard until the wind gust is finished.
+<p>
+
+You can schedule any number of notes, at any time, 
+and set each to play at any time. The order in which
+you put them on the schedule is unimportant. The agent would behave
+exactly the same if you swapped the two lines:
+
+<pre>
+class Example(Agent):
+    name = 'wind plink example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 2.7)
+        self.sched_note('environ/wind-hard.aiff', 1, 0.5)
+</pre>
+
+Sometimes you want one sound to follow <em>immediately</em> on the heels
+of another. Conveniently, the <code>sched_note()</code> function returns
+the duration of the sound it plays (taking into account the pitch and
+duration that you specify). You can use this information:
+
+<pre>
+class Example(Agent):
+    name = 'silence wind plink example'
+    def run(self):
+        dur = self.sched_note('environ/wind-hard.aiff', 1, 0.5, 1.5)
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 1.5+dur)
+</pre>
+
+This produces the wind, but not until 1.5 seconds have passed (in silence).
+Precisely when the wind ends, the plink sound begins.
+<p>
+
+<h3>Playing forever</h3>
+
+Perhaps we wish that plink repeated several times. It is easy to
+schedule several notes at once:
+
+<pre>
+class Example(Agent):
+    name = 'six plinks example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 0.0)
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 0.5)
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 1.0)
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 1.5)
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 2.0)
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 2.5)
+</pre>
+
+We could even use the magic of Python to schedule a whole lot of
+notes at once:
+
+<pre>
+class Example(Agent):
+    name = '100 plinks example'
+    def run(self):
+        for num in range(100):
+            self.sched_note('environ/droplet-plink.aiff', 1, 1, 0.5*num)
+</pre>
+
+But you cannot schedule an <em>infinite</em> number of notes at once.
+
+<pre>
+class Example(Agent):
+    # broken! infinite loop!
+    name = 'infinite loop example'
+    def run(self):
+        num = 0
+        while (1):
+            self.sched_note('environ/droplet-plink.aiff', 1, 1, 0.5*num)
+            num = num+1
+</pre>
+
+This will cause an infinite loop, as the system tries to schedule
+notes forever. It will never get around to playing any.
+(Actually, in the current version of Boodler, the system will throw
+an error when num gets too high -- it cannot schedule notes more than
+an hour in the future. It will then play the hour's worth of notes that
+have been scheduled. Which is sort of like infinity, but not much.)
+<p>
+
+The correct way to run a soundscape forever is to have an agent schedule
+another agent -- or itself. 
+
+<pre>
+class Example(Agent):
+    name = 'plink forever example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff')
+        self.resched(0.5)
+</pre>
+
+The <code>run()</code> method plays the plink sound -- and note that
+it only gives one argument, so the default values of "original pitch",
+"full volume", and "start immediately" are employed. The method then
+uses the <code>resched()</code> method to schedule <em>itself</em>
+to run again, half a second in the future. When that time comes, the
+agent will run again, and schedule another plink note and yet another
+iteration of itself. And so on.
+<p>
+
+Scheduling another agent is not much harder. You create the new
+agent instance, and then use the <code>sched_agent()</code> method.
+
+<pre>
+class Example(Agent):
+    name = 'trill forever example'
+    def run(self):
+        ag = Example2()
+        self.sched_agent(ag)
+        self.resched(1.0)
+
+class Example2(Agent):
+    name = 'trill once example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff', 1.0, 1, 0.0)
+        self.sched_note('environ/droplet-plink.aiff', 1.2, 1, 0.1)
+        self.sched_note('environ/droplet-plink.aiff', 1.4, 1, 0.2)
+        self.sched_note('environ/droplet-plink.aiff', 1.6, 1, 0.3)
+        self.sched_note('environ/droplet-plink.aiff', 1.8, 1, 0.4)
+</pre>
+
+The <code>Example2</code> agent schedules just five notes; you can hear
+the effect by typing
+
+<pre>
+python boodler.py bootest.Example2
+</pre>
+
+But if you run <code>Example</code>, you will hear the full effect.
+The <code>Example</code> agent creates an instance of the 
+<code>Example2</code> class, schedules it to run immediately, and then
+reschedules itself (the <code>Example</code> agent) to run one second
+later. Thus, a trill repeated forever.
+<p>
+
+Be wary of accidentally unleashing an unbounded flood of agents. You
+could also have made a trill repeat forever with the following single agent:
+
+<pre>
+class Example2(Agent):
+    name = 'trill forever example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff', 1.0, 1, 0.0)
+        self.sched_note('environ/droplet-plink.aiff', 1.2, 1, 0.1)
+        self.sched_note('environ/droplet-plink.aiff', 1.4, 1, 0.2)
+        self.sched_note('environ/droplet-plink.aiff', 1.6, 1, 0.3)
+        self.sched_note('environ/droplet-plink.aiff', 1.8, 1, 0.4)
+        self.resched(0.91213)
+</pre>
+
+But what happens if you run <code>Example</code> in combination with
+this version of <code>Example2</code>? Every second it will fire off
+another instance of <code>Example2</code>. But this <code>Example2</code>
+doesn't stop after five notes; it runs forever. After ten seconds,
+there are ten <code>Example2</code> instances 
+hanging around, firing off fifty notes at a time.
+After thirty seconds, there are thirty of them. The sound rapidly
+builds up to a meaningless blare, and then starts to overload the
+Boodler engine, causing skips or clipping noise.
+<p>
+
+Don't do that.
+<p>
+
+<h3>Randomness</h3>
+
+These examples have created very regular soundscapes. We often want an
+element of randomness, particularly in naturalistic soundscapes such
+as wind or bird noises.
+<p>
+
+The Python <code>random</code> module supports several different handy
+randomness functions. For example, <code>random.uniform(min, max)</code>
+returns a random real number between <code>min</code> and <code>max</code>.
+We can use this to provide an irregular sequence of plinks:
+
+<pre>
+from boodle.agent import *
+import random
+
+class Example(Agent):
+    name = 'plink forever example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff')
+        delay = random.uniform(0.25, 0.75)
+        self.resched(delay)
+</pre>
+
+(Note that we have to import the <code>random</code> module at the beginning
+of the file.) Each time this agent runs, it reschedules itself to run again --
+but the delay can be anywhere between a quarter-second and three-quarters of
+a second. 
+<p>
+
+Other useful functions include
+<code>random.randint(min, max)</code> (return a random integer between
+<code>min</code> and <code>max</code>, inclusive) and
+<code>random.choice(list)</code> (return a randomly-chosen element of the
+list). The Python reference documentation has complete details.
+<p>
+
+<hr>
+<em><a href="design.html">Designing Soundscapes</a></em>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+
+</body></html>

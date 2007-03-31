@@ -1,0 +1,333 @@
+<html><head>
+<title>Boodler: Working With Channels</title>
+</head>
+<body>
+
+<h2>Boodler: Working With Channels</h2>
+
+As we have said, a channel is a group of agents and notes which can be
+manipulated all together. In the examples above, the agents -- and therefore
+all the notes -- have run in the root channel, which is created
+automatically. Here is an example that creates a new channel:
+
+<pre>
+class Example(Agent):
+    name = 'channel example'
+    def run(self):
+        chan = self.new_channel()
+        self.sched_note('environ/droplet-plink.aiff', 1, 1, 0, chan)
+</pre>
+
+The <code>new_channel()</code> method creates a channel, which is
+contained inside the channel that the agent is running in -- that is,
+inside the root channel. We then call <code>sched_note()</code> with
+five arguments: pitch, volume, time, and channel. (As usual, to provide
+the fifth argument we must also give the first four.)
+<p>
+
+This plays a note inside our new channel. As you hear, this sounds exactly
+the same as playing it in the root channel. 
+<p>
+
+So what's the point? Consider this example:
+<p>
+
+<pre>
+class Example(Agent):
+    name = 'channel example'
+    def run(self):
+        ag = Example2()
+        loudchan = self.new_channel(1)
+        self.sched_agent(ag, 0, loudchan)
+        ag = Example2()
+        softchan = self.new_channel(0.25)
+        self.sched_agent(ag, 0.5, softchan)
+
+class Example2(Agent):
+    name = 'plink forever example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff')
+        self.resched(1.0)
+</pre>
+
+The <code>Example2</code> agent repeats a plink sound once per second,
+forever. <code>Example</code> creates two channels and two instances
+of <code>Example2</code>, and sets them off.
+<p>
+
+We've dropped in some new optional arguments here. The first argument
+of <code>new_channel()</code> is the channel volume. It defaults to
+1.0, meaning (as usual) "full volume". We set the first channel
+to full volume, but for the second channel we set
+one-quarter volume instead. The three arguments to <code>sched_agent()</code>
+are the agent, the scheduling time, and the channel. 
+<p>
+
+So the first agent runs in a full-volume channel, and starts immediately.
+The second agent runs in a 25% channel, and is scheduled to start one
+half-second in the future. Since each of the two agents
+repeats a plink every second, you hear one every half-second, but
+they alternate loud-soft-loud-soft.
+<p>
+
+(A quick footnote that doesn't really belong here: note that we 
+create two instances of <code>Example2</code>. It would not be legal
+to create one instance and schedule it twice:
+
+<pre>
+class Example(Agent):
+    # broken! schedules an agent instance twice!
+    name = 'channel example'
+    def run(self):
+        ag = Example2()
+        loudchan = self.new_channel(1)
+        self.sched_agent(ag, 0, loudchan)
+        softchan = self.new_channel(0.25)
+        self.sched_agent(ag, 0.5, softchan)
+</pre>
+
+No instance of an <code>Agent</code> class may wait on the schedule twice
+at the same time. On the other hand, once an agent starts running, it's
+off the schedule and it's legal to put it back on; this is why the
+<code>resched()</code> method works.)
+<p>
+
+<h3>Changing volumes and stopping channels</h3>
+
+In the previous example we created channels with particular volume levels.
+It's also possible to change the volume of a channel as it plays.
+<p>
+
+<pre>
+class Example(Agent):
+    name = 'fade-out example'
+    def run(self):
+        ag = Example2()
+        chan = self.new_channel(1)
+        self.sched_agent(ag, 0, chan)
+        chan.set_volume(0, 5)
+
+class Example2(Agent):
+    name = 'plink forever example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff')
+        self.resched(0.5)
+</pre>
+
+We create the channel with full volume, but we then call
+<code>chan.set_volume()</code>. (Note that this is a method of the
+channel, not of <code>self</code>.) The first argument is the volume
+to change to; the second is how long it takes to slide to that level.
+We are scheduling the volume to fade from 1 (full) to 0 (silent) over
+a five-second interval. The <code>Example2</code> agent runs continuously
+during this time, but since it is running in the channel, its notes
+are affected by the volume change.
+<p>
+
+Note that Boodler does not shut down after the five seconds are over.
+<code>Example2</code> is still running and playing notes; they're just
+at zero volume.
+<p>
+
+(By the way, you should never call <code>chan.set_volume()</code> 
+with a zero-second fade interval. Changing the volume instantaneously produces
+clicking or popping in the sound stream. If you leave off the second argument
+-- for example,
+
+<pre>
+        chan.set_volume(0)
+</pre>
+
+-- then the default interval will be 0.005, or five milliseconds. This is
+short enough to sound instantaneously, but long enough to prevent popping.
+You should not use an interval shorter than this.)
+<p>
+
+We frequently want a soundscape that starts at zero volume, fades in,
+plays for a few seconds, and then fades out. 
+Unfortunately, <code>chan.set_volume()</code> does not have an argument
+for <em>starting</em> time. It always schedules the volume change beginning
+immediately. To schedule a volume change starting in the future, we must
+create and schedule an agent.
+<p>
+
+<pre>
+class Example(Agent):
+    name = 'fade-in-out example'
+    def run(self):
+        ag = Example2()
+        chan = self.new_channel(0)
+        self.sched_agent(ag, 0, chan)
+        chan.set_volume(1, 3)
+        ag = ExampleFadeOut()
+        self.sched_agent(ag, 6, chan)
+
+class ExampleFadeOut(Agent):
+    name = 'fade-out example'
+    def run(self):
+        chan = self.channel
+        chan.set_volume(0, 3)
+
+class Example2(Agent):
+    name = 'plink forever example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff')
+        self.resched(0.5)
+</pre>
+
+We create a zero-volume channel, start the plinker immediately, and
+schedule a volume change from 0 to 1 over three seconds. Then we
+schedule an instance of <code>ExampleFadeOut</code> to begin running
+after <em>six</em> seconds. (This gives us three seconds of fade-in 
+followed by three seconds of full volume.) The <code>ExampleFadeOut</code>
+agent does nothing but schedule a three-second fade-out, from volume
+1 to 0. After nine seconds, we are back to silence.
+<p>
+
+It would be nice if Boodler shut down after that nine-second sequence.
+The <code>chan.stop()</code> method will kill a channel, and all notes
+and agents running in it. (And also any channels inside that channel.)
+But this method, like <code>chan.set_volume()</code>, takes effect
+immediately. To delay it, we must add another agent.
+
+<pre>
+class ExampleFadeOut(Agent):
+    name = 'fade-out example'
+    def run(self):
+        chan = self.channel
+        chan.set_volume(0, 3)
+        ag = ExampleStop()
+        self.sched_agent(ag, 3)
+
+class ExampleStop(Agent):
+    name = 'stop example'
+    def run(self):
+        chan = self.channel
+        chan.stop()
+</pre>
+
+(The other two agents are as before.) Note that when 
+<code>ExampleFadeOut</code> schedules <code>ExampleStop</code>, it does
+not need to pass a second argument to <code>sched_agent()</code>; the
+default behavior is to schedule the new agent in the same channel as the
+current agent, and that's the channel that <code>Example</code> creates.
+<p>
+
+Also note that the sequence of events has gotten quite elaborate.
+<code>Example</code> launches two agents, one immediate and one delayed.
+The immediate agent runs forever, rescheduling itself every half-second.
+The delayed agent launches a third agent after yet another delay.
+<p>
+
+(We could have scheduled <code>ExampleFadeOut</code> and
+<code>ExampleStop</code> both directly from <code>Example</code>, but 
+this arrangement makes the soundscape easier to modify. If we wanted
+to change the full-volume interlude from three seconds to five, we would
+just have to change the 6 in <code>Example</code> to an 8.
+<code>ExampleFadeOut</code> would run later, but it would still schedule
+the <code>chan.set_volume()</code> and the <code>ExampleStop</code> at
+the correct times, relative to each other.)
+<p>
+
+Actually, this sequence -- fade out and stop -- is so common that Boodler
+has a built-in agent to handle it. The example above could be rewritten:
+
+<pre>
+class Example(Agent):
+    name = 'fade-in-out example'
+    def run(self):
+        ag = Example2()
+        chan = self.new_channel(0)
+        self.sched_agent(ag, 0, chan)
+        chan.set_volume(1, 3)
+        ag = FadeOutAgent(3)
+        self.sched_agent(ag, 6, chan)
+
+class Example2(Agent):
+    name = 'plink forever example'
+    def run(self):
+        self.sched_note('environ/droplet-plink.aiff')
+        self.resched(0.5)
+</pre>
+
+The <code>FadeOutAgent</code> class is defined in Boodler's <code>agent</code>
+module, which we import. We create an instance, passing the fade-out interval
+(three seconds) as an argument. Then we schedule it like any other agent.
+<p>
+
+<h3>Channel limitations and rules</h3>
+
+The <code>channel.stop()</code> method kills a channel instantaneously; any
+sounds that are playing get cut off. This, like an instantaneous volume
+change, can cause clicks and pops. It is wise to fade the volume to zero
+before you stop the channel.
+<p>
+
+(In fact, since <code>FadeOutAgent</code> does both these things, it's
+just wise to use <code>FadeOutAgent</code>.)
+<p>
+
+The <code>channel.set_volume()</code> system is somewhat limited. You cannot
+schedule two volume changes on the same channel at the same time. 
+Overlapping volume changes will sound wrong, as the later change
+pre-empts the first. In fact, if a volume change even begins too soon after
+the previous one ends (on a given channel), the results will not be exactly
+right. The lesson here is that volume changes should not be used for
+frequent, short-term effects on a channel. Keep them a few seconds apart.
+<p>
+
+On the other hand, there's no problem with volume changes on 
+<em>different</em> channels. It is perfectly fine for two agents to be
+running, each creating its own channels, and fading them in and out 
+independently. They will not interfere with each other. In fact, it may
+be that (unbeknownst to them) the root channel is slowly fading out.
+<p>
+
+(You may wonder what happens when a note is playing in a channel, inside
+another channel, inside the root channel, and each of these has its own
+volume level. Simply: the loudness of a note is found by multiplying its
+own volume (the volume passed to <code>sched_note()</code>) by the
+volume of every channel it is inside. The default volume, 1, has no effect
+on the final product. On the other hand, if any channel has volume zero,
+the product will be zero. This is what we expect: you can silence a note
+by silencing the root channel, or the channel that directly contains the
+note, or any channel in between.)
+<p>
+
+This brings up one final, somewhat abstract question: who is in charge
+of a channel's volume? Since two agents trying to change the volume
+of a single channel will interfere with each other, we need a guideline.
+<p>
+
+The general guideline is: an agent takes responsibility for controlling
+the volume of the channels it creates. An agent should <em>not</em>
+try to change the volume of the channel it is running <em>in</em>.
+<p>
+
+This is because, in general, an agent does not know what other agents
+might be running in the channel with it. If they all tried to manipulate
+that channel's volume, none of them would get what they wanted. Instead,
+if you want to mess with channel volumes, do what we do in the examples
+above: create a channel for your own use, run agents in it, and change
+the volume of that channel.
+<p>
+
+This does not mean that it is absolutely forbidden for an agent to change
+or stop its own channel. <code>ExampleFadeOut</code> above does just that.
+But it is part of a system of agents that make up a soundscape. In fact,
+<code>Example</code> is employing it for the specific purpose of changing
+the volume of the channel that <code>Example</code> created.
+<p>
+
+But it would be a bad idea for <code>Example</code> to call
+<code>self.channel.set_volume(0)</code>. <code>Example</code> is a complete
+soundscape, and some other soundscape might want to invoke it running in
+a channel with several other agents.
+<p>
+
+<hr>
+<em><a href="design.html">Designing Soundscapes</a></em>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+
+</body></html>

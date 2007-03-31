@@ -1,0 +1,27 @@
+Optimize noteq loop for the case where volume ~= 0?
+
+Temporal renormalization -- change time trim/offset to much larger values
+
+Use CObject instead of sampstr/samplen?
+
+Rename and regularize all scripts
+
+An exception in PyObject_CallFunction(removefunc) should be handled well -- at least an interrupt exception
+
+Really need a config-file system, for stuff like timespeak. Configurations should be settable either for a module, or for a module in a particular channel... named channels? Network events could use this too.
+
+soundscape ideas:
+----------------
+
+Summer: crickets and katydids, a few birds (night)
+Spring: birds
+Winter: crystal noise, snow hiss
+Autumn: windstorm
+Caves: drips, skittering (lots of reverb)
+Cosmic sounds, bloop bloop bloop (fading echo)
+Vowel chanting (pentatonic)
+Crowd mutter (Elvish?)
+Drums (fifteen-beat pattern, mutating)
+Chimes or gongs (15-beat, pentatonic?)
+(Scales: pentatonic; major/minor (mutating by circle of fifths?))
+

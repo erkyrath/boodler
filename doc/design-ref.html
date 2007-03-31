@@ -1,0 +1,521 @@
+<html><head>
+<title>Boodler: Programming Reference</title>
+</head>
+<body>
+
+<h2>Boodler: Programming Reference</h2>
+
+Herein are described four classes. 
+<p>
+
+Okay, three classes and a module.
+<p>
+
+<ul>
+
+<li><a href="#agent">Agent</a>: 
+base class for boodler agents
+<li><a href="#eventagent">EventAgent</a>: 
+base class for boodler agents that listen for events
+<li><a href="#channel">Channel</a>: 
+a class for creating hierarchical trees of sounds and agents
+<li><a href="#stereo">stereo</a>: 
+a module of stereo pan objects
+
+</ul>
+
+<hr>
+
+<h3><a name="agent">Agent</a>: 
+base class for boodler agents</h3>
+
+<ul>
+<li>Methods and fields to be overridden:
+<dl>
+
+<dt>name
+<dd>a string which describes the agent
+<dt>run()
+<dd>perform the agent's action
+<dt>getname()
+<dd>return a string which describes the agent
+</dl>
+
+<li>Publically readable fields:
+<dl>
+<dt>channel
+<dd>the channel in which this agent is running
+</dl>
+
+<li>Methods which can be called from a run() method:
+<dl>
+<dt>sched_note()
+<dd>schedule a note to be played
+<dt>sched_note_duration()
+<dd>schedule a note to be played for an extended time
+<dt>sched_note_pan()
+<dd>schedule a note to be played at a stereo position
+<dt>sched_note_params()
+<dd>schedule a note, allowing all parameters
+<dt>sched_agent()
+<dd>schedule another agent to run
+<dt>resched()
+<dd>schedule self to run again
+<dt>post_agent()
+<dd>post another agent to watch for events
+<dt>send_event()
+<dd>create an event, which posted agents may receive
+<dt>new_channel()
+<dd>create a channel
+<dt>new_channel_pan()
+<dd>create a channel at a stereo position
+<dt>get_root_channel()
+<dd>return the root channel of the channel tree
+</dl>
+</ul>
+
+<hr>
+
+<dl>
+
+<dt><code>sched_note(sample [, pitch=1, volume=1, delay=0, chan=self.channel]) -&gt; duration</code>
+<p>
+
+<dd>
+Schedule a note to play. The sound is loaded from the file sample
+(which is relative to $BOODLER_SOUND_PATH). The pitch is given as a
+multiple of the sound's original frequency; the volume is given
+as a fraction of the sound's original volume. The delay is a time
+(in seconds) to delay before the note is played. The channel,
+if <code>None</code> or not supplied, defaults to the same channel the agent is
+running in.
+<p>
+
+This returns the expected duration of the sound, in seconds.
+<p>
+
+<dt><code>sched_note_pan(sample [, pan=0, pitch=1, volume=1, delay=0, chan=self.channel]) -&gt; duration</code>
+<p>
+
+<dd>
+Schedule a note to play, panning the stereo origin of the sound.
+The pan value defaults to 0, meaning no shift in origin;
+-1 means all the way left; 1 means all the way right. The value
+may also be an object created by the <code>stereo</code> module.
+<p>
+
+The sound is loaded from the file sample (which is relative to 
+$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
+sound's original frequency; the volume is given as a fraction
+of the sound's original volume. The delay is a time (in seconds)
+to delay before the note is played. The channel, if <code>None</code> or not
+supplied, defaults to the same channel the agent is running in.
+<p>
+
+This returns the expected duration of the sound, in seconds.
+<p>
+
+<dt><code>sched_note_duration(sample, duration [, pitch=1, volume=1, delay=0, chan=self.channel]) -&gt; duration</code>
+<p>
+
+<dd>
+Schedule a note to play, extending the original sound sample to a
+longer period of time. The duration is given in seconds. 
+<p>
+
+The sound is loaded from the file sample (which is relative to 
+$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
+sound's original frequency; the volume is given as a fraction
+of the sound's original volume. The delay is a time (in seconds)
+to delay before the note is played. The channel, if <code>None</code> or not
+supplied, defaults to the same channel the agent is running in.
+<p>
+
+This returns the expected duration of the sound, in seconds. Due to
+the way sounds are looped, this may be slightly longer than the
+given duration.
+<p>
+
+<dt><code>sched_note_params(sample [, param=value, param=value...]) -&gt; duration</code>
+<p>
+
+<dd>
+Schedule a note to play. This method understands all the arguments
+used by the other sched_note methods, but they must be supplied as
+named keywords. The arguments may be in any order.
+For example: "self.sched_note_params(snd, volume=0.5, pitch=2)"
+<p>
+
+The valid arguments, and their default values:
+<ul>
+<li><code>pitch = 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> (original pitch)
+<li><code>volume = 1&nbsp;&nbsp;&nbsp;&nbsp;</code> (full volume)
+<li><code>delay = 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> (play immediately)
+<li><code>pan = None&nbsp;&nbsp;&nbsp;&nbsp;</code> (no stereo shift)
+<li><code>duration = 0&nbsp;&nbsp;</code> (exactly once through the sound)
+<li><code>chan = None&nbsp;&nbsp;&nbsp;</code> (play in agent's own channel)
+</ul>
+<p>
+
+<dt><code>post_agent(agent [, chan=self.channel])</code>
+<p>
+
+<dd>
+Post an agent to watch for events; the agent will be scheduled to
+run whenever an appropriate event occurs. The channel, if <code>None</code>
+or not supplied, defaults to the same channel that self is running
+in.
+<p>
+
+The posted agent must be an instance of the <code>EventAgent</code> class.
+It must have a <code>watch_events</code> field, which lists the
+events which it is interested in. This field must be a string,
+a list of strings, or a function such that <code>agent.watch_events()</code>
+return a string or list of strings.
+<p>
+
+<dt><code>send_event(event)</code>
+<p>
+
+<dd>
+Send an event. Boodler interprets the event just as if it had
+been received from the outside world. Any agents that are posted
+watching for that type of event will run. (Due to the way the
+scheduler works, there may be a short delay before they run.
+The delay is <em>not</em> predictable. For reliable scheduling, use
+sched_agent(), not send_event().)
+<p>
+
+The event should be a tuple of strings, or a string (which will
+be split into a tuple at whitespace).
+<p>
+
+<dt><code>sched_agent(agent [, delay=0, chan=self.channel])</code>
+<p>
+
+<dd>
+Schedule an agent to run. This may be the current agent (self) or 
+a newly-created agent. The delay is a time (in seconds) to delay
+before the agent runs. The channel, if <code>None</code> or not supplied,
+defaults to the same channel that self is running in.
+<p>
+
+<dt><code>resched([delay, chan=self.channel])</code>
+<p>
+
+<dd>
+Reschedule the current agent (self). The delay is a time (in
+seconds) to delay before the agent runs again. The channel, if
+<code>None</code> or not supplied, defaults to the same channel that self is
+running in.
+<p>
+
+If delay is not supplied, it defaults to the delay used when this
+agent was first scheduled. Note that if this value was zero, 
+you will probably cause an infinite loop.
+<p>
+
+<dt><code>new_channel([startvolume=1, parent=self.channel]) -&gt; channel</code>
+<p>
+
+<dd>
+Create a new channel. The startvolume is the volume the channel
+is initially set to; this will affect all sounds played in the
+channel and any subchannels. The new channel will be a subchannel
+of parent -- if <code>None</code> or not supplied, it will be a subchannel of
+the channel that the agent (self) is running in.
+<p>
+
+<dt><code>new_channel_pan([pan=stereo.default(), startvolume=1, parent=self.channel]) -&gt; channel</code>
+<p>
+
+<dd>
+Create a new channel, panning the stereo origin of its sounds.
+(See the <code>stereo</code> module.) The startvolume is the volume the channel
+is initially set to; this will affect all sounds played in the
+channel and any subchannels. The new channel will be a subchannel
+of parent -- if <code>None</code> or not supplied, it will be a subchannel of
+the channel that the agent (self) is running in.
+<p>
+
+<dt><code>get_root_channel() -&gt; channel</code>
+<p>
+
+<dd>
+Return the root channel of the channel tree.
+<p>
+
+<dt><code>run()</code>
+<p>
+
+<dd>
+Perform the agent's action. Each subclass of Agent must override
+this method.
+<p>
+
+<dt><code>getname() -&gt; string</code>
+<p>
+
+<dd>
+Return the name of the agent. This defaults to returning 
+<code>self.name</code>, if that is defined.
+<p>
+
+</dl>
+
+<hr>
+
+<h3><a name="eventagent">EventAgent</a>: 
+base class for boodler agents that listen for events</h3>
+
+See Agent class definition for inherited methods and fields.
+<p>
+
+<ul>
+<li>Methods and fields to be overridden:
+<dl>
+
+<dt>run()
+<dd>defaults to <code>post_agent(self)</code>
+<dt>receive()
+<dd>perform the agent's action
+<dt>watch_events
+<dd>events to watch for (this may be a string, a list of 
+  strings, or a method that returns a string or list of strings)
+</dl>
+
+<li>Methods which can be called:
+<dl>
+<dt>unpost()
+<dd>remove self from event-watching post
+</dl>
+
+</ul>
+
+<hr>
+
+<dl>
+
+<dt><code>run()</code>
+<p>
+
+<dd>
+By default, this calls <code>post_agent(self)</code>. In most cases, you will
+not want to override this.
+<p>
+
+<dt><code>receive(event)</code>
+<p>
+
+<dd>
+Perform the agent's action when an appropriate event arrives. 
+Each subclass of <code>EventAgent</code> must override this method.
+The event is a tuple of one or more strings.
+<p>
+
+<dt><code>unpost()</code>
+<p>
+
+<dd>
+Remove self from event-watching post.
+<p>
+
+</dl>
+
+<hr>
+
+<h3><a name="channel">Channel</a>: 
+a class for creating hierarchical trees of sounds and agents</h3>
+
+Channel objects should be created via <code>Agent.new_channel()</code> and
+destroyed with the <code>channel.stop()</code> method.
+
+<ul>
+<li>Public methods and fields:
+<dl>
+<dt>parent
+<dd>the parent of the channel (None if root)
+<dt>get_root_channel()
+<dd>return the root channel of the tree
+<dt>set_volume()
+<dd>change the volume of the channel
+<dt>stop()
+<dd>stop the channel immediately
+</dl>
+</ul>
+
+<hr>
+
+<dl>
+
+<dt><code>stop()</code>
+<p>
+
+<dd>
+Stop the channel immediately. All sounds playing in the channel 
+(or any subchannels) are cut off; all sounds and agents scheduled
+to run are discarded.
+<p>
+
+If any notes are playing with non-zero volume, their termination
+may cause undesirable clicks and pops. It is best to set the volume
+of a channel to zero before stopping it. (The <code>FadeOutAgent</code> class
+can be used for this.)
+<p>
+
+Due to the way sound generation is buffered, when an agent calls
+<code>channel.stop()</code>, the channel may be stopped slightly later than
+it ought to be.
+<p>
+
+<dt><code>get_root_channel() -&gt; channel</code>
+<p>
+
+<dd>
+Return the root channel of the tree.
+<p>
+
+<dt><code>set_volume(newvolume [, interval=0.005])</code>
+<p>
+
+<dd>
+Change the volume of the channel to a new level (0 means silence,
+1 means full volume). This affects all notes in the channel and
+any subchannels.
+<p>
+
+The volume change begins immediately, and occurs smoothly over
+the interval given (in seconds). If no value is given, the interval
+defaults to 0.005 (five milliseconds), which is short enough that
+it will sound instantaneous. (You should not use an interval
+shorter than 0.005; it can cause undesirable clicks and pops.)
+<p>
+
+Due to the way the volume code is written (a cheap and dirty hack),
+two volume changes scheduled too close together on the same channel
+(within about one second) can interfere with each other. The earlier
+one may be ignored entirely in favor of the later. Therefore, you
+should not rely on rapid sequences of <code>set_volume()</code> calls for your
+sound effects. Set volumes on individual notes instead, or else
+create several channels.
+<p>
+
+</dl>
+
+<hr>
+
+<h3><a name="stereo">stereo</a>: 
+a module of stereo pan objects</h3>
+
+This is a separate module, <em>not</em> a class of methods. Each function
+is a top-level function in the module.
+<p>
+
+These functions are for creating stereo panning description objects.
+A stereo object is a stereo shift, a contraction, or a combination of
+these. (See <a href="design-basics.html">Soundscape Basics</a>.)
+Stereo objects can be passed
+to <code>new_channel_pan()</code> or <code>sched_note_pan()</code>.
+<p>
+
+Note that in the current implementation, stereo objects are represented
+by simple tuples, or by <code>None</code> (for the default stereo position).
+You should not rely on this remaining true. I may get cleverer in a future
+release, and re-implement them as a Python class. Use the utility
+functions.
+<p>
+
+<ul>
+<li>Module functions:
+<dl>
+
+<dt>default()
+<dd>return the default stereo position
+<dt>shift()
+<dd>return a simple stereo shift
+<dt>scale()
+<dd>return a stretched or compressed stereo effect
+<dt>fixed()
+<dd>return a stereo effect which is compressed to a point
+<dt>compose()
+<dd>apply one stereo effect on top of another
+<dt>cast()
+<dd>convert an object to a stereo effect
+</dl>
+
+</ul>
+
+<hr>
+
+<dl>
+
+<dt><code>default() -&gt; stereo</code>
+<p>
+
+<dd>
+Return a stereo object which describes the default stereo position --
+no shift, no contraction.
+<p>
+
+<dt><code>shift(pos) -&gt; stereo</code>
+<p>
+
+<dd>
+Return a simple stereo shift. If pos is zero, there is no shift in
+origin; this returns the default stereo position. -1 means all the
+way left; 1 means all the way right.
+<p>
+
+<dt><code>scale(size) -&gt; stereo</code>
+<p>
+
+<dd>
+Return a stereo effect which is not shifted left or right, but is
+compressed or stretched from the center. If size is less than 1,
+the channels are compressed; zero causes every sound to be perfectly
+centered. If size is greater than 1, the channels are spread apart.
+Negative values cause the left and right channels to swap.
+<p>
+
+<dt><code>fixed(pos) -&gt; stereo</code>
+<p>
+
+<dd>
+Return a stereo effect which is compressed to a point. All sounds
+contained in this effect, no matter how shifted, will come from a
+single point. If pos is zero, this will be the center; if -1, the
+left side; if 1, the right.
+<p>
+
+<code>fixed(pos)</code> is equivalent to 
+<code>compose(shift(pos), scale(0))</code>.
+You figure it out.
+<p>
+
+<dt><code>compose(stereo1, stereo2) -&gt; stereo</code>
+<p>
+
+<dd>
+Return a stereo effect which is the result of applying of stereo1
+on top of stereo2. This is the equivalent of a channel set to
+stereo1, containing a channel stereo2.
+<p>
+
+<dt><code>cast(obj) -&gt; stereo</code>
+<p>
+
+<dd>
+Convert obj into a stereo object. If obj is <code>None</code>, this returns the
+default stereo position. If obj is a number, this returns a simple
+stereo shift -- no scaling. If obj is a stereo object, this returns
+it (or an equivalent object).
+<p>
+
+</dl>
+
+<hr>
+<em><a href="design.html">Designing Soundscapes</a></em>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+
+</body></html>

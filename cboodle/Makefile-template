@@ -1,0 +1,23 @@
+
+PYTHONINCLUDE = @@PYTHONINCLUDE
+EXTRAINCLUDE = @@EXTRAINCLUDE
+EXTRALIB = @@EXTRALIB
+AUDEVOBJ = @@AUDEVOBJ
+LIBS = @@LIBS
+CFLAGOPTS = @@CFLAGOPTS
+LINKSHARE = @@LINKSHARE
+
+OBJS = $(AUDEVOBJ) sample.o noteq.o
+
+CFLAGS = -O2 $(CFLAGOPTS) -I$(PYTHONINCLUDE) $(EXTRAINCLUDE) -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused 
+
+all: cboodle.so
+
+main.o cboodle.o $(OBJS): common.h audev.h sample.h noteq.h
+
+cboodle.so: cboodle.o $(OBJS)
+	$(LINKSHARE) -o cboodle.so cboodle.o $(OBJS) $(EXTRALIB) $(LIBS)
+
+clean:
+	rm -f *.o *.so *.pyc *~
+	cp Makefile-clean Makefile

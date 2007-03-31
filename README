@@ -1,0 +1,131 @@
+Boodler: a programmable soundscape tool
+   Version 1.5.3
+
+Designed by Andrew Plotkin <erkyrath@eblong.com>
+   <http://www.eblong.com/zarf/boodler/>
+
+Copyright 2002 by Andrew Plotkin
+   This program is distributed under the LGPL.
+   See the LGPL document, or the above URL, for details.
+
+-----------------------------------------------
+
+* WHAT IT IS
+
+Boodler is a tool for creating soundscapes -- continuous, infinitely
+varying streams of sound. Boodler is designed to run in the background
+on a computer, maintaining whatever sound environment you desire.
+
+Boodler is extensible, customizable, and modular. Each soundscape is a
+small piece of Python code -- typically less than a page. A soundscape
+can incorporate other soundscapes; it can combine other soundscapes,
+switch between them, fade them in and out. This package comes with
+many example soundscapes. You can use these, modify them, combine them
+to arbitrary levels of complexity, or write your own.
+
+Boodler is written in Python, with one module (cboodle) written in C.
+It was developed under Python 1.5.2; more recent Python versions
+should work as well. (It's been tested up to Python 2.2, though not
+by me.)
+
+Boodler can be built to use either the OSS sound driver interface, the
+ALSA sound driver interface, or the ESD (EsounD) sound server library.
+It can also write raw sound output to a file.
+
+Boodler does not come with any warranty of any sort whatsoever.
+
+    ------------------------------------------------
+
+* GETTING STARTED
+
+To get Boodler up and running: point your web browser at the contents
+of the documentation folder (doc/index.html in this package) and
+follow the "Installation" link.
+
+Note that to run the soundscapes included with this package, you will
+need the Boodler sound library, which you must download separately. (I
+separated it out because it's huge.) Go to the web URL listed above.
+
+    -----------------------------------------------
+
+* LICENSING FOR USERS
+  (Running Boodler)
+
+Boodler is free software, and you may run it freely. (Portions of the
+Boodler source code are copyrighted and licensed under the LGPL, and
+other portions are public domain. Neither of these restrict you in any
+way from running the program.)
+
+However, there is another legal issue. Boodler operates by combining
+sound-sample files into a ongoing stream of sound -- a soundscape.
+Legally speaking, when you run it, you are creating a derivative work
+based on those sound files.
+
+The sound files in the Boodler sound library are *not* all in the
+public domain. Most of them are licensed "for private and
+non-commercial use only". Some were found by random searching around
+the web, and appear without any copyright statement at all.
+
+It is my opinion (*not* backed by any legal advice) that if you run
+Boodler for your own private use, using the Boodler sound library, you
+are within the scope of fair use and the "non-commercial use" licenses
+of those sounds.
+
+However, if you play the sound output of Boodler (based on the Boodler
+sound library) as a commercial performance, or include it in a
+recording sold for profit, you may not be complying with the copyright
+restrictions on those sounds. You will have to look at the README
+files in the sound library and decide whether your performance is
+legal.
+
+Note that this legal issue is solely a problem of playing particular
+sounds from the Boodler sound library. If you create your own Boodler
+soundscape, based solely on *your own* sound-sample files, then that
+stream of sound is entirely your own work; you may do with it as you
+wish.
+
+    -----------------------------------------------
+
+* LICENSING FOR SOUNDSCAPE DESIGNERS
+  (Extending the effects)
+
+The Python scripts included in the ./effects directory are in the
+public domain. They are intended to be used as code samples as well as
+soundscapes. You may modify, extend, combine, and pervert them as you
+wish.
+
+If you write your own soundscapes (sound agents), you may license them
+as you wish -- GPL, LGPL, some other license. Or you might choose to
+not release them at all; you are not obligated to do so.
+
+If you write a particularly interesting soundscape, you are welcome to
+contribute it to the Boodler project. As a matter of consistency, I
+prefer that all soundscapes that I distribute in the ./effects
+directory of this package be public domain (uncopyrighted). If your
+soundscape uses sounds that are not in the Boodler sound library, you
+should contribute those as well. To maintain consistency (again), all
+sounds in the sound library should be either public domain, or
+licensed free for non-commercial use.
+
+    -----------------------------------------------
+
+* LICENSING FOR PROGRAMMERS
+  (Modifying Boodler and incorporating it into other software)
+
+I consider Boodler to be more like a software component than a
+stand-alone program. Accordingly, I have released it under the GNU
+Library General Public License (the LGPL). To be precise, the
+workhorse parts of Boodler -- the boodle Python package, and the
+modules it contains (including cboodle) -- form a library, which is
+licensed under the LGPL. (The C and Python sources in the boodle and
+cboodle directories are the source code to this library.)
+
+The Python program boodler.py is simply a shell that starts up the
+Boodler library. I have released boodler.py into the public domain.
+You may do with it as you like. However, understand that if you write
+a program that is intended to link in the Boodler library (regardless
+of whether you use boodler.py), then your program is a work that uses
+the library, and must behave appropriately. See the LGPL document for
+details.
+
+    -----------------------------------------------

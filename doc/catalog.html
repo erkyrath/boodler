@@ -1,0 +1,1172 @@
+<html><head>
+<title>Boodler: Catalog of Soundscapes</title>
+</head>
+<body>
+
+<h2>Boodler: Catalog of Soundscapes</h2>
+
+These are the effects which are packaged with Boodler as of the time
+I packaged it up. More may be added when I feel like it. See
+<a href="http://www.eblong.com/zarf/boodler/">the Boodler project 
+web page</a>.
+<p>
+
+The soundscapes in this package use the sounds in the Boodler
+sound library dated 
+<em>February 19, 2002 (021902)</em>. 
+If you have an earlier version of the library, you may see errors
+about sounds not being found.
+<p>
+
+This catalog is divided up by module. Each module typically has several
+sound agents, some of which are really intended only for use by other
+agents in the module. (These are marked
+<em>internal</em>.) You are welcome to play internal agents, of course,
+but they may not sound very interesting on their own.
+<p>
+
+Also marked are <em>terminating</em> agents (which shut down after they
+are done, as opposed to running forever) and agents which
+<em>affect channels</em> (shut down the channel in which they run,
+or have some other effect. By convention, most agents do <em>not</em>
+affect the channel in which they run; this allows you to run several
+agents in a channel together. But a few agents are intended specifically
+to make some change in a channel.)
+<p>
+
+If an agent class takes arguments, they are listed in parentheses after
+the class name. Optional arguments are in square brackets (and the
+default values are shown). You may pass arguments on the command line;
+for example:
+<pre>
+python boodler.py play.OneSound environ/droplet-bloink.aiff
+python boodler.py play.OneSoundOpts environ/droplet-bloink.aiff 1.5 0.5
+</pre>
+<p>
+
+<hr>
+<h2>Table of Modules</h2>
+
+<ul>
+<li>Utilities, Tools, and Managers
+<ul>
+<li><a href="#agent">agent</a>
+<li><a href="#play">play</a>
+<li><a href="#manager">manager</a>
+<li><a href="#listen">listen</a>
+</ul>
+<li>Algorithmic Pseudomusic
+<ul>
+<li><a href="#snazz">snazz</a>
+<li><a href="#endless">endless</a>
+<li><a href="#stoner">stoner</a>
+<li><a href="#drumbeat">drumbeat</a>
+<li><a href="#gregor">gregor</a>
+</ul>
+<li>Voices in the Night
+<ul>
+<li><a href="#timespeak">timespeak</a>
+</ul>
+<li>The Natural World
+<ul>
+<li><a href="#frogs">frogs</a>
+<li><a href="#crows">crows</a>
+<li><a href="#cricket">cricket</a>
+<li><a href="#wind">wind</a>
+<li><a href="#fire">fire</a>
+<li><a href="#cavepool">cavepool</a>
+<li><a href="#pwrain">pwrain</a>
+<li><a href="#owstorm">owstorm</a>
+</ul>
+<li>The Unnatural and Completely Strange World
+<ul>
+<li><a href="#clock">clock</a>
+<li><a href="#hardhat">hardhat</a>
+<li><a href="#office">office</a>
+<li><a href="#journey">journey</a>
+<li><a href="#heartbeat">heartbeat</a>
+<li><a href="#blop">blop</a>
+</ul>
+</ul>
+
+<hr>
+
+<h2>Utilities, Tools, and Managers</h2>
+
+<h3><a name="agent">agent</a></h3>
+
+The <code>agent</code> module is the basis for all Boodler sound
+agents. In addition to the base class <code>Agent</code>, this module
+contains a few agent classes which are generally useful.
+<p>
+
+Note that since you will generally have a 
+<code>from boodle.agent import *</code> statement in your soundscape
+file, you can refer to these agents directly. (As
+<code>StopAgent()</code>, for example, rather than
+<code>agent.StopAgent()</code>.)
+
+<dl>
+
+<dt>StopAgent
+<dd>
+This agent causes a channel (the channel it runs in) to stop playing. 
+All notes and agents in the channel (and subchannels) will be
+discarded.
+(<em>terminates; affects channel</em>)
+
+<dt>FadeOutAgent ([ duration = 0.005 ])
+<dd>
+This agent causes its channel to fade down to zero volume over a
+given interval, and then stop.
+(<em>terminates; affects channel</em>)
+
+<dt>FadeInOutAgent (agent, liveinterval, fadeinterval [, fadeoutinterval] )
+<dd>
+This agent creates a channel with an agent. The agent begins running
+immediately; the channel
+fades up from zero volume, holds at full volume, fades out,
+and then stops. 
+<p>
+The fadeinterval is the time the channel takes to fade in or out.
+The liveinterval is the duration of maximum volume (from the end
+of fade-in to the beginning of fade-out).
+<p>
+(If a third argument is given, then fadeinterval is the fade-in time,
+and fadeoutinterval is the fade-out time. If the third argument is omitted,
+these are the same.)
+<p>
+Note that unlike StopAgent and FadeOutAgent, this agent
+does <em>not</em> affect the channel it runs in. It creates a subchannel
+to do its work in.
+(<em>terminates</em>)
+
+<dt>NullAgent
+<dd>
+This does nothing. It is included for debugging purposes, or in case
+you feel like doing nothing.
+(<em>terminates</em>)
+
+</dl>
+
+<h3><a name="play">play</a></h3>
+
+The <code>play</code> module includes basic tools for playing one
+or more sound files.
+<p>
+
+<dl>
+
+<dt>play.OneSound (sound)
+<dd>
+Plays the given sound once. (The argument should be a filename in
+<code>$BOODLER_SOUND_PATH</code>, 
+such as <code>environ/droplet-plink.aiff</code>.
+You can also use an absolute pathname.)
+(<em>terminates</em>)
+
+<dt>play.OneSoundOpts (sound [, pitch=1, volume=1, pan=0 ])
+<dd>
+Play the given sound once, optionally modifying the pitch, volume,
+and stereo panning position. 
+(See <a href="design-basics.html">Boodler Soundscape Basics</a> 
+for details on how Boodler understands pitch, volume, and pan values.)
+(<em>terminates</em>)
+
+<dt>play.RepeatSound (sound)
+<dd>
+Plays the given sound over and over, with no pauses between,
+repeating forever.
+
+<dt>play.ExtendSound (sound [, duration=10 ])
+<dd>
+Play the given sound once, extending it to the given duration
+(in seconds). This only works if the sound has looping parameters
+built into it. If it does not, the sound just plays in its standard
+form.
+(<em>terminates</em>)
+
+<dt>play.SoundSequence (sound1, sound2, sound3, ...)
+<dd>
+Play the given sounds, one after another, with no pauses between.
+(<em>terminates</em>)
+
+<dt>play.RepeatSoundSequence (sound1, sound2, sound3, ...)
+<dd>
+Play the given sounds, one after another, with no pauses between.
+When the last one is finished, start over with the first.
+
+<dt>play.SoundShuffle (sound1, sound2, sound3, ...)
+<dd>
+Play the given sounds, in a random order, with no pauses between.
+Continue forever.
+
+<dt>play.RepeatSoundShuffle (mindelay, maxdelay, fadetime, sound1, sound2, sound3, ...)
+<dd>
+Choose one of the sounds at random, and begin repeating it. After an interval
+(between mindelay and maxdelay), fade into another repeating sound,
+with a cross-fade duration of fadetime.
+(You may pass a single argument which is a list of sounds, instead of
+several sound argument.)
+
+<dt>play.IntermittentSounds (mindelay, maxdelay, sound1, sound2, sound3, ...)
+<dd>
+At intervals (between mindelay, and maxdelay), play one of the given sounds
+at random.
+(You may pass a single argument which is a list of sounds, instead of
+several sound argument.)
+
+<dt>play.IntermittentSoundsOpts (mindelay, maxdelay, minpitch, maxpitch, minvol, maxvol, sound1, sound2, sound3, ...)
+<dd>
+Same as <code>IntermittentSounds</code>, except the pitch of each sound
+is randomly chosen between minpitch and maxpitch, and the volume is
+randomly chosen between minvol and maxvol.
+
+<dt>play.IntermittentSoundsPanOpts (mindelay, maxdelay, minpitch, maxpitch, minvol, maxvol, maxpan, sound1, sound2, sound3, ...)
+<dd>
+Same as <code>IntermittentSoundsOpts</code>, except the panning location
+of each sound is randomly chosen between -maxpan and maxpan.
+
+</dl>
+
+<h3><a name="manager">manager</a></h3>
+
+The <code>manager</code> module contains tools for managing other
+agents.
+<p>
+
+<dl>
+
+<dt>manager.Simultaneous (agent1, agent2, agent3, ...)
+<dd>
+Start up all the given agents, and let them play simultanously.
+(The agents can be actual agent instance objects, or strings naming
+agent classes. In the latter case, the agent class must be instantiable
+without arguments.)
+
+<dt>manager.SimultaneousVolume (agent1, vol1, agent2, vol2, agent3, vol3, ...)
+<dd>
+Start up all the given agents, each at the given volume.
+Let them all play simultanously.
+
+<dt>manager.Sequential (mindelay, maxdelay, class1, class2, class3, ...)
+<dd>
+Create an agent of class1 (which must be an agent class, or the name
+of one, which is instantiable without arguments). Let it fade in, and
+then play for an amount of time which is randomly chosen between
+mindelay and maxdelay seconds. After that time is up, fade out class1 while
+fading in class2. Continue forever in this way: each class
+sequentially gets a turn, and each turn lasts a randomly-chosen interval.
+
+<dt>manager.VolumeModulate (agent [, vol=0.8, delta=0.2, minfade=7, maxfade=20, mindelay=30, maxdelay=70 ])
+<dd>
+Start up the given agent, at the given volume. Begin fading the volume
+up or down, to a new value which is randomly chosen within delta of vol
+(that is, between vol-delta and vol+delta). The volume change lasts for
+an interval between minfade and maxfade. Another volume change occurs
+at random intervals, each between mindelay and maxdelay. (Note that the
+delay interval is measured from the start of each volume change to the
+start of the next. Therefore, the four timing arguments should be in 
+strictly increasing order to prevent volume changes from overlapping:
+minfade &lt; maxfade &lt; mindelay &lt; maxdelay.)
+
+<dt>manager.VolumeModulateChannel ([ vol=0.8, delta=0.2, minfade=7, maxfade=20, mindelay=30, maxdelay=70 ])
+<dd>
+Perform the periodic volume modulation described for 
+<code>VolumeModulate</code>.
+This changes the volume of the channel it is running in.
+(<em>internal; affects channel</em>)
+
+</dl>
+
+<h3><a name="listen">listen</a></h3>
+
+The <code>listen</code> module contains tools which listen for Boodler
+events. Remember that these agents will not run unless you run Boodler with the
+<code>--listen</code> argument (before the agent name).
+<p>
+
+Each agent class listens for one or more types of events. (The type of the
+event is determined by its first word.) For example, the
+<code>listen.Sounds</code> agent class listens for events whose first
+word is <code>sound</code>. You could send such an event with the
+<code>boomsg.py</code> program:
+
+<pre>
+python boomsg.py sound environ/droplet-plink.aiff environ/droplet-bloink.aiff
+</pre>
+
+Actually, you do not need to use <code>boomsg.py</code>. 
+Any program which can open a TCP network connection can send a message
+to Boodler. See the <a href="design-events.html">External Events</a>
+section of the programming documentation.
+<p>
+
+<dl>
+
+<dt>listen.Sounds
+<dd>
+Play sounds according to the events that are received. 
+Events:
+<dl>
+<dt>sound sound [ sound2 sound3... ]
+<dd>Play the given sound (or sounds), in sequence.
+</dl>
+Note that although each event triggers a sequence of sounds played one
+after another, separate events are <em>not</em> sequenced. If two events
+arrive close together, their sounds will overlap.
+
+<dt>listen.Agents ([ fadetime=2 ])
+<dd>
+Run whichever agent is specified by events. Only one agent is run at a
+time; when each event is received, the previous agent is faded out.
+No agent is started up initially, so there is silence until the first
+event arrives.
+Events:
+<dl>
+<dt>agent agentname [ arguments... ]
+<dd>Start up the given agent (passing it the arguments, if supplied).
+The agent is faded in, and the previous agent is faded out, over an interval
+of fadetime.
+</dl>
+
+<dt>listen.Volume (agent [, initvolume=1 ])
+<dd>
+Run an agent, changing its volume according to the events that are received.
+(The agent can be an actual agent instance object, or a string
+naming an agent class. In the latter case, the agent class must
+be instantiable without arguments.)
+Events:
+<dl>
+<dt>volume vol [ fadetime ]
+<dd>
+<dt>volume up [ fadetime ]
+<dd>
+<dt>volume down [ fadetime ]
+<dd>Set the volume. (If muted, a nonzero volume unmutes.)
+The volume may be a number between 0 and 1, or the strings "up" or "down",
+which shift the volume by a tenth.
+If fadetime is supplied, the volume changes gradually over that interval.
+<dt>mute [ fadetime ]
+<dd>Set the volume to zero.
+<dt>unmute [ fadetime ]
+<dd>Set the volume to whatever the last volume event specified.
+<dt>flipmute [ fadetime ]
+<dd>Mute if playing; unmute if muted.
+</dl>
+
+<dt>listen.RemoteVolume (agent [, initvolume=1 ])
+<dd>
+This works the same as <code>listen.Volume</code>, but it also accepts
+standard remote-control button events to control the volume.
+Events (in addition to the ones listed above):
+<dl>
+<dt>remote volup 
+<dd>Turn up the volume.
+<dt>remote voldown
+<dd>Turn down the volume.
+<dt>remote mute 
+<dd>Mute or unmute.
+</dl>
+
+<dt>listen.RemoteTranslateVolume
+<dd>
+This handles the event translation for <code>listen.RemoteVolume</code>.
+All it does is listen for <code>remote</code> events, as listed above,
+and send <code>volume</code> and <code>flipmute</code> events in
+response.
+(<em>internal</em>)
+
+<dt>listen.TimeSpeak
+<dd>
+Speak the current time when an event is received. 
+Events:
+<dl>
+<dt>time
+<dd>Speak the time.
+</dl>
+
+<dt>listen.Catalog (class1, class2, class3, ...)
+<dd>
+Switch between a list of agents, when an event is received.
+Events:
+<dl>
+<dt>remote 1 .. 9
+<dd>Switch to the given entry in the list.
+<dt>remote chanup
+<dd>
+<dt>remote chandown
+<dd>Switch up and down the list.
+</dl>
+
+<dt>listen.Leash
+<dd>
+Receive events from the <code>leash.py</code> Boodler user interface
+script. <code>leash.py</code> sends a variety of events, primarily
+<code>agent</code> events. This agent sets up the listeners which
+respond to them.
+
+<dt>listen.Shutdown
+<dd>
+Shut down Boodler when an event is received. 
+Events:
+<dl>
+<dt>shutdown [ fadetime ]
+<dd>Stop all sounds, channels, and agents, and cause Boodler to exit.
+If fadetime is supplied, everything fades out over that interval before
+Boodler exits.
+(<em>terminates; affects channel</em>)
+</dl>
+
+</dl>
+
+<h2>Algorithmic Pseudomusic</h2>
+
+<h3><a name="snazz">snazz</a></h3>
+
+The <code>snazz</code> module generates a running drum solo. The rhythm
+is not a simple repeating sequence; it mutates over time, in a
+way which (I hope) has some aural interest. It's really rather catchy, 
+in a bongo sort of way.
+<p>
+
+The underlying algorithm for <code>snazz</code> comes from an idea I had
+about representing drum measures as binary tree. Really! 
+<p>
+
+<dl>
+
+<dt>snazz.Simple ([ repeat=4 ])
+<dd>
+Repeat a rhythm four times (or however many are specified), and then change
+to a completely new rhythm.
+
+<dt>snazz.Complex ([ repeat=4 ])
+<dd>
+Repeat a rhythm four times (or however many), and then change to a 
+new rhythm. This agent uses a more complex algorithm, which permits
+arbitrary trees, not just binary trees. You will sometimes hear a measure
+which changes slightly as it repeats. This is a tree node with
+three or five children, which creates three-against-two or five-against-two
+rhymthic variations.
+
+<dt>snazz.ComplexWeight
+<dd>
+Repeat a rhythm, and then change to a new one. Each measure is repeated
+two, four, or six times, depending on how interesting it is. A very simple
+"dah dah dah dah" will only repeat twice; a complex three-based or five-based
+rhythm will repeat six times, allowing you more time to appreciate it.
+
+<dt>snazz.Mutate ([ repeat=4 ])
+<dd>
+Repeat a rhythm four times (or however many), and then change it. The change
+sometimes gives a completely new rhythm, but more often it is a mutation, 
+which affects only part of the measure and leaves the rest recognizable.
+Mutations may make the rhythm more complex, or simplify it.
+
+</dl>
+
+<h3><a name="endless">endless</a></h3>
+
+The <code>endless</code> module implements the Shepard aural illusion
+of endlessly rising (or falling) scales.
+<p>
+
+<dl>
+
+<dt>endless.Rising ([ octaves=3, notes=octaves, samp='voice/z-baa-proc.aiff', rate=0.4 ])
+<dd>
+Play a rising series of chords. The cycle spans the given number of octaves, 
+and by default the number of notes in the chord is equal to the number
+of octaves -- that is, the notes are one octave apart. You can increase
+the number of notes, which causes them to be closer together, but the 
+overall effect quickly is lost.
+<p>
+
+The sample defines which sound is used, and the rate is the duration of each
+note, in seconds.
+
+<dt>endless.Falling ([ octaves=3, notes=octaves, samp='voice/z-baa-proc.aiff', rate=0.4 ])
+<dd>
+The same, but with descending chords.
+
+</dl>
+
+<h3><a name="stoner">stoner</a></h3>
+
+The <code>stoner</code> module implements StonerSound, an "audio screen
+saver" that I originally implemented for the Mac.
+(See
+<a href="http://www.eblong.com/zarf/stonersound.html">StonerSound 
+project page</a>.)
+<p>
+
+<dl>
+
+<dt>stoner.StonerSound
+<dd>
+Perform StonerSound.
+<p>
+
+(<em>Note:</em> I only have one instrument implemented, because there aren't
+enough good musical samples in the Boodler sound library. In a future
+version I may add more -- preferably multirange sounds.)
+
+</dl>
+
+<h3><a name="drumbeat">drumbeat</a></h3>
+
+The <code>drumbeat</code> module generates a running drum machine track.
+(This is an earlier attempt at the <code>snazz</code> idea. It doesn't
+work as well, but it's still worth including.)
+<p>
+
+A change occurs about every four bars. Some changes are temporary, and
+return to the basic theme after a few bars. Some changes are permanent.
+<p>
+
+<dl>
+
+<dt>drumbeat.DrumTrack
+<dd>
+Begin the drum track.
+
+<dt>drumbeat.DrumsWithClicks
+<dd>
+The same, with an added repeating high-hat click.
+
+<dt>drumbeat.DualDrums
+<dd>
+Two drum tracks -- one on the left, one on the right.
+(Thanks to Abe for the idea.)
+
+</dl>
+
+<h3><a name="gregor">gregor</a></h3>
+
+The <code>gregor</code> module is similar to <code>drumbeat</code>,
+except that it works in harmony rather than rhythm. It generates
+a mutating line of harmony from a (fixed) melodic line. Sometimes
+the harmony is simple chords; sometimes it is a more complex polyphony.
+<p>
+
+Again, this is a <em>work in progress</em>.
+<p>
+
+<dl>
+
+<dt>gregor.Chant
+<dd>
+Begin the harmony line.
+
+<dt>gregor.ChantWithDrums
+<dd>
+Combines the <code>gregor</code> and <code>drumbeat</code> modules.
+Not exactly period Gregorian, but kind of nice.
+
+</dl>
+
+
+<h2>Voices in the Night</h2>
+
+<h3><a name="timespeak">timespeak</a></h3>
+
+The <code>timespeak</code> module contains agents that speak the time,
+in English.
+<p>
+
+Two voices are available for speaking. However, I don't have a particularly
+good way to select a voice. You're best off going into 
+<code>effects/timespeak.py</code>, finding the 
+<code>default_voice = ['...']</code> lines, and uncommenting the one
+you want.
+<p>
+
+(Remind me to write a general configuration-file system for Boodler...)
+<p>
+
+<dl>
+
+<dt>timespeak.Time (timeval [, opts=(SAY_TIME_IS | SAY_SECONDS) ])
+<dd>
+Speak the given time. The time value is given as a tuple
+(year, month, day, hour, minute, second, weekday, julian, daylight) --
+see the Python <code>time</code> module. (In fact, <code>timespeak</code>
+only considers the hour, minute, and second entries.) The time value
+may also be given as a floating point number, seconds since the epoch,
+which is converted to a local time tuple and then spoken.
+<p>
+
+By default, the spoken format is: "The time is twelve fifteen and thirty-one
+seconds", or "The time is ten o'clock exactly".
+<p>
+
+You may also supply a second argument, a bitwise-or mask of
+the constants <code>timespeak.SAY_TIME_IS</code> (begin "The time is...") and
+<code>timespeak.SAY_SECONDS</code> (include "...and N seconds").
+The default is both.
+If you pass 0 as the second argument, the format will be reduced to
+"Twelve fifteen".
+<p>
+
+(<em>terminates</em>)
+
+<dt>timespeak.Now ([ opts=(SAY_TIME_IS | SAY_SECONDS) ])
+<dd>
+Speak the current time -- the time at which the agent runs.
+(<em>terminates</em>)
+
+<dt>timespeak.Periodic ([ period=15 ])
+<dd>
+Speak the time every N minutes. This will not necessarily begin right away;
+it occurs on the hour, and every even fraction of an hour. 
+(So the period must be between 1 and 60, and must
+evenly divide 60. The default is quarter-hours.)
+
+<dt>timespeak.TemporalFugue
+<dd>
+Begin speaking the time once per second, forever. This produces a polyphonic
+spoken chant, which is more hypnotic than one might expect.
+
+</dl>
+
+<h2>The Natural World</h2>
+
+<h3><a name="frogs">frogs</a></h3>
+
+The <code>frogs</code> module does amphibious environments.
+<p>
+
+<dl>
+
+<dt>frogs.FrogPond
+<dd>
+Occasional bullfrog calls against a background of night cheepers.
+
+<dt>frogs.Bullfrogs ([ mindelay=0.75, maxdelay=3.5 ])
+<dd>
+A series of bullfrog calls, each at a random pitch and stereo location.
+The arguments determine the minimum and maximum delay between each
+call and the next.
+(<em>internal</em>)
+
+<dt>frogs.Cheepers ([ pitch=1 ])
+<dd>
+Continuous night-cheepers, at the given pitch.
+(<em>internal</em>)
+
+<dt>frogs.VaryingCheepers
+<dd>
+Waves of cheepers, each at a slightly different pitch. Each wave
+lasts from 24 to 60 seconds, and then fades smoothly into the
+next wave.
+(<em>internal</em>)
+
+</dl>
+
+<h3><a name="crows">crows</a></h3>
+
+The <code>crows</code> module was the first one I wrote. 
+<p>
+
+<dl>
+
+<dt>crows.ParliamentOfCrows
+<dd>
+Many crows croaking to each other, near and far, left and right.
+
+<dt>crows.SomeCrows
+<dd>
+A sequence of crow calls. Each call has a different pitch, stereo location,
+and duration, and calls are spaced up to 3.5 seconds apart.
+(<em>internal</em>)
+
+</dl>
+
+<h3><a name="cricket">cricket</a></h3>
+
+The <code>cricket</code> module is mostly collected from the
+"Singing Insects of North America" collection at University of Florida.
+<p>
+
+<dl>
+
+<dt>cricket.CricketMeadow
+<dd>
+A steady soft chirp in the background (the Texas Meadow Katydid)
+with various other crickets taking turns.
+
+<dt>cricket.ManyCrickets ([ numbugs=3 ])
+<dd>
+A steady chirping that occasionally switches from one species to another;
+and some number (default 3) of more strident crickets, which also
+occasionally change species.
+
+<dt>cricket.VaryingContinuo
+<dd>
+One of the more steady, even cricket-songs plays for 30 to 60 seconds.
+It then fades into a different songs, which plays for 30 to 60 seconds,
+and so on.
+(<em>internal</em>)
+
+<dt>cricket.VaryingChirps
+<dd>
+Two of the more strident cricket-songs play, each changing every 20
+to 40 seconds.
+(<em>internal</em>)
+
+<dt>cricket.OccasionallyVaryingChirps
+<dd>
+One of the more strident cricket-songs plays for a time (phasing
+slightly every ten to twenty seconds). It then fades into a different
+song, and so on.
+(<em>internal</em>)
+
+</dl>
+
+<h3><a name="wind">wind</a></h3>
+
+The <code>wind</code> module does the motion of the ocean of air.
+<p>
+
+<dl>
+
+<dt>wind.VaryingWind
+<dd>
+A continuous wind that varies widely in speed and intensity.
+
+<dt>wind.HeavyVaryingWind
+<dd>
+Same thing, but a bit heavier and more complex.
+
+<dt>wind.SteadyWind ([ pitch=1 ])
+<dd>
+A perfectly steady wind, at the given pitch. (This chooses randomly
+between two wind sounds, so a particular pitch will not always produce
+the same sound.)
+(<em>internal</em>)
+
+<dt>wind.SteadyGale
+<dd>
+Shrieking wind.
+(<em>internal</em>)
+
+<dt>wind.VaryingGale
+<dd>
+Shrieking wind, at varying speeds.
+(<em>internal</em>)
+
+<dt>wind.IntermittentGale ([ mindelay=9, maxdelay=12 ])
+<dd>
+A shrieking wind blows up and fades out over an interval of about ten seconds.
+This is repeated every so often -- by default, every 9 to 12 seconds, so
+that it never completely stops.
+(<em>internal</em>)
+
+<dt>wind.GustyWind ([ mindelay=2, maxdelay=4 ])
+<dd>
+Individual gusts of wind, at random speeds, repeated at intervals -- by
+default, every 2 to 4 seconds.
+(<em>internal</em>)
+
+<dt>wind.Windstorm
+<dd>
+A mix of steady and gusty winds.
+
+<dt>wind.GentleWindstorm
+<dd>
+Same thing, but less gusty.
+
+</dl>
+
+<h3><a name="fire">fire</a></h3>
+
+The <code>fire</code> module handles various combustiania.
+<p>
+
+<dl>
+
+<dt>fire.Bonfire
+<dd>
+Steady fire, at a mix of pitches.
+
+<dt>fire.Steady ([ pitch=1 ])
+<dd>
+Continuous crackling fire, at the given pitch.
+(<em>internal</em>)
+
+</dl>
+
+<h3><a name="cavepool">cavepool</a></h3>
+
+The <code>cavepool</code> module simulates a still, icy pool which half-fills
+a cavern, far beneath the Misty Mountains.
+<p>
+
+<dl>
+
+<dt>cavepool.Cavern
+<dd>
+The pool ripples softly, and water drips from the cavern ceiling.
+
+<dt>cavepool.WaterFlow
+<dd>
+Water lapping at the edge of the pool, shifting occasionally.
+(<em>internal</em>)
+
+<dt>cavepool.Water
+<dd>
+Water lapping steadily.
+(<em>internal</em>)
+
+<dt>cavepool.Drip
+<dd>
+A single stalactite, dripping periodically into the pool.
+(<em>internal</em>)
+
+<dt>cavepool.Still
+<dd>
+Stalactites dripping, here and there.
+(<em>internal</em>)
+
+</dl>
+
+<h3><a name="pwrain">pwrain</a></h3>
+
+The <code>pwrain</code> module creates a rainforest, with
+occasional insects and frogs amid the downpour. 
+Contributed by Peter Williams.
+<p>
+
+<dl>
+
+<dt>pwrain.Rainforest
+<dd>
+The full rainforest environment.
+
+<dt>pwrain.RainSounds
+<dd>
+Occasionally varying rain.
+(<em>internal</em>)
+
+<dt>pwrain.WaterSounds
+<dd>
+Occasionally varying flowing water.
+(<em>internal</em>)
+
+<dt>pwrain.LightWind ([ vol=0.075, delta=0.05 ])
+<dd>
+Varying light wind. The volume varies up and down, with delta of vol.
+(That is, from delta-vol to delta+vol).
+(<em>internal</em>)
+
+</dl>
+
+<h3><a name="owstorm">owstorm</a></h3>
+
+The <code>owstorm</code> module creates a summer thunderstorm. It
+builds up to a peak and then tails off, over the course of an hour.
+Contributed by Owen Williams.
+<p>
+
+This module is extremely rich and complex, with many internal agents --
+too many to document here. Feel free to look at the source.
+<p>
+
+<dl>
+
+<dt>owstorm.RainForever
+<dd>
+A repeating storm, which rises and fades in a one-hour cycle.
+
+<dt>owstorm.OneStorm
+<dd>
+A single, one-hour-long thunderstorm.
+(<em>internal; terminates</em>)
+
+</dl>
+
+<h2>The Unnatural and Completely Strange World</h2>
+
+<h3><a name="clock">clock</a></h3>
+
+The <code>clock</code> module generates clock ticking and chiming effects.
+(Note how complex soundscape effects are built up out of agents,
+which are themselves made of simpler agents.)
+<p>
+
+<dl>
+
+<dt>clock.TimeSpace
+<dd>
+Hundreds of clocks drifting by, ticking. Occasionally one strikes the
+hour -- some hour, at least.
+
+<dt>clock.OccasionalChimes ([ mindelay=15, maxdelay=90, useinout=0 ])
+<dd>
+A clock begins chiming every so often. (The mindelay and maxdelay 
+arguments control this period, so by default, a chime begins every
+15 to 90 seconds.) The chiming lasts roughly ten seconds, and then fades
+away. If useinout is set to 1, the chiming fades in slowly instead of
+beginning abruptly.
+(<em>internal</em>)
+
+<dt>clock.ChimeFadesOut
+<dd>
+A clock begins chiming, plays for roughly ten seconds, and then fades
+out.
+(<em>internal</em>; <em>terminates</em>)
+
+<dt>clock.ChimeFadesInOut
+<dd>
+A clock begins chiming softly, fades in,
+plays for roughly ten seconds, and then fades out.
+(<em>internal</em>; <em>terminates</em>)
+
+<dt>clock.SteadyRandomChime
+<dd>
+A clock chimes forever. The pitch and stereo location are random.
+(<em>internal</em>)
+
+<dt>clock.ManyTicks
+<dd>
+Many layers of ticking fading in and out.
+(<em>internal</em>)
+
+<dt>clock.VaryingTicks
+<dd>
+A ticking sound that changes pitch and speed every few seconds.
+(<em>internal</em>)
+
+<dt>clock.Tick ([ pitch=1 ])
+<dd>
+A steady ticking at the given pitch. The stereo location is random.
+(<em>internal</em>)
+
+</dl>
+
+<h3><a name="hardhat">hardhat</a></h3>
+
+The <code>hardhat</code> module does noises of heavy motors and
+construction equipment. Also some <em>de</em>struction equipment.
+
+<dl>
+
+<dt>hardhat.Site
+<dd>
+A mixture of motors and the occasional pile-driver.
+
+<dt>hardhat.GlassDisaster
+<dd>
+Continual showers of shattering glass.
+
+<dt>hardhat.ManyMotors
+<dd>
+A mixture of motors.
+(<em>internal</em>)
+
+<dt>hardhat.MotorRunFade ([ duration=3, fadetime=7 ])
+<dd>
+A random motor starts up, runs for the given duration, and then fades out
+over the given interval.
+(<em>internal; terminates</em>)
+
+<dt>hardhat.MotorRun
+<dd>
+A random motor starts up and runs forever.
+(<em>internal</em>)
+
+<dt>hardhat.OccasionalPileDriver
+<dd>
+A pile driver starts up at a random pitch and volume. It runs for from
+3 to 15 seconds, and then fades out. The cycle repeats every 30 to 90
+seconds.
+(<em>internal</em>)
+
+<dt>hardhat.PileDriverInOut ([ duration=3 ])
+<dd>
+A pile driver starts up, runs for the given interval, and then fades out
+and stops.
+(<em>internal; terminates</em>)
+
+<dt>hardhat.PileDriver
+<dd>
+A steady pile-driver at a random pitch and stereo pan.
+(<em>internal</em>)
+
+<dt>hardhat.OccasionalGlass
+<dd>
+A pane of glass smashes, every few seconds.
+(<em>internal</em>)
+
+<dt>hardhat.GlassForest ([ snd='mech/glass-breaking-reverb.aiff', mindelay=0.25, maxdelay=0.4 ])
+<dd>
+Repeated showers of broken glass. The given sound is repeated at intervals
+which range from mindelay to maxdelay. The pitch drifts slowly and randomly
+up and down.
+(<em>internal</em>)
+
+</dl>
+
+
+<h3><a name="journey">journey</a></h3>
+
+The <code>journey</code> module performs sounds of travel.
+<p>
+
+<dl>
+
+<dt>journey.BusyHighway
+<dd>
+Cars rushing past, with occasional trucks and railway crossings.
+
+<dt>journey.Highway
+<dd>
+Cars rushing past.
+
+<dt>journey.BusyRailway
+<dd>
+Railroad track sounds, with occasional crossings.
+
+<dt>journey.VaryingTrack
+<dd>
+Railroad track sounds, varying every so often in pitch and quality.
+
+<dt>journey.Track ([ pitch=1 ])
+<dd>
+Railroad track sounds, at the given pitch, but chosen randomly from a
+list of sound samples.
+(<em>internal</em>)
+
+<dt>journey.OccasionalCrossing
+<dd>
+A railroad crossing goes past, fading in and out over the course of ten
+seconds. Another goes past every 30 to 120 seconds.
+(<em>internal</em>)
+
+<dt>journey.RailroadCrossing
+<dd>
+Random railway crossing bell, repeated forever.
+(<em>internal</em>)
+
+<dt>journey.OccasionalTruck
+<dd>
+A random truck-horn is heard, at random intervals up to 90 seconds
+apart.
+(<em>internal</em>)
+
+<dt>journey.Transfer
+<dd>
+Slow fade back and forth between car and rail travel.
+
+</dl>
+
+<h3><a name="office">office</a></h3>
+
+The <code>office</code> module contains a couple of rather arbitrary
+workaday environments.
+
+<dl>
+
+<dt>office.Typewriter
+<dd>
+Someone typing on an electric typewriter.
+
+<dt>office.Keyboard
+<dd>
+Someone typing on a computer keyboard.
+
+</dl>
+
+<h3><a name="heartbeat">heartbeat</a></h3>
+
+The <code>heartbeat</code> module fills a space with invisible circulation.
+<p>
+
+<dl>
+
+<dt>heartbeat.ManyBeats
+<dd>
+Several heartbeats (four, by default), of random pitch.
+
+<dt>heartbeat.ComingAndGoing
+<dd>
+One heartbeat begins, then another, then another and another.
+Then, one at a time, they fade away. Silence. The cycle repeats.
+
+<dt>heartbeat.ComeGoBeat ([ fadetime=4, livetime=10 ])
+<dd>
+A random heartbeat fades in, continues for a time, and then fades out
+and stops.
+(<em>internal; terminates</em>)
+
+<dt>heartbeat.OneBeat ([ pitch=1 ])
+<dd>
+A single steady beat at the given pitch.
+(<em>internal</em>)
+
+<dt>heartbeat.OneSoftBeat ([ pitch=1 ])
+<dd>
+Same, but a gentler sample.
+(<em>internal</em>)
+
+<dt>heartbeat.OneRandomBeat ([ pitch=1 ])
+<dd>
+Same, but randomly chooses between the two samples.
+(<em>internal</em>)
+
+
+</dl>
+
+
+<h3><a name="blop">blop</a></h3>
+
+The <code>blop</code> module emits strange electronic blopping noises.
+<p>
+
+<dl>
+
+<dt>blop.BlopSpace
+<dd>
+Strange blopping noises in all directions.
+
+<dt>blop.TapSpace
+<dd>
+Strange echoey tapping noises in all directions.
+
+<dt>blop.TonkSpace
+<dd>
+Strange echoey tonking noises in all directions.
+
+<dt>blop.EchoWorld
+<dd>
+A mix of echoing noises, with an occasional gong in the distance.
+
+<dt>blop.BlopEchoes
+<dd>
+A single chain of blops, at a random pitch and location.
+(<em>internal</em>; <em>terminates</em>)
+
+<dt>blop.TapEchoes
+<dd>
+A single chain of taps, at a random pitch and location.
+(<em>internal</em>; <em>terminates</em>)
+
+<dt>blop.TonkEchoes
+<dd>
+A single chain of tonks, at a random pitch and location.
+(<em>internal</em>; <em>terminates</em>)
+
+<dt>blop.OccasionalGong
+<dd>
+A gong crashes at long intervals.
+(<em>internal</em>)
+
+</dl>
+
+
+
+<hr>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+
+</body></html>

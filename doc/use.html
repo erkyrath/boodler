@@ -1,0 +1,242 @@
+<html><head>
+<title>Boodler: Using It</title>
+</head>
+<body>
+
+<h2>Boodler: Using It</h2>
+
+First, make sure you have downloaded the Boodler source and 
+sound library packages; 
+moved to the source directory;
+done <em>make</em>; and set the necessary
+environment variables. 
+(See <a href="install.html">Installing Boodler</a>.)
+<p>
+
+The use of Boodler, in its simplest form, is, um, simple:
+<pre>
+python boodler.py module.ClassName
+</pre>
+<p>
+
+...where <code>module</code> is one of the files in
+<code>$BOODLER_EFFECTS_PATH</code> (without the <code>.py</code>
+suffix), and ClassName is one of the <code>Agent</code> classes
+in that file. For example:
+<pre>
+python boodler.py crows.ParliamentOfCrows
+</pre>
+<p>
+
+Most <code>Agent</code> classes produce an unending stream of sound,
+causing Boodler to run forever (or until you hit ctrl-C). Some 
+agents, however, come to a conclusion and shut themselves
+down. If you tell Boodler to run such an agent, Boodler will exit
+when the agent is finished.
+<p>
+
+<h3>Running agent classes with arguments</h3>
+
+Some <code>Agent</code> classes take additional options, which you can
+add to the command line after the class name. For example, 
+<pre>
+python boodler.py play.OneSound environ/droplet-bloink.aiff
+</pre>
+<p>
+
+<code>play.OneSound</code> is an agent which takes exactly one argument --
+the name of a sound -- and plays it once, and then exits. (The sound
+is searched for in <code>$BOODLER_SOUND_PATH</code>.)
+<p>
+
+<code>play.OneSound</code> requires one argument -- you will get an error
+if you try to pass none (or two or more). 
+Some <code>Agent</code> classes, however, have optional arguments --
+or both mandatory and optional arguments. If you try
+<pre>
+python boodler.py play.OneSoundOpts environ/droplet-bloink.aiff</pre>
+...you will hear exactly the same "bloink" noise as in the previous
+example. However, <code>play.OneSoundOpts</code> takes up to three
+additional arguments: the pitch, the volume, and the stereo (left-right)
+shift. You may do
+<pre>
+python boodler.py play.OneSoundOpts environ/droplet-bloink.aiff 0.5 0.75 -1.0</pre>
+...to hear this sound played an octave lower, at 75% volume, and shifted
+entirely to the left speaker channel.
+<p>
+
+Some <code>Agent</code> classes take arguments which are themselves the
+names of other <code>Agent</code> classes. Try this:
+<pre>
+python boodler.py manager.Simultaneous crows.ParliamentOfCrows wind.Windstorm
+</pre>
+<p>
+
+The <code>manager.Simultaneous</code> agent takes as arguments any number
+of <code>Agent</code> classes; it sets them all playing at the same
+time. In this case, you get a bunch of crows complaining about the blustery
+weather.
+<p>
+
+(There is currently no way to pass arguments to any agents which are
+themselves arguments. You cannot, for example, say
+<pre>
+python boodler.py manager.Simultaneous wind.Windstorm play.OneSound environ/droplet-bloink.aiff</pre>
+...because <code>manager.Simultaneous</code> will just think that
+<code>environ/droplet-bloink.aiff</code> is supposed to be a third 
+agent. I may come up with a way around this in some future release.
+In the meantime, it is trivial to write your own agent which accomplishes
+this simultaneity. See <a href="design.html">Designing New Soundscapes</a>.)
+
+<h3><a name="events">Sending events to Boodler</a></h3>
+
+Some Agent classes can receive events, or messages, sent by other programs.
+Boodler listens on a network socket for these messages if you give the
+<code>--listen</code> argument. (If you do not, Boodler does <em>not</em>
+listen for events, and event-receiving agents will not run.
+This is the default behavior for reasons of security paranoia.)
+<p>
+
+To send an event, use
+the <code>boomsg.py</code> program:
+
+<pre>
+python boomsg.py go
+</pre>
+
+This sends a simple message <code>('go')</code> to a listening Boodler
+process -- by default, on the same machine. To send a message to a 
+different machine, you would say:
+
+<pre>
+python boomsg.py --hostname machine.addr.net go
+</pre>
+
+You can also send a more complex message, with several words:
+
+<pre>
+python boomsg.py go 5.47 cheese
+</pre>
+
+The effect of an event depends on what agent has been posted to receive it.
+For examples of Agent classes that receive events,
+see the <code>listen</code> module in the list of soundscapes.
+<p>
+
+<h3>What soundscapes are there?</h3>
+
+<a href="catalog.html">Here is the list of sound agents</a> which come
+with Boodler.
+<p>
+
+<h3>All the obscure options</h3>
+
+<pre>
+python boodler.py
+  [--device /dev/device] [--rate soundrate] [--master volume]
+  [--verbose] [--hardware] [--stats interval] [--listen] [--port port]
+  module.AgentClass [ data ... ]
+</pre>
+
+<dl>
+
+<dt><code>--device <em>/dev/device</em></code>
+<dd>Set the device which Boodler will write to. This must support
+the OSS sound API. The default is <code>/dev/dsp</code>.
+
+<dt><code>--rate <em>soundrate</em></code>
+<dd>Set the sampling rate (in frames per second) which Boodler will try
+to use. If the sound device does not support this rate, Boodler will try
+to fall back upon some sampling rate which is supported.
+
+<dt><code>--master <em>volume</em></code>
+<dd>Set the master mixing volume for all sounds. The default is 0.5.
+You should <em>not</em> increase this. If you do, any soundscapes that
+play more than one sound at a time (most of them) are likely to suffer from 
+clipping noise -- sporadic static. 
+(To increase Boodler's volume, you should use a mixer application to
+adjust your sound driver, or just turn up your speakers.)
+If you hear clipping noise in complex
+soundscapes, try <em>reducing</em> this option below 0.5.
+
+<dt><code>--verbose</code>
+<dd>Turn on verbose handling of exceptions. Normally, if an exception
+occurs in the execution of an agent, Boodler just prints the name of
+the exception and continues running. If you set <code>--verbose</code>,
+Boodler will print out the entire Python stack trace.
+
+<dt><code>--hardware</code>
+<dd>Display the capabilities of your sound hardware at startup time.
+This shows you explicitly what sample format and frame rate Boodler is
+using. It also dumps whatever other information about the sound
+interface might (conceivably) be important.
+
+<dt><code>--stats <em>interval</em></code>
+<dd>Turn on periodic statistics reporting. At intervals (given in
+seconds), Boodler will print out a message saying how many agents,
+channels, sounds, and note are queued up. This may be helpful for
+debugging soundscapes; if you see a value which increases without
+limit, you probably have a bug.
+
+<dt><code>--listen</code>
+<dd>Cause Boodler to listen for events on a network socket (port 31863).
+Agents can be triggered by these events. See <a href="#events">above</a>.
+
+<dt><code>--port <em>port</em></code>
+<dd>If <code>--listen</code> is used, this causes Boodler to listen
+on the given port number (instead of the default port 31863). 
+The port may also be an absolute pathname (beginning with "/"),
+in which case Boodler uses a Unix domain socket instead of a network
+socket.
+
+<dt><code>--define <em>opt</em></code>
+<dd>
+
+<dt><code>--define <em>opt=val</em></code>
+<dd>Pass an option in to the sound driver. The available options
+depend on which driver Boodler is compiled with. (Use 
+<code>--hardware</code> to show the driver details.)
+Note that if an <em>=val</em> is supplied, there may not be any spaces
+before or after the equals sign.
+
+<ul>
+<li>OSS driver -- no options
+
+<li>ALSA driver -- no options
+
+<li>ESD driver -- no options
+
+<li>MACOSX driver
+
+<dl>
+<dt><code>--define buffercount=<em>count</em></code>
+<dd>Create a queue of <em>count</em> buffers. If you find that the
+sound skips when the CPU is busy (for example, when you're dragging
+or resizing windows), increase this value. The default is 6.
+<dt><code>--define buffersize=<em>size</em></code>
+<dd>Set each CoreAudio buffer to be <em>size</em> bytes long.
+The default is 32768. (I have found that using a value of 65536
+or more causes clicking; I'm not sure why.)
+</dl>
+
+<li>FILE driver
+
+<dl>
+<dt><code>--define time=<em>interval</em></code>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.
+<dt><code>--define end=big</code>
+<dd>Force the sound output to be written big-endian. (FILE output is
+always 16-bit, signed, stereo.)
+<dt><code>--define end=little</code>
+<dd>Force the sound output to be written little-endian.
+</dl>
+
+</ul>
+
+</dl>
+
+<hr>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+
+</body></html>

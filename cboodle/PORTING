@@ -1,0 +1,169 @@
+Boodler: a programmable soundscape tool
+
+Designed by Andrew Plotkin <erkyrath@eblong.com>
+   <http://www.eblong.com/zarf/boodler/>
+
+It is not terribly difficult to port the cboodle module to use a different
+sound driver or library. You need to write a new version of audev.c which
+implements five low-level functions.
+
+int audev_init_device(char *devname, long soundrate, int verbose, 
+  extraopt_t *extra);
+void audev_close_device(void);
+long audev_get_soundrate(void);
+long audev_get_framesperbuf(void);
+int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock);
+
+Before we describe these, a bit of terminology:
+
+A stream of sound data is a sequence of *frames*. Each frame contains
+some number of channel samples -- one sample for monophonic sound, two
+samples for stereo sound, and so on. Each *sample* is some number of
+bytes (typically one, two, or four). 
+
+(It is important to remember that the rate of a sound stream is given
+in frames per second, *not* samples per second. A 44.1-kilohertz
+stereo 8-bit stream consists of 88200 bytes per second: 44100 frames
+per second, 2 samples per frame, 1 byte per sample. Do not get
+confused about this.)
+
+A sound stream may use *signed* samples (alternately positive and
+negative, with zero as the center axis) or *unsigned* samples
+(alternately high and low values, with a medial value at the center.)
+
+Furthermore, if the samples are more than one byte each, they may be
+kept in memory in a *big-endian* format (most significant byte first),
+or *little-endian* (least significant byte first). Intel architectures
+tend to use little-endian, Motorola and PPC architectures big-endian.
+(You probably know this already, but I figure I should be complete
+about it.)
+
+-----------------------------------------------------------------------
+
+You will need to include two Boodler header files, in addition to whatever
+system header files are appropriate:
+
+#include "common.h"
+#include "audev.h"
+
+Then implement the five functions.
+
+  int audev_init_device(char *devname, long soundrate, int verbose,
+    extraopt_t *extra);
+
+This should open the sound channel. If it succeeds, return TRUE; if it
+fails, return FALSE. Print error messages to stderr.
+
+This function will have to store the data format of the channel in
+private storage. (You will at least need to know the frame rate,
+number of channels, sample size, and whether samples are signed or
+unsigned.) You probably also want to allocate some buffers.
+
+The devname argument may be a device name, parameters, or any other
+information the user might want to supply in order to specify a sound
+channel. Ordinarily, this will be NULL (meaning that you should assume
+default parameters), but the user may pass in any string using the
+--device argument to Boodler.
+
+The soundrate argument indicates a desired sound rate, which the user
+has passed in using the --rate argument. This may be zero, meaning
+that you should use a default rate appropriate to the sound system.
+The sound rate is given in frames per second.
+
+(The soundrate argument is a hint, not a requirement. If the sound
+system cannot handled the desired sound rate, you should still open a
+channel, with a sound rate as close as possible to the request.)
+
+The verbose argument indicates that the user has given the --hardware
+argument, which means to print as much information as possible about
+the sound system (to stdout). Go nuts -- print out version numbers,
+available sound formats, buffer sizes, anything that a curious user
+might want to know.
+
+The extraopt argument points to an array of (key, value) objects which
+the user has specified. In each object, the key is a string, and the
+value is either a string or NULL. The array is terminated with a
+(NULL, NULL) object. These extra options can be anything specific to
+the driver -- desired sound formats, device numbers, whatever. (In
+general, they should always be optional, and taken as hints rather
+than requirements.)
+
+The strings passed in the extraopts array are deallocated after
+audev_init_device() returns. If you need to keep one for later use,
+allocate a copy for yourself.
+
+(Yes, ratewanted and verbose could have been passed via the extra
+option mechanism. They're not. Sorry.)
+
+  void audev_close_device(void);
+
+This should close the sound channel.
+
+  long audev_get_soundrate(void);
+
+Return the sound rate of the channel (after it is opened), in frames
+per second. This should be the *actual* rate, not the requested
+soundrate which was passed to audev_init_device().
+
+  long audev_get_framesperbuf(void);
+
+Return the length of a sound buffer (in frames). The buffer size may
+be mandated by your sound system, or you may have to just pick one.
+
+  int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock);
+
+This function forms the core of the Boodler sound generation loop. In
+general, it should look like this:
+
+  while (1) {
+    int res;
+    res = mixfunc(valbuffer, genfunc, rock);
+    if (res)
+      return TRUE;
+    /* ... push valbuffer to sound channel */
+  }
+
+The mixfunc argument is the entry point to the Boodler engine. You
+don't need to worry about how it works, or about the genfunc or rock
+arguments. Just call mixfunc(buffer, genfunc, rock). If this returns
+TRUE, it is indicating that Boodler is terminating, and you should
+return TRUE as well.
+
+The valbuffer argument is an array which you must supply; mixfunc()
+will fill it in with a buffer-ful of sound. The format of valbuffer is
+*not* the same as your channel's sound format. The number of frames
+must be the value you return in audev_get_framesperbuf(); each frame
+must be stereo (two samples); and each sample must be a signed long
+integer. The longs are stored in native endianness -- you access them
+through simple C statements, not byte-swapping macros.
+
+In other words, the type of the array must be "long"; the length must
+be 2*framesperbuf; and mixfunc() will fill the array with positive and
+negative values, with 0 indicating silence.
+
+(It is easiest to allocate valbuffer in audev_init_device(), and free
+it in audev_close_device(), but the details are up to you.)
+
+Once mixfunc() returns (assuming it returns FALSE), you must take the
+valbuffer array and shove it into your sound channel. All the work of
+format conversion is your problem. You may have to swap bytes, shift
+sample size, or change signed (0-centered) values to unsigned
+(0x8000-centered) values.
+
+Note that although valbuffer is an array of longs, the values actually
+stored there will be in the range [-32767..32767]. This will be true
+*regardless* of sizeof(long). 
+
+(Actually, an overdriven sound may cause the values in valbuffer to
+exceed this range. You will have to clip or truncate the values as you
+shove them into your sound channel. Clipping is a bit slower, but
+truncating causes much louder static.)
+
+audev_loop() should continue looping and pushing sound samples until
+mixfunc() returns TRUE. You will probably need some code to check if
+your sound channel is full, and pause until it opens up again.
+
+(Roddy the Rotifer says: "Give a pin -- don't busy-spin.")
+
+If you encounter an error and cannot continue generating sound, print
+a message to stderr and return FALSE.

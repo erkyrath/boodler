@@ -1,0 +1,190 @@
+<html><head>
+<title>Boodler: External Events</title>
+</head>
+<body>
+
+<h2>Boodler: External Events</h2>
+
+Boodler can trigger agents in response to external events. These events are
+messages received via a standard network connection. You can set up other
+programs to send these messages, and thereby interface your Boodler sound
+system with anything else you desire.
+<p>
+
+(A note on security: Boodler has none. If your computer is connected to
+the Internet, any machine on the Internet can send events to Boodler.
+As a precaution, therefore, Boodler does <em>not</em> listen for events
+unless you use the <code>--listen</code> option.
+If you want to use sound events, but want to exclude the outside world
+from sending them, you should use some kind of firewall hardware or software.
+Boodler uses port 31863; a firewall that blocks that port will block
+Boodler events.)
+<p>
+
+(Another option is to give the <code>--port</code> option and specify
+an absolute pathname instead of a port number. This causes Boodler to
+listen on a Unix domain socket, instead of an Internet network socket.
+Unix domain sockets only work within a single machine, not between
+different machines, and you can use standard Unix file protections to
+limit access to the socket.)
+<p>
+
+<h3>Events</h3>
+
+An event message is a tuple of one or more strings. The first (or only)
+string in the tuple is considered to be the <em>type</em> of the event.
+<p>
+
+To listen for events, you create a special type of agent. This agent sits on
+a channel and waits, but it is not scheduled for a particular time. Instead,
+it listens for a particular type of event. When an event of that type
+arrives, the agent runs immediately. (Well, actually there's a small
+delay.)
+<p>
+
+A listening agent, unlike a normal agent, does not shut down after it runs
+once. It continues listening, and runs once every time an appropriate
+event is received.
+<p>
+
+More than one agent can be posted to listen for a particular type of event.
+When that event arrives, all the agents run simultaneously. Also,
+a particular agent can be posted to listen for several types of events.
+<p>
+
+<h3>Writing a Listening Agent</h3>
+
+A listening agent might look like this:
+<p>
+
+<pre>
+class Example(EventAgent):
+    name = 'listening example'
+    watch_events = 'go'
+    def receive(self, event):
+        self.sched_note('environ/droplet-plink.aiff')
+</pre>
+
+The agent is a member of <code>EventAgent</code>, which is a subclass
+of <code>Agent</code> which has been specialized for event-listening.
+Note that there is no <code>run()</code> method; instead, there
+is a <code>receive()</code> method, which takes an extra argument for
+the event.
+The class also has an extra attribute:
+<code>watch_events</code>. This must contain the type of event to watch
+for.
+<p>
+
+You can now type:
+
+<pre>
+python boodler.py --listen bootest.Example
+</pre>
+
+Boodler will start up, but you will hear nothing. 
+(Don't forget the <code>--listen</code> argument, or else you'll see
+an "event listening disabled" error.)
+<p>
+
+When an <code>EventAgent</code> starts up, it posts itself to listen
+for its <code>watch_events</code>. In other words, the 
+<code>EventAgent</code> class has a default <code>run()</code> implementation
+which looks like this:
+
+<pre>
+    def run(self):
+        self.post_agent(self)
+</pre>
+
+This is usually what you want -- when the agent is scheduled (either
+from the command line, or by another agent) it should begin waiting
+for events. (You can, of course, override the <code>run()</code>
+if you want the agent to do something more complicated.)
+<p>
+
+At any rate, our agent is still waiting patiently.
+To send an event, use the <code>boomsg.py</code> program:
+
+<pre>
+python boomsg.py go
+</pre>
+
+This sends a simple message <code>('go')</code> to a listening Boodler
+process -- by default, on the same machine. To send a message to a 
+different machine, you would say:
+
+<pre>
+python boomsg.py --hostname machine.addr.net go
+</pre>
+
+You can also use the <code>--port</code> argument to specify a network
+port number, or (if the <code>--port</code> value is an absolute pathname)
+a Unix domain socket. Note that <code>--hostname</code> is ignored for
+Unix domain sockets.
+
+<h3>More Complex Listeners</h3>
+
+The example above uses the simplest kind of event -- a single string,
+which gives the event type.
+You can also receive events that have more information.
+
+<pre>
+class Example(EventAgent):
+    name = 'listening example'
+    watch_events = 'play'
+    def receive(self, event):
+        snd = event[1]
+        self.sched_note(snd)
+</pre>
+
+This listener listens for a <code>'play'</code> event. The agent
+then extracts the name of a sound from the second element of the tuple,
+and plays the sound. So you could type:
+
+<pre>
+python boomsg.py play environ/droplet-plink.aiff
+</pre>
+
+...or name any other sound in the library.
+
+You can also check <code>event</code> to discriminate between types
+of events, if your agent watches for more than one type.
+
+<pre>
+class Example(EventAgent):
+    name = 'listening example'
+    watch_events = ['droplet', 'heartbeat']
+    def receive(self, event):
+        if (event[0] == 'droplet'):
+            self.sched_note('environ/droplet-plink.aiff')
+        if (event[0] == 'heartbeat'):
+            self.sched_note('environ/heartbeat.aiff')
+</pre>
+
+In this example, <code>watch_events</code> is a list of strings, rather
+than a single string. (It could also be a function which returns a
+string, or a list of strings.) The agent accepts both <code>'droplet'</code>
+and <code>'heartbeat'</code> events, and plays each as a different sound.
+<p>
+
+<h3>The Event Message Protocol</h3>
+
+You don't actually have to use <code>boomsg.py</code> to send events.
+The protocol is simply a direct TCP/IP connection to port 31863.
+(<code>telnet</code> will work fine.)
+Each (nonempty) line sent is an event. 
+The line is broken up into strings at space characters;
+the resulting tuple becomes the event.
+<p>
+
+You can keep the connection open,
+and send many messages in a row, if you want. Unix, Mac, or DOS linebreaks
+will all work.
+<p>
+
+<hr>
+<em><a href="design.html">Designing Soundscapes</a></em>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+
+</body></html>
