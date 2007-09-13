@@ -11,7 +11,6 @@ import os.path
 import aifc
 import wave
 import sunau
-import cboodle
 import struct
 import types
 
@@ -341,3 +340,8 @@ class MixinLoader(SampleLoader):
 		pass
 
 mixin_loader = MixinLoader()
+
+
+# Late imports.
+
+from boodle import cboodle

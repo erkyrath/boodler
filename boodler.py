@@ -18,7 +18,7 @@ import sys
 import os
 import string
 import getopt
-from boodle import *
+from boodle import agent, generator, cboodle
 
 try:
 	(opts, args) = getopt.getopt(sys.argv[1:], 'd:r:m:lp:vD:', 

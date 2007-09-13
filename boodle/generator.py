@@ -8,11 +8,6 @@ import sys
 import traceback
 import string
 import types
-import cboodle
-import agent
-import stereo
-import sample
-import listen
 
 queue = []
 postpool = {}
@@ -430,3 +425,8 @@ def receive_event(gen, val):
 		return
 	for ag in watchers:
 		gen.postqueue.append((ag, event))
+
+
+# Late imports.
+
+from boodle import cboodle, stereo, sample, listen

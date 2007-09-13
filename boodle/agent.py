@@ -6,10 +6,6 @@
 
 import types
 import string
-import generator
-import cboodle
-import sample
-import stereo
 
 class Agent:
 	"""Agent: base class for Boodler agents.
@@ -543,3 +539,8 @@ def list_module_by_name(name):
 		obj = mod.__dict__[key]
 		if (type(obj) == type(Agent) and issubclass(obj, Agent) and not(obj in [Agent, FadeOutAgent, FadeInOutAgent, StopAgent, NullAgent, EventAgent])):
 			print (name + '.' + key)
+
+
+# Late imports.
+
+from boodle import cboodle, generator, sample, stereo

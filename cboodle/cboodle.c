@@ -5,6 +5,18 @@
    See the LGPL document, or the above URL, for details.
 */
 
+/* This source file does not get compiled directly. It must first be
+   preprocessed by replacing the token $MODBASE$ with one of the
+   extension module keys (file, oss, and so on).
+
+   This is handled by the command
+      python setup.py generate_source
+   ...which generates the source files cboodle-file.c, cboodle-oss.c, 
+   and so on. The source package is distributed with these files already
+   generated.
+*/
+
+
 #include <Python.h>
 
 #include "common.h"
@@ -17,7 +29,7 @@ typedef struct run_agents_rock_struct {
   PyObject *generator;
 } run_agents_rock_t;
 
-extern void initcboodle(void);
+extern void initcboodle_$MODBASE$(void);
 static int run_python_agents(long curtime, void *rock);
 
 static PyObject *cboodle_init(PyObject *self, PyObject *args)
@@ -497,8 +509,8 @@ static PyMethodDef methods[] = {
   {NULL, NULL}
 };
 
-void initcboodle(void)
+void initcboodle_$MODBASE$(void)
 {
-  Py_InitModule("cboodle", methods);
+  Py_InitModule("cboodle_$MODBASE$", methods);
 }
 
