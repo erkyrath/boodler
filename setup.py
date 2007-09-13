@@ -5,9 +5,11 @@ from distutils.command.build_ext import build_ext
 
 class local_build_ext(build_ext):
 	user_options = (build_ext.user_options + [
-		('intmath', None, 'force audio sample computation to use integer math'),
+		('intmath', None, 'audio mixing uses integer math'),
+		('floatmath', None, 'audio mixing uses floating-point math (default)'),
 	])
 	boolean_options = (build_ext.boolean_options + [ 'intmath' ])
+	negative_opt = {'floatmath' : 'intmath'}
 	
 	def initialize_options(self):
 		build_ext.initialize_options(self)
