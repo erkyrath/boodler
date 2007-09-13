@@ -33,9 +33,6 @@ static long *valbuffer = NULL;
 
 int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
 {
-  int ix, res;
-  long lx;
-  unsigned int formatlist, tmpflist;
   int channels, format, rate;
   int fragsize;
   extraopt_t *opt;
@@ -142,8 +139,6 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 
 void audev_close_device()
 {
-  int res;
-
   if (device == NULL) {
     fprintf(stderr, "Unable to close sound device which was never opened.\n");
     return;
