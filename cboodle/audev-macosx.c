@@ -49,9 +49,8 @@ static OSStatus PlaybackIOProc(AudioDeviceID inDevice,
 
 int audev_init_device(char *dummydevname, long ratewanted, int verbose, extraopt_t *extra)
 {
-  int ix, bx, res;
+  int bx, res;
   OSStatus status;
-  long lx;
   int channels;
   long rate;
   long fragsize;
@@ -256,7 +255,6 @@ int audev_init_device(char *dummydevname, long ratewanted, int verbose, extraopt
 void audev_close_device()
 {
   OSStatus status;
-  int res;
   int bx;
 
   if (audevice == kAudioDeviceUnknown) {
