@@ -1,10 +1,20 @@
 # Boodler: a programmable soundscape tool
-# Copyright 2002 by Andrew Plotkin <erkyrath@eblong.com>
+# Copyright 2002-7 by Andrew Plotkin <erkyrath@eblong.com>
 # <http://www.eblong.com/zarf/boodler/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
 __all__ = ['agent', 'generator', 'listen', 'sample', 'stereo', 'music']
+
+driver_list = [ 'oss', 'esd', 'alsa', 'macosx', 'file' ]
+
+driver_map = {
+	'file': 'write file containing raw sample output',
+	'macosx': 'MacOSX CoreAudio',
+	'esd': 'Enlightened Sound Daemon',
+	'oss': 'Open Sound System',
+	'alsa': 'Advanced Linux Sound Architecture',
+}
 
 class DummyDriver:
 	"""A dummy driver class.
@@ -35,7 +45,6 @@ def set_driver(key):
 	"""
 	global cboodle
 	
-	print '### setting driver to', key
 	modname = 'cboodle_'+key
 	selfmod = __import__('boodle.'+modname)
 	driver = getattr(selfmod, modname)
@@ -45,4 +54,26 @@ def set_driver(key):
 	agent.cboodle = driver
 	generator.cboodle = driver
 	sample.cboodle = driver
+
 	return driver
+
+def list_drivers():
+	"""list_drivers() -> list of (str, str)
+
+	List the Boodler drivers which are installed and usable.
+	Returns a list of tuples (key, fullname). In each pair, key is a 
+	driver key (which can be passed to set_driver()), and fullname
+	is a human-readable description of the driver.
+	"""
+	
+	ls = []
+
+	for key in driver_list:
+		modname = 'cboodle_'+key
+		try:
+			__import__('boodle.'+modname)
+			ls.append(key)
+		except Exception:
+			pass
+
+	return [ (key, driver_map[key]) for key in ls ]

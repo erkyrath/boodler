@@ -18,6 +18,10 @@ import sys
 import os
 import optparse
 
+defaultdriver = 'oss'
+if (sys.platform == 'darwin'):
+	defaultdriver = 'macosx'
+
 usage = 'usage: %prog [ options ] module.AgentClass [ data ... ]'
 
 popt = optparse.OptionParser(prog=sys.argv[0],
@@ -26,7 +30,7 @@ popt = optparse.OptionParser(prog=sys.argv[0],
 
 popt.add_option('-o', '--output',
 	action='store', type='string', dest='driver',
-	help='output driver to use') ### default?
+	help='output driver to use (default: '+defaultdriver+')')
 popt.add_option('-m', '--master',
 	action='store', type='float', dest='basevolume', metavar='VOLUME',
 	help='master volume (default: 0.5)')
@@ -54,18 +58,21 @@ popt.add_option('-v', '--verbose',
 popt.add_option('--hardware',
 	action='store_true', dest='verbosehardware',
 	help='display verbose information about driver')
+popt.add_option('--list-drivers',
+	action='store_true', dest='listdrivers',
+	help='list all available output drivers')
 popt.add_option('--list-devices',
 	action='store_true', dest='listdevices',
 	help='list all available device names')
 
 popt.set_defaults(
+	driver=defaultdriver,
 	ratewanted = 0,
 	basevolume = 0.5,
 	netlisten = False,
 	verboseerrors = False,
 	verbosehardware = False,
 	extraopts = [])
-### default driver
 
 (opts, args) = popt.parse_args()
 
@@ -85,6 +92,12 @@ if (opts.listdevices):
 import boodle
 from boodle import agent, generator
 cboodle = boodle.cboodle
+
+if (opts.listdrivers):
+	ls = boodle.list_drivers()
+	print len(ls), 'output drivers available:'
+	for (key, name) in ls:
+		print '   ', key+':', name
 
 if (opts.driver):
 	cboodle = boodle.set_driver(opts.driver)
