@@ -344,4 +344,6 @@ mixin_loader = MixinLoader()
 
 # Late imports.
 
-from boodle import cboodle
+import boodle
+# cboodle may be updated later, by a set_driver() call.
+cboodle = boodle.cboodle

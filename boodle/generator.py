@@ -429,4 +429,7 @@ def receive_event(gen, val):
 
 # Late imports.
 
-from boodle import cboodle, stereo, sample, listen
+import boodle
+from boodle import stereo, sample, listen
+# cboodle may be updated later, by a set_driver() call.
+cboodle = boodle.cboodle

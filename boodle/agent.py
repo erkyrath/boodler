@@ -543,4 +543,7 @@ def list_module_by_name(name):
 
 # Late imports.
 
-from boodle import cboodle, generator, sample, stereo
+import boodle
+from boodle import generator, sample, stereo
+# cboodle may be updated later, by a set_driver() call.
+cboodle = boodle.cboodle
