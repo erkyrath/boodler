@@ -6,6 +6,14 @@ from distutils.errors import *
 import distutils.log
 
 class BooExtension(Extension):
+	"""BooExtension: A distutils.Extension class customized for Boodler
+	driver extensions.
+
+	Since all the drivers have nearly the same list of source files,
+	this class generates the list at init time. You don't need to
+	pass the source list in.
+	"""
+	
 	def __init__(self, key, **opts):
 		self.boodler_key = key
 		modname = 'boodle.cboodle_'+key
@@ -15,7 +23,7 @@ class BooExtension(Extension):
 
 		Extension.__init__(self, modname, ls, **opts)
 		
-				
+# The list of driver extensions.
 extensions = [
 	BooExtension('file'),
 	BooExtension('macosx',
@@ -24,6 +32,18 @@ extensions = [
 ]
 
 class local_build_ext(build_ext):
+	"""local_build_ext: A customization of the distutils build_ext
+	command.
+
+	This command understands an additional boolean argument:
+	
+		--intmath (use integer math for audio mixing)
+		--floatmath (use floating-point math for audio mixing)
+		
+	The default is --floatmath. You can pass these arguments on
+	the command line, or modify setup.cfg.
+	"""
+	
 	user_options = (build_ext.user_options + [
 		('intmath', None, 'audio mixing uses integer math'),
 		('floatmath', None, 'audio mixing uses floating-point math (default)'),
@@ -46,6 +66,20 @@ class local_build_ext(build_ext):
 		build_ext.finalize_options(self)
 
 class local_generate_source(Command):
+	"""local_generate_source: A special command to generate cboodle-*.c
+	source files.
+
+	Every driver module needs a different cboodle-*.c source file. They
+	are nearly identical; the only difference is a few symbol names.
+	It is therefore convenient to generate them from a template, called
+	cboodle.c.
+
+	The generate_source command is not in the "build" or "install" pipeline,
+	because I ran it before I distributed the source. You should already
+	have a bunch of cboodle-*.c files. If you run this command, they'll
+	be rewritten, but they won't be any different.
+	"""
+	
 	description = "generate extra source files (not needed for build/install)"
 	user_options = []
 	

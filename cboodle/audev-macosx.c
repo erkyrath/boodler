@@ -47,13 +47,16 @@ static OSStatus PlaybackIOProc(AudioDeviceID inDevice,
   const AudioTimeStamp *inOutputTime,
   void *inClientData);
 
-int audev_init_device(char *dummydevname, long ratewanted, int verbose, extraopt_t *extra)
+int audev_init_device(char *wantdevname, long ratewanted, int verbose, extraopt_t *extra)
 {
   int bx, res;
   OSStatus status;
   int channels;
   long rate;
   long fragsize;
+  int listdevices = FALSE;
+  AudioDeviceID wantdevid;
+  AudioDeviceID wantedaudev;
   extraopt_t *opt;
   UInt32 propsize;
   UInt32 bytecount;
@@ -75,6 +78,9 @@ int audev_init_device(char *dummydevname, long ratewanted, int verbose, extraopt
     else if (!strcmp(opt->key, "buffercount") && opt->val) {
       bufcount = atoi(opt->val);
     }
+    else if (!strcmp(opt->key, "listdevices")) {
+      listdevices = TRUE;
+    }
   }
 
   if (bufcount < 2)
@@ -85,12 +91,110 @@ int audev_init_device(char *dummydevname, long ratewanted, int verbose, extraopt
     return FALSE;
   }
 
-  propsize = sizeof(audevice);
-  status = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice,
-    &propsize, &audevice);
-  if (status) {
-    fprintf(stderr, "Could not get audio default device.\n");
-    return FALSE;
+  wantedaudev = kAudioDeviceUnknown;
+
+  /* If the given device name is a string representation of an
+     integer, work out the integer. */
+  wantdevid = kAudioDeviceUnknown;
+  if (wantdevname) {
+    char *endptr = NULL;
+    wantdevid = strtol(wantdevname, &endptr, 10);
+    if (!endptr || endptr == wantdevname || (*endptr != '\0'))
+      wantdevid = kAudioDeviceUnknown;
+  }
+
+  if (wantdevid != kAudioDeviceUnknown) {
+    printf("### int value is %d\n", (int)wantdevid);
+  }
+
+  if (listdevices || wantdevname) {
+    int ix, jx;
+    int device_count;
+#define LEN_DEVICE_LIST 16
+    AudioDeviceID devicelist[LEN_DEVICE_LIST];  
+
+    propsize = LEN_DEVICE_LIST * sizeof(AudioDeviceID);
+    status = AudioHardwareGetProperty(kAudioHardwarePropertyDevices,
+      &propsize, devicelist);
+    if (status) {
+      fprintf(stderr, "Could not get list of audio devices.\n");
+      return FALSE;
+    }
+    printf("### propsize %d\n", (int)propsize);
+    device_count = propsize / sizeof(AudioDeviceID);
+
+    for (ix=0; ix<device_count; ix++) {
+      AudioDeviceID tmpaudev = devicelist[ix];
+
+      /* Determine if this is an output device. */
+      status = AudioDeviceGetPropertyInfo(tmpaudev, 0, 0, 
+	kAudioDevicePropertyStreamConfiguration, &propsize, NULL);
+      if (status) {
+	fprintf(stderr, "Could not get audio property info.\n");
+	return FALSE;
+      }
+
+      AudioBufferList *buflist = (AudioBufferList *)malloc(propsize);
+      status = AudioDeviceGetProperty(tmpaudev, 0, 0, 
+	kAudioDevicePropertyStreamConfiguration, &propsize, buflist);
+      if (status) {
+	fprintf(stderr, "Could not get audio property info.\n");
+	return FALSE;
+      }
+
+      int hasoutput = FALSE;
+
+      for (jx=0; jx<buflist->mNumberBuffers; jx++) {
+	if (buflist->mBuffers[jx].mNumberChannels > 0) {
+	  hasoutput = TRUE;
+	}
+      }
+
+      free(buflist);
+      buflist = NULL;
+
+      if (!hasoutput) {
+	/* skip this device. */
+	continue;
+      }
+
+      /* Determine the device name. */
+
+      propsize = LEN_DEVICE_NAME * sizeof(char);
+      status = AudioDeviceGetProperty(tmpaudev, 1, 0,
+	kAudioDevicePropertyDeviceName, &propsize, devicename);
+      if (status) {
+	fprintf(stderr, "Could not get audio device name.\n");
+	return FALSE;
+      }
+
+      if (listdevices)
+	printf("Found device ID %d: \"%s\".\n", (int)tmpaudev, devicename);
+
+      /* Check if the desired name matches (a prefix of) the device name. */
+      if (wantdevname && !strncmp(wantdevname, devicename, 
+	    strlen(wantdevname))) {
+	wantedaudev = tmpaudev;
+      }
+
+      /* Check if the int version of the desired name matches the device ID. */
+      if (wantdevid != kAudioDeviceUnknown && wantdevid == tmpaudev) {
+	wantedaudev = tmpaudev;
+      }
+    }
+  }
+
+  if (wantdevname) {
+    audevice = wantedaudev;
+  }
+  else {
+    propsize = sizeof(audevice);
+    status = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice,
+      &propsize, &audevice);
+    if (status) {
+      fprintf(stderr, "Could not get audio default device.\n");
+      return FALSE;
+    }
   }
 
   if (audevice == kAudioDeviceUnknown) {

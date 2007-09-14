@@ -72,6 +72,9 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     else if (!strcmp(opt->key, "time") && opt->val) {
       maxsecs = atof(opt->val);
     }
+    else if (!strcmp(opt->key, "listdevices")) {
+      printf("Device list: give any writable file as a device name.\n");
+    }
   }
 
   if (format == -1) {

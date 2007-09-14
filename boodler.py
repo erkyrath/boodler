@@ -54,6 +54,9 @@ popt.add_option('-v', '--verbose',
 popt.add_option('--hardware',
 	action='store_true', dest='verbosehardware',
 	help='display verbose information about driver')
+popt.add_option('--list-devices',
+	action='store_true', dest='listdevices',
+	help='list all available device names')
 
 popt.set_defaults(
 	ratewanted = 0,
@@ -76,6 +79,9 @@ for val in opts.extraopts:
 	extraopts.append(op)
 	op = None
 
+if (opts.listdevices):
+	extraopts.append( ('listdevices', None) )
+
 import boodle
 from boodle import agent, generator
 cboodle = boodle.cboodle
@@ -83,8 +89,9 @@ cboodle = boodle.cboodle
 if (opts.driver):
 	cboodle = boodle.set_driver(opts.driver)
 
-if (opts.verbosehardware and len(args) == 0):
-	args = ['']
+if (opts.verbosehardware or opts.listdevices):
+	if (len(args) == 0):
+		args = ['']
 
 if (len(args) == 0):
 	print usage.replace('%prog', sys.argv[0])
