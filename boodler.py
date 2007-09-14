@@ -22,6 +22,11 @@ defaultdriver = 'oss'
 if (sys.platform == 'darwin'):
 	defaultdriver = 'macosx'
 
+# The next line may be modified during package installation.
+configfiledriver = '$CONFIGUREDDRIVER$'
+if (not configfiledriver.startswith('$')):
+	defaultdriver = configfiledriver
+
 usage = 'usage: %prog [ options ] module.AgentClass [ data ... ]'
 
 popt = optparse.OptionParser(prog=sys.argv[0],

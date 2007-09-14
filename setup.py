@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+import os.path
 from distutils.core import setup, Command, Extension
 from distutils.command.build_ext import build_ext
+from distutils.command.build_scripts import build_scripts
 from distutils.errors import *
+from distutils.util import convert_path
 import distutils.log
 
 class BooExtension(Extension):
@@ -65,6 +68,55 @@ class local_build_ext(build_ext):
 		
 		build_ext.finalize_options(self)
 
+class local_build_scripts(build_scripts):
+	"""local_build_scripts: A customization of the distutils 
+	build_scripts command.
+
+	This command understands an additional argument:
+
+		--default-driver KEY (default Boodler output driver)
+
+	This modifies the boodler.py script as it is built, to use
+	the given value as a default driver. You can pass this argument 
+	on the command line, or modify setup.cfg.
+
+	If you do not set --default-driver, the default default driver
+	will be 'macosx' (on MacOS) or 'oss' (otherwise).
+	"""
+
+	user_options = (build_scripts.user_options + [
+		('default-driver=', None, 'default Boodler output driver'),
+	])
+
+	def initialize_options(self):
+		build_scripts.initialize_options(self)
+		self.default_driver = None
+
+	def finalize_options(self):
+		build_scripts.finalize_options(self)
+
+	def copy_scripts(self):
+		build_scripts.copy_scripts(self)
+		if (self.default_driver):
+			# If a driver was configured in, modify the boodler.py script.
+			for script in self.scripts:
+				if (script != 'boodler.py'):
+					continue
+				script = convert_path(script)
+				outfile = os.path.join(self.build_dir, os.path.basename(script))
+				print 'modifying', outfile, 'to have', self.default_driver, 'as the default driver'
+				try:
+					fl = open(outfile, 'r')
+					val = fl.read()
+					fl.close()
+					if ('$CONFIGUREDDRIVER$' in val):
+						val = val.replace('$CONFIGUREDDRIVER$', self.default_driver)
+						fl = open(outfile, 'w')
+						fl.write(val)
+						fl.close()
+				except IOError:
+					pass
+
 class local_generate_source(Command):
 	"""local_generate_source: A special command to generate cboodle-*.c
 	source files.
@@ -125,6 +177,7 @@ setup(name = 'Boodler',
 	ext_modules = list(extensions),
 	cmdclass = {
 		'build_ext': local_build_ext,
+		'build_scripts': local_build_scripts,
 		'generate_source': local_generate_source,
 	},
 )
