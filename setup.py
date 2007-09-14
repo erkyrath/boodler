@@ -3,6 +3,7 @@
 from distutils.core import setup, Command, Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import *
+import distutils.log
 
 class BooExtension(Extension):
 	def __init__(self, key, **opts):
@@ -17,7 +18,9 @@ class BooExtension(Extension):
 				
 extensions = [
 	BooExtension('file'),
-	BooExtension('macosx', extra_link_args=['-framework Carbon']),
+	BooExtension('macosx',
+		extra_link_args = ['-framework', 'Carbon', '-framework', 'Python'],
+	),
 ]
 
 class local_build_ext(build_ext):
@@ -62,6 +65,8 @@ class local_generate_source(Command):
 			if (not destfile):
 				raise DistutilsSetupError('Boodler extension ' + key + ' does not have a ' + barename + ' source.')
 			srcfile = destfile[ : -len(barename) ] + 'cboodle.c'
+
+			distutils.log.info("building '%s' extension at '%s'", key, destfile)
 
 			infl = open(srcfile, 'rU')
 			outfl = open(destfile, 'wU')

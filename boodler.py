@@ -56,12 +56,12 @@ popt.add_option('--hardware',
 	help='display verbose information about driver')
 
 popt.set_defaults(
-	ratewanted=0,
-	basevolume=0.5,
-	netlisten=False,
-	verboseerrors=False,
-	verbosehardware=False,
-	extraopts=[])
+	ratewanted = 0,
+	basevolume = 0.5,
+	netlisten = False,
+	verboseerrors = False,
+	verbosehardware = False,
+	extraopts = [])
 ### default driver
 
 (opts, args) = popt.parse_args()
@@ -75,9 +75,6 @@ for val in opts.extraopts:
 		op = (val[ : pos], val[pos+1 : ])
 	extraopts.append(op)
 	op = None
-
-print '###', opts
-print '### opts', extraopts
 
 import boodle
 from boodle import agent, generator
