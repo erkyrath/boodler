@@ -117,12 +117,15 @@ all_extensions = [
 	
 	BooExtension('vorbis',
 		libraries = ['vorbis', 'vorbisenc'],
-		available = check_header_available('vorbis/vorbisenc.h'),
+		available = check_all_available(
+			check_header_available('ogg/ogg.h'),
+			check_header_available('vorbis/vorbisenc.h')),
 	),
 	
 	BooExtension('shout',
 		libraries = ['vorbis', 'vorbisenc', 'shout'],
 		available = check_all_available(
+			check_header_available('ogg/ogg.h'),
 			check_header_available('vorbis/vorbisenc.h'),
 			check_header_available('shout/shout.h')),
 	),

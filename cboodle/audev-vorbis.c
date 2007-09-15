@@ -1,8 +1,10 @@
 /* Boodler: a programmable soundscape tool
-   Copyright 2002 by Andrew Plotkin <erkyrath@eblong.com>
+   Copyright 2002-7 by Andrew Plotkin <erkyrath@eblong.com>
    <http://www.eblong.com/zarf/boodler/>
    This program is distributed under the LGPL.
    See the LGPL document, or the above URL, for details.
+
+   Vorbis driver contributed by Aaron Griffith.
 */
 
 #include <stdio.h>
@@ -21,7 +23,6 @@
 #define DEFAULT_FILENAME "boosound.ogg"
 
 static FILE *device = NULL;
-static int sound_big_endian = 0;
 static long sound_rate = 0; /* frames per second */
 static int sound_channels = 0;
 static int sound_format = 0; /* TRUE for big-endian, FALSE for little */
@@ -43,25 +44,7 @@ static vorbis_dsp_state vd;
 static vorbis_block     vb;
 static int eos=0;
 
-static void audev_vorbis_flush(void)
-{
-  while (vorbis_analysis_blockout(&vd, &vb) == 1) {
-    vorbis_analysis(&vb, NULL);
-    vorbis_bitrate_addblock(&vb);
-    
-    while (vorbis_bitrate_flushpacket(&vd, &op)) {
-      ogg_stream_packetin(&os, &op);
-      
-      while (!eos) {
-        int result = ogg_stream_pageout(&os, &og);
-        if (result == 0) break;
-        fwrite(og.header, 1, og.header_len, device);
-        fwrite(og.body, 1, og.body_len, device);
-        if (ogg_page_eos(&og)) eos=1;
-      }
-    }
-  }
-}
+static void audev_vorbis_flush(void);
 
 int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
 {
@@ -70,7 +53,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   int fragsize;
   extraopt_t *opt;
   double maxsecs = 5.0;
-  char endtest[sizeof(unsigned int)];
+  double quality = 0.5;
 
   if (verbose) {
     printf("Boodler: VORBIS sound driver.\n");
@@ -81,34 +64,18 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;
   }
 
-  *((unsigned int *)endtest) = ( (unsigned int) ( ('E' << 24) + ('N' << 16) + ('D' << 8) + ('I') ) );
-  if (endtest[0] == 'I' && endtest[1] == 'D' && endtest[2] == 'N' && endtest[3] == 'E') {
-    sound_big_endian = FALSE;
-  }
-  else if (endtest[sizeof(unsigned int)-1] == 'I' && endtest[sizeof(unsigned int)-2] == 'D' && endtest[sizeof(unsigned int)-3] == 'N' && endtest[sizeof(unsigned int)-4] == 'E') {
-    sound_big_endian = TRUE;
-  }
-  else {
-    fprintf(stderr, "Cannot determine endianness.\n");
-    return FALSE;
-  }
-
-  format = -1;
+  format = FALSE; /* always little-endian */
 
   for (opt=extra; opt->key; opt++) {
-    if (!strcmp(opt->key, "end") && opt->val) {
-      if (!strcmp(opt->val, "big"))
-	format = TRUE;
-      else if (!strcmp(opt->val, "little"))
-	format = FALSE;
-    }
-    else if (!strcmp(opt->key, "time") && opt->val) {
+    if (!strcmp(opt->key, "time") && opt->val) {
       maxsecs = atof(opt->val);
     }
-  }
-
-  if (format == -1) {
-    format = sound_big_endian;
+    else if (!strcmp(opt->key, "quality") && opt->val) {
+      quality = atof(opt->val);
+    }
+    else if (!strcmp(opt->key, "listdevices")) {
+      printf("Device list: give any writable file as a device name.\n");
+    }
   }
 
   if (!ratewanted)
@@ -133,6 +100,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   if (verbose) {
     printf("%d channels, %d frames per second, 16-bit samples (signed, %s)\n",
       channels, rate, (format?"big-endian":"little-endian"));
+    printf("vorbis VBR encoding quality %f\n", quality);
   }
 
   maxtime = (long)(maxsecs * (double)rate);
@@ -168,9 +136,11 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   }
   
   vorbis_info_init(&vi);
-  ret = vorbis_encode_init_vbr(&vi , 2, sound_rate, 0.1);
+  ret = vorbis_encode_init_vbr(&vi, 2, sound_rate, quality);
   if (ret) {
-    fprintf(stderr, "Unable to allocate sound buffer.\n");
+    fprintf(stderr, "Unable to initialize Vorbis encoder.\n");
+    free(valbuffer);
+    valbuffer = NULL;
     free(rawbuffer);
     rawbuffer = NULL;
     fclose(device);
@@ -179,13 +149,23 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   }
   
   vorbis_comment_init(&vc);
-  vorbis_comment_add_tag(&vc, "ENCODER","Boodler");
+  vorbis_comment_add_tag(&vc, "ENCODER", "Boodler");
   
   vorbis_analysis_init(&vd, &vi);
   vorbis_block_init(&vd, &vb);
   
   srand(time(NULL));
-  ogg_stream_init(&os, rand());
+  ret = ogg_stream_init(&os, rand());
+  if (ret) {
+    fprintf(stderr, "Unable to initialize Ogg stream.\n");
+    free(valbuffer);
+    valbuffer = NULL;
+    free(rawbuffer);
+    rawbuffer = NULL;
+    fclose(device);
+    device = NULL;
+    return FALSE;
+  }
   
   {
     ogg_packet header;
@@ -209,6 +189,11 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 
 void audev_close_device()
 {
+  if (device == NULL) {
+    fprintf(stderr, "Unable to close sound device which was never opened.\n");
+    return;
+  }
+
   vorbis_analysis_wrote(&vd, 0);
   audev_vorbis_flush();
   
@@ -217,11 +202,6 @@ void audev_close_device()
   vorbis_dsp_clear(&vd);
   vorbis_comment_clear(&vc);
   vorbis_info_clear(&vi);
-
-  if (device == NULL) {
-    fprintf(stderr, "Unable to close sound device which was never opened.\n");
-    return;
-  }
 
   fclose(device);
   device = NULL;
@@ -284,7 +264,6 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
       }
     }
 
-    //fwrite(rawbuffer, 1, sound_buffersize, device);
     float **buffer = vorbis_analysis_buffer(&vd, sound_buffersize / 4);
     
     for (i = 0; i < sound_buffersize / 4; i++) {
@@ -300,6 +279,26 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
     curtime += framesperbuf;
     if (curtime >= maxtime)
       return FALSE;
+  }
+}
+
+static void audev_vorbis_flush(void)
+{
+  while (vorbis_analysis_blockout(&vd, &vb) == 1) {
+    vorbis_analysis(&vb, NULL);
+    vorbis_bitrate_addblock(&vb);
+    
+    while (vorbis_bitrate_flushpacket(&vd, &op)) {
+      ogg_stream_packetin(&os, &op);
+      
+      while (!eos) {
+        int result = ogg_stream_pageout(&os, &og);
+        if (result == 0) break;
+        fwrite(og.header, 1, og.header_len, device);
+        fwrite(og.body, 1, og.body_len, device);
+        if (ogg_page_eos(&og)) eos=1;
+      }
+    }
   }
 }
 
