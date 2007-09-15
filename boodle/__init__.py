@@ -6,7 +6,7 @@
 
 __all__ = ['agent', 'generator', 'listen', 'sample', 'stereo', 'music']
 
-driver_list = [ 'file', 'oss', 'esd', 'alsa', 'macosx' ]
+driver_list = [ 'file', 'oss', 'esd', 'alsa', 'macosx', 'vorbis', 'shout' ]
 
 driver_map = {
 	'file': 'write file containing raw sample output',
@@ -14,6 +14,8 @@ driver_map = {
 	'esd': 'Enlightened Sound Daemon',
 	'alsa': 'Advanced Linux Sound Architecture',
 	'macosx': 'MacOSX CoreAudio',
+	'vorbis': 'write Ogg Vorbis file',
+	'shout': 'Shoutcast or Icecast stream',
 }
 
 class DummyDriver:

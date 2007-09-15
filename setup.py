@@ -21,18 +21,50 @@ def check_header_available(path):
 	return a result; instead, it returns a function f(ls) which you
 	can call when you have a list of include directories to check.
 	The f(ls) function is what returns the boolean result.
+
+	Confused? You would use this like this:
+
+	fn = check_header_available('one.h')
+
+	Now fn(ls) tells you whether 'one.h' is in any of the include
+	directories listed in ls. It's set up this way because we don't
+	know the include directories until compile time.
 	"""
 	
 	pathels = path.split('/')
-	def func(ls):
+	def resfunc(ls):
 		for dir in ls:
 			filename = os.path.join(dir, *pathels)
 			if (os.path.isfile(filename)):
 				return True
 		distutils.log.info("unable to locate header '%s'", path)
 		return False
-	return func
+	return resfunc
 
+def check_all_available(*funcs):
+	"""check_all_available(func1, func2, ...) -> func(includedirs) -> bool
+
+	Determine whether all of the given functions return True. This
+	function is curried.
+
+	There's no reason for that to make sense to you. You use it like this:
+
+	fn = check_all_available(
+		check_header_available('one.h'),
+		check_header_available('two.h') )
+
+	Now fn(ls) is a function that checks to make sure *both* 'one.h' and
+	'two.h' are available. You pass a list of include directories to
+	fn().
+	"""
+	
+	def resfunc(ls):
+		for func in funcs:
+			if (not func(ls)):
+				return False
+		return True
+	return resfunc
+	
 class BooExtension(Extension):
 	"""BooExtension: A distutils.Extension class customized for Boodler
 	driver extensions.
@@ -81,6 +113,18 @@ all_extensions = [
 	BooExtension('alsa',
 		libraries = ['asound'],
 		available = check_header_available('sys/asoundlib.h'),
+	),
+	
+	BooExtension('vorbis',
+		libraries = ['vorbis', 'vorbisenc'],
+		available = check_header_available('vorbis/vorbisenc.h'),
+	),
+	
+	BooExtension('shout',
+		libraries = ['vorbis', 'vorbisenc', 'shout'],
+		available = check_all_available(
+			check_header_available('vorbis/vorbisenc.h'),
+			check_header_available('shout/shout.h')),
 	),
 	
 	BooExtension('macosx',
