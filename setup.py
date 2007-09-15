@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os.path
+import re
 from distutils.core import setup, Command, Extension
 from distutils.command.build_ext import build_ext
 from distutils.command.build_scripts import build_scripts
@@ -109,8 +110,10 @@ class local_build_scripts(build_scripts):
 					fl = open(outfile, 'r')
 					val = fl.read()
 					fl.close()
-					if ('$CONFIGUREDDRIVER$' in val):
-						val = val.replace('$CONFIGUREDDRIVER$', self.default_driver)
+					if ('CONFIGUREDDRIVER' in val):
+						srcpat = "'[^']*'\\s*#\\s*CONFIGUREDDRIVER"
+						destpat = "'" + self.default_driver + "' # CONFIGUREDDRIVER"
+						val = re.sub(srcpat, destpat, val)
 						fl = open(outfile, 'w')
 						fl.write(val)
 						fl.close()

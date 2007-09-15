@@ -23,8 +23,8 @@ if (sys.platform == 'darwin'):
 	defaultdriver = 'macosx'
 
 # The next line may be modified during package installation.
-configfiledriver = '$CONFIGUREDDRIVER$'
-if (not configfiledriver.startswith('$')):
+configfiledriver = '' # CONFIGUREDDRIVER
+if (configfiledriver):
 	defaultdriver = configfiledriver
 
 usage = 'usage: %prog [ options ] module.AgentClass [ data ... ]'
