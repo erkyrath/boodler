@@ -6,14 +6,14 @@
 
 __all__ = ['agent', 'generator', 'listen', 'sample', 'stereo', 'music']
 
-driver_list = [ 'oss', 'esd', 'alsa', 'macosx', 'file' ]
+driver_list = [ 'file', 'oss', 'esd', 'alsa', 'macosx' ]
 
 driver_map = {
 	'file': 'write file containing raw sample output',
-	'macosx': 'MacOSX CoreAudio',
-	'esd': 'Enlightened Sound Daemon',
 	'oss': 'Open Sound System',
+	'esd': 'Enlightened Sound Daemon',
 	'alsa': 'Advanced Linux Sound Architecture',
+	'macosx': 'MacOSX CoreAudio',
 }
 
 class DummyDriver:
