@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<!--  
+Sample ices configuration file for use with Boodler.
+
+To use this, you would run:
+
+  python boodler.py -o stdout -Dend=little AGENT | ices ices-boodler.xml
+
+For full documentation of this config file, see
+  http://icecast.org/docs/ices-2.0.0/
+
+   -->
+
+<ices>
+
+    <!-- run in background  -->
+    <background>0</background>
+    <!-- where logs go. -->
+    <logpath>/var/log/ices</logpath>
+    <logfile>ices.log</logfile>
+    <!-- size in kilobytes -->
+    <logsize>2048</logsize>
+    <!-- 1=error, 2=warn, 3=info, 4=debug -->
+    <loglevel>4</loglevel>
+    <!-- logfile is ignored if this is set to 1 -->
+    <consolelog>0</consolelog>
+
+    <!-- optional filename to write process id to -->
+    <!-- <pidfile>/home/ices/ices.pid</pidfile> -->
+
+    <stream>
+        <!-- metadata used for stream listing -->
+        <metadata>
+            <name>Boodler source</name>
+            <genre>Example genre</genre>
+            <description>A short description of your stream</description>
+            <url>http://boodler.org</url>
+        </metadata>
+
+        <!--    Input module.
+            This example is set up to use the 'stdinpcm' module, as
+            piped in from Boodler's 'stdout' module.  -->
+        <input>
+            <module>stdinpcm</module>
+            <param name="rate">44100</param>
+            <param name="channels">2</param>
+            <!-- Read metadata from the given filename, when SIGUSR1
+                is received. (Do not set metadata to 0.) -->
+            <param name="metadata">1</param>
+            <param name="metadatafilename">test</param>
+        </input>
+
+        <!--    Stream instance.
+
+            You may have one or more instances here.  This allows you to
+            send the same input data to one or more servers (or to different
+            mountpoints on the same server). Each of them can have different
+            parameters. This is primarily useful for a) relaying to multiple
+            independent servers, and b) encoding/reencoding to multiple
+            bitrates.
+
+            If one instance fails (for example, the associated server goes
+            down, etc), the others will continue to function correctly.
+            This example defines a single instance.  -->
+
+        <instance>
+            <!--    Server details.
+
+                You define hostname and port for the server here, along
+                with the source password and mountpoint.  -->
+
+            <hostname>localhost</hostname>
+            <port>8000</port>
+            <password>hackme</password>
+            <mount>/boodler.ogg</mount>
+            <yp>1</yp>  <!-- allow stream to be advertised on YP, default 0 -->
+
+            <!--    Live encoding/reencoding:
+
+                channels must be 2, and samplerate must match the
+                parameter given to Boodler. (44100 by default.) If you
+                want to reduce channels to 1, add a downmix section. 
+                If you want a lower rate, change the value 44100 here
+                (and above) to (for example) 22050, and then run Boodler 
+                with "--rate 22050". -->
+
+            <encode>  
+                <quality>0</quality>
+                <samplerate>44100</samplerate>
+                <channels>2</channels>
+            </encode>
+        </instance>
+
+    </stream>
+</ices>

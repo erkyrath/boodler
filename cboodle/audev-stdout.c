@@ -37,7 +37,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   char endtest[sizeof(unsigned int)];
 
   if (verbose) {
-    fprintf(stderr, "Boodler: FILE sound driver.\n");
+    fprintf(stderr, "Boodler: STDOUT sound driver.\n");
   }
 
   if (device) {
