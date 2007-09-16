@@ -232,6 +232,39 @@ always 16-bit, signed, stereo.)
 <dd>Force the sound output to be written little-endian.
 </dl>
 
+<li>VORBIS driver
+
+<dl>
+<dt><code>--define time=<em>interval</em></code>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.
+<dt><code>--define quality=<em>val</em></code>
+<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
+quality) to 1.0 (high).
+</dl>
+
+<li>SHOUT driver
+
+<dl>
+<dt><code>--define shout-server=<em>name</em></code>
+<dd>Connect to shoutcast or icecast server <em>name</em>. Can be a
+domain or an IP address. Defaults to "127.0.0.1".
+<dt><code>--define shout-port=<em>port</em></code>
+<dd>Use port <em>port</em> on the streaming server. Defaults to 8000.
+<dt><code>--define shout-user=<em>name</em></code>
+<dd>Login with username <em>user</em> to the server. Defaults to "source".
+<dt><code>--define shout-password=<em>password</em></code>
+<dd>Login with password <em>password</em> to the server. Defaults to "hackme".
+<dt><code>--define shout-mount=<em>mount</em></code>
+<dd>With an icecast server, mount the sound on <em>mount</em>. Defaults to "/boodler.ogg".
+<dt><code>--define shout-protocol=<em>type</em></code>
+<dd>Use <em>type</em> as the protocol. Use "http" for icecast2,
+"xaudiocast" for icecast1, and "icy" for a shoutcast server. Defaults to "http".
+<dt><code>--define quality=<em>val</em></code>
+<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
+quality) to 1.0 (high).
+</dl>
+
 </ul>
 
 </dl>
