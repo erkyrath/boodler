@@ -277,7 +277,7 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
   int ix, res;
   ssize_t written;
 
-  if (device < 0) {
+  if (!device) {
     fprintf(stderr, "Sound device is not open.\n");
     return FALSE;
   }

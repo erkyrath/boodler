@@ -107,7 +107,13 @@ if (opts.listdrivers):
 if (opts.driver):
 	cboodle = boodle.set_driver(opts.driver)
 
+avoidstdout = False
+if (opts.driver == 'stdout'):
+	avoidstdout = True
+
 if (opts.verbosehardware or opts.listdevices):
+	# For these options, we need to start up the driver even if
+	# no agent was specified. So specify a no-op agent.
 	if (len(args) == 0):
 		args = ['']
 
@@ -145,7 +151,8 @@ try:
 
 	try:
 		try:
-			print ('running "' + ag.getname() + '"')
+			if (not avoidstdout):
+				print ('running "' + ag.getname() + '"')
 			cboodle.loop(generator.run_agents, gen)
 		finally:
 			cboodle.final()

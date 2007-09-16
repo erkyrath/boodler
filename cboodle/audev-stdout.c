@@ -15,7 +15,6 @@
 #include "audev.h"
 
 #define DEFAULT_SOUNDRATE (44100)
-#define DEFAULT_FILENAME "boosound.raw"
 
 static FILE *device = NULL;
 static int sound_big_endian = 0;
@@ -23,7 +22,6 @@ static long sound_rate = 0; /* frames per second */
 static int sound_channels = 0;
 static int sound_format = 0; /* TRUE for big-endian, FALSE for little */
 static long sound_buffersize = 0; /* bytes */
-static long maxtime = 0, curtime = 0;
 
 static long samplesperbuf = 0;
 static long framesperbuf = 0;
@@ -36,11 +34,10 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   int channels, format, rate;
   int fragsize;
   extraopt_t *opt;
-  double maxsecs = 5.0;
   char endtest[sizeof(unsigned int)];
 
   if (verbose) {
-    printf("Boodler: FILE sound driver.\n");
+    fprintf(stderr, "Boodler: FILE sound driver.\n");
   }
 
   if (device) {
@@ -69,11 +66,8 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
       else if (!strcmp(opt->val, "little"))
 	format = FALSE;
     }
-    else if (!strcmp(opt->key, "time") && opt->val) {
-      maxsecs = atof(opt->val);
-    }
     else if (!strcmp(opt->key, "listdevices")) {
-      printf("Device list: give any writable file as a device name.\n");
+      fprintf(stderr, "Device list: not applicable.\n");
     }
   }
 
@@ -83,17 +77,11 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 
   if (!ratewanted)
     ratewanted = DEFAULT_SOUNDRATE;
-  if (!devname) 
-    devname = DEFAULT_FILENAME;
 
-  device = fopen(devname, "wb");
-  if (!device) {
-    fprintf(stderr, "Error opening file %s\n", devname);
-    return FALSE;
-  }
+  device = stdout;
 
   if (verbose) {
-    printf("Opened file %s.\n", devname);
+    fprintf(stderr, "Writing to stdout...\n");
   }
 
   rate = ratewanted;
@@ -101,14 +89,8 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   fragsize = 16384;
 
   if (verbose) {
-    printf("%d channels, %d frames per second, 16-bit samples (signed, %s)\n",
+    fprintf(stderr, "%d channels, %d frames per second, 16-bit samples (signed, %s)\n",
       channels, rate, (format?"big-endian":"little-endian"));
-  }
-
-  maxtime = (long)(maxsecs * (double)rate);
-  curtime = 0;
-  if (verbose) {
-    printf("%g seconds of output (%ld frames)\n", maxsecs, maxtime);
   }
 
   sound_rate = rate;
@@ -122,7 +104,6 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   rawbuffer = (char *)malloc(sound_buffersize);
   if (!rawbuffer) {
     fprintf(stderr, "Unable to allocate sound buffer.\n");
-    fclose(device);
     device = NULL;
     return FALSE;    
   }
@@ -132,7 +113,6 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     fprintf(stderr, "Unable to allocate sound buffer.\n");
     free(rawbuffer);
     rawbuffer = NULL;
-    fclose(device);
     device = NULL;
     return FALSE;     
   }
@@ -147,7 +127,6 @@ void audev_close_device()
     return;
   }
 
-  fclose(device);
   device = NULL;
 
   if (rawbuffer) {
@@ -209,9 +188,6 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
     }
 
     fwrite(rawbuffer, 1, sound_buffersize, device);
-    curtime += framesperbuf;
-    if (curtime >= maxtime)
-      return FALSE;
   }
 }
 

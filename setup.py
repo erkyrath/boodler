@@ -101,6 +101,8 @@ all_extensions = [
 
 	BooExtension('file'),
 	
+	BooExtension('stdout'),
+	
 	BooExtension('oss',
 		available = check_header_available('sys/soundcard.h'),
 	),
