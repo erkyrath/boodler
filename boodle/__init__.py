@@ -81,4 +81,4 @@ def list_drivers():
 		except Exception:
 			pass
 
-	return [ (key, driver_map[key]) for key in ls ]
+	return [ (key, driver_map.get(key, 'unnamed driver')) for key in ls ]
