@@ -1,10 +1,10 @@
 Boodler: a programmable soundscape tool
-   Version 1.6.0 ####
+   Version 1.6.0
 
 Designed by Andrew Plotkin <erkyrath@eblong.com>
-   <http://www.eblong.com/zarf/boodler/>
+   <http://eblong.com/zarf/boodler/>
 
-Copyright 2002 by Andrew Plotkin
+Copyright 2002-7 by Andrew Plotkin
    This program is distributed under the LGPL.
    See the LGPL document, or the above URL, for details.
 
@@ -23,14 +23,21 @@ switch between them, fade them in and out. This package comes with
 many example soundscapes. You can use these, modify them, combine them
 to arbitrary levels of complexity, or write your own.
 
-Boodler is written in Python, with one module (cboodle) written in C.
-It was developed under Python 1.5.2; more recent Python versions
-should work as well. (It's been tested up to Python 2.2, though not
-by me.)
+Boodler is written in Python, with the driver modules (cboodle_*)
+written in C. It was developed under Python 2.3.5; more recent Python
+2.x versions should work as well.
 
-Boodler can be built to use either the OSS sound driver interface, the
-ALSA sound driver interface, or the ESD (EsounD) sound server library.
-It can also write raw sound output to a file.
+Boodler can generate audio output to several destinations, each of
+which is defined by a driver module:
+
+    file:   write file containing raw sample output
+    stdout: write raw sample output to stdout
+    oss:    Open Sound System
+    esd:    Enlightened Sound Daemon
+    alsa:   Advanced Linux Sound Architecture
+    macosx: MacOSX CoreAudio
+    vorbis: write Ogg Vorbis file
+    shout:  Shoutcast or Icecast source
 
 Boodler does not come with any warranty of any sort whatsoever.
 
@@ -38,13 +45,19 @@ Boodler does not come with any warranty of any sort whatsoever.
 
 * GETTING STARTED
 
-To get Boodler up and running: point your web browser at the contents
-of the documentation folder (doc/index.html in this package) and
-follow the "Installation" link.
+Boodler is now distributed as a standard Python distutils package.
+If you have downloaded the source code, you need only type:
+
+  python setup.py build
+  python setup.py install
+
+For more information, point your web browser at the contents of the
+documentation folder (doc/index.html in this package) and follow the
+"Installation" link.
 
 Note that to run the soundscapes included with this package, you will
 need the Boodler sound library, which you must download separately. (I
-separated it out because it's huge.) Go to the web URL listed above.
+separated it out because it's huge.) Go to the web URL above.
 
     -----------------------------------------------
 
