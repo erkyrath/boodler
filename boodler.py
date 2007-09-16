@@ -2,7 +2,7 @@
 
 # Boodler: a programmable soundscape tool
 # Designed by Andrew Plotkin <erkyrath@eblong.com>
-# For more information, see <http://www.eblong.com/zarf/boodler/>
+# For more information, see <http://eblong.com/zarf/boodler/>
 #
 # This Python script, "boodler.py", is in the public domain. 
 # The Python modules that it uses (the contents of the "boodle" package, 
