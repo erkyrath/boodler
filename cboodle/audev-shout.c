@@ -27,7 +27,7 @@
 #define DEFAULT_PROTOCOL SHOUT_PROTOCOL_HTTP
 #define DEFAULT_MOUNT "/boodler.ogg"
 #define DEFAULT_USER "source"
-#define DEFAULT_PASSWORD "password"
+#define DEFAULT_PASSWORD "hackme"
 
 static long sound_rate = 0; /* frames per second */
 static int sound_channels = 0;
