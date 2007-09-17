@@ -1,3 +1,4 @@
+<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head>
 <title>Boodler: Installation</title>
 </head>
@@ -5,32 +6,39 @@
 
 <h2>Boodler: Installation</h2>
 
-Boodler does not, as yet, have a formal installation procedure.
-The source archive (boodler.tar.gz) unpacks into a single directory
-tree; it is simplest to run Boodler from there.
+Boodler uses the standard Python distutils system for building and
+installation.
 <p>
 
 <h3>Prerequisites</h3>
 
 Boodler is written in Python; you must have a Python interpreter installed
-on your system in order to run it. (Python version 1.5.2 is required.
-Later versions of Python should work as well.)
+on your system in order to run it. (Python version 2.3.5 or later is 
+recommended. No, it doesn't work in Python3K.)
 <p>
 
-Boodler can be built to use either the OSS sound driver interface, the
-ALSA sound driver interface, or the ESD (EsounD) sound server library.
-(On MacOSX, it can use the standard CoreAudio interface or the OSX port
-of ESD.)
-It can also write raw sound output to a file.
+Boodler can generate audio output to several destinations, each of
+which is defined by a driver module:
 <p>
+
+<ul>
+<li><code>file</code>:   write file containing raw sample output
+<li><code>stdout</code>: write raw sample output to stdout
+<li><code>oss</code>:    Open Sound System
+<li><code>esd</code>:    Enlightened Sound Daemon
+<li><code>alsa</code>:   Advanced Linux Sound Architecture
+<li><code>macosx</code>: MacOSX CoreAudio
+<li><code>vorbis</code>: write Ogg Vorbis file
+<li><code>shout</code>:  Shoutcast or Icecast source
+</ul>
 
 <h3>The contents of the archive</h3>
 
 If you list the source directory, you will see the following arrangement:
 
 <dl>
-<dt>./configure.py
-<dd>A script which configures the Boodler source to compile on your machine.
+<dt>./setup.py
+<dd>A script which compiles and installs Boodler on your machine.
 <dt>./boodler.py
 <dd>The Boodler program itself. This Python script starts up the Boodler
 engine.
@@ -87,33 +95,35 @@ of directories, if you want to search in several places for either
 sounds or sound effects.
 <p>
 
-You will also need to have the <code>boodle</code> package in your
-Python path. The easiest way to do this is simply to cd to the
-source directory (<code>/home/zarf/src/boodler</code>) -- Python
-is always willing to load packages from the current directory.
-If you wish to run Boodler while in another directory, you can
-add the source directory to your <code>PYTHONPATH</code>.
+You may also want to make sure that Python's script directory is in
+your <code>PATH</code>. On most Unix systems, this will be
+<code>/usr/local/bin</code>. However, on MacOSX, it is the (somewhat
+unwieldy) 
+<code>/System/Library/Frameworks/Python.framework/Versions/Current/bin</code>.
 <p>
 
 <h3>Building Boodler</h3>
 
 <ol>
 <li>
-Type <em>python configure.py</em>.
+Type <em>python setup.py build</em>.
 <p>
 
-(This tries to figure out the configuration of your system, and sets up
-Boodler to compile properly.)
+This tries to figure out the configuration of your system, and compiles
+the Boodler modules which can be compiled.
 <p>
 
 <li>
-Type <em>make</em>.
+Type <em>sudo python setup.py install</em>.
 <p>
 
-(This compiles the C source code for <code>boodle.cboodle</code>,
-and copies the resulting module library to the <code>./boodle</code>
-directory.)
+This installs Boodler in the system's Python directory. The 
+<code>sudo</code> command will ask you for your password, which the 
+setup script needs to write to a system directory. If you want to
+install to a different directory, you could instead type:
 <p>
+
+<em>python setup.py install --prefix <code>directory</code></em>
 
 </ol>
 
@@ -122,7 +132,7 @@ directory.)
 Try this command:
 
 <pre>
-python boodler.py play.OneSound pure/stereotest.aiff
+boodler.py play.OneSound pure/stereotest.aiff
 </pre>
 
 You should hear a seven-note series of test tones -- first alternating
@@ -136,63 +146,9 @@ You can now begin <a href="use.html">using Boodler</a>.
 
 <ul>
 
-<li>The <code>configure.py</code> program complains that none of
-Boodler's sound drivers are compatible.
-
-<ul>
 <li>
-Boodler currently recognizes five different interfaces to a machine's
-sound hardware:
-
-<ul>
-
-<li>OSS (the Open Sound System)
-is a low-level sound driver. If you build Boodler to use OSS, it
-will monopolize the sound hardware -- no other sound-producing program
-will be able to run.
-
-<li>ALSA (the Advanced Linux Sound Architecture) is a more modern and
-powerful sound driver. As with OSS, only one ALSA program can use the
-sound hardware at a time. (ALSA is designed to emulate OSS, so if your
-machine has ALSA installed, you can probably build Boodler using
-either the OSS or ALSA interfaces.)
-
-<li>ESD (EsounD, the "Enlightened Sound Daemon") 
-is a more flexible system. Many programs can use the ESD sound
-interface on your computer at the same time. However, the ESD form of
-Boodler will use somewhat more CPU time. (Also, ESD is kind of junky and
-unsupported. I never liked it much.)
-
-<li>MACOSX (MacOSX CoreAudio)
-uses the CoreAudio framework. This is the
-configuration you will likely want under MacOSX. (Although ESD should
-also work, if you're running the MacOSX port of ESD.)
-
-<li>FILE 
-is an interface that does not play sounds at all. Instead, it writes raw
-sound data to a file on disk. This may be useful. (I used it to generate
-the Boodler samples on the web site.)
-
-</ul>
-
-You can select one or the other by typing
-<code>python configure.py --driver alsa</code>,
-et cetera.
-To see which of them your computer supports, type
-<code>python configure.py --list</code>.
-
-<li>
-If your sound interface header files or libraries are in a
-non-standard location, you will have to configure Boodler to 
-find them. Type
-<code>python configure.py --help</code>
-for details.
-
-</ul>
-
-<li>
-You're trying to build Boodler (with the <code>make</code> command),
-and you see the error "Python.h: No such file or directory".
+You're trying to build Boodler, and you see the error "Python.h: No such 
+file or directory".
 
 <ul>
 <li>Probably you don't have the Python development package installed on
@@ -202,19 +158,33 @@ modules for Python.
 find the "python-devel" RPM package; if you use some other installation
 system, the name will be something similar. Make sure you get the headers
 that match your version of Python.
-<li>On MacOSX, you can either install Python via
-<a href="http://fink.sourceforge.net/">Fink</a>,
-or download the Python source and build it yourself.
+</ul>
+
+<li>
+You install successfully, but you get the error
+"boodler.py: Command not found."
+
+<ul>
+<li>
+You probably don't have the Python script directory in your 
+<code>PATH</code>. Try <code>/usr/local/bin/boodler.py</code>, or
+(on the Mac)
+<code>/System/Library/Frameworks/Python.framework/Versions/Current/bin/boodler.py</code>.
+<li>
+If you think you added one of those directories to your <code>PATH</code>,
+type <code>rehash</code>.
 </ul>
 
 <li>
 The script aborts with the exception 
-"ImportError: No module named cboodle".
+"ImportError: No module named cboodle_oss".
 
 <ul>
 <li>
-The <code>boodle.cboodle</code> module does not exist. Did you forget
-to <em>make</em>?
+The default output driver could not be built on your system. Type
+<code>boodler.py --list-drivers</code> to see a list, and then
+try adding <code>-o <em>driver</em></code> to your Boodler command
+line.
 </ul>
 
 <li>
@@ -239,7 +209,7 @@ in a different location. You can use the <code>--device</code> argument
 to indicate the correct location:
 
 <pre>
-python boodler.py --device /dev/whatever play.OneSound pure/stereotest.aiff
+boodler.py --device /dev/whatever play.OneSound pure/stereotest.aiff
 </pre>
 </ul>
 
@@ -283,7 +253,7 @@ of less accurate volume fading.
 using the <code>--define buffercount=<em>count</em></code> option.
 The default is 6; increasing it to 12 or 16 should help:
 <pre>
-python boodler.py --define buffercount=12 play.OneSound pure/stereotest.aiff
+boodler.py --define buffercount=12 play.OneSound pure/stereotest.aiff
 </pre>
 <li>Get a beefier computer.
 </ul>
