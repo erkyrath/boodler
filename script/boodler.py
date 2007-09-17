@@ -25,7 +25,7 @@ if (sys.platform == 'darwin'):
 # The next line may be modified during package installation.
 configfiledriver = '' # CONFIGUREDDRIVER
 if (configfiledriver):
-	defaultdriver = configfiledriver
+	defaultdriver = configfiledriver.lower()
 
 usage = 'usage: %prog [ options ] module.AgentClass [ data ... ]'
 
@@ -105,6 +105,7 @@ if (opts.listdrivers):
 		print '   ', key+':', name
 
 if (opts.driver):
+	opts.driver = opts.driver.lower()
 	cboodle = boodle.set_driver(opts.driver)
 
 avoidstdout = False

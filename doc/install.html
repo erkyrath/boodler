@@ -39,15 +39,15 @@ If you list the source directory, you will see the following arrangement:
 <dl>
 <dt>./setup.py
 <dd>A script which compiles and installs Boodler on your machine.
-<dt>./boodler.py
+<dt>./script/boodler.py
 <dd>The Boodler program itself. This Python script starts up the Boodler
 engine.
-<dt>./boomsg.py
+<dt>./script/boomsg.py
 <dd>A simple script for sending network events to Boodler.
-<dt>./boodle/*.py
+<dt>./src/boodle/*.py
 <dd>The <code>boodle</code> Python package. This contains several Python
 modules which are used by Boodler.
-<dt>./cboodle/*.c
+<dt>./src/cboodle/*.c
 <dd>The C source for the <code>boodle.cboodle</code> module. This
 module performs the resampling, linear interpolation, and mixing operations
 which are at the heart of Boodler. It is written in C for efficiency.
@@ -177,7 +177,8 @@ type <code>rehash</code>.
 
 <li>
 The script aborts with the exception 
-"ImportError: No module named cboodle_oss".
+"ImportError: No module named cboodle_oss" or
+"No Boodler output driver has been selected."
 
 <ul>
 <li>

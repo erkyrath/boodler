@@ -85,7 +85,7 @@ class BooExtension(Extension):
 		modname = 'boodle.cboodle_'+key
 		
 		ls = ['audev-'+key, 'cboodle-'+key, 'noteq', 'sample']
-		ls = [ ('cboodle/' + val + '.c') for val in ls ]
+		ls = [ ('src/cboodle/' + val + '.c') for val in ls ]
 
 		avail = opts.pop('available', None)
 		if (avail):
@@ -298,7 +298,8 @@ setup(name = 'Boodler',
 	author_email = 'erkyrath@eblong.com',
 	url = 'http://boodler.org/',
 	packages = ['boodle'],
-	scripts = ['boodler.py', 'boomsg.py'],
+	package_dir = {'': 'src'},
+	scripts = ['script/boodler.py', 'script/boomsg.py'],
 	ext_modules = list(all_extensions),
 	cmdclass = {
 		'build_ext': local_build_ext,
