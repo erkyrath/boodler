@@ -10,6 +10,18 @@ from distutils.errors import *
 from distutils.util import convert_path
 import distutils.log
 
+def append_if(cond, list1, list2):
+	"""append_if(cond, list1, list2) -> list
+
+	Return a copy of list1, with list2 appended on if the condition is
+	true.
+	"""
+
+	res = list(list1)
+	if (cond):
+		res.extend(list2)
+	return res
+
 def check_header_available(path):
 	"""check_header_available(path) -> func(includedirs) -> bool
 
@@ -104,6 +116,8 @@ all_extensions = [
 	BooExtension('stdout'),
 	
 	BooExtension('oss',
+		libraries = append_if(('bsd' in sys.platform.lower()),
+			[], ['ossaudio']),
 		available = check_header_available('sys/soundcard.h'),
 	),
 	
