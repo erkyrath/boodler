@@ -22,7 +22,6 @@ static int device = -1; /* file descriptor */
 static int sound_big_endian = 0;
 static long sound_rate = 0; /* frames per second */
 static int sound_channels = 0;
-static int sound_format = 0; /* AFMT_* */
 static long sound_buffersize = 0; /* bytes */
 
 static long samplesperbuf = 0;
@@ -35,8 +34,6 @@ static void print_esd_format(FILE *out, esd_format_t format);
 
 int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
 {
-  int ix;
-  long lx;
   int rate, format;
   char endtest[sizeof(unsigned int)];
   esd_server_info_t *info;
@@ -133,7 +130,7 @@ static void print_esd_format(FILE *out, esd_format_t format)
     fprintf(out, "16-bit");
     break;
   default:
-    fprintf(out, "??-bit");
+    fprintf(out, "?-bit");
     break;
   }
 
@@ -148,7 +145,7 @@ static void print_esd_format(FILE *out, esd_format_t format)
     fprintf(out, "stereo");
     break;
   default:
-    fprintf(out, "??-channel");
+    fprintf(out, "?-channel");
     break;
   }
 
@@ -168,7 +165,7 @@ static void print_esd_format(FILE *out, esd_format_t format)
     fprintf(out, "adpcm");
     break;
   default:
-    fprintf(out, "??-mode");
+    fprintf(out, "?-mode");
     break;
   }
 
@@ -187,7 +184,7 @@ static void print_esd_format(FILE *out, esd_format_t format)
       fprintf(out, "record");
       break;
     default:
-      fprintf(out, "??-func");
+      fprintf(out, "?-func");
       break;
     }
   }
@@ -203,7 +200,7 @@ static void print_esd_format(FILE *out, esd_format_t format)
       fprintf(out, "loop");
       break;
     default:
-      fprintf(out, "??-func");
+      fprintf(out, "?-func");
       break;
     }
   }
