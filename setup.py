@@ -156,20 +156,31 @@ class local_build_ext(build_ext):
 	"""local_build_ext: A customization of the distutils build_ext
 	command.
 
-	This command understands an additional boolean argument:
+	This command understands these additional arguments:
 	
+		--with-drivers=LIST (force building these Boodler output drivers)
+		--without-drivers=LIST (forbid building these Boodler output drivers)
 		--intmath (use integer math for audio mixing)
-		--floatmath (use floating-point math for audio mixing)
+		--floatmath (use floating-point math for audio mixing) (default)
 		
-	The default is --floatmath. You can pass these arguments on
-	the command line, or modify setup.cfg.
+	You can pass these arguments on the command line, or modify setup.cfg.
 
 	This command also checks each extension before building, to make
 	sure the appropriate headers are available. (Or whatever test
-	the extension provides.)
+	the extension provides.) 
+
+	If you list a driver in the --with-drivers argument, the command will
+	try to build it without any checking. (This could result in compilation
+	errors.) If you list a driver in the --without-drivers argument, it
+	will not be built at all. The format of these arguments is a
+	comma-separated list of driver names; for example:
+
+		setup.py build_ext --with-drivers=macosx --without-drivers=vorbis,shout
 	"""
 	
 	user_options = (build_ext.user_options + [
+		('with-drivers=', None, 'force building these Boodler output drivers'),
+		('without-drivers=', None, 'forbid building these Boodler output drivers'),
 		('intmath', None, 'audio mixing uses integer math'),
 		('floatmath', None, 'audio mixing uses floating-point math (default)'),
 	])
@@ -179,6 +190,10 @@ class local_build_ext(build_ext):
 	def initialize_options(self):
 		build_ext.initialize_options(self)
 		self.intmath = None
+		self.with_drivers = None
+		self.without_drivers = None
+		self.with_driver_set = {}
+		self.without_driver_set = {}
 
 	def finalize_options(self):
 		if (self.intmath):
@@ -189,6 +204,15 @@ class local_build_ext(build_ext):
 				self.define = self.define + ',BOODLER_INTMATH'
 		
 		build_ext.finalize_options(self)
+		
+		if (self.with_drivers):
+			for val in self.with_drivers.split(','):
+				val = val.strip().lower()
+				self.with_driver_set[val] = True
+		if (self.without_drivers):
+			for val in self.without_drivers.split(','):
+				val = val.strip().lower()
+				self.without_driver_set[val] = True
 
 	def build_extension(self, ext):
 		# First check whether the extension is buildable. Mostly this
@@ -198,7 +222,16 @@ class local_build_ext(build_ext):
 		ls = [ '/usr/include', '/usr/local/include' ]
 		ls = ls + self.include_dirs + ext.include_dirs
 
-		if (not ext.ext_available(ls)):
+		if (ext.boodler_key in self.with_driver_set):
+			distutils.log.info("'%s' is listed in with-drivers", ext.boodler_key)
+			use = True
+		elif (ext.boodler_key in self.without_driver_set):
+			distutils.log.info("'%s' is listed in without-drivers", ext.boodler_key)
+			use = False
+		else:
+			use = ext.ext_available(ls)
+
+		if (not use):
 			distutils.log.info("skipping '%s' extension", ext.name)
 			return
 		
