@@ -32,9 +32,9 @@ Boodler in some other project or program, you should read the following.
 <h4><em>(Running Boodler)</em></h4>
 
 Boodler is free software, and you may run it freely. (Portions of the
-Boodler source code are copyrighted and licensed under the LGPL, and
-other portions are public domain. Neither of these restrict you in any
-way from running the program.)
+Boodler source code are copyrighted and licensed under the LGPL or the
+GPL, and other portions are public domain. Neither of these restrict
+you in any way from running the program.)
 <p>
 
 However, there is another legal issue. Boodler operates by combining
@@ -100,11 +100,9 @@ licensed free for non-commercial use.
 I consider Boodler to be more like a software component than a
 stand-alone program. Accordingly, I have released it under the 
 <a href="LGPL">GNU Library General Public License</a>
-(the LGPL). To be precise, the
-workhorse parts of Boodler -- the boodle Python package, and the
-modules it contains (including cboodle) -- form a library, which is
-licensed under the LGPL. (The C and Python sources in the boodle and
-cboodle directories are the source code to this library.)
+(the LGPL). To be precise, the workhorse parts of Boodler -- the
+boodle Python package -- form a library, which is licensed under the
+LGPL.
 <p>
 
 The Python program boodler.py is simply a shell that starts up the
@@ -114,6 +112,21 @@ a program that is intended to link in the Boodler library (regardless
 of whether you use boodler.py), then your program is a work that uses
 the library, and must behave appropriately. See the LGPL document for
 details.
+<p>
+
+One detail: the C source code of the cboodle extensions is 
+dual-licensed. You may use it under the terms of the 
+<a href="LGPL">LGPL</a>
+or the
+<a href="GPL">GPL</a>,
+whichever you like. This is because it must be compiled with several
+native libraries, including
+<a href="http://www.icecast.org/">VorbisEnc</a> (BSD license), 
+<a href="http://xiph.org/">LibShout</a> (LGPL),
+and 
+<a href="http://lame.sourceforge.net/">LAME</a> (GPL). 
+The dynamically loadable cboodle_* driver modules are
+therefore all under the LGPL, except for cboodle_lame, which is GPL.
 <p>
 
 <h3><a name="warranty">WARRANTY</a></h3>

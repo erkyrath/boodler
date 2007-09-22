@@ -1,10 +1,17 @@
 /* Boodler: a programmable soundscape tool
    Copyright 2002-7 by Andrew Plotkin <erkyrath@eblong.com>
    <http://eblong.com/zarf/boodler/>
-   This program is distributed under the LGPL.
+   The cboodle_shout extension is distributed under the LGPL.
    See the LGPL document, or the above URL, for details.
 
    Shout driver contributed by Aaron Griffith.
+*/
+
+/*
+   For information about the Vorbis encoding library, see
+   <http://xiph.org/>.
+   For information about LibShout, see
+   <http://www.icecast.org/>.
 */
 
 #include <stdio.h>

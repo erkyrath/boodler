@@ -5,9 +5,9 @@
 # For more information, see <http://eblong.com/zarf/boodler/>
 #
 # This Python script, "boodler.py", is in the public domain. 
-# The Python modules that it uses (the contents of the "boodle" package, 
-# including the C modules "cboodle_*") are licensed under the GNU Library
-# General Public License (LGPL).
+# The Python modules that it uses are licensed under the GNU Library
+# General Public License (LGPL). The cboodle extensions are licensed
+# under either the LGPL or the GPL.
 #
 # You should have received a copy of the GNU Library General Public License
 # along with this program. (It should be a document entitled "LGPL".) 
