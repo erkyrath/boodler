@@ -312,7 +312,7 @@ long audev_get_framesperbuf()
 
 int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
 {
-  struct timeval tv;
+  /* struct timeval tv; */
   char *ptr;
   int ix, res;
 

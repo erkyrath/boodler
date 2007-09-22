@@ -146,6 +146,10 @@ try:
 	if (not ag.inited):
 		raise generator.ScheduleError('agent is uninitialized')
 	gen.addagent(ag, gen.rootchannel, 0)
+
+	title = ag.getname()
+	if (not [True for (key,val) in extraopts if (key == 'title')]):
+		extraopts.append( ('title', title) )
 	
 	cboodle.init(opts.devname, opts.ratewanted, opts.verbosehardware, extraopts)
 	extraopts = None
@@ -153,7 +157,7 @@ try:
 	try:
 		try:
 			if (not avoidstdout):
-				print ('running "' + ag.getname() + '"')
+				print ('running "' + title + '"')
 			cboodle.loop(generator.run_agents, gen)
 		finally:
 			cboodle.final()

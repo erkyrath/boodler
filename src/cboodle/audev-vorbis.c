@@ -7,6 +7,11 @@
    Vorbis driver contributed by Aaron Griffith.
 */
 
+/*
+   For information about the Vorbis encoding library, see
+   <http://xiph.org/>.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -54,6 +59,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   extraopt_t *opt;
   double maxsecs = 5.0;
   double quality = 0.5;
+  char *title = NULL;
 
   if (verbose) {
     printf("Boodler: VORBIS sound driver.\n");
@@ -72,6 +78,9 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     }
     else if (!strcmp(opt->key, "quality") && opt->val) {
       quality = atof(opt->val);
+    }
+    else if (!strcmp(opt->key, "title") && opt->val) {
+      title = opt->val;
     }
     else if (!strcmp(opt->key, "listdevices")) {
       printf("Device list: give any writable file as a device name.\n");
@@ -147,9 +156,27 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     device = NULL;
     return FALSE;
   }
-  
+
+  /* See <http://xiph.org/vorbis/doc/v-comment.html> */  
   vorbis_comment_init(&vc);
-  vorbis_comment_add_tag(&vc, "ENCODER", "Boodler");
+  {
+    char commentbuf[256];
+    time_t nowtime;
+    struct tm *now;
+
+    if (title) {
+      strcpy(commentbuf, "Boodler: ");
+      strncat(commentbuf, title, 255-strlen(commentbuf));
+      vorbis_comment_add_tag(&vc, "TITLE", commentbuf);
+    }
+
+    nowtime = time(NULL);
+    now = localtime(&nowtime);
+    strftime(commentbuf, 255, "%Y-%m-%d (generated)", now);
+    vorbis_comment_add_tag(&vc, "DATE", commentbuf);
+
+    vorbis_comment_add_tag(&vc, "ENCODER", "Boodler");
+  }
   
   vorbis_analysis_init(&vd, &vi);
   vorbis_block_init(&vd, &vb);
