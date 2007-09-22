@@ -302,6 +302,31 @@ domain or an IP address. Defaults to "127.0.0.1".
 quality) to 1.0 (high).
 </dl>
 
+<h4><code>lame</code> -- write MP3 file with LAME encoder</h4>
+
+This writes a file, like the <code>file</code> driver; but it
+generates an MP3 file. The default filename is "boosound.mp3".
+To change this, pass a filename as the <code>--device</code>.
+<p>
+
+<dl>
+<dt><code>--define time=<em>interval</em></code>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.
+<dt><code>--define quality=<em>val</em></code>
+<dd>Set the LAME VBR compression quality, from 9 (low bitrate and 
+quality) to 0 (high). Yes, it's backwards. The default is 2.
+<dt><code>--define fast</code>
+<dd>Use a faster VBR encoding algorithm. (Reduces quality somewhat.)
+<dt><code>--define abr=<em>rate</em></code>
+<dd>Use ABR (fixed average bit rate) of <em>rate</em> KBPS.
+The <em>rate</em> can be from 8 to 320.
+<dt><code>--define haste=<em>val</em></code>
+<dd>Modify the speed of the encoding algorithm, from 0 (slow and careful)
+to 9 (hasty). This affects the quality (but not the bit rate) of the output. 
+The default is 2.
+</dl>
+
 <h3>All the obscure options</h3>
 
 <pre>

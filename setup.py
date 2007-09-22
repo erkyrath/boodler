@@ -146,6 +146,11 @@ all_extensions = [
 			check_header_available('shout/shout.h')),
 	),
 	
+	BooExtension('lame',
+		libraries = ['mp3lame'],
+		available = check_header_available('lame/lame.h'),
+	),
+	
 	BooExtension('macosx',
 		extra_link_args = ['-framework', 'Carbon', '-framework', 'Python'],
 		available = (lambda ls : (sys.platform == 'darwin')),
