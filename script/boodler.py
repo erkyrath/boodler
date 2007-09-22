@@ -119,6 +119,8 @@ if (opts.verbosehardware or opts.listdevices):
 		args = ['']
 
 if (len(args) == 0):
+	if (opts.listdrivers):
+		sys.exit()
 	print usage.replace('%prog', sys.argv[0])
 	sys.exit()
 
