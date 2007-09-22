@@ -14,6 +14,7 @@ environment variables.
 <p>
 
 The use of Boodler, in its simplest form, is, um, simple:
+<p>
 <pre>
 boodler.py module.ClassName
 </pre>
@@ -23,6 +24,7 @@ boodler.py module.ClassName
 <code>$BOODLER_EFFECTS_PATH</code> (without the <code>.py</code>
 suffix), and ClassName is one of the <code>Agent</code> classes
 in that file. For example:
+<p>
 <pre>
 boodler.py crows.ParliamentOfCrows
 </pre>
@@ -39,6 +41,7 @@ when the agent is finished.
 
 Some <code>Agent</code> classes take additional options, which you can
 add to the command line after the class name. For example, 
+<p>
 <pre>
 boodler.py play.OneSound environ/droplet-bloink.aiff
 </pre>
@@ -53,20 +56,25 @@ is searched for in <code>$BOODLER_SOUND_PATH</code>.)
 if you try to pass none (or two or more). 
 Some <code>Agent</code> classes, however, have optional arguments --
 or both mandatory and optional arguments. If you try
+<p>
 <pre>
 boodler.py play.OneSoundOpts environ/droplet-bloink.aiff</pre>
+<p>
 ...you will hear exactly the same "bloink" noise as in the previous
 example. However, <code>play.OneSoundOpts</code> takes up to three
 additional arguments: the pitch, the volume, and the stereo (left-right)
 shift. You may do
+<p>
 <pre>
 boodler.py play.OneSoundOpts environ/droplet-bloink.aiff 0.5 0.75 -1.0</pre>
+<p>
 ...to hear this sound played an octave lower, at 75% volume, and shifted
 entirely to the left speaker channel.
 <p>
 
 Some <code>Agent</code> classes take arguments which are themselves the
 names of other <code>Agent</code> classes. Try this:
+<p>
 <pre>
 boodler.py manager.Simultaneous crows.ParliamentOfCrows wind.Windstorm
 </pre>
@@ -80,8 +88,10 @@ weather.
 
 (There is currently no way to pass arguments to any agents which are
 themselves arguments. You cannot, for example, say
+<p>
 <pre>
 boodler.py manager.Simultaneous wind.Windstorm play.OneSound environ/droplet-bloink.aiff</pre>
+<p>
 ...because <code>manager.Simultaneous</code> will just think that
 <code>environ/droplet-bloink.aiff</code> is supposed to be a third 
 agent. I may come up with a way around this in some future release.
@@ -99,24 +109,30 @@ This is the default behavior for reasons of security paranoia.)
 
 To send an event, use
 the <code>boomsg.py</code> program:
+<p>
 
 <pre>
 boomsg.py go
 </pre>
+<p>
 
 This sends a simple message <code>('go')</code> to a listening Boodler
 process -- by default, on the same machine. To send a message to a 
 different machine, you would say:
+<p>
 
 <pre>
 boomsg.py --hostname machine.addr.net go
 </pre>
+<p>
 
 You can also send a more complex message, with several words:
+<p>
 
 <pre>
 boomsg.py go 5.47 cheese
 </pre>
+<p>
 
 The effect of an event depends on what agent has been posted to receive it.
 For examples of Agent classes that receive events,
@@ -128,6 +144,163 @@ see the <code>listen</code> module in the list of soundscapes.
 <a href="catalog.html">Here is the list of sound agents</a> which come
 with Boodler.
 <p>
+
+<h3>Choosing an output driver</h3>
+
+By default, Boodler uses an appropriate sound device for your computer.
+(The OSS library on Unixes; CoreAudio on MacOSX.) But there are
+many output drivers available. To see which ones were compiled
+in your Boodler installation:
+<p>
+
+<pre>
+boodler.py --list-drivers
+</pre>
+<p>
+
+You can adjust the behavior of each driver with various command-line
+arguments. Most understand the <code>--rate</code> and
+<code>--device</code> arguments (although the meaning of the latter
+depends on the driver). Some drivers also accept additional arguments,
+using the <code>--define <em>opt</em></code> or
+<code>--define <em>opt=val</em></code> command-line arguments. (Use 
+<code>--hardware</code> to show the driver details.)<p>
+
+Boodler currently offers these drivers:
+
+<h4><code>file</code> --   write file containing raw sample output</h4>
+
+The file will be named "boosound.raw" by default. To change this, pass
+a filename as the <code>--device</code>.
+<p>
+
+The file will contain raw PCM sound sample data, two channels, 16 bits
+per sample, signed (centered at 0). By default the samples will be
+in the native endianness of your computer, but you can change this with
+<code>--define end=big</code> or <code>--define end=little</code>.
+<p>
+
+This driver limits the size of the file. By default, it will only write
+five seconds of sound data; you can change the limit with the
+<code>--define time=<em>interval</em></code> option. If the
+sound agent stops before the time limit, you'll get a shorter file.
+<p>
+
+(Note that this driver writes to the file as quickly as possible.
+It probably won't take five seconds to generate a five-second
+sound file.)
+<p>
+
+<dl>
+<dt><code>--define time=<em>interval</em></code>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.
+<dt><code>--define end=big</code>
+<dd>Force the sound output to be written big-endian.
+<dt><code>--define end=little</code>
+<dd>Force the sound output to be written little-endian.
+</dl>
+
+<h4><code>stdout</code> -- write raw sample output to stdout</h4>
+
+This is similar to the <code>file</code> driver, but it streams its
+data to stdout, and there is no time limit. The 
+<code>--device</code> argument is ignored.
+<p>
+
+The <code>stdout</code> driver, like the <code>file</code> driver,
+generates sound data as quickly as possible. This will probably
+be much faster than real time! If you pipe the output to a file,
+you will have a very large file very soon. This driver is intended
+to be piped to an application that can regulate its input, such as
+<a href="http://www.icecast.org/ices.php">Ices</a>.
+<p>
+
+<dl>
+<dt><code>--define end=big</code>
+<dd>Force the sound output to be written big-endian.
+<dt><code>--define end=little</code>
+<dd>Force the sound output to be written little-endian.
+</dl>
+
+<h4><code>oss</code> --    Open Sound System</h4>
+
+This is the default output driver on Linux and other Unixes.
+Use <code>--device</code> to control which audio hardware device
+is used; the default is <code>/dev/dsp</code>.
+<p>
+
+<h4><code>esd</code> --    Enlightened Sound Daemon</h4>
+
+Another Unix sound framework. The <code>--device</code> option defines 
+the hostname to send sound to; it defaults to <code>localhost</code>.
+If no ESD daemon is running, this will attempt to write directly to
+<code>/dev/dsp</code>.
+<p>
+
+<h4><code>alsa</code> --   Advanced Linux Sound Architecture</h4>
+
+Yet another Unix sound framework.
+<p>
+
+<h4><code>macosx</code> -- MacOSX CoreAudio</h4>
+
+This is the default output driver on MacOSX.
+<p>
+
+<dl>
+<dt><code>--define buffercount=<em>count</em></code>
+<dd>Create a queue of <em>count</em> buffers. If you find that the
+sound skips when the CPU is busy (for example, when you're dragging
+or resizing windows), increase this value. The default is 6.
+<dt><code>--define buffersize=<em>size</em></code>
+<dd>Set each CoreAudio buffer to be <em>size</em> bytes long.
+The default is 32768. (I have found that using a value of 65536
+or more causes clicking; I'm not sure why.)
+</dl>
+
+<h4><code>vorbis</code> -- write Ogg Vorbis file</h4>
+
+This writes a file, like the <code>file</code> driver; but it
+generates an Ogg Vorbis file. The default filename is "boosound.ogg".
+To change this, pass a filename as the <code>--device</code>.
+<p>
+
+<dl>
+<dt><code>--define time=<em>interval</em></code>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.
+<dt><code>--define quality=<em>val</em></code>
+<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
+quality) to 1.0 (high).
+</dl>
+
+<h4><code>shout</code> --  Shoutcast or Icecast source</h4>
+
+This generates an Ogg Vorbis stream, and sends it to a Shoutcast or
+Icecast server (using 
+<a href="http://www.icecast.org/download.php">libshout</a>).
+<p>
+
+<dl>
+<dt><code>--define shout-server=<em>name</em></code>
+<dd>Connect to shoutcast or icecast server <em>name</em>. Can be a
+domain or an IP address. Defaults to "127.0.0.1".
+<dt><code>--define shout-port=<em>port</em></code>
+<dd>Use port <em>port</em> on the streaming server. Defaults to 8000.
+<dt><code>--define shout-user=<em>name</em></code>
+<dd>Login with username <em>user</em> to the server. Defaults to "source".
+<dt><code>--define shout-password=<em>password</em></code>
+<dd>Login with password <em>password</em> to the server. Defaults to "hackme".
+<dt><code>--define shout-mount=<em>mount</em></code>
+<dd>With an icecast server, mount the sound on <em>mount</em>. Defaults to "/boodler.ogg".
+<dt><code>--define shout-protocol=<em>type</em></code>
+<dd>Use <em>type</em> as the protocol. Use "http" for icecast2,
+"xaudiocast" for icecast1, and "icy" for a shoutcast server. Defaults to "http".
+<dt><code>--define quality=<em>val</em></code>
+<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
+quality) to 1.0 (high).
+</dl>
 
 <h3>All the obscure options</h3>
 
@@ -205,88 +378,10 @@ socket.
 
 <dt><code>--define <em>opt=val</em></code>
 <dd>Pass an option in to the sound driver. The available options
-depend on which driver Boodler is compiled with. (Use 
-<code>--hardware</code> to show the driver details.)
+depend on which driver Boodler is compiled with.
 Note that if an <em>=val</em> is supplied, there may not be any spaces
-before or after the equals sign.
-
-<ul>
-<li>OSS driver -- no options
-
-<li>ALSA driver -- no options
-
-<li>ESD driver -- no options
-
-<li>MACOSX driver
-
-<dl>
-<dt><code>--define buffercount=<em>count</em></code>
-<dd>Create a queue of <em>count</em> buffers. If you find that the
-sound skips when the CPU is busy (for example, when you're dragging
-or resizing windows), increase this value. The default is 6.
-<dt><code>--define buffersize=<em>size</em></code>
-<dd>Set each CoreAudio buffer to be <em>size</em> bytes long.
-The default is 32768. (I have found that using a value of 65536
-or more causes clicking; I'm not sure why.)
-</dl>
-
-<li>FILE driver
-
-<dl>
-<dt><code>--define time=<em>interval</em></code>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.
-<dt><code>--define end=big</code>
-<dd>Force the sound output to be written big-endian. (FILE output is
-always 16-bit, signed, stereo.)
-<dt><code>--define end=little</code>
-<dd>Force the sound output to be written little-endian.
-</dl>
-
-<li>STDOUT driver
-
-<dl>
-<dt><code>--define end=big</code>
-<dd>Force the sound output to be written big-endian. (STDOUT output is
-always 16-bit, signed, stereo.)
-<dt><code>--define end=little</code>
-<dd>Force the sound output to be written little-endian.
-</dl>
-
-<li>VORBIS driver
-
-<dl>
-<dt><code>--define time=<em>interval</em></code>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.
-<dt><code>--define quality=<em>val</em></code>
-<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
-quality) to 1.0 (high).
-</dl>
-
-<li>SHOUT driver
-
-<dl>
-<dt><code>--define shout-server=<em>name</em></code>
-<dd>Connect to shoutcast or icecast server <em>name</em>. Can be a
-domain or an IP address. Defaults to "127.0.0.1".
-<dt><code>--define shout-port=<em>port</em></code>
-<dd>Use port <em>port</em> on the streaming server. Defaults to 8000.
-<dt><code>--define shout-user=<em>name</em></code>
-<dd>Login with username <em>user</em> to the server. Defaults to "source".
-<dt><code>--define shout-password=<em>password</em></code>
-<dd>Login with password <em>password</em> to the server. Defaults to "hackme".
-<dt><code>--define shout-mount=<em>mount</em></code>
-<dd>With an icecast server, mount the sound on <em>mount</em>. Defaults to "/boodler.ogg".
-<dt><code>--define shout-protocol=<em>type</em></code>
-<dd>Use <em>type</em> as the protocol. Use "http" for icecast2,
-"xaudiocast" for icecast1, and "icy" for a shoutcast server. Defaults to "http".
-<dt><code>--define quality=<em>val</em></code>
-<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
-quality) to 1.0 (high).
-</dl>
-
-</ul>
+before or after the equals sign. See the previous section
+for the meaning of the many options.
 
 </dl>
 
