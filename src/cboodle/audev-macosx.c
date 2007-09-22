@@ -5,6 +5,11 @@
    See the LGPL document, or the above URL, for details.
 */
 
+/*
+  For CoreAudio documentation, see:
+  http://developer.apple.com/documentation/MusicAudio/Reference/CACoreAudioReference/AudioHardware/CompositePage.html
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
