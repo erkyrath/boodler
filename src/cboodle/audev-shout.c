@@ -8,6 +8,7 @@
 */
 
 /*
+   Developed with ShoutLib library version 2.2.2.
    For information about the Vorbis encoding library, see
    <http://xiph.org/>.
    For information about LibShout, see
@@ -77,6 +78,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 
   if (verbose) {
     printf("Boodler: SHOUT sound driver.\n");
+    printf("ShoutLib version: %s\n", shout_version(NULL,NULL,NULL));
   }
 
   if (shout) {

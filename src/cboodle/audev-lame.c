@@ -6,7 +6,8 @@
 */
 
 /*
-   For information about the Lame encoding library, see
+   Developed with LAME library version 3.93.
+   For information about the LAME encoding library, see
    <http://lame.sourceforge.net/>.
 */
 
