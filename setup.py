@@ -128,7 +128,7 @@ all_extensions = [
 	
 	BooExtension('alsa',
 		libraries = ['asound'],
-		available = check_header_available('sys/asoundlib.h'),
+		available = check_header_available('alsa/asoundlib.h'),
 	),
 	
 	BooExtension('vorbis',

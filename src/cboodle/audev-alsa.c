@@ -5,8 +5,9 @@
    See the LGPL document, or the above URL, for details.
 */
 
-/* This version of the file is written to version 0.5 of the ALSA API.
-   (That's old -- circa 2001.)
+/*
+   Developed with ALSA library version 1.0.14a.
+   For information about ALSA, see <http://alsa-project.org/>.
 */
 
 #include <stdio.h>
@@ -14,17 +15,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/asoundlib.h>
+#include <alsa/asoundlib.h>
 
 #include "common.h"
 #include "audev.h"
 
 #define DEFAULT_SOUNDRATE (44100)
+#define DEFAULT_DEVICENAME "default"
 
 static snd_pcm_t *device = NULL;
 static long sound_rate = 0; /* frames per second */
-static int sound_channels = 0;
-static int sound_format = 0; /* SND_PCM_SFMT_* */
+static snd_pcm_format_t sound_format = 0; /* SND_PCM_FORMAT_* */
 static long sound_buffersize = 0; /* bytes */
 
 static long samplesperbuf = 0;
@@ -36,14 +37,17 @@ static long *valbuffer = NULL;
 int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
 {
   int ix, res;
-  int alsacard, alsadevice;
   long lx;
   unsigned int formatlist, tmpflist;
-  int channels, format, rate;
-  int fragsize;
+  int native_big_endian = 0;
+  int channels, format;
+  char endtest[sizeof(unsigned int)];
+
+  snd_pcm_hw_params_t params;
 
   if (verbose) {
     printf("Boodler: ALSA sound driver.\n");
+    printf("ALSA header version: %s\n", SND_LIB_VERSION_STR);
   }
 
   if (device) {
@@ -51,168 +55,122 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;
   }
 
+  *((unsigned int *)endtest) = ( (unsigned int) ( ('E' << 24) + ('N' << 16) + ('D' << 8) + ('I') ) );
+  if (endtest[0] == 'I' && endtest[1] == 'D' && endtest[2] == 'N' && endtest[3] == 'E') {
+    native_big_endian = FALSE;
+  }
+  else if (endtest[sizeof(unsigned int)-1] == 'I' && endtest[sizeof(unsigned int)-2] == 'D' && endtest[sizeof(unsigned int)-3] == 'N' && endtest[sizeof(unsigned int)-4] == 'E') {
+    native_big_endian = TRUE;
+  }
+  else {
+    fprintf(stderr, "Cannot determine native endianness.\n");
+    return FALSE;
+  }
+
+  format = -1;
+
+  for (opt=extra; opt->key; opt++) {
+    if (!strcmp(opt->key, "end") && opt->val) {
+      if (!strcmp(opt->val, "big"))
+	format = TRUE;
+      else if (!strcmp(opt->val, "little"))
+	format = FALSE;
+    }
+  }
+
+  if (format == -1) {
+    format = native_big_endian;
+  }
+
   if (!ratewanted)
     ratewanted = DEFAULT_SOUNDRATE;
+  if (!devname) 
+    devname = DEFAULT_DEVICENAME;
 
-  /* Grab card/device info from devname? */
+  if (format)
+    sound_format = SND_PCM_FORMAT_S16_BE;
+  else
+    sound_format = SND_PCM_FORMAT_S16_LE;
 
-  alsacard = snd_defaults_pcm_card();
-  alsadevice = snd_defaults_pcm_device();
-
-  res = snd_pcm_open(&device, alsacard, alsadevice, 
-    SND_PCM_OPEN_PLAYBACK);
+  /* open in blocking mode */
+  res = snd_pcm_open(&device, devname, SND_PCM_STREAM_PLAYBACK, 0);
   if (res) {
     fprintf(stderr, "Error opening ALSA device: %s\n", snd_strerror(res));
     return FALSE;
   }
 
   if (verbose) {
-    printf("Opened ALSA card %d, device %d.\n", alsacard, alsadevice);
-  }
-
-  if (verbose) {
     snd_pcm_info_t info;
-    printf("ALSA header version %s.\n", SND_LIB_VERSION_STR);
     res = snd_pcm_info(device, &info);
     if (res) {
-      printf("Unable to get PCM device info.\n");
+      printf("Unable to get PCM device info: %s\n", snd_strerror(res));
     }
     else {
       printf("PCM device \"%s\", name \"%s\"\n", info.id, info.name);
     }
   }
 
-  format = -1;
   channels = 2;
 
-  {
-    snd_pcm_channel_info_t info;
-
-    info.channel = SND_PCM_CHANNEL_PLAYBACK;
-
-    res = snd_pcm_channel_info(device, &info);
-    if (res) {
-      fprintf(stderr, "Error getting channel info: %s\n", snd_strerror(res));
-      return FALSE;
-    }
-
-    if (verbose) {
-      printf("Native channel info:\n");
-      printf("  formats = 0x%x, rates = 0x%x, min_rate = %d, max_rate = %d\n",
-        info.formats, info.rates, info.min_rate, info.max_rate);
-      printf("  min_fragment = %d, max_fragment = %d\n", 
-        info.min_fragment_size, info.max_fragment_size);
-    }
-
-    fragsize = info.max_fragment_size;
-    if (verbose) {
-      printf("Choosing fragment size %d.\n", fragsize);
-    }
-
-    if (info.formats & SND_PCM_FMT_S16_BE) {
-      format = SND_PCM_SFMT_S16_BE;
-    }
-    else if (info.formats & SND_PCM_FMT_S16_LE) {
-      format = SND_PCM_SFMT_S16_LE;
-    }
-    if (verbose) {
-      if (format == -1) 
-        printf("No 16-bit signed format supported natively...\n");
-      else
-        printf("Native support for %s\n", snd_pcm_get_format_name(format));
-    }
-  }
-
-  {
-    snd_pcm_channel_info_t info;
-
-    info.channel = SND_PCM_CHANNEL_PLAYBACK;
-
-    res = snd_pcm_plugin_info(device, &info);
-    if (res) {
-      fprintf(stderr, "Error getting channel plugin info: %s\n", snd_strerror(res));
-      return FALSE;
-    }
-
-    if (verbose) {
-      printf("Plugin channel info:\n");
-      printf("  formats = 0x%x, rates = 0x%x, min_rate = %d, max_rate = %d\n",
-        info.formats, info.rates, info.min_rate, info.max_rate);
-      printf("  min_fragment = %d, max_fragment = %d\n", 
-        info.min_fragment_size, info.max_fragment_size);
-    }
-
-    if (format == -1) {
-      if (info.formats & SND_PCM_FMT_S16_BE) {
-        format = SND_PCM_SFMT_S16_BE;
-      }
-      else if (info.formats & SND_PCM_FMT_S16_LE) {
-        format = SND_PCM_SFMT_S16_LE;
-      }
-      if (verbose) {
-        if (format == -1) 
-          printf("No 16-bit signed format supported in plugin...\n");
-        else
-          printf("Plugin support for %s\n", snd_pcm_get_format_name(format));
-      }
-    }
-
-    if (ratewanted < info.min_rate) {
-      rate = info.min_rate;
-    }
-    else if (ratewanted > info.max_rate) {
-      rate = info.max_rate;
-    }
-    else {
-      rate = ratewanted;
-    }
-
-    if (verbose) {
-      printf("Choosing rate %d.\n", rate);
-    }
-  }
-
-  if (format == -1) {
-    fprintf(stderr, "Unable find acceptable sample format.\n");
-    return FALSE;
-  }
-
-  {
-    snd_pcm_channel_params_t params;
-
-    memset(&params, 0, sizeof(params));
-    params.channel = SND_PCM_CHANNEL_PLAYBACK;
-    params.mode = SND_PCM_MODE_BLOCK;
-    params.format.interleave = 1;
-    params.format.format = format;
-    params.format.rate = rate;
-    params.format.voices = 2;
-    params.start_mode = SND_PCM_START_DATA;
-    params.stop_mode = SND_PCM_STOP_STOP;
-    params.buf.block.frag_size = fragsize;
-    params.buf.block.frags_min = 1;
-    /*params.buf.block.frags_max = ###;*/
-
-    res = snd_pcm_plugin_params(device, &params);
-    if (res) {
-      fprintf(stderr, "Error setting plugin parameters: %s\n", snd_strerror(res));
-      return FALSE;
-    }
-  }
-
-  res = snd_pcm_plugin_prepare(device, SND_PCM_CHANNEL_PLAYBACK);
+  memset(&params, 0, sizeof(params));
+  res = snd_pcm_hw_params_any(device, &params);
   if (res) {
-    fprintf(stderr, "Error preparing plugin: %s\n", snd_strerror(res));
+    fprintf(stderr, "Error setting up hardware parameters: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
     return FALSE;
   }
 
-  sound_rate = rate;
-  sound_channels = channels;
-  sound_format = format;
-  sound_buffersize = fragsize;
+  res = snd_pcm_hw_params_set_access(device, &params, SND_PCM_ACCESS_RW_INTERLEAVED);
+  if (res) {
+    fprintf(stderr, "Error setting write-interleaved access: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  res = snd_pcm_hw_params_set_format(device, &params, sound_format);
+  if (res) {
+    fprintf(stderr, "Error setting sample format: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  res = snd_pcm_hw_params_set_channels(device, &params, channels);
+  if (res) {
+    fprintf(stderr, "Error setting two channels: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  sound_rate = ratewanted;
+
+  res = snd_pcm_hw_params_set_rate_near(device, &params, &sound_rate, NULL);
+  if (res) {
+    fprintf(stderr, "Error setting sample rate: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  if (verbose) {
+    printf("Sample rate %d\n", sound_rate);
+    printf("Sample format %s (16-bit signed %s-endian)\n", 
+      snd_pcm_format_name(sound_format),
+      ((sound_format==SND_PCM_FORMAT_S16_BE) ? "big" : "little"));
+  }
+
+  sound_buffersize = 32768; /* bytes */
 
   samplesperbuf = sound_buffersize / 2;
-  framesperbuf = sound_buffersize / (2 * sound_channels);
+  framesperbuf = sound_buffersize / (2 * channels);
 
   rawbuffer = (char *)malloc(sound_buffersize);
   if (!rawbuffer) {
@@ -232,6 +190,32 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;     
   }
 
+  res = snd_pcm_hw_params(device, &params);
+  if (res) {
+    fprintf(stderr, "Error using hardware parameters: %s\n",
+      snd_strerror(res));
+    free(valbuffer);
+    valbuffer = NULL;
+    free(rawbuffer);
+    rawbuffer = NULL;
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  res = snd_pcm_prepare(device);
+  if (res) {
+    fprintf(stderr, "Error preparing device: %s\n",
+      snd_strerror(res));
+    free(valbuffer);
+    valbuffer = NULL;
+    free(rawbuffer);
+    rawbuffer = NULL;
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
   return TRUE;
 }
 
@@ -242,11 +226,6 @@ void audev_close_device()
   if (device == NULL) {
     fprintf(stderr, "Unable to close sound device which was never opened.\n");
     return;
-  }
-
-  res = snd_pcm_channel_flush(device, SND_PCM_CHANNEL_PLAYBACK);
-  if (res) {
-    fprintf(stderr, "Error flushing device: %s\n", snd_strerror(res));
   }
 
   res = snd_pcm_close(device);
@@ -279,7 +258,7 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
 {
   char *ptr;
   int ix, res;
-  ssize_t written;
+  snd_pcm_sframes_t written;
 
   if (!device) {
     fprintf(stderr, "Sound device is not open.\n");
@@ -291,7 +270,7 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
     if (res)
       return TRUE;
 
-    if (sound_format == SND_PCM_SFMT_S16_BE) {
+    if (sound_format == SND_PCM_FORMAT_S16_BE) {
       for (ix=0, ptr=rawbuffer; ix<samplesperbuf; ix++) {
 	long samp = valbuffer[ix];
 	if (samp > 0x7FFF)
@@ -314,14 +293,14 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
       }
     }
 
-    written = snd_pcm_plugin_write(device, rawbuffer, sound_buffersize); 
-    if (written != sound_buffersize) {
+    written = snd_pcm_writei(device, rawbuffer, framesperbuf); 
+    if (written != framesperbuf) {
       if (written < 0) {
         fprintf(stderr, "Error writing sound: %s\n", snd_strerror(written));
       }
       else {
-        fprintf(stderr, "Incomplete sound write: %ld bytes short\n",
-          sound_buffersize - (long)written);
+        fprintf(stderr, "Incomplete sound write: %ld frames short\n",
+          framesperbuf - (long)written);
       }
     }
   }

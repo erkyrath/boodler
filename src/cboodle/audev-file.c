@@ -56,7 +56,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     sound_big_endian = TRUE;
   }
   else {
-    fprintf(stderr, "Cannot determine endianness.\n");
+    fprintf(stderr, "Cannot determine native endianness.\n");
     return FALSE;
   }
 
