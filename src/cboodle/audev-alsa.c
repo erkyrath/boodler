@@ -24,7 +24,7 @@
 #define DEFAULT_DEVICENAME "default"
 
 static snd_pcm_t *device = NULL;
-static long sound_rate = 0; /* frames per second */
+static unsigned int sound_rate = 0; /* frames per second */
 static snd_pcm_format_t sound_format = 0; /* SND_PCM_FORMAT_* */
 static long sound_buffersize = 0; /* bytes */
 
@@ -36,14 +36,13 @@ static long *valbuffer = NULL;
 
 int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
 {
-  int ix, res;
-  long lx;
-  unsigned int formatlist, tmpflist;
+  int res;
   int native_big_endian = 0;
   int channels, format;
+  extraopt_t *opt;
   char endtest[sizeof(unsigned int)];
 
-  snd_pcm_hw_params_t params;
+  snd_pcm_hw_params_t *params = NULL;
 
   if (verbose) {
     printf("Boodler: ALSA sound driver.\n");
@@ -100,20 +99,35 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   }
 
   if (verbose) {
-    snd_pcm_info_t info;
-    res = snd_pcm_info(device, &info);
+    snd_pcm_info_t *info = NULL;
+
+    res = snd_pcm_info_malloc(&info);
+    if (!res) {
+      res = snd_pcm_info(device, info);
+      if (!res) {
+	printf("PCM device \"%s\", name \"%s\"\n", 
+	  snd_pcm_info_get_id(info), snd_pcm_info_get_name(info));
+      }
+      snd_pcm_info_free(info);
+    }
+
     if (res) {
       printf("Unable to get PCM device info: %s\n", snd_strerror(res));
-    }
-    else {
-      printf("PCM device \"%s\", name \"%s\"\n", info.id, info.name);
     }
   }
 
   channels = 2;
 
-  memset(&params, 0, sizeof(params));
-  res = snd_pcm_hw_params_any(device, &params);
+  res = snd_pcm_hw_params_malloc(&params);
+  if (res) {
+    fprintf(stderr, "Error allocating hardware parameters: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  res = snd_pcm_hw_params_any(device, params);
   if (res) {
     fprintf(stderr, "Error setting up hardware parameters: %s\n",
       snd_strerror(res));
@@ -122,7 +136,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;
   }
 
-  res = snd_pcm_hw_params_set_access(device, &params, SND_PCM_ACCESS_RW_INTERLEAVED);
+  res = snd_pcm_hw_params_set_access(device, params, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (res) {
     fprintf(stderr, "Error setting write-interleaved access: %s\n",
       snd_strerror(res));
@@ -131,7 +145,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;
   }
 
-  res = snd_pcm_hw_params_set_format(device, &params, sound_format);
+  res = snd_pcm_hw_params_set_format(device, params, sound_format);
   if (res) {
     fprintf(stderr, "Error setting sample format: %s\n",
       snd_strerror(res));
@@ -140,7 +154,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;
   }
 
-  res = snd_pcm_hw_params_set_channels(device, &params, channels);
+  res = snd_pcm_hw_params_set_channels(device, params, channels);
   if (res) {
     fprintf(stderr, "Error setting two channels: %s\n",
       snd_strerror(res));
@@ -151,7 +165,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 
   sound_rate = ratewanted;
 
-  res = snd_pcm_hw_params_set_rate_near(device, &params, &sound_rate, NULL);
+  res = snd_pcm_hw_params_set_rate_near(device, params, &sound_rate, NULL);
   if (res) {
     fprintf(stderr, "Error setting sample rate: %s\n",
       snd_strerror(res));
@@ -190,7 +204,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;     
   }
 
-  res = snd_pcm_hw_params(device, &params);
+  res = snd_pcm_hw_params(device, params);
   if (res) {
     fprintf(stderr, "Error using hardware parameters: %s\n",
       snd_strerror(res));
@@ -215,6 +229,8 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     device = NULL;
     return FALSE;
   }
+
+  snd_pcm_hw_params_free(params);
 
   return TRUE;
 }
@@ -246,7 +262,7 @@ void audev_close_device()
 
 long audev_get_soundrate()
 {
-  return sound_rate;
+  return (long)sound_rate;
 }
 
 long audev_get_framesperbuf()
