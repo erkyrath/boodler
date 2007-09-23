@@ -5,6 +5,10 @@
    See the LGPL document, or the above URL, for details.
 */
 
+/* This version of the file is written to version 0.5 of the ALSA API.
+   (That's old -- circa 2001.)
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
