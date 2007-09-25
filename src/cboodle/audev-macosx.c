@@ -108,10 +108,6 @@ int audev_init_device(char *wantdevname, long ratewanted, int verbose, extraopt_
       wantdevid = kAudioDeviceUnknown;
   }
 
-  if (wantdevid != kAudioDeviceUnknown) {
-    printf("### int value is %d\n", (int)wantdevid);
-  }
-
   if (listdevices || wantdevname) {
     int ix, jx;
     int device_count;
@@ -125,7 +121,6 @@ int audev_init_device(char *wantdevname, long ratewanted, int verbose, extraopt_
       fprintf(stderr, "Could not get list of audio devices.\n");
       return FALSE;
     }
-    printf("### propsize %d\n", (int)propsize);
     device_count = propsize / sizeof(AudioDeviceID);
 
     for (ix=0; ix<device_count; ix++) {
