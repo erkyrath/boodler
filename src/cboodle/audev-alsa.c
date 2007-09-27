@@ -8,6 +8,7 @@
 /*
    Developed with ALSA library version 1.0.14a.
    For information about ALSA, see <http://alsa-project.org/>.
+   Documentation: <http://alsa-project.org/alsa-doc/alsa-lib/>
 */
 
 #include <stdio.h>
