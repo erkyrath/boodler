@@ -220,6 +220,42 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;
   }
 
+  //### read and check all the values?
+  printf("Framesperbuf: %ld\n", framesperbuf);
+
+  res = snd_pcm_hw_params_current(device, params);
+  if (res) {
+    fprintf(stderr, "Error fetching hardware parameters: %s\n",
+      snd_strerror(res));
+  }
+  else {
+    unsigned int gotrate;
+    snd_pcm_uframes_t gotframes;
+    unsigned int gotcount;
+
+    res = snd_pcm_hw_params_get_rate(params, &gotrate, NULL);
+    if (res)
+      fprintf(stderr, "Error fetching rate: %s\n",
+	snd_strerror(res));
+    else
+      printf("Found rate: %d\n", gotrate);
+
+    res = snd_pcm_hw_params_get_period_size(params, &gotframes, NULL);
+    if (res)
+      fprintf(stderr, "Error fetching frames: %s\n",
+	snd_strerror(res));
+    else
+      printf("Found frames: %d\n", (int)gotframes);
+
+    res = snd_pcm_hw_params_get_periods(params, &gotcount, NULL);
+    if (res)
+      fprintf(stderr, "Error fetching count: %s\n",
+	snd_strerror(res));
+    else
+      printf("Found count: %d\n", gotcount);
+  }
+  //###
+
   res = snd_pcm_prepare(device);
   if (res) {
     fprintf(stderr, "Error preparing device: %s\n",
@@ -313,14 +349,28 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
     }
 
     written = snd_pcm_writei(device, rawbuffer, framesperbuf); 
-    if (written != framesperbuf) {
-      if (written < 0) {
-        fprintf(stderr, "Error writing sound: %s\n", snd_strerror(written));
+    if (written < 0) {
+      if (written == -EPIPE) {
+	fprintf(stderr, "### Underflow!\n");
+	res = snd_pcm_prepare(device);
+	if (res) {
+	  fprintf(stderr, "Error repreparing: %s\n", snd_strerror(res));
+	  return FALSE;
+	}
+	written = snd_pcm_writei(device, rawbuffer, framesperbuf);
+	if (written < 0) {
+	  fprintf(stderr, "Error re-writing: %s\n", snd_strerror(written));
+	  return FALSE;
+	}
       }
       else {
-        fprintf(stderr, "Incomplete sound write: %ld frames short\n",
-          framesperbuf - (long)written);
+	fprintf(stderr, "Error writing sound: %s\n", snd_strerror(written));
+	return FALSE;
       }
+    }
+    else if (written != framesperbuf) {
+      fprintf(stderr, "Incomplete sound write: %ld frames short\n",
+        framesperbuf - (long)written);
     }
   }
 }
