@@ -27,7 +27,9 @@
 static snd_pcm_t *device = NULL;
 static unsigned int sound_rate = 0; /* frames per second */
 static snd_pcm_format_t sound_format = 0; /* SND_PCM_FORMAT_* */
-static long sound_buffersize = 0; /* bytes */
+static long sound_buffersize = 16384; /* bytes */
+static snd_pcm_uframes_t sound_periodsize = 0; /* frames */
+static snd_pcm_uframes_t sound_hwbuffersize = 0; /* frames */
 
 static long samplesperbuf = 0;
 static long framesperbuf = 0;
@@ -37,7 +39,7 @@ static long *valbuffer = NULL;
 
 int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
 {
-  int res;
+  int res, count;
   int native_big_endian = 0;
   int channels, format;
   extraopt_t *opt;
@@ -75,6 +77,15 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 	format = TRUE;
       else if (!strcmp(opt->val, "little"))
 	format = FALSE;
+    }
+    else if (!strcmp(opt->key, "periodsize") && opt->val) {
+      sound_periodsize = atol(opt->val);
+    }
+    else if (!strcmp(opt->key, "hwbuffer") && opt->val) {
+      sound_hwbuffersize = atol(opt->val);
+    }
+    else if (!strcmp(opt->key, "buffersize") && opt->val) {
+      sound_buffersize = atol(opt->val) * 4;
     }
     else if (!strcmp(opt->key, "listdevices")) {
       printf("ALSA driver is unable to list devices.\n");
@@ -178,17 +189,97 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;
   }
 
+  if (sound_periodsize != 0) {
+    res = snd_pcm_hw_params_set_period_size_near(device, params, &sound_periodsize, NULL);
+    if (res) {
+      fprintf(stderr, "Error setting sample period size: %s\n",
+	snd_strerror(res));
+      snd_pcm_close(device);
+      device = NULL;
+      return FALSE;
+    }
+  }
+
+  if (sound_hwbuffersize != 0) {
+    res = snd_pcm_hw_params_set_buffer_size_near(device, params, &sound_hwbuffersize);
+    if (res) {
+      fprintf(stderr, "Error setting hardware buffer size: %s\n",
+	snd_strerror(res));
+      snd_pcm_close(device);
+      device = NULL;
+      return FALSE;
+    }
+  }
+
+  /* Set up the parameters. */
+
+  res = snd_pcm_hw_params(device, params);
+  if (res) {
+    fprintf(stderr, "Error using hardware parameters: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  /* Now read them back in, just to be sure. */
+
+  res = snd_pcm_hw_params_current(device, params);
+  if (res) {
+    fprintf(stderr, "Error fetching hardware parameters: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  res = snd_pcm_hw_params_get_rate(params, &sound_rate, NULL);
+  if (res) {
+    fprintf(stderr, "Error fetching hardware rate: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  res = snd_pcm_hw_params_get_period_size(params, &sound_periodsize, NULL);
+  if (res) {
+    fprintf(stderr, "Error fetching hardware period size: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  res = snd_pcm_hw_params_get_buffer_size(params, &sound_hwbuffersize);
+  if (res) {
+    fprintf(stderr, "Error fetching hardware buffer size: %s\n",
+      snd_strerror(res));
+    snd_pcm_close(device);
+    device = NULL;
+    return FALSE;
+  }
+
+  /* Ensure that sound_buffersize is a multiple of the periodsize*4.
+     (Because we have 4 bytes to a frame, and sound_buffersize is in
+     bytes.)
+  */
+
+  count = sound_buffersize / (4*sound_periodsize);
+  sound_buffersize = count * (4*sound_periodsize);
+
+  samplesperbuf = sound_buffersize / 2;
+  framesperbuf = sound_buffersize / (2 * channels);
+
   if (verbose) {
     printf("Sample rate %d\n", sound_rate);
     printf("Sample format %s (16-bit signed %s-endian)\n", 
       snd_pcm_format_name(sound_format),
       ((sound_format==SND_PCM_FORMAT_S16_BE) ? "big" : "little"));
+    printf("Boodler buffer %ld frames\n", framesperbuf);
+    printf("Hardware buffer %ld frames (period %ld frames)\n",
+      (long)sound_periodsize, (long)sound_hwbuffersize);
   }
-
-  sound_buffersize = 32768; /* bytes */
-
-  samplesperbuf = sound_buffersize / 2;
-  framesperbuf = sound_buffersize / (2 * channels);
 
   rawbuffer = (char *)malloc(sound_buffersize);
   if (!rawbuffer) {
@@ -207,55 +298,6 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     device = NULL;
     return FALSE;     
   }
-
-  res = snd_pcm_hw_params(device, params);
-  if (res) {
-    fprintf(stderr, "Error using hardware parameters: %s\n",
-      snd_strerror(res));
-    free(valbuffer);
-    valbuffer = NULL;
-    free(rawbuffer);
-    rawbuffer = NULL;
-    snd_pcm_close(device);
-    device = NULL;
-    return FALSE;
-  }
-
-  //### read and check all the values?
-  printf("Framesperbuf: %ld\n", framesperbuf);
-
-  res = snd_pcm_hw_params_current(device, params);
-  if (res) {
-    fprintf(stderr, "Error fetching hardware parameters: %s\n",
-      snd_strerror(res));
-  }
-  else {
-    unsigned int gotrate;
-    snd_pcm_uframes_t gotframes;
-    unsigned int gotcount;
-
-    res = snd_pcm_hw_params_get_rate(params, &gotrate, NULL);
-    if (res)
-      fprintf(stderr, "Error fetching rate: %s\n",
-	snd_strerror(res));
-    else
-      printf("Found rate: %d\n", gotrate);
-
-    res = snd_pcm_hw_params_get_period_size(params, &gotframes, NULL);
-    if (res)
-      fprintf(stderr, "Error fetching frames: %s\n",
-	snd_strerror(res));
-    else
-      printf("Found frames: %d\n", (int)gotframes);
-
-    res = snd_pcm_hw_params_get_periods(params, &gotcount, NULL);
-    if (res)
-      fprintf(stderr, "Error fetching count: %s\n",
-	snd_strerror(res));
-    else
-      printf("Found count: %d\n", gotcount);
-  }
-  //###
 
   res = snd_pcm_prepare(device);
   if (res) {
@@ -313,8 +355,9 @@ long audev_get_framesperbuf()
 int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
 {
   char *ptr;
-  int ix, res;
-  snd_pcm_sframes_t written;
+  int ix;
+  snd_pcm_sframes_t res;
+  snd_pcm_uframes_t written, towrite;
 
   if (!device) {
     fprintf(stderr, "Sound device is not open.\n");
@@ -349,29 +392,52 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
       }
     }
 
-    written = snd_pcm_writei(device, rawbuffer, framesperbuf); 
-    if (written < 0) {
-      if (written == -EPIPE) {
+    /* Now write out the rawbuffer, in chunks of (at most) periodsize
+       frames. */
+
+    written = 0; /* frames */
+
+    while (written < framesperbuf) {
+      towrite = framesperbuf - written;
+      if (towrite > sound_periodsize)
+	towrite = sound_periodsize;
+
+      ptr = rawbuffer + (4*written); /* 4 bytes per frame */
+
+      res = snd_pcm_writei(device, ptr, towrite);
+      if (res > 0) {
+	if (res != towrite) {
+	  fprintf(stderr, "Incomplete sound write: %ld frames short\n",
+	    (long)towrite - (long)res);
+	}
+	written += res;
+	continue;
+      }
+      if (res == 0) {
+	fprintf(stderr, "Error: no frames written!\n");
+	return FALSE;
+      }
+
+      /* (res < 0) */
+
+      if (res == -EPIPE) {
 	fprintf(stderr, "### Underflow!\n");
+	/* When an underflow occurs, we have to call prepare() again. */
 	res = snd_pcm_prepare(device);
 	if (res) {
 	  fprintf(stderr, "Error repreparing: %s\n", snd_strerror(res));
 	  return FALSE;
 	}
-	written = snd_pcm_writei(device, rawbuffer, framesperbuf);
-	if (written < 0) {
-	  fprintf(stderr, "Error re-writing: %s\n", snd_strerror(written));
-	  return FALSE;
-	}
+
+	/* We also re-do the writei(), with the same data as before,
+	   although I haven't seen a clear explanation of why this
+	   makes sense. To accomplish this, just continue without
+	   incrementing written. */
+	continue;
       }
-      else {
-	fprintf(stderr, "Error writing sound: %s\n", snd_strerror(written));
-	return FALSE;
-      }
-    }
-    else if (written != framesperbuf) {
-      fprintf(stderr, "Incomplete sound write: %ld frames short\n",
-        framesperbuf - (long)written);
+
+      fprintf(stderr, "Error writing sound: %s\n", snd_strerror(res));
+      return FALSE;
     }
   }
 }
