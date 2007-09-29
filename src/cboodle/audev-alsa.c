@@ -90,6 +90,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     }
     else if (!strcmp(opt->key, "listdevices")) {
       printf("ALSA driver is unable to list devices.\n");
+      /* Check aplay.c: snd_device_name_hint(), snd_device_name_get_hint() */
     }
   }
 
