@@ -230,17 +230,32 @@ Use <code>--device</code> to control which audio hardware device
 is used; the default is <code>/dev/dsp</code>.
 <p>
 
+<h4><code>alsa</code> --   Advanced Linux Sound Architecture</h4>
+
+Another Unix sound framework. Use <code>--device</code> to control which
+ALSA device is used; the default is <code>default</code>.
+<p>
+
+<dl>
+<dt><code>--define buffersize=<em>frames</em></code>
+<dd>Define the length of Boodler's generation buffer, in frames.
+The default is 4096.
+<dt><code>--define hwbuffer=<em>frames</em></code>
+<dd>Define the length of the ALSA sound buffer, in frames. The default
+is 16384. If you find that the sound skips when the CPU is busy,
+increase this value. The hwbuffer should not be shorter than the buffersize.
+<dt><code>--define periodsize=<em>frames</em></code>
+<dd>Define the length of the ALSA transfer period. This should be a
+fraction of the buffersize. The default is left up to the ALSA
+driver; it depends on the buffersize.
+</dl>
+
 <h4><code>esd</code> --    Enlightened Sound Daemon</h4>
 
-Another Unix sound framework. The <code>--device</code> option defines 
+Yet another Unix sound framework. The <code>--device</code> option defines 
 the hostname to send sound to; it defaults to <code>localhost</code>.
 If no ESD daemon is running, this will attempt to write directly to
 <code>/dev/dsp</code>.
-<p>
-
-<h4><code>alsa</code> --   Advanced Linux Sound Architecture</h4>
-
-Yet another Unix sound framework.
 <p>
 
 <h4><code>macosx</code> -- MacOSX CoreAudio</h4>

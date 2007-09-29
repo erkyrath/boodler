@@ -29,7 +29,7 @@ static unsigned int sound_rate = 0; /* frames per second */
 static snd_pcm_format_t sound_format = 0; /* SND_PCM_FORMAT_* */
 static long sound_buffersize = 16384; /* bytes */
 static snd_pcm_uframes_t sound_periodsize = 0; /* frames */
-static snd_pcm_uframes_t sound_hwbuffersize = 0; /* frames */
+static snd_pcm_uframes_t sound_hwbuffersize = 16384; /* frames */
 
 static long samplesperbuf = 0;
 static long framesperbuf = 0;
@@ -266,6 +266,8 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   */
 
   count = sound_buffersize / (4*sound_periodsize);
+  if (count <= 0)
+    count = 1;
   sound_buffersize = count * (4*sound_periodsize);
 
   samplesperbuf = sound_buffersize / 2;
@@ -278,7 +280,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
       ((sound_format==SND_PCM_FORMAT_S16_BE) ? "big" : "little"));
     printf("Boodler buffer %ld frames\n", framesperbuf);
     printf("Hardware buffer %ld frames (period %ld frames)\n",
-      (long)sound_periodsize, (long)sound_hwbuffersize);
+      (long)sound_hwbuffersize, (long)sound_periodsize);
   }
 
   rawbuffer = (char *)malloc(sound_buffersize);
@@ -421,7 +423,6 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
       /* (res < 0) */
 
       if (res == -EPIPE) {
-	fprintf(stderr, "### Underflow!\n");
 	/* When an underflow occurs, we have to call prepare() again. */
 	res = snd_pcm_prepare(device);
 	if (res) {
