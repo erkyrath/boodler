@@ -152,7 +152,7 @@ all_extensions = [
 	),
 	
 	BooExtension('macosx',
-		extra_link_args = ['-framework', 'Carbon', '-framework', 'Python'],
+		extra_link_args = ['-framework', 'CoreAudio', '-framework', 'Python'],
 		available = (lambda ls : (sys.platform == 'darwin')),
 	),
 ]
@@ -344,7 +344,7 @@ class local_generate_source(Command):
 				
 
 setup(name = 'Boodler',
-	version = '1.6.0',
+	version = '1.6.1',
 	description = 'Programmable soundscape tool',
 	author = 'Andrew Plotkin',
 	author_email = 'erkyrath@eblong.com',
