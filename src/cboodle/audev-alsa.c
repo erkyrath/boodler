@@ -49,7 +49,8 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 
   if (verbose) {
     printf("Boodler: ALSA sound driver.\n");
-    printf("ALSA header version: %s\n", SND_LIB_VERSION_STR);
+    printf("ALSA header version %s, library version %s\n",
+      SND_LIB_VERSION_STR, snd_asoundlib_version());
   }
 
   if (device) {
