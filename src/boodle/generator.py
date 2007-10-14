@@ -18,8 +18,10 @@ import bisect
 # lambda
 # string.*
 # types.*
+# == None
 ####
 
+### can these live in Generator?
 queue = []
 postpool = {}
 channels = {}
@@ -42,7 +44,7 @@ class Generator:
 	"""
 
 	def __init__(self, basevolume=0.5, dolisten=0, listenport=None):
-		self.rootchannel = Channel(None, self, basevolume, None)
+		self.rootchannel = Channel(None, self, None, basevolume, None)
 		self.stoplist = []
 		self.postqueue = []
 		self.listener = None
@@ -58,6 +60,7 @@ class Generator:
 	def close(self):
 		if (self.listener != None):
 			self.listener.close()
+		self.logger.info('generator shut down')
 
 	def set_verbose_errors(self, val):
 		### necessary?
@@ -80,7 +83,11 @@ class Generator:
 
 		bisect.insort(queue, ag)
 
+		ag.logger.info('scheduled at depth-%d', chan.depth)
+
 	def remagent(self, ag):
+		ag.logger.info('unscheduled')
+		
 		ag.queued = False
 		ag.channel.agentcount = ag.channel.agentcount-1
 		queue.remove(ag)
@@ -184,9 +191,13 @@ class Channel:
 
 	"""
 
-	def __init__(self, parent, gen, startvol, pan):
+	logger = None
+
+	def __init__(self, parent, gen, createagent, startvol, pan):
 		self.active = True
 		self.generator = gen
+		if (not Channel.logger):
+			Channel.logger = logging.getLogger('channel')
 		self.volume = (0, 0, startvol, startvol)
 		self.stereo = stereo.cast(pan)
 		self.lastvolume = startvol
@@ -194,7 +205,8 @@ class Channel:
 		self.agentcount = 0
 		self.childcount = 0
 		self.parent = parent
-		if (parent == None):
+		
+		if (parent is None):
 			self.depth = 0
 			self.ancestors = {}
 			self.rootchannel = self
@@ -204,7 +216,18 @@ class Channel:
 			self.ancestors = parent.ancestors.copy()
 			self.ancestors[parent] = parent
 			self.rootchannel = parent.rootchannel
+			
+		if (createagent is None):
+			self.creatorname = '<boodler>'
+		else:
+			### use the Boodler package name here, if possible
+			self.creatorname = createagent.__class__.__name__
+			
 		channels[self] = self
+		self.logger.info('opened %s', self)
+
+	def __str__(self):
+		return 'depth-%d (out of %s)' % (self.depth, self.creatorname)
 
 	def close(self):
 		if (not self.active):
@@ -219,6 +242,8 @@ class Channel:
 			self.parent.childcount = self.parent.childcount-1
 			if (self.parent.childcount < 0):
 				raise BoodleInternalError('channel childcount negative')
+				
+		self.logger.info('closed %s', self)
 		self.active = False
 		self.generator = None
 		self.depth = None
@@ -349,10 +374,11 @@ def run_agents(starttime, gen):
 	nexttime = starttime + cboodle.framesperbuf()
 	#print 'generating:', starttime, 'to', nexttime, '(queue', len(queue), ', channels', len(channels), ')'
 
-	for chan in gen.stoplist:
-		if (chan.active):
-			chan.realstop()
-	gen.stoplist = []
+	if (gen.stoplist):
+		for chan in gen.stoplist:
+			if (chan.active):
+				chan.realstop()
+		gen.stoplist = []
 
 	#print map((lambda samp: (string.split(samp.filename, '/')[-1], samp.refcount, samp.lastused)), sample.cache.values())
 	#print map((lambda ch: sys.getrefcount(ch)), channels.keys())
@@ -366,7 +392,7 @@ def run_agents(starttime, gen):
 	gen.agentruntime = starttime
 	while (len(gen.postqueue) > 0):
 		(ag, ev) = gen.postqueue.pop(0)
-		#print 'running posted:', '"' + ag.getname() + '"', 'on', str(ev)
+		ag.logger.info('running on %s', ev)
 		try:
 			if (not ag.channel.active):
 				raise BoodleInternalError('posted agent not in active channel')
@@ -379,7 +405,7 @@ def run_agents(starttime, gen):
 		ag = queue.pop(0)
 		ag.queued = False
 		ag.channel.agentcount = ag.channel.agentcount-1
-		#print 'running:', '"' + ag.getname() + '"', 'at', ag.runtime, ', depth', ag.channel.depth
+		ag.logger.info('running')
 		try:
 			if (not ag.channel.active):
 				raise BoodleInternalError('queued agent not in active channel')

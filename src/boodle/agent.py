@@ -319,7 +319,7 @@ class Agent:
 			raise generator.ChannelError('creator is not in a channel')
 		if (parent == None):
 			parent = self.channel
-		chan = generator.Channel(parent, self.generator, startvolume, None)
+		chan = generator.Channel(parent, self.generator, self, startvolume, None)
 		return chan
 
 	def new_channel_pan(self, pan=None, startvolume=1.0, parent=None):
@@ -338,7 +338,7 @@ class Agent:
 			raise generator.ChannelError('creator is not in a channel')
 		if (parent == None):
 			parent = self.channel
-		chan = generator.Channel(parent, self.generator, startvolume, pan)
+		chan = generator.Channel(parent, self.generator, self, startvolume, pan)
 		return chan
 
 	def get_root_channel(self):
@@ -540,7 +540,8 @@ def list_module_by_name(name):
 
 	Given a string that names a module -- for example, 'play' -- import 
 	the module, and list all its members that are subclasses of Agent.
-
+	
+	### probably can be yanked at this point
 	"""
 	mod = __import__(name)
 	for key in mod.__dict__.keys():
