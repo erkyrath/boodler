@@ -17,6 +17,9 @@
 import sys
 import os
 import optparse
+import logging
+import traceback
+import StringIO
 
 defaultdriver = 'oss'
 if (sys.platform == 'darwin'):
@@ -28,6 +31,14 @@ if (configfiledriver):
 	defaultdriver = configfiledriver.lower()
 
 usage = 'usage: %prog [ options ] module.AgentClass [ data ... ]'
+
+loglevels = {
+	'debug': logging.DEBUG,
+	'info': logging.INFO,
+	'warning': logging.WARNING,
+	'error': logging.ERROR,
+	'critical': logging.CRITICAL
+}
 
 popt = optparse.OptionParser(prog=sys.argv[0],
 	usage=usage,
@@ -54,6 +65,13 @@ popt.add_option('-p', '--port',
 popt.add_option('-D', '--define',
 	action='append', dest='extraopts', metavar='VAR=VAL',
 	help='define additional driver parameters')
+popt.add_option('-L', '--log',
+	action='store', type='choice', dest='loglevel', metavar='LEVEL',
+	choices=loglevels.keys(),
+	help='message level to log (default: error)')
+popt.add_option('--logconfig',
+	action='store', type='string', dest='logconfig', metavar='CONFIGFILE',
+	help='log configuration file')
 popt.add_option('--stats',
 	action='store', type='float', dest='statsrate', metavar='SECONDS',
 	help='display statistics at regular intervals')
@@ -93,6 +111,44 @@ for val in opts.extraopts:
 
 if (opts.listdevices):
 	extraopts.append( ('listdevices', None) )
+
+class LogFormatter(logging.Formatter):
+	def __init__(self, verbose):
+		logging.Formatter.__init__(self,
+			'%(asctime)s: %(levelname)-8s: (%(name)s) %(message)s',
+			'%b-%d %H:%M:%S')
+		self.verboseerrors = verbose
+	def formatException(self, tup):
+		if (self.verboseerrors):
+			return logging.Formatter.formatException(self, tup)
+		fl = StringIO.StringIO()
+		traceback.print_tb(tup[2], file=fl)
+		res = fl.getvalue()
+		fl.close()
+		fl = None
+		tup = None
+		ls = res.split('\n')
+		return ('\n'.join(ls[-3:]))
+		
+rootlogger = logging.getLogger()
+level = None
+
+if (opts.logconfig):
+	import logging.config
+	logging.config.fileConfig(opts.logconfig)
+	if (opts.loglevel):
+		level = loglevels.get(opts.loglevel)
+else:
+	if (not opts.loglevel):
+		level = logging.ERROR
+	else:
+		level = loglevels.get(opts.loglevel)
+	roothandler = logging.StreamHandler(sys.stderr)
+	roothandler.setFormatter(LogFormatter(opts.verboseerrors))
+	rootlogger.addHandler(roothandler)
+
+if (level):
+	rootlogger.setLevel(level)
 
 import boodle
 from boodle import agent, generator

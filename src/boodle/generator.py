@@ -5,10 +5,20 @@
 # See the LGPL document, or the above URL, for details.
 
 import sys
+import logging
 import traceback
 import string
 import types
 import bisect
+
+#### clean up:
+# for x in map.keys()
+# filter
+# map
+# lambda
+# string.*
+# types.*
+####
 
 queue = []
 postpool = {}
@@ -40,8 +50,9 @@ class Generator:
 		self.lastunload = 0
 		self.verbose_errors = False
 		self.stats_interval = None
+		self.logger = logging.getLogger()
 		if dolisten:
-			lfunc = lambda val, gen=self: receive_event(gen, val)
+			lfunc = lambda val, gen=self: receive_event(gen, val) ###?
 			self.listener = listen.Listener(lfunc, listenport)
 
 	def close(self):
@@ -49,6 +60,7 @@ class Generator:
 			self.listener.close()
 
 	def set_verbose_errors(self, val):
+		### necessary?
 		self.verbose_errors = val
 
 	def set_stats_interval(self, val):
@@ -247,7 +259,7 @@ class Channel:
 			ag.generator.remeventagent(ag)
 		channelfunc = (lambda ch, key=self: (ch == key or ch.ancestors.has_key(key)))
 		chans = filter(channelfunc, channels.keys())
-		chans.sort(lambda c1, c2: (c2.depth - c1.depth))
+		chans.sort(lambda c1, c2: (c2.depth - c1.depth)) ### __cmp__
 		for ch in chans:
 			ch.close()
 
@@ -360,15 +372,8 @@ def run_agents(starttime, gen):
 				raise BoodleInternalError('posted agent not in active channel')
 			ag.receive(ev)
 		except Exception, ex:
-			print 'Error running ' + '"' + ag.getname() + '"' + ': '
-			if gen.verbose_errors:
-				(extyp, exval, extrace) = sys.exc_info()
-				traceback.print_exception(extyp, exval, extrace)
-				extyp = None
-				exval = None
-				extrace = None				
-			else:
-				print '  ' + str(ex.__class__) + ': ' + str(ex)
+			ag.logger.exception('"%s" %s: %s',
+				ag.getname(), ex.__class__.__name__, ex)
 
 	while (len(queue) > 0 and queue[0].runtime < nexttime):
 		ag = queue.pop(0)
@@ -381,18 +386,11 @@ def run_agents(starttime, gen):
 			gen.agentruntime = ag.runtime
 			ag.run()
 		except Exception, ex:
-			print 'Error running ' + '"' + ag.getname() + '"' + ': '
-			if gen.verbose_errors:
-				(extyp, exval, extrace) = sys.exc_info()
-				traceback.print_exception(extyp, exval, extrace)
-				extyp = None
-				exval = None
-				extrace = None
-			else:
-				print '  ' + str(ex.__class__) + ': ' + str(ex)
+			ag.logger.exception('"%s" %s: %s',
+				ag.getname(), ex.__class__.__name__, ex)
 
 	for chan in channels.keys():
-		vol = chan.volume
+		vol = chan.volume     ### break out tuple
 		if (nexttime >= vol[1]):
 			chan.lastvolume = vol[3]
 		elif (nexttime >= vol[0]):

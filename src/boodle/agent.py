@@ -4,8 +4,9 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-import types
-import string
+import logging
+import types ###
+import string ###
 
 class Agent:
 	"""Agent: base class for Boodler agents.
@@ -49,6 +50,10 @@ class Agent:
 		self.runtime = 0
 		self.channel = None
 		self.origdelay = None
+		
+		### use the Boodler package name here, if possible
+		cla = self.__class__
+		self.logger = logging.getLogger('pkg.'+cla.__module__+'.'+cla.__name__)
 
 	def __cmp__(self, other):
 		return cmp(self.runtime, other.runtime)
