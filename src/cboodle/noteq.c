@@ -193,9 +193,6 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
   long framesperbuf = audev_get_framesperbuf();
   long end_time;
 
-  /* This can become invalid, since we're deleting notes */
-  last_added = NULL;
-
   if (genfunc) {
     int res = (*genfunc)(current_time, rock);
     if (res)

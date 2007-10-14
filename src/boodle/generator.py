@@ -8,6 +8,7 @@ import sys
 import traceback
 import string
 import types
+import bisect
 
 queue = []
 postpool = {}
@@ -37,7 +38,7 @@ class Generator:
 		self.listener = None
 		self.event_registry = {}
 		self.lastunload = 0
-		self.verbose_errors = 0
+		self.verbose_errors = False
 		self.stats_interval = None
 		if dolisten:
 			lfunc = lambda val, gen=self: receive_event(gen, val)
@@ -63,18 +64,12 @@ class Generator:
 		ag.runtime = runtime
 		ag.channel = chan
 		chan.agentcount = chan.agentcount+1
-		ag.queued = 1
+		ag.queued = True
 
-		# make more efficient?
-		for ix in range(len(queue)):
-			if (runtime <= queue[ix].runtime):
-				queue.insert(ix, ag)
-				break
-		else:
-			queue.append(ag)
+		bisect.insort(queue, ag)
 
 	def remagent(self, ag):
-		ag.queued = 0
+		ag.queued = False
 		ag.channel.agentcount = ag.channel.agentcount-1
 		queue.remove(ag)
 
@@ -88,7 +83,7 @@ class Generator:
 		ag.generator = self
 		ag.channel = chan
 		chan.agentcount = chan.agentcount+1
-		ag.posted = 1
+		ag.posted = True
 		postpool[ag] = ag
 
 		try:
@@ -105,7 +100,7 @@ class Generator:
 				if (type(dat) != types.StringType):
 					raise TypeError('"' + ag.getname() + '"' + ' has invalid entry in watch_events')
 		except:
-			ag.posted = 0
+			ag.posted = False
 			chan.agentcount = chan.agentcount-1
 			del postpool[ag]
 			raise
@@ -125,7 +120,7 @@ class Generator:
 			if ((ags != None) and (ag in ags)):
 				ags.remove(ag)
 		ag.real_watch_events = []
-		ag.posted = 0
+		ag.posted = False
 		ag.channel.agentcount = ag.channel.agentcount-1
 		del postpool[ag]
 
@@ -178,7 +173,7 @@ class Channel:
 	"""
 
 	def __init__(self, parent, gen, startvol, pan):
-		self.active = 1
+		self.active = True
 		self.generator = gen
 		self.volume = (0, 0, startvol, startvol)
 		self.stereo = stereo.cast(pan)
@@ -200,7 +195,7 @@ class Channel:
 		channels[self] = self
 
 	def close(self):
-		if (self.active == 0):
+		if (not self.active):
 			return
 		if (self.childcount > 0):
 			raise BoodleInternalError('channel has children at close')
@@ -212,7 +207,7 @@ class Channel:
 			self.parent.childcount = self.parent.childcount-1
 			if (self.parent.childcount < 0):
 				raise BoodleInternalError('channel childcount negative')
-		self.active = 0
+		self.active = False
 		self.generator = None
 		self.depth = None
 		self.ancestors.clear()
@@ -240,7 +235,7 @@ class Channel:
 		self.generator.stoplist.append(self)
 
 	def realstop(self):
-		if (self.active == 0):
+		if (not self.active):
 			raise ChannelError('cannot stop an inactive channel')
 		cboodle.stop_notes(self)
 		agentfunc = (lambda ag, key=self: (ag.channel == key or ag.channel.ancestors.has_key(key)))
@@ -343,7 +338,7 @@ def run_agents(starttime, gen):
 	#print 'generating:', starttime, 'to', nexttime, '(queue', len(queue), ', channels', len(channels), ')'
 
 	for chan in gen.stoplist:
-		if (chan.active > 0):
+		if (chan.active):
 			chan.realstop()
 	gen.stoplist = []
 
@@ -377,7 +372,7 @@ def run_agents(starttime, gen):
 
 	while (len(queue) > 0 and queue[0].runtime < nexttime):
 		ag = queue.pop(0)
-		ag.queued = 0
+		ag.queued = False
 		ag.channel.agentcount = ag.channel.agentcount-1
 		#print 'running:', '"' + ag.getname() + '"', 'at', ag.runtime, ', depth', ag.channel.depth
 		try:

@@ -344,7 +344,7 @@ class local_generate_source(Command):
 				
 
 setup(name = 'Boodler',
-	version = '1.6.1',
+	version = '2.0.0',
 	description = 'Programmable soundscape tool',
 	author = 'Andrew Plotkin',
 	author_email = 'erkyrath@eblong.com',

@@ -30,14 +30,14 @@ class Listener:
 		self.sockets = [insock]
 		self.handler = handler
 		self.datas = {}
-		self.active = 1
+		self.active = True
 
 	def close(self):
 		for sock in self.sockets:
 			sock.close()
 		self.socket = None
 		self.insock = None
-		self.active = 0
+		self.active = False
 		if (self.unlinkport != None):
 			os.unlink(self.unlinkport)
 

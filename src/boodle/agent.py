@@ -37,18 +37,21 @@ class Agent:
 	"""
 
 	name = None
-	inited = 0
+	inited = False
 	event = None
 	real_watch_events = []
 
-	def __init__(self):
-		self.inited = 1
-		self.queued = 0
-		self.posted = 0
+	def __init__(self): ###push other args into an init()
+		self.inited = True
+		self.queued = False
+		self.posted = False
 		self.generator = None
 		self.runtime = 0
 		self.channel = None
 		self.origdelay = None
+
+	def __cmp__(self, other):
+		return cmp(self.runtime, other.runtime)
 
 	def sched_note(self, samp, pitch=1.0, volume=1.0, delay=0, chan=None):
 		"""sched_note(sample [, pitch=1, volume=1, delay=0, chan=self.channel]) -> duration
@@ -381,11 +384,11 @@ class EventAgent(Agent):
 
 	"""
 
-	subinited = 0
+	subinited = False
 
 	def __init__(self):
 		Agent.__init__(self)
-		self.subinited = 1
+		self.subinited = True
 
 	def run(self):
 		"""run()
