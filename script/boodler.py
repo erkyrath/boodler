@@ -221,6 +221,8 @@ try:
 			cboodle.final()
 	except generator.StopGeneration:
 		pass
-finally:
-	gen.close()
+except:
+	rootlogger.critical('internal error', exc_info=True)
+
+gen.close()
 

@@ -44,6 +44,9 @@ class Generator:
 	"""
 
 	def __init__(self, basevolume=0.5, dolisten=0, listenport=None):
+		self.logger = logging.getLogger()
+		self.logger.info('generator setting up')
+		
 		self.rootchannel = Channel(None, self, None, basevolume, None)
 		self.stoplist = []
 		self.postqueue = []
@@ -52,7 +55,6 @@ class Generator:
 		self.lastunload = 0
 		self.verbose_errors = False
 		self.stats_interval = None
-		self.logger = logging.getLogger()
 		if dolisten:
 			lfunc = lambda val, gen=self: receive_event(gen, val) ###?
 			self.listener = listen.Listener(lfunc, listenport)
