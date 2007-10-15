@@ -58,7 +58,7 @@ class Generator:
 			self.listener = listen.Listener(lfunc, listenport)
 
 	def close(self):
-		if (self.listener != None):
+		if (self.listener):
 			self.listener.close()
 		self.logger.info('generator shut down')
 
@@ -133,7 +133,7 @@ class Generator:
 		evreg = self.event_registry
 		for el in ag.real_watch_events:
 			ags = evreg.get(el)
-			if ((ags != None) and (ag in ags)):
+			if ((ags) and (ag in ags)):
 				ags.remove(ag)
 		ag.real_watch_events = []
 		ag.posted = False
@@ -147,7 +147,7 @@ class Generator:
 
 		write('...\n')
 		numagent = len(queue)
-		if (self.listener != None):
+		if (self.listener):
 			numagentpost = len(postpool)
 			write(str(numagent+numagentpost) + ' agents (' + str(numagent) + ' scheduled, ' + str(numagentpost) + ' posted)\n')
 		else:
@@ -238,7 +238,7 @@ class Channel:
 			raise BoodleInternalError('channel has agents at close')
 		if (self.notecount > 0):
 			raise BoodleInternalError('channel has notes at close')
-		if (self.parent != None):
+		if (self.parent):
 			self.parent.childcount = self.parent.childcount-1
 			if (self.parent.childcount < 0):
 				raise BoodleInternalError('channel childcount negative')
@@ -394,7 +394,7 @@ def run_agents(starttime, gen):
 				chan.realstop()
 		gen.stoplist = []
 
-	if (gen.listener != None):
+	if (gen.listener):
 		gen.listener.poll()
 
 	gen.agentruntime = starttime

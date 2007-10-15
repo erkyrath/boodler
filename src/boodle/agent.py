@@ -11,9 +11,13 @@ import string ###
 class Agent:
 	"""Agent: base class for Boodler agents.
 
-	Agents compare (<, ==, >) based on their runtime field. (This lets the
-	generator sort its queue more efficiently.) Therefore, two different
-	agents can easily appear equal (==). To test identity, compare (a is b).
+	Agents compare (<, >) based on their runtime field. (This lets the
+	generator sort its queue more efficiently.) If the runtime fields are
+	equal, the comparison is arbitrary (but consistent; the objects compare
+	based on id().)
+
+	Comparing (agent == None) will raise an exception. Use (agent is None)
+	instead.
 
 	Methods and fields to be overridden:
 
@@ -59,7 +63,7 @@ class Agent:
 		self.logger = logging.getLogger('pkg.'+cla.__module__+'.'+cla.__name__)
 
 	def __cmp__(self, other):
-		return cmp(self.runtime, other.runtime)
+		return (cmp(self.runtime, other.runtime) or cmp(id(self), id(other)))
 
 	def sched_note(self, samp, pitch=1.0, volume=1.0, delay=0, chan=None):
 		"""sched_note(sample [, pitch=1, volume=1, delay=0, chan=self.channel]) -> duration
@@ -371,7 +375,7 @@ class Agent:
 
 		"""
 		nm = self.name
-		if (nm != None):
+		if (nm):
 			return nm
 		return 'unnamed agent'
 
