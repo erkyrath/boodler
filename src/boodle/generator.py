@@ -17,10 +17,6 @@ import StringIO
 # types.*
 ####
 
-### can these live in Generator?
-queue = []
-postpool = {}
-channels = {}
 
 class Generator:
 	"""Generator: A class that stores the internal state of boodler
@@ -33,8 +29,10 @@ class Generator:
 	def __init__(self, basevolume=0.5, dolisten=0, listenport=None):
 		self.logger = logging.getLogger()
 		self.logger.info('generator setting up')
-		
-		self.rootchannel = Channel(None, self, None, basevolume, None)
+
+		self.queue = []
+		self.postpool = {}
+		self.channels = {}
 		self.stoplist = []
 		self.postqueue = []
 		self.listener = None
@@ -47,6 +45,8 @@ class Generator:
 			lfunc = lambda val, gen=self: receive_event(gen, val)
 			self.listener = listen.Listener(lfunc, listenport)
 
+		self.rootchannel = Channel(None, self, None, basevolume, None)
+
 	def close(self):
 		if (self.listener):
 			self.listener.close()
@@ -58,7 +58,6 @@ class Generator:
 		self.last_stats_dump = 0
 
 	def addagent(self, ag, chan, runtime):
-		# move to agent, maybe?
 		if (ag.queued):
 			raise ScheduleError('"' + ag.getname() + '"' + ' is already scheduled')
 
@@ -68,7 +67,7 @@ class Generator:
 		chan.agentcount = chan.agentcount+1
 		ag.queued = True
 
-		bisect.insort(queue, ag)
+		bisect.insort(self.queue, ag)
 
 		ag.logger.info('scheduled at depth-%d', chan.depth)
 
@@ -77,7 +76,7 @@ class Generator:
 		
 		ag.queued = False
 		ag.channel.agentcount = ag.channel.agentcount-1
-		queue.remove(ag)
+		self.queue.remove(ag)
 
 	def addeventagent(self, ag, chan):
 		if (self.listener is None):
@@ -90,7 +89,7 @@ class Generator:
 		ag.channel = chan
 		chan.agentcount = chan.agentcount+1
 		ag.posted = True
-		postpool[ag] = ag
+		self.postpool[ag] = ag
 
 		try:
 			ls = ag.watch_events
@@ -108,7 +107,7 @@ class Generator:
 		except:
 			ag.posted = False
 			chan.agentcount = chan.agentcount-1
-			del postpool[ag]
+			del self.postpool[ag]
 			raise
 		
 		ag.real_watch_events = ls
@@ -128,7 +127,7 @@ class Generator:
 		ag.real_watch_events = []
 		ag.posted = False
 		ag.channel.agentcount = ag.channel.agentcount-1
-		del postpool[ag]
+		del self.postpool[ag]
 
 	def dump_stats(self, fl=None):
 		if (fl is None):
@@ -136,13 +135,13 @@ class Generator:
 		write = fl.write
 
 		write('...\n')
-		numagent = len(queue)
+		numagent = len(self.queue)
 		if (self.listener):
-			numagentpost = len(postpool)
+			numagentpost = len(self.postpool)
 			write(str(numagent+numagentpost) + ' agents (' + str(numagent) + ' scheduled, ' + str(numagentpost) + ' posted)\n')
 		else:
 			write(str(numagent) + ' agents\n')
-		numchan = len(channels)
+		numchan = len(self.channels)
 		write(str(numchan) + ' channels\n')
 		numsamp = len(sample.cache)
 		numsamploaded = 0
@@ -213,7 +212,7 @@ class Channel:
 			### use the Boodler package name here, if possible
 			self.creatorname = createagent.__class__.__name__
 			
-		channels[self] = self
+		gen.channels[self] = self
 		self.logger.info('opened %s', self)
 
 	def __str__(self):
@@ -234,13 +233,14 @@ class Channel:
 				raise BoodleInternalError('channel childcount negative')
 				
 		self.logger.info('closed %s', self)
+		gen = self.generator
 		self.active = False
 		self.generator = None
 		self.depth = None
 		self.ancestors.clear()
 		self.ancestors = None
 		self.parent = None
-		del channels[self]
+		del gen.channels[self]
 
 	def stop(self):
 		"""stop()
@@ -266,17 +266,17 @@ class Channel:
 			raise ChannelError('cannot stop an inactive channel')
 		cboodle.stop_notes(self)
 		
-		agents = [ ag for ag in queue
+		agents = [ ag for ag in self.generator.queue
 			if (ag.channel is self or ag.channel.ancestors.has_key(self)) ]
 		for ag in agents:
-			ag.generator.remagent(ag)
+			self.generator.remagent(ag)
 			
-		agents = [ ag for ag in postpool
+		agents = [ ag for ag in self.generator.postpool
 			if (ag.channel is self or ag.channel.ancestors.has_key(self)) ]
 		for ag in agents:
-			ag.generator.remeventagent(ag)
+			self.generator.remeventagent(ag)
 			
-		chans = [ ch for ch in channels
+		chans = [ ch for ch in self.generator.channels
 			if (ch is self or ch.ancestors.has_key(self)) ]
 		chans.sort(Channel.compare)
 		for ch in chans:
@@ -352,9 +352,9 @@ def run_agents(starttime, gen):
 		cboodle.adjust_timebase(TRIMOFFSET)
 		gen.lastunload = gen.lastunload - TRIMOFFSET
 		sample.adjust_timebase(TRIMOFFSET, UNLOADAGE)
-		for ag in queue:
+		for ag in gen.queue:
 			ag.runtime = ag.runtime - TRIMOFFSET
-		for chan in channels:
+		for chan in gen.channels:
 			(starttm, endtm, startvol, endvol) = chan.volume
 			if (endtm <= starttime):
 				continue
@@ -400,8 +400,8 @@ def run_agents(starttime, gen):
 				ag.getname(), ex.__class__.__name__, ex,
 				exc_info=True)
 
-	while (len(queue) and queue[0].runtime < nexttime):
-		ag = queue.pop(0)
+	while (gen.queue and gen.queue[0].runtime < nexttime):
+		ag = gen.queue.pop(0)
 		ag.queued = False
 		ag.channel.agentcount = ag.channel.agentcount-1
 		ag.logger.info('running')
@@ -415,7 +415,7 @@ def run_agents(starttime, gen):
 				ag.getname(), ex.__class__.__name__, ex,
 				exc_info=True)
 
-	for chan in channels:
+	for chan in gen.channels:
 		(starttm, endtm, startvol, endvol) = chan.volume
 		if (nexttime >= endtm):
 			chan.lastvolume = endvol
@@ -424,7 +424,7 @@ def run_agents(starttime, gen):
 		else:
 			chan.lastvolume = startvol
 
-	ls = [ chan for chan in channels
+	ls = [ chan for chan in gen.channels
 		if (chan.notecount == 0
 			and chan.agentcount == 0
 			and chan.childcount == 0)
@@ -432,7 +432,7 @@ def run_agents(starttime, gen):
 	for chan in ls:
 		chan.close()
 
-	if (not channels):
+	if (not gen.channels):
 		raise StopGeneration()
 
 
