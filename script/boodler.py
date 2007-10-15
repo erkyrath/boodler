@@ -68,7 +68,7 @@ popt.add_option('-D', '--define',
 popt.add_option('-L', '--log',
 	action='store', type='choice', dest='loglevel', metavar='LEVEL',
 	choices=loglevels.keys(),
-	help='message level to log (default: error)')
+	help='message level to log (default: warning)')
 popt.add_option('--logconfig',
 	action='store', type='string', dest='logconfig', metavar='CONFIGFILE',
 	help='log configuration file')
@@ -140,7 +140,7 @@ if (opts.logconfig):
 		level = loglevels.get(opts.loglevel)
 else:
 	if (not opts.loglevel):
-		level = logging.ERROR
+		level = logging.WARNING
 	else:
 		level = loglevels.get(opts.loglevel)
 	roothandler = logging.StreamHandler(sys.stderr)
@@ -167,6 +167,9 @@ if (opts.driver):
 avoidstdout = False
 if (opts.driver == 'stdout'):
 	avoidstdout = True
+if (level in [logging.INFO, logging.DEBUG]):
+	avoidstdout = True
+
 
 if (opts.verbosehardware or opts.listdevices):
 	# For these options, we need to start up the driver even if
@@ -194,8 +197,6 @@ if ((netport is not None) and netport.startswith('/')):
 	netport = int(netport)
 
 gen = generator.Generator(opts.basevolume, opts.netlisten, netport)
-if (opts.verboseerrors):
-	gen.set_verbose_errors(True)
 if (opts.statsrate != None):
 	gen.set_stats_interval(opts.statsrate)
 
@@ -220,9 +221,12 @@ try:
 		finally:
 			cboodle.final()
 	except generator.StopGeneration:
-		pass
-except:
-	rootlogger.critical('internal error', exc_info=True)
+		rootlogger.warning('end of soundscape')
+	except KeyboardInterrupt:
+		rootlogger.warning('keyboard interrupt')
+except Exception, ex:
+	rootlogger.critical('%s: %s', ex.__class__.__name__, ex,
+		exc_info=True)
 
 gen.close()
 

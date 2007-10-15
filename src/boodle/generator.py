@@ -10,6 +10,7 @@ import traceback
 import string
 import types
 import bisect
+import StringIO
 
 #### clean up:
 # for x in map.keys()
@@ -55,6 +56,7 @@ class Generator:
 		self.lastunload = 0
 		self.verbose_errors = False
 		self.stats_interval = None
+		self.statslogger = None
 		if dolisten:
 			lfunc = lambda val, gen=self: receive_event(gen, val) ###?
 			self.listener = listen.Listener(lfunc, listenport)
@@ -64,11 +66,8 @@ class Generator:
 			self.listener.close()
 		self.logger.info('generator shut down')
 
-	def set_verbose_errors(self, val):
-		### necessary?
-		self.verbose_errors = val
-
 	def set_stats_interval(self, val):
+		self.statslogger = logging.getLogger('stats')
 		self.stats_interval = val
 		self.last_stats_dump = 0
 
@@ -150,7 +149,7 @@ class Generator:
 			fl = sys.stdout
 		write = fl.write
 
-		write('* boodler runtime stats\n')
+		write('...\n')
 		numagent = len(queue)
 		if (self.listener != None):
 			numagentpost = len(postpool)
@@ -346,7 +345,6 @@ UNLOADAGE  = 110000
 
 def run_agents(starttime, gen):
 	if (starttime >= TRIMTIME):
-		#print 'adjust timebase:', starttime, '-', TRIMOFFSET, '=', (starttime - TRIMOFFSET)
 		starttime = starttime - TRIMOFFSET
 		cboodle.adjust_timebase(TRIMOFFSET)
 		gen.lastunload = gen.lastunload - TRIMOFFSET
@@ -360,33 +358,28 @@ def run_agents(starttime, gen):
 			starttm = starttm - TRIMOFFSET
 			endtm = endtm - TRIMOFFSET
 			chan.volume = (starttm, endtm, startvol, endvol)
-		if (gen.stats_interval != None):
+		if (not (gen.stats_interval is None)):
 			gen.last_stats_dump = gen.last_stats_dump - TRIMOFFSET
 
 	if (gen.lastunload + UNLOADTIME < starttime):
-		#print 'unload samples:', starttime
 		gen.lastunload = starttime
 		sample.unload_unused(starttime-UNLOADAGE)
 
-	if (gen.stats_interval != None):
+	if (not (gen.stats_interval is None)):
 		if (gen.last_stats_dump + int(gen.stats_interval * cboodle.framespersec()) < starttime):
 			gen.last_stats_dump = starttime
-			gen.dump_stats()
+			fl = StringIO.StringIO()
+			gen.dump_stats(fl)
+			gen.statslogger.warning(fl.getvalue())
+			fl.close()
 
 	nexttime = starttime + cboodle.framesperbuf()
-	#print 'generating:', starttime, 'to', nexttime, '(queue', len(queue), ', channels', len(channels), ')'
 
 	if (gen.stoplist):
 		for chan in gen.stoplist:
 			if (chan.active):
 				chan.realstop()
 		gen.stoplist = []
-
-	#print map((lambda samp: (string.split(samp.filename, '/')[-1], samp.refcount, samp.lastused)), sample.cache.values())
-	#print map((lambda ch: sys.getrefcount(ch)), channels.keys())
-	#print map((lambda ch: (ch.notecount, ch.agentcount, ch.childcount)), channels.keys())
-	#print map((lambda ch: (ch.volume, ch.lastvolume)), channels.keys())
-	#print gen.event_registry
 
 	if (gen.listener != None):
 		gen.listener.poll()
