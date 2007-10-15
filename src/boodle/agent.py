@@ -535,20 +535,6 @@ def load_class_by_name(name):
 	return clas
 
 
-def list_module_by_name(name):
-	"""list_module_by_name(str)
-
-	Given a string that names a module -- for example, 'play' -- import 
-	the module, and list all its members that are subclasses of Agent.
-	
-	### probably can be yanked at this point
-	"""
-	mod = __import__(name)
-	for key in mod.__dict__.keys():
-		obj = mod.__dict__[key]
-		if (type(obj) == type(Agent) and issubclass(obj, Agent) and not(obj in [Agent, FadeOutAgent, FadeInOutAgent, StopAgent, NullAgent, EventAgent])):
-			print (name + '.' + key)
-
 
 # Late imports.
 
