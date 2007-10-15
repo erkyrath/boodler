@@ -40,7 +40,7 @@ class Sample:
 		if (cboodle.is_sample_error(self.csamp)):
 			raise SampleError('sample is unplayable')
 		if (not cboodle.is_sample_loaded(self.csamp)):
-			if (self.reloader != None):
+			if (not (self.reloader is None)):
 				self.reloader.reload(self)
 			if (not cboodle.is_sample_loaded(self.csamp)):
 				raise SampleError('sample is unloaded')
@@ -58,7 +58,7 @@ class Sample:
 		if (cboodle.is_sample_error(self.csamp)):
 			raise SampleError('sample is unplayable')
 		if (not cboodle.is_sample_loaded(self.csamp)):
-			if (self.reloader != None):
+			if (not (self.reloader is None)):
 				self.reloader.reload(self)
 			if (not cboodle.is_sample_loaded(self.csamp)):
 				raise SampleError('sample is unloaded')
@@ -96,7 +96,7 @@ class MixinSample(Sample):
 		for (startval, endval, pair) in self.ranges:
 			if (pitch >= startval and pitch <= endval):
 				return pair
-		if (self.defval != None):
+		if (not (self.defval is None)):
 			return self.defval
 		raise SampleError(str(pitch) + ' is outside mixin ranges')
 
@@ -116,12 +116,11 @@ class MixinSample(Sample):
 		return realsamp.get_info(realpitch)
 
 def unload_unused(deathtime):
-	for samp in cache.values():
+	for samp in list(cache.values()):
 		if (samp.refcount == 0
-			and samp.csamp != None 
+			and (not (samp.csamp is None))
 			and deathtime >= samp.lastused
 			and cboodle.is_sample_loaded(samp.csamp)):
-				#print 'unloading', samp.filename
 				cboodle.unload_sample(samp.csamp)
 
 def adjust_timebase(trimoffset, maxage):
@@ -144,7 +143,7 @@ def get(sname):
 	"""
 	sname = intern(sname)
 	samp = cache.get(sname)
-	if (samp != None):
+	if (not (samp is None)):
 		return samp
 	
 	if (os.path.isabs(sname)):
@@ -220,7 +219,7 @@ class SampleLoader:
 
 def find_loader(suffix):
 	clas = SampleLoader.suffixmap.get(suffix)
-	if (clas == None):
+	if (clas is None):
 		raise SampleError('unknown sound file extension \'' 
 			+ suffix + '\'')
 	return clas
@@ -238,7 +237,7 @@ class AifcLoader(SampleLoader):
 		fl.close()
 		loopstart = -1
 		loopend = -1
-		if (markers != None):
+		if (not (markers is None)):
 			for (mark, pos, name) in markers:
 				if (mark == 1):
 					loopstart = pos

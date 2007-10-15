@@ -15,7 +15,6 @@ import StringIO
 #### clean up:
 # string.*
 # types.*
-# == None
 ####
 
 ### can these live in Generator?

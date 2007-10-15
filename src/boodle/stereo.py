@@ -74,10 +74,10 @@ def compose(stereo1, stereo2):
 	stereo1, containing a channel stereo2.
 
 	"""
-	if (stereo1 == None):
+	if (stereo1 is None):
 		stereo1 = (1.0, 0.0)
 	(chscale, chshift) = stereo1
-	if (stereo2 == None):
+	if (stereo2 is None):
 		stereo2 = (1.0, 0.0)
 	(stereoscale, stereoshift) = stereo2
 	stereoscale = stereoscale * chscale
@@ -93,7 +93,7 @@ def cast(obj):
 	it (or an equivalent object).
 
 	"""
-	if (obj == None):
+	if (obj is None):
 		return obj
 	objtyp = type(obj)
 	if (objtyp == types.TupleType):
