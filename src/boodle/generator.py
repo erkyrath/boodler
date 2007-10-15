@@ -22,15 +22,6 @@ queue = []
 postpool = {}
 channels = {}
 
-class ScheduleError(Exception):
-	pass
-class ChannelError(Exception):
-	pass
-class StopGeneration(Exception):
-	pass
-class BoodleInternalError(Exception):
-	pass
-
 class Generator:
 	"""Generator: A class that stores the internal state of boodler
 	sound generation.
@@ -405,8 +396,9 @@ def run_agents(starttime, gen):
 				raise BoodleInternalError('posted agent not in active channel')
 			ag.receive(ev)
 		except Exception, ex:
-			ag.logger.exception('"%s" %s: %s',
-				ag.getname(), ex.__class__.__name__, ex)
+			ag.logger.error('"%s" %s: %s',
+				ag.getname(), ex.__class__.__name__, ex,
+				exc_info=True)
 
 	while (len(queue) and queue[0].runtime < nexttime):
 		ag = queue.pop(0)
@@ -419,8 +411,9 @@ def run_agents(starttime, gen):
 			gen.agentruntime = ag.runtime
 			ag.run()
 		except Exception, ex:
-			ag.logger.exception('"%s" %s: %s',
-				ag.getname(), ex.__class__.__name__, ex)
+			ag.logger.error('"%s" %s: %s',
+				ag.getname(), ex.__class__.__name__, ex,
+				exc_info=True)
 
 	for chan in channels:
 		(starttm, endtm, startvol, endvol) = chan.volume
@@ -461,5 +454,20 @@ def receive_event(gen, val):
 
 import boodle
 from boodle import stereo, sample, listen
+from boodle import BoodlerError, StopGeneration
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
+
+class ScheduleError(BoodlerError):
+	"""ScheduleError: Represents an invalid use of the scheduler.
+	"""
+	pass
+class ChannelError(BoodlerError):
+	"""ChannelError: Represents an invalid use of a channel.
+	"""
+	pass
+class BoodleInternalError(BoodlerError):
+	"""BoodleInternalError: Represents an internal sanity check going
+	wrong.
+	"""
+	pass

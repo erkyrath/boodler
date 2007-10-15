@@ -121,6 +121,7 @@ class LogFormatter(logging.Formatter):
 	def formatException(self, tup):
 		if (self.verboseerrors):
 			return logging.Formatter.formatException(self, tup)
+		trimlast = (isinstance(tup[1], boodle.BoodlerError))
 		fl = StringIO.StringIO()
 		traceback.print_tb(tup[2], file=fl)
 		res = fl.getvalue()
@@ -128,7 +129,10 @@ class LogFormatter(logging.Formatter):
 		fl = None
 		tup = None
 		ls = res.split('\n')
-		return ('\n'.join(ls[-3:]))
+		ls = [ ln for ln in ls if ln ]
+		if (trimlast and len(ls) >= 4):
+			ls = ls[:-2]
+		return ('\n'.join(ls[-2:]))
 		
 rootlogger = logging.getLogger()
 level = None
@@ -219,8 +223,8 @@ try:
 			cboodle.loop(generator.run_agents, gen)
 		finally:
 			cboodle.final()
-	except generator.StopGeneration:
-		rootlogger.warning('end of soundscape')
+	except boodle.StopGeneration:
+		pass
 	except KeyboardInterrupt:
 		rootlogger.warning('keyboard interrupt')
 except Exception, ex:

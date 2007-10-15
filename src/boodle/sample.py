@@ -24,9 +24,6 @@ if struct.pack("h", 1) == "\000\001":
 else:
 	big_endian = 0
 
-class SampleError(Exception):
-	pass
-
 class Sample:
 	reloader = None
 
@@ -346,3 +343,9 @@ mixin_loader = MixinLoader()
 import boodle
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
+
+class SampleError(boodle.BoodlerError):
+	"""SampleError: Represents problems encountered while finding or
+	loading sound files.
+	"""
+	pass
