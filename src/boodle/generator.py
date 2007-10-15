@@ -13,10 +13,6 @@ import bisect
 import StringIO
 
 #### clean up:
-# for x in map.keys()
-# filter
-# map
-# lambda
 # string.*
 # types.*
 # == None
@@ -58,7 +54,7 @@ class Generator:
 		self.stats_interval = None
 		self.statslogger = None
 		if dolisten:
-			lfunc = lambda val, gen=self: receive_event(gen, val) ###?
+			lfunc = lambda val, gen=self: receive_event(gen, val)
 			self.listener = listen.Listener(lfunc, listenport)
 
 	def close(self):
@@ -94,7 +90,7 @@ class Generator:
 		queue.remove(ag)
 
 	def addeventagent(self, ag, chan):
-		if (self.listener == None):
+		if (self.listener is None):
 			raise ScheduleError('event listening disabled -- cannot post '
 				+ '"' + ag.getname() + '"')
 		if (ag.posted):
@@ -108,7 +104,7 @@ class Generator:
 
 		try:
 			ls = ag.watch_events
-			if (ls == None):
+			if (ls is None):
 				raise NotImplementedError('"' + ag.getname() + '"' + ' has no watch_events')
 			if callable(ls):
 				ls = ls()
@@ -145,7 +141,7 @@ class Generator:
 		del postpool[ag]
 
 	def dump_stats(self, fl=None):
-		if (fl == None):
+		if (fl is None):
 			fl = sys.stdout
 		write = fl.write
 
@@ -165,7 +161,7 @@ class Generator:
 		numnotes = 0
 		for samp in sample.cache.values():
 			numnotes = numnotes + samp.refcount
-			if (samp.csamp == None):
+			if (samp.csamp is None):
 				numsampvirt = numsampvirt+1
 			elif (cboodle.is_sample_loaded(samp.csamp)):
 				numsamploaded = numsamploaded+1
@@ -190,6 +186,9 @@ class Channel:
 	set_volume() -- change the volume of the channel
 	stop() -- stop the channel immediately
 
+	Class method:
+
+	compare() -- compare two channels in deepest-to-root order
 	"""
 
 	logger = None
@@ -276,16 +275,20 @@ class Channel:
 		if (not self.active):
 			raise ChannelError('cannot stop an inactive channel')
 		cboodle.stop_notes(self)
-		agentfunc = (lambda ag, key=self: (ag.channel == key or ag.channel.ancestors.has_key(key)))
-		agents = filter(agentfunc, queue)
+		
+		agents = [ ag for ag in queue
+			if (ag.channel is self or ag.channel.ancestors.has_key(self)) ]
 		for ag in agents:
 			ag.generator.remagent(ag)
-		agents = filter(agentfunc, postpool.keys())
+			
+		agents = [ ag for ag in postpool
+			if (ag.channel is self or ag.channel.ancestors.has_key(self)) ]
 		for ag in agents:
 			ag.generator.remeventagent(ag)
-		channelfunc = (lambda ch, key=self: (ch == key or ch.ancestors.has_key(key)))
-		chans = filter(channelfunc, channels.keys())
-		chans.sort(lambda c1, c2: (c2.depth - c1.depth)) ### __cmp__
+			
+		chans = [ ch for ch in channels
+			if (ch is self or ch.ancestors.has_key(self)) ]
+		chans.sort(Channel.compare)
 		for ch in chans:
 			ch.close()
 
@@ -331,6 +334,16 @@ class Channel:
 		endtm = starttm + int(interval * cboodle.framespersec())
 		if (endtm >= self.volume[1]):
 			self.volume = (starttm, endtm, self.lastvolume, newvol)
+
+	def compare(ch1, ch2):
+		"""compare(ch1, ch2) -> int
+
+		Compare two channels in depth order. Sorting a list of channels
+		with this comparison function will put the deepest ones first,
+		the root last.
+		"""
+		return cmp(ch2.depth, ch1.depth)
+	compare = staticmethod(compare)
 
 TRIMTIME   = 317520000   # two hours
 TRIMOFFSET = 158760000   # one hour
@@ -439,7 +452,7 @@ def receive_event(gen, val):
 	if (len(event) == 0):
 		return
 	watchers = gen.event_registry.get(event[0])
-	if (watchers == None):
+	if (not watchers):
 		return
 	for ag in watchers:
 		gen.postqueue.append((ag, event))

@@ -11,6 +11,10 @@ import string ###
 class Agent:
 	"""Agent: base class for Boodler agents.
 
+	Agents compare (<, ==, >) based on their runtime field. (This lets the
+	generator sort its queue more efficiently.) Therefore, two different
+	agents can easily appear equal (==). To test identity, compare (a is b).
+
 	Methods and fields to be overridden:
 
 	run() -- perform the agent's action
@@ -34,7 +38,6 @@ class Agent:
 	new_channel() -- create a channel
 	new_channel_pan() -- create a channel at a stereo position
 	get_root_channel() -- return the root channel of the channel tree
-
 	"""
 
 	name = None
@@ -94,9 +97,9 @@ class Agent:
 
 		"""
 
-		if (self.generator == None or self.channel == None):
+		if (self.generator is None or self.channel is None):
 			raise generator.ScheduleError('scheduler has never been scheduled')
-		if (chan == None):
+		if (chan is None):
 			chan = self.channel
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule note to inactive channel')
@@ -114,7 +117,7 @@ class Agent:
 		starttime = gen.agentruntime + fdelay
 
 		pan = stereo.cast(pan)
-		if (pan == None):
+		if (pan is None):
 			panscale = 1.0
 			panshift = 0.0
 		else:
@@ -146,9 +149,9 @@ class Agent:
 
 	def sched_note_duration_pan(self, samp, duration, pan=None, pitch=1.0, volume=1.0, delay=0, chan=None):
 
-		if (self.generator == None or self.channel == None):
+		if (self.generator is None or self.channel is None):
 			raise generator.ScheduleError('scheduler has never been scheduled')
-		if (chan == None):
+		if (chan is None):
 			chan = self.channel
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule note to inactive channel')
@@ -172,7 +175,7 @@ class Agent:
 		fduration = int(duration * fps)
 
 		pan = stereo.cast(pan)
-		if (pan == None):
+		if (pan is None):
 			panscale = 1.0
 			panshift = 0.0
 		else:
@@ -226,9 +229,9 @@ class Agent:
 			raise generator.ScheduleError('not an EventAgent instance')
 		if (not (ag.inited and ag.subinited)):
 			raise generator.ScheduleError('agent is uninitialized')
-		if (self.generator == None or self.channel == None):
+		if (self.generator is None or self.channel is None):
 			raise generator.ScheduleError('poster has never been scheduled')
-		if (chan == None):
+		if (chan is None):
 			chan = self.channel
 		if (not chan.active):
 			raise generator.ChannelError('cannot post agent to inactive channel')
@@ -266,9 +269,9 @@ class Agent:
 			raise generator.ScheduleError('not an Agent instance')
 		if (not ag.inited):
 			raise generator.ScheduleError('agent is uninitialized')
-		if (self.generator == None or self.channel == None):
+		if (self.generator is None or self.channel is None):
 			raise generator.ScheduleError('scheduler has never been scheduled')
-		if (chan == None):
+		if (chan is None):
 			chan = self.channel
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule agent to inactive channel')
@@ -298,9 +301,9 @@ class Agent:
 
 		"""
 
-		if (delay == None):
+		if (delay is None):
 			delay = self.origdelay
-			if (delay == None):
+			if (delay is None):
 				raise generator.ScheduleError('resched with no prior delay')
 		self.sched_agent(self, delay, chan)
 
@@ -315,9 +318,9 @@ class Agent:
 
 		"""
 
-		if (self.channel == None):
+		if (self.channel is None):
 			raise generator.ChannelError('creator is not in a channel')
-		if (parent == None):
+		if (parent is None):
 			parent = self.channel
 		chan = generator.Channel(parent, self.generator, self, startvolume, None)
 		return chan
@@ -334,9 +337,9 @@ class Agent:
 
 		"""
 
-		if (self.channel == None):
+		if (self.channel is None):
 			raise generator.ChannelError('creator is not in a channel')
-		if (parent == None):
+		if (parent is None):
 			parent = self.channel
 		chan = generator.Channel(parent, self.generator, self, startvolume, pan)
 		return chan
@@ -488,7 +491,7 @@ class FadeInOutAgent(Agent):
 		self.agentinst = agentinst
 		self.fadeininterval = float(fadeinterval)
 		self.liveinterval = float(liveinterval)
-		if (fadeoutinterval == None):
+		if (fadeoutinterval is None):
 			self.fadeoutinterval = self.fadeininterval
 		else:
 			self.fadeoutinterval = float(fadeoutinterval)
