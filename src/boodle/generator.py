@@ -351,7 +351,7 @@ def run_agents(starttime, gen):
 		sample.adjust_timebase(TRIMOFFSET, UNLOADAGE)
 		for ag in queue:
 			ag.runtime = ag.runtime - TRIMOFFSET
-		for chan in channels.keys():
+		for chan in channels:
 			(starttm, endtm, startvol, endvol) = chan.volume
 			if (endtm <= starttime):
 				continue
@@ -396,7 +396,7 @@ def run_agents(starttime, gen):
 			ag.logger.exception('"%s" %s: %s',
 				ag.getname(), ex.__class__.__name__, ex)
 
-	while (len(queue) > 0 and queue[0].runtime < nexttime):
+	while (len(queue) and queue[0].runtime < nexttime):
 		ag = queue.pop(0)
 		ag.queued = False
 		ag.channel.agentcount = ag.channel.agentcount-1
@@ -410,20 +410,24 @@ def run_agents(starttime, gen):
 			ag.logger.exception('"%s" %s: %s',
 				ag.getname(), ex.__class__.__name__, ex)
 
-	for chan in channels.keys():
-		vol = chan.volume     ### break out tuple
-		if (nexttime >= vol[1]):
-			chan.lastvolume = vol[3]
-		elif (nexttime >= vol[0]):
-			chan.lastvolume = (nexttime - vol[0]) / float(vol[1] - vol[0]) * (vol[3] - vol[2]) + vol[2]
+	for chan in channels:
+		(starttm, endtm, startvol, endvol) = chan.volume
+		if (nexttime >= endtm):
+			chan.lastvolume = endvol
+		elif (nexttime >= starttm):
+			chan.lastvolume = (nexttime - starttm) / float(endtm - starttm) * (endvol - startvol) + startvol
 		else:
-			chan.lastvolume = vol[2]
+			chan.lastvolume = startvol
 
-	for chan in channels.keys():
-		if (chan.notecount == 0 and chan.agentcount == 0 and chan.childcount == 0):
-			chan.close()
+	ls = [ chan for chan in channels
+		if (chan.notecount == 0
+			and chan.agentcount == 0
+			and chan.childcount == 0)
+	]
+	for chan in ls:
+		chan.close()
 
-	if (len(channels) == 0):
+	if (not channels):
 		raise StopGeneration()
 
 

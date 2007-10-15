@@ -190,8 +190,6 @@ if (effects_dir):
 		if (len(dir) > 0):
 			sys.path.append(dir)
 
-clas = agent.load_class_by_name(args[0])
-
 netport = opts.netport
 if ((netport is not None) and netport.startswith('/')):
 	netport = int(netport)
@@ -201,7 +199,8 @@ if (opts.statsrate != None):
 	gen.set_stats_interval(opts.statsrate)
 
 try:
-	ag = apply(clas, args[1:])
+	clas = agent.load_class_by_name(args[0])
+	ag = clas(*args[1:])
 	if (not ag.inited):
 		raise generator.ScheduleError('agent is uninitialized')
 	gen.addagent(ag, gen.rootchannel, 0)

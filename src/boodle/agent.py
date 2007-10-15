@@ -525,7 +525,7 @@ def load_class_by_name(name):
 			mod = getattr(mod, comp)
 		clas = getattr(mod, classname)
 	except AttributeError, ex:
-		raise ValueError('unable to load ' + name + ' (' + str(ex) + ' missing)')
+		raise ValueError('unable to load ' + name + ' (' + str(ex) + ')')
 	
 	if (type(clas) != type(Agent)):
 		raise TypeError(name + ' is not a class')
