@@ -130,27 +130,64 @@ class LogFormatter(logging.Formatter):
 		Custom formatting for logged exceptions. If the --verbose option
 		is not set, this shows only the bottom of the stack trace.
 
-		For BoodlerErrors, this shows the second-lowest frame in the
-		stack trace, which may occasionally be more useful.
-		
-		### Really what we want is to show the lowest frame which is not
-		in the boodle.* package!
+		For BoodlerErrors, this shows the lowest frame which is not in
+		the boodle.* package. This is a moderately filthy hack, but
+		convenient.
 		"""
 		
 		if (self.verboseerrors):
+			# Standard, complete traceback.
 			return logging.Formatter.formatException(self, tup)
-		trimlast = (isinstance(tup[1], boodle.BoodlerError))
+
+		moreinfo = None
+		limit = None
+		notboodle = (isinstance(tup[1], boodle.BoodlerError))
+		if (notboodle):
+			# Iterate down the stack. Keep track of the last frame which
+			# is not in the boodle package. (But don't count the initial
+			# frames which are not in boodle; those are just the calling
+			# script.)
+			depth = 0
+			inboodle = False
+			tr = tup[2]
+			while (tr):
+				modname = tr.tb_frame.f_globals.get('__name__', '')
+				if (modname.startswith('boodle.')):
+					inboodle = True
+				else:
+					if (inboodle):
+						limit = depth+1
+				tr = tr.tb_next
+				depth += 1
+			if (not limit):
+				limit = None
+		
 		fl = StringIO.StringIO()
-		traceback.print_tb(tup[2], file=fl)
+		traceback.print_tb(tup[2], limit=limit, file=fl)
 		res = fl.getvalue()
 		fl.close()
 		fl = None
+
+		ex = tup[1]
+		if (isinstance(ex, SyntaxError)):
+			# Add the description of the bad line.
+			moreinfo = [
+				'  File "%s", line %d' % (ex.filename, ex.lineno),
+				'      '+ex.text.rstrip().replace('\t',' '),
+				'     %s^' % (' '*ex.offset,),
+			]
+
+		# Clear up the temp variables, to prevent the stack frame from
+		# staring into the abyss.
 		tup = None
+		ex = None
+		
 		ls = res.split('\n')
 		ls = [ ln for ln in ls if ln ]
-		if (trimlast and len(ls) >= 4):
-			ls = ls[:-2]
-		return ('\n'.join(ls[-2:]))
+		ls = ls[-2:]
+		if (moreinfo):
+			ls.extend(moreinfo)
+		return ('\n'.join(ls))
 		
 rootlogger = logging.getLogger()
 level = None
