@@ -18,8 +18,6 @@ compose() -- apply one stereo effect on top of another
 cast() -- convert an object to a stereo effect
 """
 
-import types
-
 def default():
 	"""default() -> stereo
 
@@ -56,7 +54,7 @@ def scale(size):
 	return (float(size), 0.0)
 
 def fixed(pos):
-	"""shift(pos) -> stereo
+	"""fixed(pos) -> stereo
 
 	Return a stereo effect which is compressed to a point. All sounds
 	contained in this effect, no matter how shifted, will come from a
@@ -96,12 +94,12 @@ def cast(obj):
 	if (obj is None):
 		return obj
 	objtyp = type(obj)
-	if (objtyp == types.TupleType):
+	if (objtyp == tuple):
 		if (len(obj) == 2):
 			return (float(obj[0]), float(obj[1]))
 		raise TypeError('stereo tuple not 2-tuple')
-	if (objtyp == types.IntType or objtyp == types.LongType or objtyp == types.FloatType):
+	if (objtyp in [int, long, float]):
 		if (obj == 0):
 			return None
 		return (1.0, float(obj))
-	raise TypeError('object can\'t be converted to stereo')
+	raise TypeError('object cannot be converted to stereo')

@@ -5,7 +5,6 @@
 # See the LGPL document, or the above URL, for details.
 
 import logging
-import types ###
 
 class Agent:
 	"""Agent: base class for Boodler agents.
@@ -107,7 +106,7 @@ class Agent:
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule note to inactive channel')
 		gen = self.generator
-		if (type(samp) == types.StringType):
+		if (not isinstance(samp, sample.Sample)):
 			samp = sample.get(samp)
 
 		if (delay < 0):
@@ -159,7 +158,7 @@ class Agent:
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule note to inactive channel')
 		gen = self.generator
-		if (type(samp) == types.StringType):
+		if (not isinstance(samp, sample.Sample)):
 			samp = sample.get(samp)
 
 		if (delay < 0):

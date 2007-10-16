@@ -7,12 +7,11 @@
 import sys
 import logging
 import traceback
-import types
 import bisect
 import StringIO
 
 #### clean up:
-# types.*
+# intern
 ####
 
 
@@ -95,12 +94,12 @@ class Generator:
 				raise NotImplementedError('"' + ag.getname() + '"' + ' has no watch_events')
 			if callable(ls):
 				ls = ls()
-			if (type(ls) == types.StringType):
+			if (type(ls) in [string, unicode]):
 				ls = [ls]
-			if (type(ls) != types.ListType):
+			if (type(ls) != list):
 				raise TypeError('"' + ag.getname() + '"' + ' has invalid watch_events')
 			for dat in ls:
-				if (type(dat) != types.StringType):
+				if (not (type(dat) in [string, unicode])):
 					raise TypeError('"' + ag.getname() + '"' + ' has invalid entry in watch_events')
 		except:
 			ag.posted = False
@@ -435,7 +434,7 @@ def run_agents(starttime, gen):
 
 
 def receive_event(gen, val):
-	if (type(val) == types.StringType):
+	if (type(val) in [string, unicode]):
 		event = tuple(val.split())
 	else:
 		event = tuple(val)

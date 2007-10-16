@@ -11,7 +11,6 @@ import aifc
 import wave
 import sunau
 import struct
-import types
 
 cache = {}
 
@@ -184,7 +183,7 @@ def get_info(samp, pitch=1):
 	exactly equal to the value returned by agent.sched_note(), when
 	the note is actually played.
 	"""
-	if (type(samp) == types.StringType):
+	if (not isinstance(samp, Sample)):
 		samp = get(samp)
 	return samp.get_info(pitch)
 
