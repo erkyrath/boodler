@@ -113,12 +113,30 @@ if (opts.listdevices):
 	extraopts.append( ('listdevices', None) )
 
 class LogFormatter(logging.Formatter):
+	"""LogFormatter: A logging formatter class, customized for Boodler.
+
+	This has format strings built in. It also obeys the --verbose option
+	(or lack of it) when showing backtraces.
+	"""
+	
 	def __init__(self, verbose):
 		logging.Formatter.__init__(self,
 			'%(asctime)s: %(levelname)-8s: (%(name)s) %(message)s',
 			'%b-%d %H:%M:%S')
 		self.verboseerrors = verbose
 	def formatException(self, tup):
+		"""formatException(tup) -> str
+
+		Custom formatting for logged exceptions. If the --verbose option
+		is not set, this shows only the bottom of the stack trace.
+
+		For BoodlerErrors, this shows the second-lowest frame in the
+		stack trace, which may occasionally be more useful.
+		
+		### Really what we want is to show the lowest frame which is not
+		in the boodle.* package!
+		"""
+		
 		if (self.verboseerrors):
 			return logging.Formatter.formatException(self, tup)
 		trimlast = (isinstance(tup[1], boodle.BoodlerError))
