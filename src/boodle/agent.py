@@ -219,11 +219,11 @@ class Agent:
 		chan = args.get('chan', None)
 		return self.sched_note_duration_pan(samp, duration, pan, pitch, volume, delay, chan)
 
-	def listen(self, events=None, handle=None, once=False, chan=None):
+	def listen(self, events=None, handle=None, hold=None, chan=None):
 		### returns a Handler
 		pass
 
-	def post_agent(self, ag, chan=None): #### kill ### or repurpose
+	def post_agent(self, ag, hold=None, chan=None, listenchan=None): #### 
 		"""post_agent(agent [, chan=self.channel])
 
 		Post an agent to watch for events; the agent will be scheduled to
@@ -238,6 +238,7 @@ class Agent:
 
 		"""
 
+		#### only for freshly-created agents
 		if (not isinstance(ag, EventAgent)):
 			raise generator.ScheduleError('not an EventAgent instance')
 		if (not (ag.inited and ag.subinited)):
