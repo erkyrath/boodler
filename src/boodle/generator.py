@@ -10,11 +10,6 @@ import traceback
 import bisect
 import StringIO
 
-#### clean up:
-# intern
-####
-
-
 class Generator:
 	"""Generator: A class that stores the internal state of boodler
 	sound generation.

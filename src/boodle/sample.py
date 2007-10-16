@@ -136,7 +136,6 @@ def get(sname):
 	This function is available nevertheless.
 
 	"""
-	sname = intern(sname)
 	samp = cache.get(sname)
 	if (not (samp is None)):
 		return samp
