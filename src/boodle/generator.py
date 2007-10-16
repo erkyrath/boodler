@@ -11,6 +11,9 @@ import traceback
 import bisect
 import StringIO
 
+### get rid of [, var...] in doc comments
+### clean up everything that says "watch"
+
 class Generator:
 	"""Generator: A class that stores the internal state of boodler
 	sound generation.
@@ -29,14 +32,14 @@ class Generator:
 		self.stoplist = []
 		self.postqueue = []
 		self.listener = None
-		self.event_registry = {}
+		self.event_registry = {} ### get rid
 		self.lastunload = 0
 		self.verbose_errors = False
 		self.stats_interval = None
 		self.statslogger = None
-		if dolisten:
-			lfunc = lambda val, gen=self: receive_event(gen, val)
-			self.listener = listen.Listener(lfunc, listenport)
+		###if dolisten:
+		###	lfunc = lambda val, gen=self: receive_event(gen, val)
+		###	self.listener = listen.Listener(lfunc, listenport)
 
 		self.rootchannel = Channel(None, self, None, basevolume, None)
 
@@ -470,6 +473,7 @@ def run_agents(starttime, gen):
 		gen.listener.poll()
 
 	gen.agentruntime = starttime
+	### this is now only externally posted events; rejigger?
 	while (len(gen.postqueue) > 0):
 		(ag, ev) = gen.postqueue.pop(0)
 		ag.logger.info('running on %s', ev)
@@ -496,6 +500,7 @@ def run_agents(starttime, gen):
 			ag.logger.error('"%s" %s: %s',
 				ag.getname(), ex.__class__.__name__, ex,
 				exc_info=True)
+		ag.firsttime = False
 
 	for chan in gen.channels:
 		(starttm, endtm, startvol, endvol) = chan.volume
@@ -518,6 +523,7 @@ def run_agents(starttime, gen):
 		raise StopGeneration()
 
 
+### redo (as Generator method)
 def receive_event(gen, val):
 	if (type(val) in [string, unicode]):
 		event = tuple(val.split())

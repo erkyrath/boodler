@@ -26,6 +26,7 @@ class Agent:
 	Publically readable fields:
 
 	channel -- the channel in which this agent is running
+	firsttime -- True the first time the run() method is called
 
 	Methods which can be called from a run() method:
 
@@ -49,12 +50,14 @@ class Agent:
 	name = None
 	inited = False
 	event = None
+	watch_events = None
 	real_watch_events = []
 
 	def __init__(self): ###push other args into an init()
 		self.inited = True
 		self.queued = False
-		self.posted = False
+		self.posted = False ###? list of Handlers
+		self.firsttime = True
 		self.generator = None
 		self.runtime = 0
 		self.channel = None
@@ -216,7 +219,11 @@ class Agent:
 		chan = args.get('chan', None)
 		return self.sched_note_duration_pan(samp, duration, pan, pitch, volume, delay, chan)
 
-	def post_agent(self, ag, chan=None):
+	def listen(self, events=None, handle=None, once=False, chan=None):
+		### returns a Handler
+		pass
+
+	def post_agent(self, ag, chan=None): #### kill ### or repurpose
 		"""post_agent(agent [, chan=self.channel])
 
 		Post an agent to watch for events; the agent will be scheduled to
@@ -245,6 +252,7 @@ class Agent:
 		gen.addeventagent(ag, chan)
 
 	def send_event(self, ev):
+		### on self.channel, or name a channel
 		"""send_event(event)
 
 		Send an event. Boodler interprets the event just as if it had
@@ -404,8 +412,6 @@ class Agent:
 
 		"""
 		raise NotImplementedError('"' + self.getname() + '" has no run() method')
-
-	watch_events = None
 
 	def getname(self):
 		"""getname() -> string
