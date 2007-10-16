@@ -5,6 +5,7 @@
 # See the LGPL document, or the above URL, for details.
 
 import sys
+import re
 import logging
 import traceback
 import bisect
@@ -166,6 +167,10 @@ class Channel:
 	get_root_channel() -- return the root channel of the tree
 	set_volume() -- change the volume of the channel
 	stop() -- stop the channel immediately
+	get_prop() -- get a property from this channel
+	has_prop() -- see whether this channel has a given property
+	set_prop() -- set a property on this channel
+	del_prop() -- delete a property from this channel
 
 	Class method:
 
@@ -185,6 +190,7 @@ class Channel:
 		self.notecount = 0
 		self.agentcount = 0
 		self.childcount = 0
+		self.propmap = {}
 		self.parent = parent
 		
 		if (parent is None):
@@ -317,6 +323,63 @@ class Channel:
 		if (endtm >= self.volume[1]):
 			self.volume = (starttm, endtm, self.lastvolume, newvol)
 
+	def get_prop(self, key, default=None):
+		"""get_prop(key, default=None) -> any
+
+		Get a property from this channel. If none is set, see if one is
+		inherited from the parent. If there is no inherited value either,
+		return None, or the given default.
+
+		Note that None is a legal property value. To distinguish between
+		no property and a property set to None, use has_prop().
+		"""
+		
+		key = check_prop_name(key)
+		chan = self
+		while (chan):
+			if (chan.propmap.has_key(key)):
+				return chan.propmap[key]
+			chan = chan.parent
+		return default
+			
+	def has_prop(self, key):
+		"""has_prop(key) -> bool
+
+		See whether this channel has a given property. If none is set, see
+		if one is inherited from the parent.
+		"""
+		
+		key = check_prop_name(key)
+		chan = self
+		while (chan):
+			if (chan.propmap.has_key(key)):
+				return True
+			chan = chan.parent
+		return False
+			
+	def set_prop(self, key, val):
+		"""set_prop(key, val) -> None
+
+		Set a property on this channel.
+		"""
+		
+		key = check_prop_name(key)
+		self.propmap[key] = val
+			
+	def del_prop(self, key):
+		"""del_prop(key) -> None
+
+		Delete a property from this channel. If none is set, this has no
+		effect.
+
+		Note that this does not affect parent channels. So get_prop(key)
+		may still return a value after del_prop(key).
+		"""
+
+		key = check_prop_name(key)
+		if (self.propmap.has_key(key)):
+			self.propmap.pop(key)
+			
 	def compare(ch1, ch2):
 		"""compare(ch1, ch2) -> int
 
@@ -327,6 +390,33 @@ class Channel:
 		return cmp(ch2.depth, ch1.depth)
 	compare = staticmethod(compare)
 
+# Regular expression for valid event/property names: one or more elements,
+# separated by periods. Each element must contain only letters, digits,
+# and underscores. An element may not start with a digit.
+prop_name_regexp = re.compile('\\A[a-zA-Z_][a-zA-Z_0-9]*(\.([a-zA-Z_][a-zA-Z_0-9]*))*\\Z')
+
+# A cache of valid event/property names. We keep this so that we don't
+# have to regexp them every time.
+valid_prop_names = {}
+
+def check_prop_name(val):
+	"""check_prop_name(val) -> str
+
+	Ensure that the value is a valid event or property name. If it isn't, 
+	raise BoodlerError. If it is, return a str version of it (in case it 
+	was a unicode object).
+	"""
+	
+	res = valid_prop_names.get(val)
+	if (res):
+		return res
+	res = prop_name_regexp.match(val)
+	if (not res):
+		raise BoodlerError('invalid prop/event name: ' + val)
+	res = str(val)
+	valid_prop_names[res] = res
+	return res
+	
 TRIMTIME   = 317520000   # two hours
 TRIMOFFSET = 158760000   # one hour
 UNLOADTIME =  13230000   # five minutes
