@@ -4,7 +4,6 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-import string
 import fileinput
 import os
 import os.path
@@ -17,7 +16,7 @@ import types
 cache = {}
 
 sound_dirs = os.environ.get('BOODLER_SOUND_PATH', os.curdir)
-sound_dirs = string.split(sound_dirs, ':')
+sound_dirs = sound_dirs.split(':')
 
 if struct.pack("h", 1) == "\000\001":
 	big_endian = 1
@@ -155,12 +154,12 @@ def get(sname):
 		else:
 			raise SampleError('file not readable: ' + sname)
 
-	dotpos = string.rfind(sname, '.')
+	dotpos = sname.rfind('.')
 	if (dotpos >= 0):
 		suffix = sname[dotpos : ]
 	else:
 		suffix = ''
-	suffix = string.lower(suffix)
+	suffix = suffix.lower()
 	
 	loader = find_loader(suffix)
 	samp = loader.load(filename, suffix)
@@ -293,10 +292,10 @@ class MixinLoader(SampleLoader):
 		dirname = os.path.dirname(filename)
 
 		for line in fileinput.input(filename):
-			tok = string.split(line)
+			tok = line.split()
 			if len(tok) == 0:
 				continue
-			if (tok[0][0:1] == '#'):
+			if (tok[0].startswith('#')):
 				continue
 			if (tok[0] == 'range'):
 				if (len(tok) < 4):

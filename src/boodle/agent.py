@@ -6,7 +6,6 @@
 
 import logging
 import types ###
-import string ###
 
 class Agent:
 	"""Agent: base class for Boodler agents.
@@ -519,14 +518,14 @@ def load_class_by_name(name):
 	if (name == ''):
 		return NullAgent
 
-	fullname = string.split(name, '.')
+	fullname = name.split('.')
 	[classname] = fullname[-1 : ]
 	modname = fullname[ : -1]
 	
 	if (len(modname) == 0):
 		raise ValueError('argument must be of the form module.Class')
 	
-	mod = __import__(string.join(modname, '.'))
+	mod = __import__('.'.join(modname))
 	try:
 		for comp in modname[1:]:
 			mod = getattr(mod, comp)

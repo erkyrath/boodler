@@ -7,13 +7,11 @@
 import sys
 import logging
 import traceback
-import string
 import types
 import bisect
 import StringIO
 
 #### clean up:
-# string.*
 # types.*
 ####
 
@@ -438,7 +436,7 @@ def run_agents(starttime, gen):
 
 def receive_event(gen, val):
 	if (type(val) == types.StringType):
-		event = tuple(string.split(val))
+		event = tuple(val.split())
 	else:
 		event = tuple(val)
 	if (len(event) == 0):

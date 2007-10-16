@@ -4,7 +4,6 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-import string
 import socket
 import select
 import os
@@ -59,13 +58,13 @@ class Listener:
 						del self.datas[sock]
 						self.sockets.remove(sock)
 					else:
-						dat = string.replace(dat, '\015', '\012')
+						dat = dat.replace('\r', '\n')
 						dat = self.datas[sock] + dat
 						while (1):
-							linepos = string.find(dat, '\012')
+							linepos = dat.find('\n')
 							if (linepos < 0):
 								break
-							message = string.strip(dat[:linepos])
-							dat = string.lstrip(dat[linepos:])
+							message = dat[:linepos].strip()
+							dat = dat[linepos:].lstrip()
 							self.handler(message)
 						self.datas[sock] = dat
