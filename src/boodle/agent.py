@@ -40,6 +40,10 @@ class Agent:
 	new_channel() -- create a channel
 	new_channel_pan() -- create a channel at a stereo position
 	get_root_channel() -- return the root channel of the channel tree
+	get_prop() -- get a property from the agent's channel
+	has_prop() -- see whether the agent's channel has a given property
+	set_prop() -- set a property on the agent's channel
+	del_prop() -- delete a property from the agent's channel
 	"""
 
 	name = None
@@ -354,6 +358,44 @@ class Agent:
 		"""
 		return self.generator.rootchannel
 
+	def get_prop(self, key, default=None):
+		"""get_prop(key, default=None) -> any
+
+		Get a property from the agent's channel. If none is set, see if 
+		one is inherited from the parent. If there is no inherited value 
+		either, return None, or the given default.
+
+		Note that None is a legal property value. To distinguish between
+		no property and a property set to None, use has_prop().
+		"""
+		return self.channel.get_prop(key, default)
+			
+	def has_prop(self, key):
+		"""has_prop(key) -> bool
+
+		See whether the agent's channel has a given property. If none is 
+		set, see if one is inherited from the parent.
+		"""
+		return self.channel.has_prop(key)
+			
+	def set_prop(self, key, val):
+		"""set_prop(key, val) -> None
+
+		Set a property on the agent's channel.
+		"""
+		return self.channel.set_prop(key, val)
+			
+	def del_prop(self, key):
+		"""del_prop(key) -> None
+
+		Delete a property from the agent's channel. If none is set, this 
+		has no effect.
+
+		Note that this does not affect parent channels. So get_prop(key)
+		may still return a value after del_prop(key).
+		"""
+		return self.channel.del_prop(key)
+			
 	def run(self):
 		"""run()
 
