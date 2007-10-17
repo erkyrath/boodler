@@ -64,7 +64,7 @@ class Generator:
 
 		bisect.insort(self.queue, ag)
 
-		ag.logger.info('scheduled at depth-%d', chan.depth)
+		ag.logger.info('scheduled on %s', chan)
 
 	def remagent(self, ag):
 		ag.logger.info('unscheduled')
@@ -75,7 +75,7 @@ class Generator:
 
 	def addhandler(self, han):
 		ag = han.agent
-		ag.logger.info('listening for "%s"', han.event)
+		ag.logger.info('listening for "%s" on %s', han.event, han.listenchannel)
 
 		han.alive = True
 		self.allhandlers[han] = han
@@ -119,7 +119,7 @@ class Generator:
 				if (chan.runholds < 0):
 					raise BoodleInternalError('channel runholds negative')
 
-			han.shutdown()
+			han.finalize()
 		
 	def dump_stats(self, fl=None):
 		if (fl is None):
@@ -175,12 +175,15 @@ class Channel:
 	"""
 
 	logger = None
+	ordinal = 0   # only for display name
 
 	def __init__(self, parent, gen, createagent, startvol, pan):
 		self.active = True
 		self.generator = gen
 		if (not Channel.logger):
 			Channel.logger = logging.getLogger('channel')
+		Channel.ordinal += 1
+		self.ordinal = Channel.ordinal
 		self.volume = (0, 0, startvol, startvol)
 		self.stereo = stereo.cast(pan)
 		self.lastvolume = startvol
@@ -215,7 +218,8 @@ class Channel:
 		self.logger.info('opened %s', self)
 
 	def __str__(self):
-		return 'depth-%d (out of %s)' % (self.depth, self.creatorname)
+		return ('#%d (depth %d, out of %s)' 
+			% (self.ordinal, self.depth, self.creatorname))
 
 	def close(self):
 		# This is called both from the explicit stop list, and from the
