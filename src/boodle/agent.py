@@ -239,13 +239,14 @@ class Agent:
 			event = event()
 			if (event is None):
 				raise generator.ScheduleError('must return event to listen for')
-		event = generator.check_prop_name(event)
+		if (event != ''):
+			event = generator.check_prop_name(event)
 
 		if (handle is None):
 			handle = self.receive
 
 		gen = self.generator
-		han = Handler(self, event, chan, hold)
+		han = Handler(self, handle, event, chan, hold)
 		gen.addhandler(han)
 		
 		return han
@@ -297,23 +298,28 @@ class Agent:
 		gen = self.generator
 		gen.addeventagent(ag, chan)
 
-	def send_event(self, ev):
-		### on self.channel, or name a channel
+	def send_event(self, evname, *args, **kwargs):
 		"""send_event(event)
 
-		Send an event. Boodler interprets the event just as if it had
-		been received from the outside world. Any agents that are posted
-		watching for that type of event will run. (Due to the way the
-		scheduler works, there may be a short delay before they run.
-		The delay is *not* predictable. For reliable scheduling, use
-		sched_agent(), not send_event().)
-
-		The event should be a tuple of strings, or a string (which will
-		be split into a tuple at whitespace).
-
+		Send an event. ###
 		"""
 
-		generator.receive_event(self.generator, ev)
+		chan = kwargs.pop('chan', None)
+		if (kwargs):
+			raise TypeError('invalid keyword argument for this function')
+
+		if (self.generator is None or self.channel is None):
+			raise generator.ScheduleError('sender has never been scheduled')
+		if (chan is None):
+			chan = self.channel
+		if (not chan.active):
+			raise generator.ChannelError('cannot send event to inactive channel')
+		gen = self.generator
+
+		evname = generator.check_prop_name(evname)
+		ev = (evname,) + args
+
+		gen.sendevent(ev, chan)
 
 	def sched_agent(self, ag, delay=0, chan=None):
 		"""sched_agent(agent [, delay=0, chan=self.channel])
@@ -491,9 +497,10 @@ HoldBoth = True
 		
 class Handler:
 	###
-	def __init__(self, ag, event, chan, hold):
+	def __init__(self, ag, func, event, chan, hold):
 		self.alive = False
 		self.agent = ag
+		self.func = func
 		self.generator = ag.generator
 		self.event = event
 		self.listenchannel = chan

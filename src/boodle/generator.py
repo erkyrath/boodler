@@ -120,7 +120,43 @@ class Generator:
 					raise BoodleInternalError('channel runholds negative')
 
 			han.finalize()
+
+	def sendevent(self, ev, chan):
+		key = ev[0]
+		self.logger.info('event "%s" on %s', key, chan)
+
+		keydic = { key: True, '': True }
+		pos = -1
+		while (True):
+			pos = key.rfind('.', 0, pos)
+			if (pos < 0):
+				break
+			keydic[key[0 : pos]] = True
 		
+		hans = []
+
+		while (chan):
+			subhans = [ han for han in chan.listenhandlers
+				if keydic.has_key(han.event) ]
+			if (subhans):
+				hans.extend(subhans)
+			chan = chan.parent
+
+		for han in hans:
+			if (not han.alive):
+				continue
+			ag = han.agent
+			ag.logger.info('received "%s"', ev[0])
+			try:
+				if (not ag.channel.active):
+					raise BoodleInternalError('listening agent not in active channel')
+				han.func(*ev)
+				### cancel on return value?
+			except Exception, ex:
+				ag.logger.error('"%s" %s: %s',
+					ag.getname(), ex.__class__.__name__, ex,
+					exc_info=True)
+
 	def dump_stats(self, fl=None):
 		if (fl is None):
 			fl = sys.stdout
