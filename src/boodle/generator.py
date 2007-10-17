@@ -12,7 +12,7 @@ import bisect
 import StringIO
 
 ### get rid of [, var...] in doc comments
-### clean up everything that says "watch"
+### clean up everything that says "watch", "event_reg", "EventAgent"
 
 class Generator:
 	"""Generator: A class that stores the internal state of boodler
@@ -22,17 +22,16 @@ class Generator:
 
 	"""
 
-	def __init__(self, basevolume=0.5, dolisten=0, listenport=None):
+	def __init__(self, basevolume=0.5, dolisten=False, listenport=None):
 		self.logger = logging.getLogger()
 		self.logger.info('generator setting up')
 
 		self.queue = []
-		self.postpool = {}
 		self.channels = {}
 		self.stoplist = []
 		self.postqueue = []
-		self.listener = None
-		self.event_registry = {} ### get rid
+		self.allhandlers = {}
+		self.listener = None  ### list of listeners?
 		self.lastunload = 0
 		self.verbose_errors = False
 		self.stats_interval = None
@@ -60,7 +59,7 @@ class Generator:
 		ag.generator = self
 		ag.runtime = runtime
 		ag.channel = chan
-		chan.agentcount = chan.agentcount+1
+		chan.agentcount += 1
 		ag.queued = True
 
 		bisect.insort(self.queue, ag)
@@ -71,60 +70,57 @@ class Generator:
 		ag.logger.info('unscheduled')
 		
 		ag.queued = False
-		ag.channel.agentcount = ag.channel.agentcount-1
+		ag.channel.agentcount -= 1
 		self.queue.remove(ag)
 
-	def addeventagent(self, ag, chan):
-		if (self.listener is None):
-			raise ScheduleError('event listening disabled -- cannot post '
-				+ '"' + ag.getname() + '"')
-		if (ag.posted):
-			raise ScheduleError('"' + ag.getname() + '"' + ' is already posted')
+	def addhandler(self, han):
+		ag = han.agent
+		ag.logger.info('listening for "%s"', han.event)
 
-		ag.generator = self
-		ag.channel = chan
-		chan.agentcount = chan.agentcount+1
-		ag.posted = True
-		self.postpool[ag] = ag
+		han.alive = True
+		self.allhandlers[han] = han
+		ag.handlers[han] = han
 
-		try:
-			ls = ag.watch_events
-			if (ls is None):
-				raise NotImplementedError('"' + ag.getname() + '"' + ' has no watch_events')
-			if callable(ls):
-				ls = ls()
-			if (type(ls) in [string, unicode]):
-				ls = [ls]
-			if (type(ls) != list):
-				raise TypeError('"' + ag.getname() + '"' + ' has invalid watch_events')
-			for dat in ls:
-				if (not (type(dat) in [string, unicode])):
-					raise TypeError('"' + ag.getname() + '"' + ' has invalid entry in watch_events')
-		except:
-			ag.posted = False
-			chan.agentcount = chan.agentcount-1
-			del self.postpool[ag]
-			raise
+		chan = han.listenchannel
+		chan.listenhandlers[han] = han
+		if (han.holdlisten):
+			chan.listenholds += 1
+
+		chan = han.runchannel
+		chan.runhandlers[han] = han
+		if (han.holdrun):
+			chan.runholds += 1
+
+	def remhandlers(self, hans):
+		for han in hans:
+			# The list may have duplicates, so we have to be careful
+			# not to kill a handler twice.
+			if (not han.alive):
+				continue
+
+			ag = han.agent
+			ag.logger.info('stopped listening for "%s"', han.event)
+			
+			han.alive = False
+			self.allhandlers.pop(han)
+			ag.handlers.pop(han)
+				
+			chan = han.listenchannel
+			chan.listenhandlers.pop(han)
+			if (han.holdlisten):
+				chan.listenholds -= 1
+				if (chan.listenholds < 0):
+					raise BoodleInternalError('channel listenholds negative')
+					
+			chan = han.runchannel
+			chan.runhandlers.pop(han)
+			if (han.holdrun):
+				chan.runholds -= 1
+				if (chan.runholds < 0):
+					raise BoodleInternalError('channel runholds negative')
+
+			han.shutdown()
 		
-		ag.real_watch_events = ls
-		evreg = self.event_registry
-		for el in ls:
-			if (evreg.has_key(el)):
-				evreg[el].append(ag)
-			else:
-				evreg[el] = [ag]
-
-	def remeventagent(self, ag):
-		evreg = self.event_registry
-		for el in ag.real_watch_events:
-			ags = evreg.get(el)
-			if ((ags) and (ag in ags)):
-				ags.remove(ag)
-		ag.real_watch_events = []
-		ag.posted = False
-		ag.channel.agentcount = ag.channel.agentcount-1
-		del self.postpool[ag]
-
 	def dump_stats(self, fl=None):
 		if (fl is None):
 			fl = sys.stdout
@@ -132,13 +128,12 @@ class Generator:
 
 		write('...\n')
 		numagent = len(self.queue)
-		if (self.listener):
-			numagentpost = len(self.postpool)
-			write(str(numagent+numagentpost) + ' agents (' + str(numagent) + ' scheduled, ' + str(numagentpost) + ' posted)\n')
-		else:
-			write(str(numagent) + ' agents\n')
+		write('%d agents\n' % (numagent,))
 		numchan = len(self.channels)
-		write(str(numchan) + ' channels\n')
+		write('%d channels\n' % (numchan,))
+		numhan = len(self.allhandlers)
+		if (numhan):
+			write('%d handlers\n' % (numhan,))
 		numsamp = len(sample.cache)
 		numsamploaded = 0
 		numsampunloaded = 0
@@ -147,15 +142,14 @@ class Generator:
 		for samp in sample.cache.values():
 			numnotes = numnotes + samp.refcount
 			if (samp.csamp is None):
-				numsampvirt = numsampvirt+1
+				numsampvirt += 1
 			elif (cboodle.is_sample_loaded(samp.csamp)):
-				numsamploaded = numsamploaded+1
+				numsamploaded += 1
 			else:
-				numsampunloaded = numsampunloaded+1
-		write(str(numsamp) + ' samples (' + str(numsamploaded) 
-			+ ' loaded, ' + str(numsampunloaded) + ' unloaded, '
-			+ str(numsampvirt) + ' virtual)\n')
-		write(str(numnotes) + ' notes\n')
+				numsampunloaded += 1
+		write('%d samples (%d loaded, %d unloaded, %d virtual)\n'
+			% (numsamp, numsamploaded, numsampunloaded, numsampvirt))
+		write('%d notes\n' % (numnotes,))
 
 class Channel:
 	"""Channel: a class for creating hierarchical trees of sounds and
@@ -193,6 +187,10 @@ class Channel:
 		self.notecount = 0
 		self.agentcount = 0
 		self.childcount = 0
+		self.listenhandlers = {}
+		self.listenholds = 0
+		self.runhandlers = {}
+		self.runholds = 0
 		self.propmap = {}
 		self.parent = parent
 		
@@ -202,7 +200,7 @@ class Channel:
 			self.rootchannel = self
 		else:
 			self.depth = parent.depth+1
-			parent.childcount = parent.childcount+1
+			parent.childcount += 1
 			self.ancestors = parent.ancestors.copy()
 			self.ancestors[parent] = parent
 			self.rootchannel = parent.rootchannel
@@ -220,16 +218,26 @@ class Channel:
 		return 'depth-%d (out of %s)' % (self.depth, self.creatorname)
 
 	def close(self):
+		# This is called both from the explicit stop list, and from the
+		# regular check for channels with no more stuff scheduled.
+		
 		if (not self.active):
 			return
+			
 		if (self.childcount > 0):
 			raise BoodleInternalError('channel has children at close')
 		if (self.agentcount > 0):
 			raise BoodleInternalError('channel has agents at close')
+		if (self.listenholds > 0):
+			raise BoodleInternalError('channel has listens at close')
+		if (self.listenhandlers):
+			raise BoodleInternalError('channel has listenhandlers at close')
+		if (self.runhandlers):
+			raise BoodleInternalError('channel has runhandlers at close')
 		if (self.notecount > 0):
 			raise BoodleInternalError('channel has notes at close')
 		if (self.parent):
-			self.parent.childcount = self.parent.childcount-1
+			self.parent.childcount -= 1
 			if (self.parent.childcount < 0):
 				raise BoodleInternalError('channel childcount negative')
 				
@@ -237,6 +245,8 @@ class Channel:
 		gen = self.generator
 		self.active = False
 		self.generator = None
+		self.listenhandlers = None
+		self.runhandlers = None
 		self.depth = None
 		self.ancestors.clear()
 		self.ancestors = None
@@ -265,19 +275,23 @@ class Channel:
 	def realstop(self):
 		if (not self.active):
 			raise ChannelError('cannot stop an inactive channel')
+		gen = self.generator
+		
 		cboodle.stop_notes(self)
 		
-		agents = [ ag for ag in self.generator.queue
+		agents = [ ag for ag in gen.queue
 			if (ag.channel is self or ag.channel.ancestors.has_key(self)) ]
 		for ag in agents:
-			self.generator.remagent(ag)
+			gen.remagent(ag)
+
+		hans = [ han for han in gen.allhandlers
+			if ((han.runchannel is self
+					or han.runchannel.ancestors.has_key(self))
+				or (han.listenchannel is self
+					or han.listenchannel.ancestors.has_key(self))) ]
+		gen.remhandlers(hans)
 			
-		agents = [ ag for ag in self.generator.postpool
-			if (ag.channel is self or ag.channel.ancestors.has_key(self)) ]
-		for ag in agents:
-			self.generator.remeventagent(ag)
-			
-		chans = [ ch for ch in self.generator.channels
+		chans = [ ch for ch in gen.channels
 			if (ch is self or ch.ancestors.has_key(self)) ]
 		chans.sort(Channel.compare)
 		for ch in chans:
@@ -489,7 +503,7 @@ def run_agents(starttime, gen):
 	while (gen.queue and gen.queue[0].runtime < nexttime):
 		ag = gen.queue.pop(0)
 		ag.queued = False
-		ag.channel.agentcount = ag.channel.agentcount-1
+		ag.channel.agentcount -= 1
 		ag.logger.info('running')
 		try:
 			if (not ag.channel.active):
@@ -514,9 +528,15 @@ def run_agents(starttime, gen):
 	ls = [ chan for chan in gen.channels
 		if (chan.notecount == 0
 			and chan.agentcount == 0
+			and chan.listenholds == 0
+			and chan.runholds == 0
 			and chan.childcount == 0)
 	]
 	for chan in ls:
+		if (chan.runhandlers):
+			gen.remhandlers(list(chan.runhandlers))
+		if (chan.listenhandlers):
+			gen.remhandlers(list(chan.listenhandlers))
 		chan.close()
 
 	if (not gen.channels):

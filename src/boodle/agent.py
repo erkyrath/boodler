@@ -20,6 +20,7 @@ class Agent:
 	Methods and fields to be overridden:
 
 	run() -- perform the agent's action
+	receive() -- perform the agent's action
 	name -- a string which describes the agent
 	getname() -- return a string which describes the agent
 
@@ -50,13 +51,12 @@ class Agent:
 	name = None
 	inited = False
 	event = None
-	watch_events = None
-	real_watch_events = []
+	watch_event = None ### rename
 
 	def __init__(self): ###push other args into an init()
 		self.inited = True
 		self.queued = False
-		self.posted = False ###? list of Handlers
+		self.handlers = {}
 		self.firsttime = True
 		self.generator = None
 		self.runtime = 0
@@ -219,10 +219,55 @@ class Agent:
 		chan = args.get('chan', None)
 		return self.sched_note_duration_pan(samp, duration, pan, pitch, volume, delay, chan)
 
-	def listen(self, events=None, handle=None, hold=None, chan=None):
-		### returns a Handler
-		pass
+	def listen(self, event=None, handle=None, hold=None, chan=None):
+		###
+		
+		if (not self.inited):
+			raise generator.ScheduleError('agent is uninitialized')
+		if (self.generator is None or self.channel is None):
+			raise generator.ScheduleError('listener has never been scheduled')
+		if (chan is None):
+			chan = self.channel
+		if (not chan.active):
+			raise generator.ChannelError('cannot listen to inactive channel')
+			
+		if (event is None):
+			event = self.watch_event
+		if (event is None):
+			raise generator.ScheduleError('must specify event to listen for')
+		if (callable(event)):
+			event = event()
+			if (event is None):
+				raise generator.ScheduleError('must return event to listen for')
+		event = generator.check_prop_name(event)
 
+		if (handle is None):
+			handle = self.receive
+
+		gen = self.generator
+		han = Handler(self, event, chan, hold)
+		gen.addhandler(han)
+		
+		return han
+
+	def unlisten(self, event=None):
+		###
+		
+		if (self.generator is None or self.channel is None):
+			raise generator.ScheduleError('listener has never been scheduled')
+
+		if (event is None):
+			ls = [ han for han in self.handlers ]
+		else:
+			event = generator.check_prop_name(event)
+			ls = [ han for han in self.handlers if (han.event == event) ]
+
+		if (not ls):
+			return
+			
+		gen = self.generator
+		gen.remhandlers(ls)
+		
 	def post_agent(self, ag, hold=None, chan=None, listenchan=None): #### 
 		"""post_agent(agent [, chan=self.channel])
 
@@ -414,6 +459,19 @@ class Agent:
 		"""
 		raise NotImplementedError('"' + self.getname() + '" has no run() method')
 
+	def receive(self, event):
+		"""receive()
+
+		Perform the agent's action when an appropriate event arrives. 
+		Each subclass of Agent which listens for events must override this
+		method (or provide an alternative handler).
+		
+		The event is a tuple, starting with a string, followed (possibly)
+		by more values
+
+		"""
+		raise NotImplementedError('"' + self.getname() + '" has no receive() method')
+		
 	def getname(self):
 		"""getname() -> string
 
@@ -426,6 +484,48 @@ class Agent:
 			return nm
 		return 'unnamed agent'
 
+# Constants for the hold parameter of Agent.listen()
+HoldRun = 'run'
+HoldListen = 'listen'
+HoldBoth = True
+		
+class Handler:
+	###
+	def __init__(self, ag, event, chan, hold):
+		self.alive = False
+		self.agent = ag
+		self.generator = ag.generator
+		self.event = event
+		self.listenchannel = chan
+		self.runchannel = ag.channel
+		self.holdlisten = False
+		self.holdrun = False
+
+		if (hold is HoldListen):
+			self.holdlisten = True
+			hold = None
+		if (hold is HoldRun):
+			self.holdrun = True
+			hold = None
+		if (hold):
+			self.holdlisten = True
+			self.holdrun = True
+
+	def finalize(self):
+		### only called by remhandlers
+		self.alive = False
+		self.agent = None
+		self.generator = None
+		self.event = None
+		self.listenchannel = None
+		self.runchannel = None
+
+	def cancel(self):
+		if (not self.alive):
+			return
+		self.generator.remhandlers([self])
+		
+### kill
 class EventAgent(Agent):
 	"""EventAgent: base class for Boodler agents that listen for events.
 	See Agent class definition for inherited methods and fields.
