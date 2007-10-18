@@ -37,7 +37,7 @@ class Agent:
 	sched_note_params() -- schedule a note, allowing all parameters
 	sched_agent() -- schedule another agent to run
 	resched() -- schedule self to run again
-	post_agent() -- post another agent to watch for events
+	post_agent() -- post another agent to listen for events
 	send_event() -- create an event, which posted agents may receive
 	new_channel() -- create a channel
 	new_channel_pan() -- create a channel at a stereo position
@@ -51,7 +51,7 @@ class Agent:
 	name = None
 	inited = False
 	event = None
-	watch_event = None ### rename
+	selected_event = None
 
 	def __init__(self): ###push other args into an init()
 		self.inited = True
@@ -232,7 +232,7 @@ class Agent:
 			raise generator.ChannelError('cannot listen to inactive channel')
 			
 		if (event is None):
-			event = self.watch_event
+			event = self.selected_event
 		if (event is None):
 			raise generator.ScheduleError('must specify event to listen for')
 		if (callable(event)):
@@ -272,15 +272,7 @@ class Agent:
 	def post_agent(self, ag, hold=None, chan=None, listenchan=None): #### 
 		"""post_agent(agent [, chan=self.channel])
 
-		Post an agent to watch for events; the agent will be scheduled to
-		run whenever an appropriate event occurs. The channel, if None
-		or not supplied, defaults to the same channel that self is running
-		in.
-
-		The posted agent must have a watch_events field, which lists the
-		events which it is interested in. This field must be a string,
-		a list of strings, or a function such that agent.watch_events()
-		return a string or list of strings.
+		Post an agent to listen for events ###
 
 		"""
 
@@ -531,65 +523,10 @@ class Handler:
 		if (not self.alive):
 			return
 		self.generator.remhandlers([self])
-		
-### kill
-class EventAgent(Agent):
-	"""EventAgent: base class for Boodler agents that listen for events.
-	See Agent class definition for inherited methods and fields.
 
-	Methods and fields to be overridden:
-
-	run() -- defaults to post_agent(self)
-	receive() -- perform the agent's action
-	watch_events -- events to watch for (this may be a string, a list of 
-	  strings, or a method that returns a string or list of strings)
-
-	Methods which can be called:
-
-	unpost() -- remove self from event-watching post
-
-	"""
-
-	subinited = False
-
-	def __init__(self):
-		Agent.__init__(self)
-		self.subinited = True
-
-	def run(self):
-		"""run()
-
-		By default, this calls post_agent(self). In most cases, you will
-		not want to override this.		
-
-		"""
-		self.post_agent(self)
-
-	def receive(self, event):
-		"""receive()
-
-		Perform the agent's action when an appropriate event arrives. 
-		Each subclass of EventAgent must override this method.
-		The event is a tuple of one or more strings.
-
-		"""
-		raise NotImplementedError('"' + self.getname() + '" has no receive() method')
-
-	def unpost(self):
-		"""unpost()
-
-		Remove self from event-watching post.
-
-		"""
-
-		if (not (self.inited and self.subinited)):
-			raise generator.ScheduleError('agent is uninitialized')
-		if (not self.posted):
-			raise generator.ScheduleError('agent is not posted')
-
-		gen = self.generator
-		gen.remeventagent(self)
-
+				
+# And now, a bunch of agents which everybody will want to use.
+### Add UnlistenAgent? SendEventAgent?
 
 class NullAgent(Agent):
 	"""NullAgent:

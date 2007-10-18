@@ -12,7 +12,6 @@ import bisect
 import StringIO
 
 ### get rid of [, var...] in doc comments
-### clean up everything that says "watch", "event_reg", "EventAgent"
 
 class Generator:
 	"""Generator: A class that stores the internal state of boodler
@@ -36,7 +35,7 @@ class Generator:
 		self.verbose_errors = False
 		self.stats_interval = None
 		self.statslogger = None
-		###if dolisten:
+		###if dolisten: ### this appends to postqueue
 		###	lfunc = lambda val, gen=self: receive_event(gen, val)
 		###	self.listener = listen.Listener(lfunc, listenport)
 
@@ -581,21 +580,6 @@ def run_agents(starttime, gen):
 
 	if (not gen.channels):
 		raise StopGeneration()
-
-
-### redo (as Generator method)
-def receive_event(gen, val):
-	if (type(val) in [string, unicode]):
-		event = tuple(val.split())
-	else:
-		event = tuple(val)
-	if (len(event) == 0):
-		return
-	watchers = gen.event_registry.get(event[0])
-	if (not watchers):
-		return
-	for ag in watchers:
-		gen.postqueue.append((ag, event))
 
 
 # Late imports.
