@@ -62,6 +62,9 @@ popt.add_option('-l', '--listen',
 popt.add_option('-p', '--port',
 	action='store', type='string', dest='netport', metavar='PORT',
 	help='port to accept events on (if --listen is set)')
+popt.add_option('--stdinevents',
+	action='store_true', dest='stdinlisten',
+	help='accept events from stdin')
 popt.add_option('-D', '--define',
 	action='append', dest='extraopts', metavar='VAR=VAL',
 	help='define additional driver parameters')
@@ -93,6 +96,7 @@ popt.set_defaults(
 	ratewanted = 0,
 	basevolume = 0.5,
 	netlisten = False,
+	stdinlisten = False,
 	verboseerrors = False,
 	verbosehardware = False,
 	extraopts = [])
@@ -152,7 +156,7 @@ class LogFormatter(logging.Formatter):
 			tr = tup[2]
 			while (tr):
 				modname = tr.tb_frame.f_globals.get('__name__', '')
-				if (modname.startswith('boodle.')):
+				if (modname == 'boodle' or modname.startswith('boodle.')):
 					inboodle = True
 				else:
 					if (inboodle):
@@ -253,7 +257,8 @@ netport = opts.netport
 if ((netport is not None) and netport.startswith('/')):
 	netport = int(netport)
 
-gen = generator.Generator(opts.basevolume, opts.netlisten, netport)
+gen = generator.Generator(opts.basevolume, opts.stdinlisten,
+	opts.netlisten, netport)
 if (opts.statsrate != None):
 	gen.set_stats_interval(opts.statsrate)
 

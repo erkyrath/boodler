@@ -240,7 +240,7 @@ class Agent:
 			if (event is None):
 				raise generator.ScheduleError('must return event to listen for')
 		if (event != ''):
-			event = generator.check_prop_name(event)
+			event = boodle.check_prop_name(event)
 
 		if (handle is None):
 			handle = self.receive
@@ -260,7 +260,7 @@ class Agent:
 		if (event is None):
 			ls = [ han for han in self.handlers ]
 		else:
-			event = generator.check_prop_name(event)
+			event = boodle.check_prop_name(event)
 			ls = [ han for han in self.handlers if (han.event == event) ]
 
 		if (not ls):
@@ -308,7 +308,7 @@ class Agent:
 			raise generator.ChannelError('cannot send event to inactive channel')
 		gen = self.generator
 
-		evname = generator.check_prop_name(evname)
+		evname = boodle.check_prop_name(evname)
 		ev = (evname,) + args
 
 		gen.sendevent(ev, chan)

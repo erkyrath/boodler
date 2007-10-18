@@ -4,18 +4,21 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+import sys
 import socket
 import select
 import os
+import fcntl
+import errno
 
-class Listener:
+class SocketListener:
 
 	unlinkport = None
 
 	def __init__(self, handler, listenport=None):
 		if (listenport == None):
 			listenport = 31863
-		if (type(listenport) == type(1)):
+		if (type(listenport) in [int, long]):
 			insock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			sockaddr = ('localhost', listenport)
 		else:
@@ -41,7 +44,7 @@ class Listener:
 			os.unlink(self.unlinkport)
 
 	def poll(self):
-		while (1):
+		while (True):
 			(readls, writels, exls) = select.select(self.sockets, [], [], 0)
 			if (len(readls) == 0):
 				return
@@ -60,11 +63,65 @@ class Listener:
 					else:
 						dat = dat.replace('\r', '\n')
 						dat = self.datas[sock] + dat
-						while (1):
-							linepos = dat.find('\n')
-							if (linepos < 0):
-								break
-							message = dat[:linepos].strip()
-							dat = dat[linepos:].lstrip()
-							self.handler(message)
+						dat = handle_by_lines(self.handler, dat)
 						self.datas[sock] = dat
+
+class StdinListener:
+
+	def __init__(self, handler):
+		self.handler = handler
+		
+		self.blockerrors = [ errno.EAGAIN, errno.EWOULDBLOCK ]
+		self.data = ''
+		
+		self.origflags = fcntl.fcntl(sys.stdin, fcntl.F_GETFL)
+		fcntl.fcntl(sys.stdin, fcntl.F_SETFL, os.O_NONBLOCK | self.origflags)
+
+	def close(self):
+		fcntl.fcntl(sys.stdin, fcntl.F_SETFL, self.origflags)
+
+	def poll(self):
+		try:
+			dat = sys.stdin.read()
+		except IOError, ex:
+			(errnum, errstr) = ex
+			if (errnum in self.blockerrors):
+				return
+			else:
+				raise
+		dat = self.data + dat
+		dat = handle_by_lines(self.handler, dat)
+		self.data = dat
+	
+						
+def handle_by_lines(handler, dat):
+	"""handle_by_lines(handler, dat) -> str
+
+	Take an input buffer, parse as many events out of it as possible,
+	handle them, and return the remainder. For each valid event, the
+	handler argument will be called with the event tuple for an
+	argument.
+
+	An event is a newline-terminated string (which is not just whitespace).
+	So the returned value will be the remainder after the last newline.
+	The event line is split on whitespace, producing a tuple of strings.
+	"""
+	
+	while (True):
+		pos = dat.find('\n')
+		if (pos < 0):
+			return dat
+		message = dat[ : pos ].strip()
+		dat = dat[ pos+1 : ]
+
+		if (not message):
+			continue
+		try:
+			ev = message.split()
+			ev[0] = boodle.check_prop_name(ev[0])
+			handler(tuple(ev))
+		except:
+			pass
+
+# Late imports
+import boodle

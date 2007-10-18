@@ -5,7 +5,6 @@
 # See the LGPL document, or the above URL, for details.
 
 import sys
-import re
 import logging
 import traceback
 import bisect
@@ -21,7 +20,9 @@ class Generator:
 
 	"""
 
-	def __init__(self, basevolume=0.5, dolisten=False, listenport=None):
+	def __init__(self, basevolume=0.5, stdinlisten=False,
+		netlisten=False, listenport=None):
+		
 		self.logger = logging.getLogger()
 		self.logger.info('generator setting up')
 
@@ -30,20 +31,24 @@ class Generator:
 		self.stoplist = []
 		self.postqueue = []
 		self.allhandlers = {}
-		self.listener = None  ### list of listeners?
+		self.listeners = []
 		self.lastunload = 0
 		self.verbose_errors = False
 		self.stats_interval = None
 		self.statslogger = None
-		###if dolisten: ### this appends to postqueue
-		###	lfunc = lambda val, gen=self: receive_event(gen, val)
-		###	self.listener = listen.Listener(lfunc, listenport)
+		if stdinlisten:
+			lis = listen.StdinListener(self.postqueue.append)
+			self.listeners.append(lis)
+		if netlisten:
+			lis = listen.SocketListener(self.postqueue.append, listenport)
+			self.listeners.append(lis)
 
 		self.rootchannel = Channel(None, self, None, basevolume, None)
 
 	def close(self):
-		if (self.listener):
-			self.listener.close()
+		while (self.listeners):
+			lis = self.listeners.pop(0)
+			lis.close()
 		self.logger.info('generator shut down')
 
 	def set_stats_interval(self, val):
@@ -390,7 +395,7 @@ class Channel:
 		no property and a property set to None, use has_prop().
 		"""
 		
-		key = check_prop_name(key)
+		key = boodle.check_prop_name(key)
 		chan = self
 		while (chan):
 			if (chan.propmap.has_key(key)):
@@ -405,7 +410,7 @@ class Channel:
 		if one is inherited from the parent.
 		"""
 		
-		key = check_prop_name(key)
+		key = boodle.check_prop_name(key)
 		chan = self
 		while (chan):
 			if (chan.propmap.has_key(key)):
@@ -419,7 +424,7 @@ class Channel:
 		Set a property on this channel.
 		"""
 		
-		key = check_prop_name(key)
+		key = boodle.check_prop_name(key)
 		self.propmap[key] = val
 			
 	def del_prop(self, key):
@@ -432,7 +437,7 @@ class Channel:
 		may still return a value after del_prop(key).
 		"""
 
-		key = check_prop_name(key)
+		key = boodle.check_prop_name(key)
 		if (self.propmap.has_key(key)):
 			self.propmap.pop(key)
 			
@@ -446,32 +451,6 @@ class Channel:
 		return cmp(ch2.depth, ch1.depth)
 	compare = staticmethod(compare)
 
-# Regular expression for valid event/property names: one or more elements,
-# separated by periods. Each element must contain only letters, digits,
-# and underscores. An element may not start with a digit.
-prop_name_regexp = re.compile('\\A[a-zA-Z_][a-zA-Z_0-9]*(\.([a-zA-Z_][a-zA-Z_0-9]*))*\\Z')
-
-# A cache of valid event/property names. We keep this so that we don't
-# have to regexp them every time.
-valid_prop_names = {}
-
-def check_prop_name(val):
-	"""check_prop_name(val) -> str
-
-	Ensure that the value is a valid event or property name. If it isn't, 
-	raise BoodlerError. If it is, return a str version of it (in case it 
-	was a unicode object).
-	"""
-	
-	res = valid_prop_names.get(val)
-	if (res):
-		return res
-	res = prop_name_regexp.match(val)
-	if (not res):
-		raise BoodlerError('invalid prop/event name: ' + val)
-	res = str(val)
-	valid_prop_names[res] = res
-	return res
 	
 TRIMTIME   = 317520000   # two hours
 TRIMOFFSET = 158760000   # one hour
@@ -522,22 +501,13 @@ def run_agents(starttime, gen):
 				chan.realstop()
 		gen.stoplist = []
 
-	if (gen.listener):
-		gen.listener.poll()
+	for lis in gen.listeners:
+		lis.poll()
 
 	gen.agentruntime = starttime
-	### this is now only externally posted events; rejigger?
-	while (len(gen.postqueue) > 0):
-		(ag, ev) = gen.postqueue.pop(0)
-		ag.logger.info('running on %s', ev)
-		try:
-			if (not ag.channel.active):
-				raise BoodleInternalError('posted agent not in active channel')
-			ag.receive(ev)
-		except Exception, ex:
-			ag.logger.error('"%s" %s: %s',
-				ag.getname(), ex.__class__.__name__, ex,
-				exc_info=True)
+	while (gen.postqueue):
+		ev = gen.postqueue.pop(0)
+		gen.sendevent(ev, gen.rootchannel)
 
 	while (gen.queue and gen.queue[0].runtime < nexttime):
 		ag = gen.queue.pop(0)
