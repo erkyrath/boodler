@@ -64,12 +64,25 @@ class Generator:
 		self.agentruntime = None
 
 	def close(self):
+		"""close() -> None
+
+		Shut down the generator object and any resources it has open.
+		(This does not, however, shut down the cboodle module. The
+		caller must do that.)
+		"""
+		
 		while (self.listeners):
 			lis = self.listeners.pop(0)
 			lis.close()
 		self.logger.info('generator shut down')
 
 	def set_stats_interval(self, val):
+		"""set_stats_interval(val) -> None
+
+		Set the interval (in seconds) at which stats are dumped to the
+		logger. Pass None to turn stats off.
+		"""
+		
 		self.statslogger = logging.getLogger('stats')
 		self.stats_interval = val
 		self.last_stats_dump = 0
@@ -116,6 +129,12 @@ class Generator:
 		self.queue.pop(posls[0])
 
 	def addhandler(self, han):
+		"""addhandler(han) -> None
+
+		Add a Handler object to the system. This sets up listening (and
+		channel holds) as described by the Handler.
+		"""
+		
 		ag = han.agent
 		ag.logger.info('listening for "%s" on %s', han.event, han.listenchannel)
 
@@ -134,6 +153,14 @@ class Generator:
 			chan.runholds += 1
 
 	def remhandlers(self, hans):
+		"""remhandlers(hans) -> None
+
+		Remove a list of Handler objects from the system. This shuts
+		down listening and releases held channels.
+
+		It is safe for a Handler to appear more than once in the list.
+		"""
+		
 		for han in hans:
 			# The list may have duplicates, so we have to be careful
 			# not to kill a handler twice.
@@ -164,6 +191,12 @@ class Generator:
 			han.finalize()
 
 	def sendevent(self, ev, chan):
+		"""sendevent(ev, chan) -> None
+
+		Process an event on the given channel. This invokes all the
+		listeners which are paying attention to the event.
+		"""
+		
 		key = ev[0]
 		self.logger.info('event "%s" on %s', key, chan)
 
@@ -185,6 +218,8 @@ class Generator:
 			chan = chan.parent
 
 		for han in hans:
+			# Conceivably an event handler can cancel a later handler.
+			# So we have to double-check each one to see if it's alive.
 			if (not han.alive):
 				continue
 			ag = han.agent
@@ -200,6 +235,11 @@ class Generator:
 					exc_info=True)
 
 	def dump_stats(self, fl=None):
+		"""dump_stats(fl=sys.stdout) -> None
+		
+		Write statistical information to the given file or stream.
+		"""
+		
 		if (fl is None):
 			fl = sys.stdout
 		write = fl.write
@@ -503,6 +543,17 @@ UNLOADTIME =  50000
 UNLOADAGE  = 110000
 
 def run_agents(starttime, gen):
+	"""run_agents(starttime, gen) -> None
+
+	The big function that does everything. This is called regularly from
+	inside the cboodle module. Its task is to push notes into the note
+	queue, and also manage everything required to do that -- agents,
+	channels, listeners, etc.
+
+	Raises StopGeneration when the soundscape is over (i.e., when all
+	channels have expired).
+	"""
+	
 	gen.logger.debug('beginning run cycle at %d', starttime)
 
 	if (starttime >= TRIMTIME):

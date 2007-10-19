@@ -42,7 +42,7 @@ class Agent:
 	del_prop() -- delete a property from the agent's channel
 	"""
 
-	name = None
+	name = None ### metadata?
 	inited = False
 	event = None
 	selected_event = None
