@@ -18,6 +18,23 @@ class Generator:
 
 	Everything in this class is private to boodler.
 
+	Interesting fields:
+
+	(Note that sets are implemented as dicts, where only the keys are
+	significant. It may be worth changing to Python sets, or it may
+	not.)
+
+	queue -- list of [runtime, agent, handler] lists. Sorted by
+		runtime (and, insignificantly, by the other tuple values).
+		These are not tuples because we have to update the runtime in
+		place occasionally.
+	rootchannel -- the root channel object
+	channels -- set of channels in existence
+
+	allhandlers -- set of all active handler objects
+	listeners -- list of sources of external events
+	postqueue -- list of events received from external sources. These
+		are handled at the beginning of the next run cycle
 	"""
 
 	def __init__(self, basevolume=0.5, stdinlisten=False,
@@ -44,6 +61,7 @@ class Generator:
 			self.listeners.append(lis)
 
 		self.rootchannel = Channel(None, self, None, basevolume, None)
+		self.agentruntime = None
 
 	def close(self):
 		while (self.listeners):
@@ -56,26 +74,46 @@ class Generator:
 		self.stats_interval = val
 		self.last_stats_dump = 0
 
-	def addagent(self, ag, chan, runtime):
+	def addagent(self, ag, chan, runtime, handle):
+		"""addagent(ag, chan, runtime, handle) -> None
+
+		Put an agent on the schedule queue. The arguments are the channel,
+		the scheduled time to run, and the function to call at that
+		time. (handle is commonly ag.run.)
+
+		A given agent can only be on the queue once.
+		"""
+
 		if (ag.queued):
 			raise ScheduleError('"' + ag.getname() + '"' + ' is already scheduled')
 
 		ag.generator = self
-		ag.runtime = runtime
 		ag.channel = chan
 		chan.agentcount += 1
 		ag.queued = True
 
-		bisect.insort(self.queue, ag)
+		bisect.insort(self.queue, [runtime, ag, handle])
 
 		ag.logger.info('scheduled on %s', chan)
 
 	def remagent(self, ag):
+		"""remagent(ag) -> None
+
+		Remove an agent from the schedule queue. This does not check whether
+		it's on the queue first.
+
+		(When agents reach the front of the queue and are played, they
+		aren't removed through this method. That's separate code in
+		run_agents().)
+		"""
+
 		ag.logger.info('unscheduled')
 		
 		ag.queued = False
 		ag.channel.agentcount -= 1
-		self.queue.remove(ag)
+		posls = [ ix for ix in range(len(self.queue))
+			if (self.queue[ix][1] is ag) ]
+		self.queue.pop(posls[0])
 
 	def addhandler(self, han):
 		ag = han.agent
@@ -323,8 +361,9 @@ class Channel:
 		
 		cboodle.stop_notes(self)
 		
-		agents = [ ag for ag in gen.queue
-			if (ag.channel is self or ag.channel.ancestors.has_key(self)) ]
+		agents = [ tup[1] for tup in gen.queue
+			if (tup[1].channel is self 
+				or tup[1].channel.ancestors.has_key(self)) ]
 		for ag in agents:
 			gen.remagent(ag)
 
@@ -464,13 +503,16 @@ UNLOADTIME =  50000
 UNLOADAGE  = 110000
 
 def run_agents(starttime, gen):
+	gen.logger.debug('beginning run cycle at %d', starttime)
+
 	if (starttime >= TRIMTIME):
 		starttime = starttime - TRIMOFFSET
+		gen.logger.debug('trimming timebase, now %d', starttime)
 		cboodle.adjust_timebase(TRIMOFFSET)
 		gen.lastunload = gen.lastunload - TRIMOFFSET
 		sample.adjust_timebase(TRIMOFFSET, UNLOADAGE)
-		for ag in gen.queue:
-			ag.runtime = ag.runtime - TRIMOFFSET
+		for tup in gen.queue:
+			tup[0] -= TRIMOFFSET
 		for chan in gen.channels:
 			(starttm, endtm, startvol, endvol) = chan.volume
 			if (endtm <= starttime):
@@ -509,16 +551,16 @@ def run_agents(starttime, gen):
 		ev = gen.postqueue.pop(0)
 		gen.sendevent(ev, gen.rootchannel)
 
-	while (gen.queue and gen.queue[0].runtime < nexttime):
-		ag = gen.queue.pop(0)
+	while (gen.queue and gen.queue[0][0] < nexttime):
+		(runtime, ag, handle) = gen.queue.pop(0)
 		ag.queued = False
 		ag.channel.agentcount -= 1
 		ag.logger.info('running')
 		try:
 			if (not ag.channel.active):
 				raise BoodleInternalError('queued agent not in active channel')
-			gen.agentruntime = ag.runtime
-			ag.run()
+			gen.agentruntime = runtime
+			handle()
 		except Exception, ex:
 			ag.logger.error('"%s" %s: %s',
 				ag.getname(), ex.__class__.__name__, ex,

@@ -267,7 +267,7 @@ try:
 	ag = clas(*args[1:])
 	if (not ag.inited):
 		raise generator.ScheduleError('agent is uninitialized')
-	gen.addagent(ag, gen.rootchannel, 0)
+	gen.addagent(ag, gen.rootchannel, 0, ag.run)
 
 	title = ag.getname()
 	if (not [True for (key,val) in extraopts if (key == 'title')]):

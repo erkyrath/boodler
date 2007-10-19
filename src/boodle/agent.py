@@ -9,14 +9,6 @@ import logging
 class Agent:
 	"""Agent: base class for Boodler agents.
 
-	Agents compare (<, >) based on their runtime field. (This lets the
-	generator sort its queue more efficiently.) If the runtime fields are
-	equal, the comparison is arbitrary (but consistent; the objects compare
-	based on id().)
-
-	Comparing (agent == None) will raise an exception. Use (agent is None)
-	instead.
-
 	Methods and fields to be overridden:
 
 	run() -- perform the agent's action
@@ -59,16 +51,12 @@ class Agent:
 		self.handlers = {}
 		self.firsttime = True
 		self.generator = None
-		self.runtime = 0
 		self.channel = None
 		self.origdelay = None
 		
 		### use the Boodler package name here, if possible
 		cla = self.__class__
 		self.logger = logging.getLogger('pkg.'+cla.__module__+'.'+cla.__name__)
-
-	def __cmp__(self, other):
-		return (cmp(self.runtime, other.runtime) or cmp(id(self), id(other)))
 
 	def sched_note(self, samp, pitch=1.0, volume=1.0, delay=0, chan=None):
 		"""sched_note(sample [, pitch=1, volume=1, delay=0, chan=self.channel]) -> duration
@@ -313,13 +301,15 @@ class Agent:
 
 		gen.sendevent(ev, chan)
 
-	def sched_agent(self, ag, delay=0, chan=None):
-		"""sched_agent(agent [, delay=0, chan=self.channel])
+	def sched_agent(self, ag, delay=0, chan=None, handle=None):
+		"""sched_agent(agent [, delay=0, chan=self.channel, handle=self.run])
 
 		Schedule an agent to run. This may be the current agent (self) or 
 		a newly-created agent. The delay is a time (in seconds) to delay
 		before the agent runs. The channel, if None or not supplied,
-		defaults to the same channel that self is running in.
+		defaults to the same channel that self is running in. The agent's
+		run() method will be called, unless you specify a different
+		function.
 
 		"""
 
@@ -333,6 +323,8 @@ class Agent:
 			chan = self.channel
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule agent to inactive channel')
+		if (handle is None):
+			handle = ag.run
 		gen = self.generator
 
 		if (delay < 0):
@@ -343,10 +335,10 @@ class Agent:
 		ag.origdelay = delay
 		fdelay = int(delay * cboodle.framespersec())
 		starttime = gen.agentruntime + fdelay
-		gen.addagent(ag, chan, starttime)
+		gen.addagent(ag, chan, starttime, handle)
 
-	def resched(self, delay=None, chan=None):
-		"""resched([delay, chan=self.channel])
+	def resched(self, delay=None, chan=None, handle=None):
+		"""resched([delay, chan=self.channel, handle=self.run])
 
 		Reschedule the current agent (self). The delay is a time (in
 		seconds) to delay before the agent runs again. The channel, if
@@ -357,13 +349,15 @@ class Agent:
 		agent was first scheduled. Note that if this value was zero, 
 		you will probably cause an infinite loop.
 
+		The agent's run() method will be called, unless you specify a 
+		different function.
 		"""
 
 		if (delay is None):
 			delay = self.origdelay
 			if (delay is None):
 				raise generator.ScheduleError('resched with no prior delay')
-		self.sched_agent(self, delay, chan)
+		self.sched_agent(self, delay, chan, handle)
 
 	def new_channel(self, startvolume=1.0, parent=None):
 		"""new_channel([startvolume=1, parent=self.channel]) -> channel
