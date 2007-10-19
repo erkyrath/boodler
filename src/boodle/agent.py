@@ -29,11 +29,13 @@ class Agent:
 	sched_note_params() -- schedule a note, allowing all parameters
 	sched_agent() -- schedule another agent to run
 	resched() -- schedule self to run again
-	post_listener_agent() -- post another agent to listen for events
-	send_event() -- create an event, which posted agents may receive
 	new_channel() -- create a channel
 	new_channel_pan() -- create a channel at a stereo position
+	listen() -- begin listening for events
+	unlisten() -- stop listening
 	get_root_channel() -- return the root channel of the channel tree
+	post_listener_agent() -- post another agent to listen for events
+	send_event() -- create an event, which posted agents may receive
 	get_prop() -- get a property from the agent's channel
 	has_prop() -- see whether the agent's channel has a given property
 	set_prop() -- set a property on the agent's channel
@@ -208,7 +210,33 @@ class Agent:
 		return self.sched_note_duration_pan(samp, duration, pan, pitch, volume, delay, chan)
 
 	def listen(self, event=None, handle=None, hold=None, chan=None):
-		###
+		"""listen(event=self.selected_event, handle=self.receive, hold=None, 
+			chan=self.channel) -> Handler
+
+		Begin listening for events. The event should be a string, or a
+		function which returns a string. (If no event is given, the
+		agent.selected_event field will be consulted.) The agent will
+		listen on the given channel, or (if none is given) on the
+		agent's own channel.
+
+		The agent will react whenever a matching event is seen on the
+		channel. An event matches if it is equal to the selected event
+		string, or begins with it; and if it is in the listening channel,
+		or a subchannel of it. (So event "foo.bar" will trigger agents
+		listening for event "foo.bar", "foo", or "".)
+
+		When an agent is triggered, its receive() method is run. (If you
+		pass a different function as handle, that function will be run.)
+
+		The hold value indicates whether the agent's channel will be kept
+		alive for as long as it listens. If this is False/None, the channel
+		will follow the usual rule and expire as soon as nothing is scheduled 
+		on it. (A listening agent does not automatically count as scheduled!)
+
+		The listen() method returns a Handler object. You may store this
+		for later use; it has a cancel() method which may be used to stop
+		listening.
+		"""
 		
 		if (not self.inited):
 			raise generator.ScheduleError('agent is uninitialized')
@@ -240,7 +268,12 @@ class Agent:
 		return han
 
 	def unlisten(self, event=None):
-		###
+		"""unlisten(event=None) -> None
+
+		Stop listening. If no event argument is given, stop listening to
+		all events. If an event is given, stop listening for that specific
+		event.
+		"""
 		
 		if (self.generator is None or self.channel is None):
 			raise generator.ScheduleError('listener has never been scheduled')
@@ -279,9 +312,12 @@ class Agent:
 		self.sched_agent(ag, 0, chan=chan, handle=func)
 
 	def send_event(self, evname, *args, **kwargs):
-		"""send_event(event)
+		"""send_event(event, ..., chan=self.channel)
 
-		Send an event. ###
+		Send an event. The event consists of the given name, followed by
+		zero or more arguments (which may be any Python object). The
+		event is sent on the given channel, or (if none given) on the
+		agent's own channel.
 		"""
 
 		chan = kwargs.pop('chan', None)
