@@ -29,7 +29,7 @@ class Agent:
 	sched_note_params() -- schedule a note, allowing all parameters
 	sched_agent() -- schedule another agent to run
 	resched() -- schedule self to run again
-	post_agent() -- post another agent to listen for events
+	post_listener_agent() -- post another agent to listen for events
 	send_event() -- create an event, which posted agents may receive
 	new_channel() -- create a channel
 	new_channel_pan() -- create a channel at a stereo position
@@ -257,26 +257,26 @@ class Agent:
 		gen = self.generator
 		gen.remhandlers(ls)
 		
-	def post_agent(self, ag, hold=None, chan=None, listenchan=None): #### 
-		"""post_agent(agent [, chan=self.channel])
+	def post_listener_agent(self, ag, chan=None, event=None, handle=None, 
+		hold=None, listenchan=None):
+		"""post_listener_agent(agent, chan=self.channel, 
+			event=ag.selected_event, handle=ag.receive, hold=None, 
+			listenchan=chan)
 
-		Post an agent to listen for events ###
+		Post an agent to listen for events. This is equivalent to 
+			sched_agent(ag, handle=ag.listen(...))
 
+		That is, the agent must not currently be scheduled. It runs
+		immediately, but only to call its listen() method, with any
+		arguments you pass in.
 		"""
 
-		#### only for freshly-created agents
-		if (not isinstance(ag, EventAgent)):
-			raise generator.ScheduleError('not an EventAgent instance')
-		if (not (ag.inited and ag.subinited)):
-			raise generator.ScheduleError('agent is uninitialized')
-		if (self.generator is None or self.channel is None):
-			raise generator.ScheduleError('poster has never been scheduled')
-		if (chan is None):
-			chan = self.channel
-		if (not chan.active):
-			raise generator.ChannelError('cannot post agent to inactive channel')
-		gen = self.generator
-		gen.addeventagent(ag, chan)
+		# Define a closure to call the agent's listen function with the
+		# appropriate arguments.
+		def func():
+			ag.listen(event=event, handle=handle, hold=hold, chan=listenchan)
+
+		self.sched_agent(ag, 0, chan=chan, handle=func)
 
 	def send_event(self, evname, *args, **kwargs):
 		"""send_event(event)
