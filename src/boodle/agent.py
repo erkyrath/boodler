@@ -232,6 +232,9 @@ class Agent:
 		alive for as long as it listens. If this is False/None, the channel
 		will follow the usual rule and expire as soon as nothing is scheduled 
 		on it. (A listening agent does not automatically count as scheduled!)
+		If the listening channel is not the same as the agent's own channel,
+		you may pass one of the constants HoldRun or HoldListen, to keep
+		just one of them alive. A True value will keep both.
 
 		The listen() method returns a Handler object. You may store this
 		for later use; it has a cancel() method which may be used to stop
@@ -518,7 +521,17 @@ HoldListen = 'listen'
 HoldBoth = True
 		
 class Handler:
-	###
+	"""Handler: Represents the state of one agent listening for one event.
+
+	Public methods:
+
+	cancel() -- stop listening
+
+	Internal methods:
+
+	finalize() -- shut down the object
+	"""
+
 	def __init__(self, ag, func, event, chan, hold):
 		self.alive = False
 		self.agent = ag
@@ -541,7 +554,15 @@ class Handler:
 			self.holdrun = True
 
 	def finalize(self):
-		### only called by remhandlers
+		"""finalize() -> None
+
+		Shut down the Handler object and drop all references.
+
+		This is an internal call. It should only be called by 
+		Generator.remhandlers(), and only after the listen has been
+		cancelled.
+		"""
+
 		self.alive = False
 		self.agent = None
 		self.generator = None
@@ -550,6 +571,11 @@ class Handler:
 		self.runchannel = None
 
 	def cancel(self):
+		"""cancel() -> None
+
+		Stop listening. It is safe to call this more than once.
+		"""
+
 		if (not self.alive):
 			return
 		self.generator.remhandlers([self])
