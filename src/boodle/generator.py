@@ -340,8 +340,15 @@ class Channel:
 			% (self.ordinal, self.depth, self.creatorname))
 
 	def close(self):
-		# This is called both from the explicit stop list, and from the
-		# regular check for channels with no more stuff scheduled.
+		"""close() -> None
+
+		Shut down the channel. This presumes that all notes, agents, and
+		subchannels have already been deleted.
+
+		Internal method. (This is called both from the explicit stop list,
+		and from the regular check for channels with no more stuff
+		scheduled.)
+		"""
 		
 		if (not self.active):
 			return
@@ -376,7 +383,7 @@ class Channel:
 		del gen.channels[self]
 
 	def stop(self):
-		"""stop()
+		"""stop() -> None
 
 		Stop the channel immediately. All sounds playing in the channel 
 		(or any subchannels) are cut off; all sounds and agents scheduled
@@ -395,6 +402,15 @@ class Channel:
 		self.generator.stoplist.append(self)
 
 	def realstop(self):
+		"""realstop() -> None
+
+		Do the work of stopping the channel. This deletes all notes
+		in the channel (and its subchannels), and all agents, and then
+		closes all the subchannels. Finally it closes the channel itself.
+
+		Internal method. (The stop() method queues this up in stoplist.)
+		"""
+		
 		if (not self.active):
 			raise ChannelError('cannot stop an inactive channel')
 		gen = self.generator
@@ -421,9 +437,23 @@ class Channel:
 			ch.close()
 
 	def addnote(self):
+		"""addnote() -> None
+
+		Note that a note has been added to the channel.
+
+		Internal method. (Called from sample.queue_note.)
+		"""
+		
 		self.notecount = self.notecount + 1
 
 	def remnote(self):
+		"""remnote() -> None
+
+		Note that a note has been removed from the channel.
+
+		Internal method. (Called from the callback to cboodle.create_note.)
+		"""
+		
 		self.notecount = self.notecount - 1
 		if (self.notecount < 0):
 			raise BoodleInternalError('channel notecount negative')
@@ -437,7 +467,7 @@ class Channel:
 		return self.rootchannel
 
 	def set_volume(self, newvol, interval=0.005):
-		"""set_volume(newvolume [, interval=0.005])
+		"""set_volume(newvolume, interval=0.005) -> None
 
 		Change the volume of the channel to a new level (0 means silence,
 		1 means full volume). This affects all notes in the channel and

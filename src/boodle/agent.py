@@ -61,7 +61,8 @@ class Agent:
 		self.logger = logging.getLogger('pkg.'+cla.__module__+'.'+cla.__name__)
 
 	def sched_note(self, samp, pitch=1.0, volume=1.0, delay=0, chan=None):
-		"""sched_note(sample [, pitch=1, volume=1, delay=0, chan=self.channel]) -> duration
+		"""sched_note(sample, pitch=1, volume=1, delay=0, chan=self.channel)
+			-> duration
 
 		Schedule a note to play. The sound is loaded from the file sample
 		(which is relative to $BOODLER_SOUND_PATH). The pitch is given as a
@@ -72,13 +73,14 @@ class Agent:
 		running in.
 
 		This returns the expected duration of the sound, in seconds.
-
 		"""
 
 		return self.sched_note_pan(samp, None, pitch, volume, delay, chan)
 
-	def sched_note_pan(self, samp, pan=None, pitch=1.0, volume=1.0, delay=0, chan=None):
-		"""sched_note_pan(sample [, pan=0, pitch=1, volume=1, delay=0, chan=self.channel]) -> duration
+	def sched_note_pan(self, samp, pan=None, pitch=1.0, volume=1.0, delay=0,
+		chan=None):
+		"""sched_note_pan(sample, pan=0, pitch=1, volume=1, delay=0,
+			chan=self.channel) -> duration
 
 		Schedule a note to play, panning the stereo origin of the sound.
 		The pan value defaults to 0, meaning no shift in origin;
@@ -93,7 +95,6 @@ class Agent:
 		supplied, defaults to the same channel the agent is running in.
 
 		This returns the expected duration of the sound, in seconds.
-
 		"""
 
 		if (self.generator is None or self.channel is None):
@@ -125,8 +126,10 @@ class Agent:
 		dur = samp.queue_note(pitch, volume, panscale, panshift, starttime, chan)
 		return float(dur) / float(fps)
 
-	def sched_note_duration(self, samp, duration, pitch=1.0, volume=1.0, delay=0, chan=None):
-		"""sched_note_duration(sample, duration [, pitch=1, volume=1, delay=0, chan=self.channel]) -> duration
+	def sched_note_duration(self, samp, duration, pitch=1.0, volume=1.0,
+		delay=0, chan=None):
+		"""sched_note_duration(sample, duration, pitch=1, volume=1, delay=0,
+			chan=self.channel) -> duration
 		
 		Schedule a note to play, extending the original sound sample to a
 		longer period of time. The duration is given in seconds. 
@@ -141,7 +144,6 @@ class Agent:
 		This returns the expected duration of the sound, in seconds. Due to
 		the way sounds are looped, this may be slightly longer than the
 		given duration.
-
 		"""
 
 		return self.sched_note_duration_pan(samp, duration, None, pitch, volume, delay, chan)
@@ -184,7 +186,7 @@ class Agent:
 		return float(dur) / float(fps)
 
 	def sched_note_params(self, samp, **args):
-		"""sched_note_params(sample [, param=value, param=value...]) -> duration
+		"""sched_note_params(sample, param=value, param=value...) -> duration
 		
 		Schedule a note to play. This method understands all the arguments
 		used by the other sched_note methods, but they must be supplied as
@@ -198,7 +200,6 @@ class Agent:
 			pan = None    (no stereo shift)
 			duration = 0  (exactly once through the sound)
 			chan = None   (play in agent's own channel)
-
 		"""
 
 		duration = args.get('duration', 0.0)
@@ -341,7 +342,7 @@ class Agent:
 		gen.sendevent(ev, chan)
 
 	def sched_agent(self, ag, delay=0, chan=None, handle=None):
-		"""sched_agent(agent [, delay=0, chan=self.channel, handle=self.run])
+		"""sched_agent(agent, delay=0, chan=self.channel, handle=self.run)
 
 		Schedule an agent to run. This may be the current agent (self) or 
 		a newly-created agent. The delay is a time (in seconds) to delay
@@ -349,7 +350,6 @@ class Agent:
 		defaults to the same channel that self is running in. The agent's
 		run() method will be called, unless you specify a different
 		function.
-
 		"""
 
 		if (not isinstance(ag, Agent)):
@@ -406,7 +406,6 @@ class Agent:
 		channel and any subchannels. The new channel will be a subchannel
 		of parent -- if None or not supplied, it will be a subchannel of
 		the channel that the agent (self) is running in.
-
 		"""
 
 		if (self.channel is None):
@@ -425,7 +424,6 @@ class Agent:
 		channel and any subchannels. The new channel will be a subchannel
 		of parent -- if None or not supplied, it will be a subchannel of
 		the channel that the agent (self) is running in.
-
 		"""
 
 		if (self.channel is None):
@@ -439,7 +437,6 @@ class Agent:
 		"""get_root_channel() -> channel
 
 		Return the root channel of the channel tree.
-
 		"""
 		return self.generator.rootchannel
 
@@ -486,7 +483,6 @@ class Agent:
 
 		Perform the agent's action. Each subclass of Agent must override
 		this method.
-
 		"""
 		raise NotImplementedError('"' + self.getname() + '" has no run() method')
 
@@ -499,7 +495,6 @@ class Agent:
 		
 		The event is a tuple, starting with a string, followed (possibly)
 		by more values
-
 		"""
 		raise NotImplementedError('"' + self.getname() + '" has no receive() method')
 		
@@ -509,7 +504,9 @@ class Agent:
 		Return the name of the agent. This defaults to returning 
 		self.name, if that is defined.
 
+		### Metadata?
 		"""
+		
 		nm = self.name
 		if (nm):
 			return nm
@@ -588,8 +585,8 @@ class NullAgent(Agent):
 	"""NullAgent:
 
 	This agent does nothing. 
-
 	"""
+	
 	name = 'null agent'
 	def run(self):
 		pass
@@ -600,8 +597,8 @@ class StopAgent(Agent):
 	This agent causes a channel to stop playing. (See Channel.stop.)
 	All notes and agents in the channel (and subchannels) will be
 	discarded.
-
 	"""
+
 	name = 'stop channel'
 	def run(self):
 		self.channel.stop()
@@ -611,8 +608,8 @@ class FadeOutAgent(Agent):
 
 	This agent causes a channel to fade down to zero volume over a
 	given interval, and then stop.
-
 	"""
+
 	name = 'fade out and stop channel'
 	def __init__(self, duration=0.005):
 		Agent.__init__(self)
@@ -634,8 +631,8 @@ class FadeInOutAgent(Agent):
 
 	If two intervals are given, the first is the fade-in time, and the
 	second is the fade-out time.
-
 	"""
+
 	name = 'fade in, fade out, stop channel'
 	def __init__(self, agentinst, liveinterval=10.0, fadeinterval=1.0, fadeoutinterval=None):
 		Agent.__init__(self)
@@ -661,8 +658,8 @@ def load_class_by_name(name):
 	class must be a subclass of Agent. The module may be nested (for 
 	example, 'reptile.snake.PythonHiss'). This does not instantiate the 
 	class; the result is a class, not an agent instance.
-
 	"""
+
 	if (name == ''):
 		return NullAgent
 

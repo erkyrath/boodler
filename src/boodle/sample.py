@@ -134,8 +134,8 @@ def get(sname):
 	This function is not useful, since agent.sched_note() and such methods
 	call it for you -- they accept filenames as well as sample objects. 
 	This function is available nevertheless.
-
 	"""
+
 	samp = cache.get(sname)
 	if (not (samp is None)):
 		return samp
@@ -166,7 +166,7 @@ def get(sname):
 	return samp
 
 def get_info(samp, pitch=1):
-	"""get_info(sample [,pitch=1]) -> tuple
+	"""get_info(sample,pitch=1) -> tuple
 
 	Measure the expected running time and looping parameters of a sound.
 	The argument can be either a filename, or a sample object (as 
@@ -182,6 +182,7 @@ def get_info(samp, pitch=1):
 	exactly equal to the value returned by agent.sched_note(), when
 	the note is actually played.
 	"""
+	
 	if (not isinstance(samp, Sample)):
 		samp = get(samp)
 	return samp.get_info(pitch)
