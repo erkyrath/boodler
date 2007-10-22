@@ -10,8 +10,6 @@ import traceback
 import bisect
 import StringIO
 
-### get rid of [, var...] in doc comments
-
 class Generator:
 	"""Generator: A class that stores the internal state of boodler
 	sound generation.
@@ -25,7 +23,7 @@ class Generator:
 	not.)
 
 	queue -- list of [runtime, agent, handler] lists. Sorted by
-		runtime (and, insignificantly, by the other tuple values).
+		runtime (and, insignificantly, by the other list values).
 		These are not tuples because we have to update the runtime in
 		place occasionally.
 	rootchannel -- the root channel object
@@ -50,7 +48,6 @@ class Generator:
 		self.allhandlers = {}
 		self.listeners = []
 		self.lastunload = 0
-		self.verbose_errors = False
 		self.stats_interval = None
 		self.statslogger = None
 		if stdinlisten:
@@ -486,8 +483,8 @@ class Channel:
 		should not rely on rapid sequences of set_volume() calls for your
 		sound effects. Set volumes on individual notes instead, or else
 		create several channels.
-
 		"""
+
 		starttm = self.generator.agentruntime
 		endtm = starttm + int(interval * cboodle.framespersec())
 		if (endtm >= self.volume[1]):
@@ -586,11 +583,17 @@ def run_agents(starttime, gen):
 	
 	gen.logger.debug('beginning run cycle at %d', starttime)
 
+	# A lot of internal scheduling is kept in frame units (meaning
+	# 1/44000 of a second or whatever). That'll overflow a long
+	# integer eventually. So at regular intervals, we have to reset
+	# the clock. That means going through every data structure that 
+	# stores a time value, and subtracting a constant from it.
+
 	if (starttime >= TRIMTIME):
 		starttime = starttime - TRIMOFFSET
 		gen.logger.debug('trimming timebase, now %d', starttime)
 		cboodle.adjust_timebase(TRIMOFFSET)
-		gen.lastunload = gen.lastunload - TRIMOFFSET
+		gen.lastunload -= TRIMOFFSET
 		sample.adjust_timebase(TRIMOFFSET, UNLOADAGE)
 		for tup in gen.queue:
 			tup[0] -= TRIMOFFSET
@@ -604,9 +607,15 @@ def run_agents(starttime, gen):
 		if (not (gen.stats_interval is None)):
 			gen.last_stats_dump = gen.last_stats_dump - TRIMOFFSET
 
+	# We also look at the database of sound samples at regular intervals.
+	# Any samples that aren't being used right now get unloaded from
+	# memory.
+
 	if (gen.lastunload + UNLOADTIME < starttime):
 		gen.lastunload = starttime
 		sample.unload_unused(starttime-UNLOADAGE)
+
+	# We might dump stats at regular intervals.
 
 	if (not (gen.stats_interval is None)):
 		if (gen.last_stats_dump + int(gen.stats_interval * cboodle.framespersec()) < starttime):
@@ -615,6 +624,9 @@ def run_agents(starttime, gen):
 			gen.dump_stats(fl)
 			gen.statslogger.warning(fl.getvalue())
 			fl.close()
+
+	# Now, the work of generating sound. We will play every note and run
+	# every agent which is scheduled between starttime and nexttime.
 
 	nexttime = starttime + cboodle.framesperbuf()
 

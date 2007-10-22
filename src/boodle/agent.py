@@ -149,6 +149,26 @@ class Agent:
 		return self.sched_note_duration_pan(samp, duration, None, pitch, volume, delay, chan)
 
 	def sched_note_duration_pan(self, samp, duration, pan=None, pitch=1.0, volume=1.0, delay=0, chan=None):
+		"""sched_note_duration_pan(sample, duration, pan=0, pitch=1, volume=1,
+			delay=0, chan=self.channel) -> duration
+
+		Schedule a note to play, panning the stereo origin of the sound.
+		The pan value defaults to 0, meaning no shift in origin;
+		-1 means all the way left; 1 means all the way right. The value
+		may also be an object created by the stereo module.
+
+		The sound is loaded from the file sample (which is relative to 
+		$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
+		sound's original frequency; the volume is given as a fraction
+		of the sound's original volume. The delay is a time (in seconds)
+		to delay before the note is played. The channel, if None or not
+		supplied, defaults to the same channel the agent is running in.
+
+		This extends the original sound sample to a longer period of time. 
+		The duration is given in seconds. This returns the expected duration 
+		of the sound, in seconds. Due to the way sounds are looped, this may 
+		be slightly longer than the given duration.
+		"""
 
 		if (self.generator is None or self.channel is None):
 			raise generator.ScheduleError('scheduler has never been scheduled')
@@ -520,6 +540,9 @@ HoldBoth = True
 class Handler:
 	"""Handler: Represents the state of one agent listening for one event.
 
+	This is mostly a data object; the generator module uses its fields.
+	It does export one method, cancel(), for Agent code to make use of.
+
 	Public methods:
 
 	cancel() -- stop listening
@@ -659,6 +682,7 @@ def load_class_by_name(name):
 	example, 'reptile.snake.PythonHiss'). This does not instantiate the 
 	class; the result is a class, not an agent instance.
 	"""
+	### What is this in the new system?
 
 	if (name == ''):
 		return NullAgent
