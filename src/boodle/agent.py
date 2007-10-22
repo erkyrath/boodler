@@ -11,6 +11,7 @@ class Agent:
 
 	Methods and fields to be overridden:
 
+	init() -- set the agent up
 	run() -- perform the agent's action
 	receive() -- perform the agent's action
 	name -- a string which describes the agent
@@ -47,7 +48,7 @@ class Agent:
 	event = None
 	selected_event = None
 
-	def __init__(self): ###push other args into an init()
+	def __init__(self, *args, **kwargs):
 		self.inited = True
 		self.queued = False
 		self.handlers = {}
@@ -59,6 +60,11 @@ class Agent:
 		### use the Boodler package name here, if possible
 		cla = self.__class__
 		self.logger = logging.getLogger('pkg.'+cla.__module__+'.'+cla.__name__)
+
+		try:
+			self.init(*args, **kwargs)
+		except TypeError, ex:
+			raise boodle.BoodlerError(str(ex))
 
 	def sched_note(self, samp, pitch=1.0, volume=1.0, delay=0, chan=None):
 		"""sched_note(sample, pitch=1, volume=1, delay=0, chan=self.channel)
@@ -498,6 +504,16 @@ class Agent:
 		"""
 		return self.channel.del_prop(key)
 			
+	def init(self):
+		"""init(...)
+
+		Set the agent up. The arguments are passed along from the 
+		constructor call. Each subclass of Agent may override
+		this method; if it wants to accept constructor arguments, it
+		must override this.
+		"""
+		pass
+
 	def run(self):
 		"""run()
 
