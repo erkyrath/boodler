@@ -590,7 +590,7 @@ def run_agents(starttime, gen):
 	# stores a time value, and subtracting a constant from it.
 
 	if (starttime >= TRIMTIME):
-		starttime = starttime - TRIMOFFSET
+		starttime -= TRIMOFFSET
 		gen.logger.debug('trimming timebase, now %d', starttime)
 		cboodle.adjust_timebase(TRIMOFFSET)
 		gen.lastunload -= TRIMOFFSET
@@ -601,11 +601,11 @@ def run_agents(starttime, gen):
 			(starttm, endtm, startvol, endvol) = chan.volume
 			if (endtm <= starttime):
 				continue
-			starttm = starttm - TRIMOFFSET
-			endtm = endtm - TRIMOFFSET
+			starttm -= TRIMOFFSET
+			endtm -= TRIMOFFSET
 			chan.volume = (starttm, endtm, startvol, endvol)
 		if (not (gen.stats_interval is None)):
-			gen.last_stats_dump = gen.last_stats_dump - TRIMOFFSET
+			gen.last_stats_dump -= TRIMOFFSET
 
 	# We also look at the database of sound samples at regular intervals.
 	# Any samples that aren't being used right now get unloaded from
