@@ -68,6 +68,9 @@ popt.add_option('--stdinevents',
 popt.add_option('-D', '--define',
 	action='append', dest='extraopts', metavar='VAR=VAL',
 	help='define additional driver parameters')
+popt.add_option('--prop',
+	action='append', dest='rootprops', metavar='VAR=VAL',
+	help='define properties for the root channel')
 popt.add_option('-L', '--log',
 	action='store', type='choice', dest='loglevel', metavar='LEVEL',
 	choices=loglevels.keys(),
@@ -99,7 +102,8 @@ popt.set_defaults(
 	stdinlisten = False,
 	verboseerrors = False,
 	verbosehardware = False,
-	extraopts = [])
+	extraopts = [],
+	rootprops = [])
 
 (opts, args) = popt.parse_args()
 
@@ -253,6 +257,27 @@ if (effects_dir):
 		if (len(dir) > 0):
 			sys.path.append(dir)
 
+rootprops = []
+val = os.environ.get('BOODLER_PROPERTIES')
+if (val):
+	for val in val.split(','):
+		val = val.strip()
+		pos = val.find('=')
+		if (pos < 0):
+			op = (val, True)
+		else:
+			op = (val[ : pos], val[pos+1 : ])
+		rootprops.append(op)
+		op = None
+for val in opts.rootprops:
+	pos = val.find('=')
+	if (pos < 0):
+		op = (val, True)
+	else:
+		op = (val[ : pos], val[pos+1 : ])
+	rootprops.append(op)
+	op = None
+
 netport = opts.netport
 if ((netport is not None) and netport.startswith('/')):
 	netport = int(netport)
@@ -263,6 +288,13 @@ if (opts.statsrate != None):
 	gen.set_stats_interval(opts.statsrate)
 
 try:
+	# Set the global properties on the root channel.
+	for (key, val) in rootprops:
+		try:
+			gen.rootchannel.set_prop(key, val)
+		except:
+			rootlogger.warning('invalid name for property: ' + key)
+
 	clas = agent.load_class_by_name(args[0])
 	ag = clas(*args[1:])
 	if (not ag.inited):
