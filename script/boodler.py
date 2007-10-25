@@ -291,6 +291,7 @@ try:
 	# Set the global properties on the root channel.
 	for (key, val) in rootprops:
 		try:
+			### do we want to run val through the s-parser? Like args?
 			gen.rootchannel.set_prop(key, val)
 		except:
 			rootlogger.warning('invalid name for property: ' + key)
