@@ -689,32 +689,39 @@ class FadeInOutAgent(Agent):
 		ag = FadeOutAgent(self.fadeoutinterval)
 		self.sched_agent(ag, self.liveinterval+self.fadeininterval, chan)
 
-def load_class_by_name(name):
+
+### What is this in the new system? Certainly moving elsewhere. Maybe
+### loading a resource, rather than an agent class per se.
+### And how do we pull agents off sys.path?
+
+def load_class_by_name(loader, name):
 	"""load_class_by_name(str) -> class
 
+	###
 	Given a string that names a class in a module -- for example, 
 	'agent.StopAgent' -- import the module and return the class. The 
 	class must be a subclass of Agent. The module may be nested (for 
 	example, 'reptile.snake.PythonHiss'). This does not instantiate the 
 	class; the result is a class, not an agent instance.
 	"""
-	### What is this in the new system?
 
 	if (name == ''):
-		return NullAgent
+		return NullAgent ###?
 
-	fullname = name.split('.')
-	[classname] = fullname[-1 : ]
-	modname = fullname[ : -1]
-	
-	if (len(modname) == 0):
-		raise ValueError('argument must be of the form module.Class')
-	
-	mod = __import__('.'.join(modname))
+	pos = name.find('/')
+	if (pos < 0):
+		raise Exception('argument must be of the form package/Agent')
+	pkgname = name[ : pos ]
+	name = name[ pos+1 : ]
+
+	pkg = loader.load(pkgname) ### spec
+	mod = pkg.get_content()
+
+	namels = name.split('.')
 	try:
-		for comp in modname[1:]:
-			mod = getattr(mod, comp)
-		clas = getattr(mod, classname)
+		clas = mod
+		for el in namels:
+			clas = getattr(clas, el)
 	except AttributeError, ex:
 		raise ValueError('unable to load ' + name + ' (' + str(ex) + ')')
 	

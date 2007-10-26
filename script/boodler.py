@@ -21,6 +21,12 @@ import logging
 import traceback
 import StringIO
 
+# same as in boodlemgr.py
+if ('darwin' in sys.platform.lower()):
+	Default_Relative_Data_Dir = 'Library/Application Support/Boodler'
+else:
+	Default_Relative_Data_Dir = '.boodler'
+
 defaultdriver = 'oss'
 if (sys.platform == 'darwin'):
 	defaultdriver = 'macosx'
@@ -68,6 +74,10 @@ popt.add_option('--stdinevents',
 popt.add_option('-D', '--define',
 	action='append', dest='extraopts', metavar='VAR=VAL',
 	help='define additional driver parameters')
+popt.add_option('--data', action='store', dest='basedir',
+	metavar='DIR', help='directory to store Boodler sound information (default: HOME/'+Default_Relative_Data_Dir+')')
+popt.add_option('--collection', action='store', dest='collection',
+	metavar='DIR', help='directory which contains your sound collection (default: DATA/Collection)')
 popt.add_option('--prop',
 	action='append', dest='rootprops', metavar='VAR=VAL',
 	help='define properties for the root channel')
@@ -106,6 +116,22 @@ popt.set_defaults(
 	rootprops = [])
 
 (opts, args) = popt.parse_args()
+
+import boopak.collect
+
+# same as in boodlemgr.py
+basedir = opts.basedir
+if (not basedir):
+	basedir = os.environ.get('BOODLER_DATA')
+if (not basedir):
+	basedir = os.path.join(os.environ.get('HOME'), Default_Relative_Data_Dir)
+
+coldir = opts.collection
+if (not coldir):
+	coldir = os.environ.get('BOODLER_COLLECTION')
+# basedir is overridden by coldir, if it is provided.
+if (coldir is None and not (basedir is None)):
+	coldir = os.path.join(basedir, boopak.collect.Filename_Collection)
 
 extraopts = []
 for val in opts.extraopts:
@@ -218,6 +244,10 @@ if (level):
 	rootlogger.setLevel(level)
 
 import boodle
+import boopak.pload
+
+loader = boopak.pload.PackageLoader(coldir, importing_ok=True)
+
 from boodle import agent, generator
 cboodle = boodle.cboodle
 
@@ -283,7 +313,7 @@ if ((netport is not None) and netport.startswith('/')):
 	netport = int(netport)
 
 gen = generator.Generator(opts.basevolume, opts.stdinlisten,
-	opts.netlisten, netport)
+	opts.netlisten, netport, loader=loader)
 if (opts.statsrate != None):
 	gen.set_stats_interval(opts.statsrate)
 
@@ -296,7 +326,11 @@ try:
 		except:
 			rootlogger.warning('invalid name for property: ' + key)
 
-	clas = agent.load_class_by_name(args[0])
+	try:
+		clas = agent.load_class_by_name(loader, args[0])
+	except Exception, ex:
+		rootlogger.error(str(ex))
+		raise boodle.StopGeneration()
 	ag = clas(*args[1:])
 	if (not ag.inited):
 		raise generator.ScheduleError('agent is uninitialized')
@@ -310,16 +344,15 @@ try:
 	extraopts = None
 
 	try:
-		try:
-			if (not avoidstdout):
-				print ('running "' + title + '"')
-			cboodle.loop(generator.run_agents, gen)
-		finally:
-			cboodle.final()
-	except boodle.StopGeneration:
-		pass
-	except KeyboardInterrupt:
-		rootlogger.warning('keyboard interrupt')
+		if (not avoidstdout):
+			print ('running "' + title + '"')
+		cboodle.loop(generator.run_agents, gen)
+	finally:
+		cboodle.final()
+except boodle.StopGeneration:
+	pass
+except KeyboardInterrupt:
+	rootlogger.warning('keyboard interrupt')
 except Exception, ex:
 	rootlogger.critical('%s: %s', ex.__class__.__name__, ex,
 		exc_info=True)

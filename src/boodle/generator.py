@@ -33,10 +33,13 @@ class Generator:
 	listeners -- list of sources of external events
 	postqueue -- list of events received from external sources. These
 		are handled at the beginning of the next run cycle
+
+	loader -- the package loader
 	"""
 
 	def __init__(self, basevolume=0.5, stdinlisten=False,
-		netlisten=False, listenport=None):
+		netlisten=False, listenport=None,
+		loader=None):
 		
 		self.logger = logging.getLogger()
 		self.logger.info('generator setting up')
@@ -56,6 +59,8 @@ class Generator:
 		if netlisten:
 			lis = listen.SocketListener(self.postqueue.append, listenport)
 			self.listeners.append(lis)
+
+		self.loader = loader
 
 		self.rootchannel = Channel(None, self, None, basevolume, None)
 		self.agentruntime = None
