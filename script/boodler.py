@@ -78,7 +78,10 @@ popt.add_option('--data', action='store', dest='basedir',
 	metavar='DIR', help='directory to store Boodler sound information (default: HOME/'+Default_Relative_Data_Dir+')')
 popt.add_option('--collection', action='store', dest='collection',
 	metavar='DIR', help='directory which contains your sound collection (default: DATA/Collection)')
-popt.add_option('--prop',
+popt.add_option('--external', ### -E?
+	action='append', dest='externaldirs', metavar='DIR',
+	help='an additional directory in which to look for sound packages')
+popt.add_option('--prop',     ### -P?
 	action='append', dest='rootprops', metavar='VAR=VAL',
 	help='define properties for the root channel')
 popt.add_option('-L', '--log',
@@ -113,7 +116,8 @@ popt.set_defaults(
 	verboseerrors = False,
 	verbosehardware = False,
 	extraopts = [],
-	rootprops = [])
+	rootprops = [],
+	externaldirs = [])
 
 (opts, args) = popt.parse_args()
 
@@ -155,7 +159,7 @@ class LogFormatter(logging.Formatter):
 	
 	def __init__(self, verbose):
 		logging.Formatter.__init__(self,
-			'%(asctime)s: %(levelname)-8s: (%(name)s) %(message)s',
+			'%(asctime)s: (%(name)s) %(message)s',
 			'%b-%d %H:%M:%S')
 		self.verboseerrors = verbose
 	def formatException(self, tup):
@@ -247,6 +251,11 @@ import boodle
 import boopak.pload
 
 loader = boopak.pload.PackageLoader(coldir, importing_ok=True)
+for val in opts.externaldirs:
+	### go through a create cycle, so that resources are found?
+	(pkgname, pkgvers) = loader.add_external_package(val)
+	rootlogger.warning('located external package: %s %s',
+		pkgname, pkgvers)
 
 from boodle import agent, generator
 cboodle = boodle.cboodle
@@ -336,7 +345,7 @@ try:
 		raise generator.ScheduleError('agent is uninitialized')
 	gen.addagent(ag, gen.rootchannel, 0, ag.run)
 
-	title = ag.getname()
+	title = ag.getname() ###?
 	if (not [True for (key,val) in extraopts if (key == 'title')]):
 		extraopts.append( ('title', title) )
 	
