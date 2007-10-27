@@ -366,6 +366,8 @@ one: eleven
 		for (name, result) in valid_list:
 			val = build_safe_pathname('/tmp', name)
 			self.assertEqual(val, result)
+		val = build_safe_pathname('/tmp', u'foo')
+		self.assertEqual(type(val), str)
 			
 	def test_deunicode(self):
 		val = ' hello '

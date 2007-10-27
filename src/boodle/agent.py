@@ -110,8 +110,7 @@ class Agent:
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule note to inactive channel')
 		gen = self.generator
-		if (not isinstance(samp, sample.Sample)):
-			samp = sample.get(samp)
+		samp = sample.get(samp)
 
 		if (delay < 0):
 			raise generator.ScheduleError('negative delay time')
@@ -183,8 +182,7 @@ class Agent:
 		if (not chan.active):
 			raise generator.ChannelError('cannot schedule note to inactive channel')
 		gen = self.generator
-		if (not isinstance(samp, sample.Sample)):
-			samp = sample.get(samp)
+		samp = sample.get(samp)
 
 		if (delay < 0):
 			raise generator.ScheduleError('negative delay time')

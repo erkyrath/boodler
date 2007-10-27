@@ -124,8 +124,9 @@ def adjust_timebase(trimoffset, maxage):
 			samp.lastused = samp.lastused - trimoffset
 
 def get(sname):
-	"""get(sample) -> soundobject
+	"""get(sample) -> Sample
 
+	###
 	Load a sample object, given a filename. (If the filename is relative,
 	$BOODLER_SOUND_PATH is searched.) The module maintains a cache of
 	sample objects, so if you load the same filename twice, the second
@@ -136,6 +137,16 @@ def get(sname):
 	This function is available nevertheless.
 	"""
 
+	# If the argument is a Sample in the first place, return it.
+	if (isinstance(sname, Sample)):
+		return sname
+
+	# If the argument is a File, extract the pathname.
+	if (isinstance(sname, boopak.pinfo.File)):
+		### This would be nicer if we called .open() and used the stream
+		sname = sname.pathname
+
+	# If we've seen it before, it's in the cache.
 	samp = cache.get(sname)
 	if (not (samp is None)):
 		return samp
@@ -152,11 +163,7 @@ def get(sname):
 		else:
 			raise SampleError('file not readable: ' + sname)
 
-	dotpos = sname.rfind('.')
-	if (dotpos >= 0):
-		suffix = sname[dotpos : ]
-	else:
-		suffix = ''
+	(dummy, suffix) = os.path.splitext(filename)
 	suffix = suffix.lower()
 	
 	loader = find_loader(suffix)
@@ -183,8 +190,7 @@ def get_info(samp, pitch=1):
 	the note is actually played.
 	"""
 	
-	if (not isinstance(samp, Sample)):
-		samp = get(samp)
+	samp = get(samp)
 	return samp.get_info(pitch)
 
 class SampleLoader:
@@ -341,6 +347,8 @@ mixin_loader = MixinLoader()
 import boodle
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
+
+import boopak
 
 class SampleError(boodle.BoodlerError):
 	"""SampleError: Represents problems encountered while finding or

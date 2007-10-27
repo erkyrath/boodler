@@ -914,6 +914,11 @@ def build_safe_pathname(basedir, filename):
 	The base pathname must be in platform format (ie, on Windows, it
 	should be backslash-delimited). The result will be in platform
 	format as well.
+
+	The result will be plain ascii characters, and will be stored as a
+	str (even if the arguments are unicode). This is mostly to work around
+	some annoyances with the aifc module, which refuses to accept unicode
+	pathnames.
 	"""
 
 	if ('\\' in filename):
@@ -928,6 +933,7 @@ def build_safe_pathname(basedir, filename):
 	# Normalize out single dots
 	els = [ el for el in els if (el != '.') ]
 	pathname = os.path.join(basedir, *els)
+	pathname = str(pathname)
 	return pathname
 
 def dict_accumulate(dic, key, val):
