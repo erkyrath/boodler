@@ -714,7 +714,18 @@ def load_class_by_name(loader, name):
 	pkgname = name[ : pos ]
 	name = name[ pos+1 : ]
 
-	pkg = loader.load(pkgname) ### spec
+	pkgspec = None
+	pos = pkgname.find(':')
+	if (pos >= 0):
+		val = pkgname[ pos+1 : ]
+		pkgname = pkgname[ : pos ]
+		if (val.startswith(':')):
+			val = val[ 1 : ]
+			pkgspec = version.VersionNumber(val)
+		else:
+			pkgspec = version.VersionSpec(val)
+
+	pkg = loader.load(pkgname, pkgspec)
 	mod = pkg.get_content()
 
 	namels = name.split('.')
@@ -740,3 +751,5 @@ import boodle
 from boodle import generator, sample, stereo
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
+
+from boopak import version
