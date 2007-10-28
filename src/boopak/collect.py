@@ -531,6 +531,10 @@ def unpack_zip_file(filename, dirname):
 			else:
 				# File
 				dat = fl.read(name)
+				if (len(ls) > 1):
+					dest = os.path.join(dirname, *(ls[:-1]))
+					if (not os.path.isdir(dest)):
+						os.makedirs(dest)
 				dest = os.path.join(dirname, *ls)
 				outfl = open(dest, 'wb')
 				outfl.write(dat)
