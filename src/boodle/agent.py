@@ -14,8 +14,6 @@ class Agent:
 	init() -- set the agent up
 	run() -- perform the agent's action
 	receive() -- perform the agent's action
-	name -- a string which describes the agent
-	getname() -- return a string which describes the agent
 
 	Publically readable fields:
 
@@ -41,13 +39,24 @@ class Agent:
 	has_prop() -- see whether the agent's channel has a given property
 	set_prop() -- set a property on the agent's channel
 	del_prop() -- delete a property from the agent's channel
+
+	Class methods:
+	
+	get_title() -- return a string which describes the agent
+	get_class_name() -- ###
 	"""
 
-	name = None ### metadata?
+	# Class members:
+
+	# The default inited flag; instances set this true in __init__().
 	inited = False
+	# Another default value; subclasses can override this.
 	selected_event = None
 
-	# Maps Agent subclasses to (pkgname, resname) pairs; see get_class_name()
+	# Maps Agent subclasses to (pkgname, resname) pairs; see get_class_name().
+	# (This does not get wiped during loader.clear_cache(), which means
+	# obsolete classes stay alive forever, at least in an importing
+	# environment. If we really cared, we'd use weak key refs.)
 	cached_class_names = {}
 	
 	def __init__(self, *args, **kwargs):
@@ -519,7 +528,7 @@ class Agent:
 		Perform the agent's action. Each subclass of Agent must override
 		this method.
 		"""
-		raise NotImplementedError('"' + self.getname() + '" has no run() method')
+		raise NotImplementedError('agent has no run() method')
 
 	def receive(self, event):
 		"""receive()
@@ -531,7 +540,7 @@ class Agent:
 		The event is a tuple, starting with a string, followed (possibly)
 		by more values
 		"""
-		raise NotImplementedError('"' + self.getname() + '" has no receive() method')
+		raise NotImplementedError('agent has no receive() method')
 
 	def get_class_name(cla):
 		### dot-separated names for class and name
@@ -555,19 +564,27 @@ class Agent:
 			
 	get_class_name = classmethod(get_class_name)
 	
-	def getname(self):
-		"""getname() -> string
+	def get_title(cla):
+		"""get_title() -> string
 
-		Return the name of the agent. This defaults to returning 
-		self.name, if that is defined.
-
-		### Metadata?
+		Return the name of the agent. This defaults to returning the
+		title value from the agent's metadata.
 		"""
-		
-		nm = self.name
-		if (nm):
-			return nm
+
+		loader = pload.PackageLoader.global_loader
+		if (loader):
+			try:
+				(pkg, resource) = loader.find_item_resources(cla)
+				res = resource.get_one('dc.title')
+				if (res):
+					return res
+			except:
+				pass
+
+		# Default value
 		return 'unnamed agent'
+
+	get_title = classmethod(get_title)
 
 # Constants for the hold parameter of Agent.listen()
 HoldRun = 'run'

@@ -270,12 +270,6 @@ if (opts.driver):
 	opts.driver = opts.driver.lower()
 	cboodle = boodle.set_driver(opts.driver)
 
-avoidstdout = False
-if (opts.driver == 'stdout'):
-	avoidstdout = True
-if (level in [logging.INFO, logging.DEBUG]):
-	avoidstdout = True
-
 
 if (opts.verbosehardware or opts.listdevices):
 	# For these options, we need to start up the driver even if
@@ -345,16 +339,24 @@ try:
 		raise generator.ScheduleError('agent is uninitialized')
 	gen.addagent(ag, gen.rootchannel, 0, ag.run)
 
-	title = ag.getname() ###?
+	title = ag.get_title()
 	if (not [True for (key,val) in extraopts if (key == 'title')]):
-		extraopts.append( ('title', title) )
+		# The extraopts get passed into the C extension, which only deals
+		# with C (byte) strings. Therefore, we must convert a unicode title
+		# to UTF-8.
+		try:
+			strtitle = title
+			if (type(strtitle) is unicode):
+				strtitle = strtitle.encode('UTF-8')
+		except:
+			strtitle = 'unable to encode agent title'
+		extraopts.append( ('title', strtitle) )
 	
 	cboodle.init(opts.devname, opts.ratewanted, opts.verbosehardware, extraopts)
 	extraopts = None
 
 	try:
-		if (not avoidstdout):
-			print ('running "' + title + '"')
+		rootlogger.warning('Running "' + title + '"')
 		cboodle.loop(generator.run_agents, gen)
 	finally:
 		cboodle.final()

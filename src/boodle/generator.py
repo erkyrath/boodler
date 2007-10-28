@@ -100,7 +100,8 @@ class Generator:
 		"""
 
 		if (ag.queued):
-			raise ScheduleError('"' + ag.getname() + '"' + ' is already scheduled')
+			tup = ag.get_class_name()
+			raise ScheduleError(tup[1] + ' instance is already scheduled')
 
 		ag.generator = self
 		ag.channel = chan
@@ -232,8 +233,8 @@ class Generator:
 				han.func(*ev)
 				### cancel on return value?
 			except Exception, ex:
-				ag.logger.error('"%s" %s: %s',
-					ag.getname(), ex.__class__.__name__, ex,
+				ag.logger.error('%s: %s',
+					ex.__class__.__name__, ex,
 					exc_info=True)
 
 	def dump_stats(self, fl=None):
@@ -659,8 +660,8 @@ def run_agents(starttime, gen):
 			gen.agentruntime = runtime
 			handle()
 		except Exception, ex:
-			ag.logger.error('"%s" %s: %s',
-				ag.getname(), ex.__class__.__name__, ex,
+			ag.logger.error('%s: %s',
+				ex.__class__.__name__, ex,
 				exc_info=True)
 		ag.firsttime = False
 
