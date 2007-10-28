@@ -746,7 +746,7 @@ class PackageLoader:
 		# Check the content cache.
 		res = pkg.content_info.get(obj)
 		if (not (res is None)):
-			return res
+			return (pkg, res)
 
 		# Look for a Resource we missed.
 		objname = getattr(obj, '__name__', None)
@@ -756,14 +756,14 @@ class PackageLoader:
 			res = pkg.resources.get(objname)
 			if (not (res is None)):
 				pkg.content_info[obj] = res
-				return res
+				return (pkg, res)
 
 		# Return a blank Resource.
 		if (objname is None):
 			objname = 'UNNAMED'
 		res = boopak.pinfo.Resource(objname)
 		pkg.content_info[obj] = res
-		return res
+		return (pkg, res)
 
 	def attrify_filename(self, pkg, mod, wholekey, res, filename):
 		"""attrify_filename(pkg, mod, wholekey, res, filename) -> None

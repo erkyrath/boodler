@@ -43,12 +43,13 @@ class Agent:
 	del_prop() -- delete a property from the agent's channel
 	"""
 
-	### get the Resource ref in here!
 	name = None ### metadata?
 	inited = False
-	event = None
 	selected_event = None
 
+	# Maps Agent subclasses to (pkgname, resname) pairs; see get_class_name()
+	cached_class_names = {}
+	
 	def __init__(self, *args, **kwargs):
 		self.inited = True
 		self.queued = False
@@ -58,9 +59,8 @@ class Agent:
 		self.channel = None
 		self.origdelay = None
 		
-		### use the Boodler package name here, if possible
-		cla = self.__class__
-		self.logger = logging.getLogger('pkg.'+cla.__module__+'.'+cla.__name__)
+		tup = self.get_class_name()
+		self.logger = logging.getLogger('.'.join(tup))
 
 		try:
 			self.init(*args, **kwargs)
@@ -532,7 +532,29 @@ class Agent:
 		by more values
 		"""
 		raise NotImplementedError('"' + self.getname() + '" has no receive() method')
+
+	def get_class_name(cla):
+		### dot-separated names for class and name
+		res = Agent.cached_class_names.get(cla)
+		if (res):
+			return res
+
+		# Default value
+		res = (cla.__module__, cla.__name__)
 		
+		loader = pload.PackageLoader.global_loader
+		if (loader):
+			try:
+				(pkg, resource) = loader.find_item_resources(cla)
+				res = ('pkg.'+pkg.name, resource.key)
+			except:
+				pass
+			
+		Agent.cached_class_names[cla] = res
+		return res
+			
+	get_class_name = classmethod(get_class_name)
+	
 	def getname(self):
 		"""getname() -> string
 
@@ -751,4 +773,4 @@ from boodle import generator, sample, stereo
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
 
-from boopak import version
+from boopak import version, pload
