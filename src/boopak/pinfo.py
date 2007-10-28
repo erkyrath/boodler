@@ -45,6 +45,7 @@ class PackageInfo:
 		self.encoded_name = encode_package_name(name, vers)
 		self.dir = dir
 		self.content = None
+		self.content_info = {}
 		self.import_in_progress = False
 		self.metadata = metadata
 		self.resources = resources
@@ -806,6 +807,9 @@ class File:
 		self.package = pkg
 		self.pathname = pathname
 		self.univname = univname
+		# If the file was pulled from Resource metadata, the metadata
+		# field will be set (by the caller). See attrify_filename().
+		self.metadata = None
 	def __repr__(self):
 		if (self.univname):
 			return '<File \'./' + self.univname + '\'>'

@@ -260,4 +260,4 @@ def bexport(resname=None):
 			raise Exception('resource not found: ' + resname)
 		filename = res.get_one('boodler.filename')
 		if (filename):
-			loader.attrify_filename(curpkg, mod, resname, filename)
+			loader.attrify_filename(curpkg, mod, resname, res, filename)

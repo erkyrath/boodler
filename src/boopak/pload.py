@@ -109,6 +109,7 @@ class PackageLoader:
 
 		# Set up the (empty) caches
 		self.package_groups = {}
+		self.package_names = {}
 		self.packages = {}
 		self.external_dirs = {}
 		self.collection_scanned = False
@@ -316,6 +317,7 @@ class PackageLoader:
 
 		# Valid; we can now add it to the cache.
 		self.packages[(pkgname, vers)] = pkg
+		self.package_names[pkg.encoded_name] = pkg
 		return pkg
 
 	def clear_cache(self):
@@ -330,6 +332,7 @@ class PackageLoader:
 		
 		self.packages.clear()
 		self.package_groups.clear()
+		self.package_names.clear()
 		if (self.all_deps):
 			for dic in self.all_deps:
 				dic.clear()
@@ -661,12 +664,14 @@ class PackageLoader:
 			raise Exception('package imported while import is in progress: ' + pkg.name)
 
 		attrify_resources = False
+		map_resources = False
 		
 		maincode = pkg.metadata.get_one('boodler.main')
 		if (not maincode):
 			attrify_resources = True
 			(file, pathname, desc) = imp.find_module('emptymodule', boopak.__path__)
 		else:
+			map_resources = True
 			(file, pathname, desc) = imp.find_module(maincode, [pkg.dir])
 			
 		if (not desc[0] in ['', '.py', '.pyc']):
@@ -698,18 +703,75 @@ class PackageLoader:
 			for res in pkg.resources.resources():
 				filename = res.get_one('boodler.filename')
 				if (filename):
-					self.attrify_filename(pkg, mod, res.key, filename)
-				
+					self.attrify_filename(pkg, mod, res.key, res, filename)
+
+		if (map_resources):
+			# Look for declarations in the module which are named in
+			# the resources map. Cache the mapping from the declaration
+			# to the resource object.
+			for res in pkg.resources.resources():
+				keyls = parse_resource_name(res.key)
+				submod = mod
+				for key in keyls:
+					submod = getattr(submod, key, None)
+					if (submod is None):
+						break
+				if (not (submod is None)):
+					pkg.content_info[submod] = res
+		
 		# The import is complete.
 		self.module_info[mod] = pkg
 		pkg.content = mod
 
-	def attrify_filename(self, pkg, mod, wholekey, filename):
-		"""attrify_filename(pkg, mod, wholekey, filename) -> None
+	def find_item_resources(self, obj):
+		### Given an object declared in a package module, try to find
+		### its Resource. If none, return a blank one. Cache nicely.
+
+		modname = getattr(obj, '__module__', None)
+		if (modname is None):
+			raise ValueError('does not appear to have been defined inside a module: ' + str(obj))
+
+		pos = modname.find('.')
+		if (pos < 0):
+			basemodname = modname
+			prefix = None
+		else:
+			basemodname = modname[:pos]
+			prefix = modname[pos+1:]
+
+		pkg = self.package_names.get(basemodname)
+		if (pkg is None):
+			raise ValueError('does not appear to have been defined inside a Boodler package: ' + str(obj))
+
+		# Check the content cache.
+		res = pkg.content_info.get(obj)
+		if (not (res is None)):
+			return res
+
+		# Look for a Resource we missed.
+		objname = getattr(obj, '__name__', None)
+		if (objname):
+			if (prefix):
+				objname = prefix+'.'+objname
+			res = pkg.resources.get(objname)
+			if (not (res is None)):
+				pkg.content_info[obj] = res
+				return res
+
+		# Return a blank Resource.
+		if (objname is None):
+			objname = 'UNNAMED'
+		res = boopak.pinfo.Resource(objname)
+		pkg.content_info[obj] = res
+		return res
+
+	def attrify_filename(self, pkg, mod, wholekey, res, filename):
+		"""attrify_filename(pkg, mod, wholekey, res, filename) -> None
 
 		Given a filename, create a File representing it, and store the
 		File in the module at a location defined by wholekey. Submodules
-		are created as necessary.
+		are created as necessary. The res argument is the Resource
+		object associated with wholekey.
 
 		The filename must be in universal format: relative to the package
 		root, and written with forward slashes, not backslashes.
@@ -745,6 +807,7 @@ class PackageLoader:
 		# We've drilled down so that mod is the next-to-last element
 		# of the original wholekey.
 		setattr(mod, attr, file)
+		file.metadata = res
 
 class ExternalDir:
 	"""ExternalDir: information about a package directory outside the

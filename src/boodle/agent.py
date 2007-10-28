@@ -43,6 +43,7 @@ class Agent:
 	del_prop() -- delete a property from the agent's channel
 	"""
 
+	### get the Resource ref in here!
 	name = None ### metadata?
 	inited = False
 	event = None
