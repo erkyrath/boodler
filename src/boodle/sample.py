@@ -144,6 +144,7 @@ def get(sname):
 	# If the argument is a File, extract the pathname.
 	if (isinstance(sname, boopak.pinfo.File)):
 		### This would be nicer if we called .open() and used the stream
+		### (or rather, passed the File into the loader)
 		### work mixin into this
 		sname = sname.pathname
 
