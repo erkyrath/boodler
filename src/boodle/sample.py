@@ -12,6 +12,7 @@ import wave
 import sunau
 import struct
 
+# Maps File objects, and also str/unicode pathnames, to Samples.
 cache = {}
 
 sound_dirs = os.environ.get('BOODLER_SOUND_PATH', os.curdir)
@@ -141,36 +142,38 @@ def get(sname):
 	if (isinstance(sname, Sample)):
 		return sname
 
-	# If the argument is a File, extract the pathname.
-	if (isinstance(sname, boopak.pinfo.File)):
-		### This would be nicer if we called .open() and used the stream
-		### (or rather, passed the File into the loader)
-		### work mixin into this
-		sname = sname.pathname
-
 	# If we've seen it before, it's in the cache.
 	samp = cache.get(sname)
 	if (not (samp is None)):
 		return samp
-	
-	if (os.path.isabs(sname)):
+
+	suffix = None
+		
+	if (isinstance(sname, boopak.pinfo.File)):
+		filename = sname
+		if (not os.access(sname.pathname, os.R_OK)):
+			raise SampleError('file not readable: ' + sname.pathname)
+		(dummy, suffix) = os.path.splitext(sname.pathname)
+	elif (os.path.isabs(sname)):
 		filename = sname
 		if (not os.access(filename, os.R_OK)):
 			raise SampleError('file not readable: ' + filename)
+		(dummy, suffix) = os.path.splitext(filename)
 	else:
 		for dir in sound_dirs:
 			filename = os.path.join(dir, sname)
 			if (os.access(filename, os.R_OK)):
+				(dummy, suffix) = os.path.splitext(filename)
 				break
 		else:
 			raise SampleError('file not readable: ' + sname)
 
-	(dummy, suffix) = os.path.splitext(filename)
 	suffix = suffix.lower()
 	
 	loader = find_loader(suffix)
 	samp = loader.load(filename, suffix)
 
+	# Cache under the original key (may be File, str, or unicode)
 	cache[sname] = samp
 	return samp
 
@@ -211,13 +214,12 @@ class SampleLoader:
 			self.raw_load(filename, csamp)
 		except Exception, ex:
 			cboodle.delete_sample(csamp)
-			raise ex
+			raise
 		samp = Sample(filename, csamp)
 		samp.reloader = self
 		return samp
 
 	def reload(self, samp):
-		#print 'reloading', samp.filename
 		self.raw_load(samp.filename, samp.csamp)
 
 def find_loader(suffix):
@@ -229,15 +231,24 @@ def find_loader(suffix):
 
 class AifcLoader(SampleLoader):
 	suffixlist = ['.aifc', '.aiff', '.aif']
+	
 	def raw_load(self, filename, csamp):
-		fl = aifc.open(filename, 'r')
-		numframes = fl.getnframes()
-		dat = fl.readframes(numframes)
-		numchannels = fl.getnchannels()
-		samplebits = fl.getsampwidth()*8
-		framerate = fl.getframerate()
-		markers = fl.getmarkers()
-		fl.close()
+		if (isinstance(filename, boopak.pinfo.File)):
+			afl = filename.open(True)
+		else:
+			afl = open(filename, 'rb')
+		try:
+			fl = aifc.open(afl)
+			numframes = fl.getnframes()
+			dat = fl.readframes(numframes)
+			numchannels = fl.getnchannels()
+			samplebits = fl.getsampwidth()*8
+			framerate = fl.getframerate()
+			markers = fl.getmarkers()
+			fl.close()
+		finally:
+			afl.close()
+			
 		loopstart = -1
 		loopend = -1
 		if (not (markers is None)):
@@ -258,14 +269,23 @@ aifc_loader = AifcLoader()
 
 class WavLoader(SampleLoader):
 	suffixlist = ['.wav']
+	
 	def raw_load(self, filename, csamp):
-		fl = wave.open(filename, 'r')
-		numframes = fl.getnframes()
-		dat = fl.readframes(numframes)
-		numchannels = fl.getnchannels()
-		samplebits = fl.getsampwidth()*8
-		framerate = fl.getframerate()
-		fl.close()
+		if (isinstance(filename, boopak.pinfo.File)):
+			afl = filename.open(True)
+		else:
+			afl = open(filename, 'rb')
+		try:
+			fl = wave.open(afl)
+			numframes = fl.getnframes()
+			dat = fl.readframes(numframes)
+			numchannels = fl.getnchannels()
+			samplebits = fl.getsampwidth()*8
+			framerate = fl.getframerate()
+			fl.close()
+		finally:
+			afl.close()
+		
 		params = (framerate, numframes, dat, -1, -1, numchannels, samplebits, 1, big_endian)
 		res = cboodle.load_sample(csamp, params)
 		if (not res):
@@ -275,14 +295,23 @@ wav_loader = WavLoader()
 
 class SunAuLoader(SampleLoader):
 	suffixlist = ['.au']
+	
 	def raw_load(self, filename, csamp):
-		fl = sunau.open(filename, 'r')
-		numframes = fl.getnframes()
-		dat = fl.readframes(numframes)
-		numchannels = fl.getnchannels()
-		samplebits = fl.getsampwidth()*8
-		framerate = fl.getframerate()
-		fl.close()
+		if (isinstance(filename, boopak.pinfo.File)):
+			afl = filename.open(True)
+		else:
+			afl = open(filename, 'rb')
+		try:
+			fl = sunau.open(afl, 'r')
+			numframes = fl.getnframes()
+			dat = fl.readframes(numframes)
+			numchannels = fl.getnchannels()
+			samplebits = fl.getsampwidth()*8
+			framerate = fl.getframerate()
+			fl.close()
+		finally:
+			afl.close()
+			
 		params = (framerate, numframes, dat, -1, -1, numchannels, samplebits, 1, 1)
 		res = cboodle.load_sample(csamp, params)
 		if (not res):
@@ -294,6 +323,8 @@ class MixinLoader(SampleLoader):
 	suffixlist = ['.mixin']
 
 	def load(self, filename, suffix):
+		### fix
+		
 		ranges = []
 		defval = None
 		dirname = os.path.dirname(filename)
