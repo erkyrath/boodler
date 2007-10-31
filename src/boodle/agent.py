@@ -664,9 +664,10 @@ class NullAgent(Agent):
 	This agent does nothing. 
 	"""
 	
-	name = 'null agent'
 	def run(self):
 		pass
+	def get_title(self):
+		return 'Null Agent'
 
 class StopAgent(Agent):
 	"""StopAgent:
@@ -676,9 +677,10 @@ class StopAgent(Agent):
 	discarded.
 	"""
 
-	name = 'stop channel'
 	def run(self):
 		self.channel.stop()
+	def get_title(self):
+		return 'Stop Channel'
 
 class FadeOutAgent(Agent):
 	"""FadeOutAgent(interval):
@@ -687,13 +689,14 @@ class FadeOutAgent(Agent):
 	given interval, and then stop.
 	"""
 
-	name = 'fade out and stop channel'
 	def __init__(self, duration=0.005):
 		Agent.__init__(self)
 		self.duration = float(duration)
 	def run(self):
 		self.channel.set_volume(0, self.duration)
 		self.sched_agent(StopAgent(), self.duration)
+	def get_title(self):
+		return 'Fade Out and Stop Channel'
 
 class FadeInOutAgent(Agent):
 	"""FadeInOutAgent(agent, liveinterval, fadeinterval, fadeoutinterval=fadeinterval):
@@ -710,7 +713,6 @@ class FadeInOutAgent(Agent):
 	second is the fade-out time.
 	"""
 
-	name = 'fade in, fade out, stop channel'
 	def __init__(self, agentinst, liveinterval=10.0, fadeinterval=1.0, fadeoutinterval=None):
 		Agent.__init__(self)
 		self.agentinst = agentinst
@@ -726,6 +728,8 @@ class FadeInOutAgent(Agent):
 		chan.set_volume(1, self.fadeininterval)
 		ag = FadeOutAgent(self.fadeoutinterval)
 		self.sched_agent(ag, self.liveinterval+self.fadeininterval, chan)
+	def get_title(self):
+		return 'Fade In, Fade Out, Stop Channel'
 
 
 ### What is this in the new system? Certainly moving elsewhere. Maybe
