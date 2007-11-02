@@ -400,6 +400,8 @@ class CreateCmd(Command):
 		tup = create.examine_directory(frame.loader, absdirname, destname)
 		((pkgname, pkgvers), contents, meta, ress) = tup
 
+		frame.loader.clear_external_packages()
+
 		if (not destname):
 			destname = os.path.dirname(absdirname)
 			destfile = create.build_package_filename(pkgname, pkgvers)

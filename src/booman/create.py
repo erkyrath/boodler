@@ -255,6 +255,9 @@ def examine_directory(loader, dirname, destname=None):
 			if (file.endswith('.wav')):
 				resuse = 'sound'
 				filebase = file[ : -4 ]
+			if (file.endswith('.mixin')):
+				resuse = 'sound'
+				filebase = file[ : -6 ]
 
 			if (not resuse):
 				continue
@@ -318,7 +321,7 @@ def examine_directory(loader, dirname, destname=None):
 		walk_module(context, mod)
 
 	finally:
-		loader.clear_external_packages()
+		loader.remove_external_package(dirname)
 
 	# Add the dependencies to the metadata.
 	ls = import_record.get( (pkgname, pkgvers) )

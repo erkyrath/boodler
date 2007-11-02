@@ -251,11 +251,16 @@ import boodle
 import boopak.pload
 
 loader = boopak.pload.PackageLoader(coldir, importing_ok=True)
-for val in opts.externaldirs:
-	### go through a create cycle, so that resources are found?
-	(pkgname, pkgvers) = loader.add_external_package(val)
-	rootlogger.warning('located external package: %s %s',
-		pkgname, pkgvers)
+
+if (opts.externaldirs):
+	import booman.command
+	import booman.create
+	for val in opts.externaldirs:
+		# Go through a create cycle, so that resources are found.
+		tup = booman.create.examine_directory(loader, val)
+		(pkgname, pkgvers) = loader.add_external_package(val, tup[2], tup[3])
+		rootlogger.warning('located external package: %s %s',
+			pkgname, pkgvers)
 
 from boodle import agent, generator
 cboodle = boodle.cboodle

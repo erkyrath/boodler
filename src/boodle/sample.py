@@ -11,6 +11,7 @@ import aifc
 import wave
 import sunau
 import struct
+import bisect
 
 # Maps File objects, and also str/unicode pathnames, to Samples.
 cache = {}
@@ -32,6 +33,9 @@ class Sample:
 		self.lastused = 0
 		self.csamp = csamp
 
+	def __repr__(self):
+		return '<Sample at ' + str(self.filename) + '>'
+		
 	def queue_note(self, pitch, volume, panscale, panshift, starttime, chan):
 		if (cboodle.is_sample_error(self.csamp)):
 			raise SampleError('sample is unplayable')
@@ -80,36 +84,61 @@ class Sample:
 				(float(res[2]) / ratio, float(res[3]) / ratio))
 
 class MixinSample(Sample):
-	def __init__(self, filename, ranges, defval):
-		self.filename = filename
+	def __init__(self, filename, ranges, default, modname=None):
 		self.ranges = ranges
-		self.defval = defval
+		self.minvals = [ rn.min for rn in ranges ]
+		self.default = default
+
+		if (filename is None):
+			filename = '<constructed>'
+		self.filename = filename
+		
+		if (modname):
+			self.__module__ = modname
+		
 		self.lastused = 0
 		self.refcount = 0
 		self.csamp = None
 
 	def find(self, pitch):
-		for (startval, endval, pair) in self.ranges:
-			if (pitch >= startval and pitch <= endval):
-				return pair
-		if (not (self.defval is None)):
-			return self.defval
+		pos = bisect.bisect(self.minvals, pitch)
+		pos -= 1
+		
+		while (pos >= 0):
+			rn = self.ranges[pos]
+			if (pitch <= rn.max):
+				return rn
+			pos -= 1
+			
+		if (not (self.default is None)):
+			return self.default
+			
 		raise SampleError(str(pitch) + ' is outside mixin ranges')
 
 	def queue_note(self, pitch, volume, panscale, panshift, starttime, chan):
-		(realsamp, ratio) = self.find(pitch)
-		realpitch = pitch * ratio
-		return realsamp.queue_note(realpitch, volume, panscale, panshift, starttime, chan)
+		rn = self.find(pitch)
+		if (not (rn.pitch is None)):
+			pitch *= rn.pitch
+		if (not (rn.volume is None)):
+			volume *= rn.volume
+		samp = get(rn.sample)
+		return samp.queue_note(pitch, volume, panscale, panshift, starttime, chan)
 
 	def queue_note_duration(self, pitch, volume, panscale, panshift, starttime, duration, chan):
-		(realsamp, ratio) = self.find(pitch)
-		realpitch = pitch * ratio
-		return realsamp.queue_note_duration(realpitch, volume, panscale, panshift, starttime, duration, chan)
+		rn = self.find(pitch)
+		if (not (rn.pitch is None)):
+			pitch *= rn.pitch
+		if (not (rn.volume is None)):
+			volume *= rn.volume
+		samp = get(rn.sample)
+		return samp.queue_note_duration(pitch, volume, panscale, panshift, starttime, duration, chan)
 
 	def get_info(self, pitch=1.0):
-		(realsamp, ratio) = self.find(pitch)
-		realpitch = pitch * ratio
-		return realsamp.get_info(realpitch)
+		rn = self.find(pitch)
+		if (not (rn.pitch is None)):
+			pitch *= rn.pitch
+		samp = get(rn.sample)
+		return samp.get_info(pitch)
 
 def unload_unused(deathtime):
 	for samp in list(cache.values()):
@@ -198,6 +227,105 @@ def get_info(samp, pitch=1):
 	samp = get(samp)
 	return samp.get_info(pitch)
 
+
+class MixIn:
+	"""MixIn: base class for statically declared mix-in samples.
+
+	To use this, declare a construct:
+
+	class your_sample_name(MixIn):
+		ranges = [
+			MixIn.range(...),
+			MixIn.range(...),
+			MixIn.range(...),
+		]
+		default = MixIn.default(...)
+
+	A range declaration looks like
+
+		MixIn.range(maxval, sample)
+	or
+		MixIn.range(minval, maxval, sample)
+	or
+		MixIn.range(minval, maxval, sample, pitch=1.0, volume=1.0)
+
+	If you don't give a minval, the maxval of the previous range is used.
+	You may use the constants MixIn.MIN and MixIn.MAX to represent the
+	limits of the range. The pitch and volume arguments are optional.
+
+	A default declaration looks like
+
+		MixIn.default(sample)
+	or
+		MixIn.default(sample, pitch=1.0, volume=1.0)
+
+	The default declaration is option. (As are, again, the pitch and
+	volume arguments.)
+
+	When your declaration is complete, your_sample_name will magically
+	be a MixinSample instance (not a class).
+	"""
+	
+	MIN = 0.0
+	MAX = 1000000.0
+
+	def default(samp, pitch=None, volume=None):
+		if (samp is None):
+			raise ValueError('default must have a sample')
+		return MixIn.range(MixIn.MIN, MixIn.MAX, samp,
+			pitch=pitch, volume=volume)
+	default = staticmethod(default)
+
+	class range:
+		def __init__(self, arg1, arg2, arg3=None, pitch=None, volume=None):
+			if (arg3 is None):
+				(min, max, samp) = (None, arg1, arg2)
+			else:
+				(min, max, samp) = (arg1, arg2, arg3)
+			if (samp is None):
+				raise ValueError('range must have a sample')
+			if (max is None):
+				raise ValueError('range must have a maximum value')
+				
+			(self.min, self.max) = (min, max)
+			self.sample = samp
+			self.pitch = pitch
+			self.volume = volume
+
+		def __repr__(self):
+			return '<range %s, %s>' % (self.min, self.max)
+
+		def __cmp__(self, other):
+			if (not (self.min is None or other.min is None)):
+				res = cmp(self.min, other.min)
+				if (res):
+					return res
+			if (not (self.max is None or other.max is None)):
+				res = cmp(self.max, other.max)
+				if (res):
+					return res
+			return 0
+
+	def __class__(name, bases, dic):
+		ranges = dic['ranges']
+		default = dic.get('default', None)
+		modname = dic['__module__']
+
+		ranges.sort()
+		
+		lastmin = 0.0
+		for rn in ranges:
+			if (rn.min is None):
+				rn.min = lastmin
+			if (rn.min > rn.max):
+				raise ValueError('range\'s min must be less than its max')
+			lastmin = rn.max
+
+		return MixinSample('<'+name+'>', ranges, default, modname)
+	__class__ = staticmethod(__class__)
+
+
+	
 class SampleLoader:
 	suffixmap = {}
 
@@ -323,13 +451,24 @@ class MixinLoader(SampleLoader):
 	suffixlist = ['.mixin']
 
 	def load(self, filename, suffix):
-		### fix
+		### this is ugly.
+
+		dirname = None
+		modname = None
+		
+		if (isinstance(filename, boopak.pinfo.File)):
+			afl = filename.open(True)
+			modname = filename.package.encoded_name
+		else:
+			dirname = os.path.dirname(filename)
+			afl = open(filename, 'rb')
+		linelist = afl.readlines()
+		afl.close()
 		
 		ranges = []
 		defval = None
-		dirname = os.path.dirname(filename)
 
-		for line in fileinput.input(filename):
+		for line in linelist:
 			tok = line.split()
 			if len(tok) == 0:
 				continue
@@ -338,35 +477,48 @@ class MixinLoader(SampleLoader):
 			if (tok[0] == 'range'):
 				if (len(tok) < 4):
 					raise SampleError('range and filename required after range')
-				pair = self.parsepair(dirname, tok[3:])
+				pair = self.parsepair(filename, dirname, tok[3:])
 				if (tok[1] == '-'):
 					if (len(ranges) == 0):
 						startval = 0.0
 					else:
-						startval = ranges[-1][1]
+						startval = ranges[-1].max
 				else:
 					startval = float(tok[1])
 				if (tok[2] == '-'):
-					endval = 1000000.0
+					endval = MixIn.MAX
 				else:
 					endval = float(tok[2])
-				ranges.append( (startval, endval, pair) )
+				rn = MixIn.range(startval, endval, pair[0], pitch=pair[1])
+				ranges.append(rn)
 			elif (tok[0] == 'else'):
 				if (len(tok) < 2):
 					raise SampleError('filename required after else')
-				defval = self.parsepair(dirname, tok[1:])
+				pair = self.parsepair(filename, dirname, tok[1:])
+				rn = MixIn.default(pair[0], pitch=pair[1])
+				defval = rn
 			else:
 				raise SampleError('unknown statement in mixin: ' + tok[0])
-		return MixinSample(filename, ranges, defval)
 
-	def parsepair(self, dirname, tok):
-		newname = os.path.join(dirname, tok[0])
-		newname = os.path.normpath(newname)
-		samp = get(newname)
+		return MixinSample(filename, ranges, defval, modname)
+
+	def parsepair(self, filename, dirname, tok):
+		if (dirname is None):
+			### parse qualified PKG/SOUND names as well.
+			val = filename.package.get_content()
+			ls = tok[0].split('.')
+			for el in ls:
+				val = getattr(val, el)
+			samp = get(val)
+		else:
+			newname = os.path.join(dirname, tok[0])
+			newname = os.path.normpath(newname)
+			samp = get(newname)
+			
 		if (len(tok) > 1):
 			ratio = float(tok[1])
 		else:
-			ratio = 1.0
+			ratio = None
 		return (samp, ratio)
 
 	def reload(self, samp):

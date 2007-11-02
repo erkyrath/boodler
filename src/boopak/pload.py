@@ -726,6 +726,9 @@ class PackageLoader:
 	def find_item_resources(self, obj):
 		### Given an object declared in a package module, try to find
 		### its Resource. If none, return a blank one. Cache nicely.
+		### rename to "find_item_metadata"?
+
+		### this ought to work for auto-created File objects.
 
 		modname = getattr(obj, '__module__', None)
 		if (modname is None):
@@ -809,6 +812,14 @@ class PackageLoader:
 		setattr(mod, attr, file)
 		file.metadata = res
 
+	def start_import_recording(self):
+		###
+		pass
+
+	def stop_import_recording(self):
+		###
+		return {}
+	
 class ExternalDir:
 	"""ExternalDir: information about a package directory outside the
 	collection.
