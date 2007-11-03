@@ -506,7 +506,7 @@ class MixinLoader(SampleLoader):
 		if (dirname is None):
 			### parse qualified PKG/SOUND names as well.
 			if ('/' in tok[0]):
-				samp = filename.package.loader.find_item_by_name(tok[0], package=filename.package)
+				samp = filename.package.loader.load_item_by_name(tok[0], package=filename.package)
 			else:
 				val = filename.package.get_content()
 				ls = tok[0].split('.')

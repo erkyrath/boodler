@@ -750,7 +750,7 @@ def load_class_by_name(loader, name):
 	if (name == ''):
 		return NullAgent ###?
 
-	clas = loader.find_item_by_name(name)
+	clas = loader.load_item_by_name(name)
 	
 	if (type(clas) != type(Agent)):
 		raise TypeError(name + ' is not a class')

@@ -338,7 +338,23 @@ class TestPLoad(unittest.TestCase):
 		self.assertEqual(vers, '1.5.3')
 
 	def subtest_load_by_name(self):
-		pass ####
+		file = self.loader.load_item_by_name('only.files/dir.two')
+		self.assertResourceReadable(file, 'dir.two')
+		file = self.loader.load_item_by_name('only.files:1.0/dir.two')
+		self.assertResourceReadable(file, 'dir.two')
+		file = self.loader.load_item_by_name('only.files::1.0/dir.two')
+		self.assertResourceReadable(file, 'dir.two')
+
+		pkg = self.loader.load('only.files')
+		file = self.loader.load_item_by_name('dir.two', package=pkg)
+		self.assertResourceReadable(file, 'dir.two')
+
+		self.assertRaises(pload.PackageNotFoundError,
+			self.loader.load_item_by_name, 'only.files:1.1/dir.two')
+		self.assertRaises(ValueError,
+			self.loader.load_item_by_name, 'dir.two')
+		self.assertRaises(ValueError,
+			self.loader.load_item_by_name, 'only.files/none.such')
 
 	def subtest_external_dir(self):
 		self.assertRaises(pload.PackageNotFoundError, 
@@ -592,3 +608,7 @@ class TestPLoad(unittest.TestCase):
 
 		val = pkg.metadata.get_one('test.unicode')
 		self.assertEqual(val, u'alpha is \u03b1')
+
+	def subtest_mixin_structure(self):
+		pass ####
+

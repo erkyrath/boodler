@@ -723,8 +723,8 @@ class PackageLoader:
 		self.module_info[mod] = pkg
 		pkg.content = mod
 
-	def find_item_by_name(self, name, package=None):
-		"""find_item_by_name(name, package=None) -> value
+	def load_item_by_name(self, name, package=None):
+		"""load_item_by_name(name, package=None) -> value
 
 		Given a string that names a resource -- for example,
 		'com.eblong.example/reptile.Hiss' -- import the module and
