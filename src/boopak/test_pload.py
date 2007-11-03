@@ -7,6 +7,7 @@ from boopak import pload
 from boopak import collect
 from boopak import version
 from boopak import pinfo
+import boodle
 
 collection = {}
 def list_collection():
@@ -100,12 +101,22 @@ def build_package(loader, name, vers='1.0',
 		for reskey in resources:
 			resfile = resources[reskey]
 			fl.write(':'+reskey+'\n')
+			
+			if (type(resfile) is dict):
+				for key in resfile:
+					fl.write(key + ': ' + resfile[key] + '\n')
+				continue
+
+			content = 'content='+reskey
+			if (type(resfile) is tuple):
+				(resfile, content) = resfile
+				
 			fl.write('boodler.filename: '+resfile+'\n')
 			val = os.path.join(path, *resfile.split('/'))
 			if (not os.path.isdir(os.path.dirname(val))):
 				os.makedirs(os.path.dirname(val))
 			subfl = open(val, 'wb')
-			subfl.write('content='+reskey)
+			subfl.write(content)
 			subfl.close()
 		fl.close()
 
@@ -229,6 +240,40 @@ class TestPLoad(unittest.TestCase):
 				'test.unicode':'alpha is \xce\xb1',
 			})
 			
+		build_package(self.loader, 'mixin.static',
+			resources={
+				'zero':'zero.txt',
+				'one':'one.txt',
+				'two':'two.txt',
+				'mixer': { 'dc.title':'Mix-In' },
+			},
+			mod_content=[
+				'from boopak.package import bexport',
+				'bexport()',
+				'from boodle.sample import MixIn',
+				'class mixer(MixIn):',
+				'  ranges = [',
+				'    MixIn.range(2.0, 2.1, two, volume=1.4),',
+				'    MixIn.range(1.5, one, pitch=1.3),',
+				'    MixIn.range(1.0, zero),',
+				'  ]',
+				'  default = MixIn.default(zero)',
+			])
+			
+		build_package(self.loader, 'mixin.file',
+			resources={
+				'zero':'zero.txt',
+				'one':'one.txt',
+				'two':'two.txt',
+				'mixer':('mixer.mixin', """
+# Comment.
+range 2 2.1 two - 1.4
+range - 1.5 one 1.3
+range - 1.0 zero
+else two
+"""),
+			})
+				
 	def tearDown(self):
 		collect.remove_recursively(self.basedir)
 
@@ -356,6 +401,15 @@ class TestPLoad(unittest.TestCase):
 		self.assertRaises(ValueError,
 			self.loader.load_item_by_name, 'only.files/none.such')
 
+	def subtest_find_item_resources(self):
+		pkg = self.loader.load('only.files')
+		mod = pkg.get_content()
+		
+		(dummy, res) = self.loader.find_item_resources(mod.dir.two)
+		self.assert_(dummy is pkg)
+		self.assert_(res is pkg.resources.get('dir.two'))
+		self.assertEquals(res.get_one('boodler.filename'), 'dir/two.txt')
+	
 	def subtest_external_dir(self):
 		self.assertRaises(pload.PackageNotFoundError, 
 			self.loader.load, 'external.one')
@@ -609,6 +663,46 @@ class TestPLoad(unittest.TestCase):
 		val = pkg.metadata.get_one('test.unicode')
 		self.assertEqual(val, u'alpha is \u03b1')
 
-	def subtest_mixin_structure(self):
-		pass ####
+	def subtest_mixin_static(self):
+		pkg = self.loader.load('mixin.static')
+		mod = pkg.get_content()
+		mixer = mod.mixer
+		
+		self.assert_(isinstance(mixer, boodle.sample.MixinSample))
+		ls = [ (rn.min, rn.max) for rn in mixer.ranges ]
+		self.assertEqual(ls, [(0.0,1.0), (1.0,1.5), (2.0,2.1)])
 
+		self.assertEqual(mixer.ranges[1].pitch, 1.3)
+		self.assertEqual(mixer.ranges[2].volume, 1.4)
+		self.assert_(mixer.ranges[0].pitch is None)
+		self.assert_(mixer.ranges[0].volume is None)
+		self.assert_(mixer.ranges[1].sample is mod.one)
+		self.assert_(mixer.default.sample is mod.zero)
+
+		(dummy, res) = self.loader.find_item_resources(mixer)
+		res2 = pkg.resources.get('mixer')
+		self.assert_(res is res2)
+		self.assertEqual(res.get_one('dc.title'), 'Mix-In')
+
+	def subtest_mixin_file(self):
+		pkg = self.loader.load('mixin.file')
+		mod = pkg.get_content()
+		
+		mixer = boodle.sample.get(mod.mixer)
+		self.assert_(isinstance(mixer, boodle.sample.MixinSample))
+		
+		ls = [ (rn.min, rn.max) for rn in mixer.ranges ]
+		self.assertEqual(ls, [(0.0,1.0), (1.0,1.5), (2.0,2.1)])
+
+		self.assertEqual(mixer.ranges[1].pitch, 1.3)
+		self.assertEqual(mixer.ranges[2].volume, 1.4)
+		self.assert_(mixer.ranges[0].pitch is None)
+		self.assert_(mixer.ranges[0].volume is None)
+		self.assert_(mixer.ranges[1].sample is mod.one)
+		self.assert_(mixer.default.sample is mod.two)
+
+		(dummy, res) = self.loader.find_item_resources(mod.mixer)
+		self.assert_(dummy is pkg)
+		res2 = pkg.resources.get('mixer')
+		self.assert_(res is res2)
+		self.assertEqual(res.get_one('boodler.filename'), 'mixer.mixin')

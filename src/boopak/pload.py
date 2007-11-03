@@ -854,8 +854,14 @@ class PackageLoader:
 
 		# We've drilled down so that mod is the next-to-last element
 		# of the original wholekey.
+		
 		setattr(mod, attr, file)
 		file.metadata = res
+		
+		# Set properties analogous to a statically-declared object. This
+		# will help with find_item_resources() later on.
+		file.__module__ = mod.__name__
+		file.__name__ = attr
 
 	def start_import_recording(self):
 		###

@@ -271,7 +271,7 @@ class MixIn:
 
 	def default(samp, pitch=None, volume=None):
 		if (samp is None):
-			raise ValueError('default must have a sample')
+			raise SampleError('default must have a sample')
 		return MixIn.range(MixIn.MIN, MixIn.MAX, samp,
 			pitch=pitch, volume=volume)
 	default = staticmethod(default)
@@ -283,9 +283,9 @@ class MixIn:
 			else:
 				(min, max, samp) = (arg1, arg2, arg3)
 			if (samp is None):
-				raise ValueError('range must have a sample')
+				raise SampleError('range must have a sample')
 			if (max is None):
-				raise ValueError('range must have a maximum value')
+				raise SampleError('range must have a maximum value')
 				
 			(self.min, self.max) = (min, max)
 			self.sample = samp
@@ -311,6 +311,11 @@ class MixIn:
 		default = dic.get('default', None)
 		modname = dic['__module__']
 
+		MixIn.sort_mixin_ranges(ranges)
+		return MixinSample('<'+name+'>', ranges, default, modname)
+	__class__ = staticmethod(__class__)
+
+	def sort_mixin_ranges(ranges):
 		ranges.sort()
 		
 		lastmin = 0.0
@@ -318,13 +323,9 @@ class MixIn:
 			if (rn.min is None):
 				rn.min = lastmin
 			if (rn.min > rn.max):
-				raise ValueError('range\'s min must be less than its max')
+				raise SampleError('range\'s min must be less than its max')
 			lastmin = rn.max
-
-		return MixinSample('<'+name+'>', ranges, default, modname)
-	__class__ = staticmethod(__class__)
-
-
+	sort_mixin_ranges = staticmethod(sort_mixin_ranges)
 	
 class SampleLoader:
 	suffixmap = {}
@@ -451,8 +452,6 @@ class MixinLoader(SampleLoader):
 	suffixlist = ['.mixin']
 
 	def load(self, filename, suffix):
-		### this is ugly.
-
 		dirname = None
 		modname = None
 		
@@ -479,10 +478,7 @@ class MixinLoader(SampleLoader):
 					raise SampleError('range and filename required after range')
 				tup = self.parseparam(filename, dirname, tok[3:])
 				if (tok[1] == '-'):
-					if (len(ranges) == 0):
-						startval = 0.0
-					else:
-						startval = ranges[-1].max
+					startval = None
 				else:
 					startval = float(tok[1])
 				if (tok[2] == '-'):
@@ -500,19 +496,13 @@ class MixinLoader(SampleLoader):
 			else:
 				raise SampleError('unknown statement in mixin: ' + tok[0])
 
+		MixIn.sort_mixin_ranges(ranges)
 		return MixinSample(filename, ranges, defval, modname)
 
 	def parseparam(self, filename, dirname, tok):
 		if (dirname is None):
-			### parse qualified PKG/SOUND names as well.
-			if ('/' in tok[0]):
-				samp = filename.package.loader.load_item_by_name(tok[0], package=filename.package)
-			else:
-				val = filename.package.get_content()
-				ls = tok[0].split('.')
-				for el in ls:
-					val = getattr(val, el)
-				samp = get(val)
+			pkg = filename.package
+			samp = pkg.loader.load_item_by_name(tok[0], package=pkg)
 		else:
 			newname = os.path.join(dirname, tok[0])
 			newname = os.path.normpath(newname)
