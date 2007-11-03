@@ -337,6 +337,9 @@ class TestPLoad(unittest.TestCase):
 		vers = grp.find_version_match(version.VersionSpec('1'))
 		self.assertEqual(vers, '1.5.3')
 
+	def subtest_load_by_name(self):
+		pass ####
+
 	def subtest_external_dir(self):
 		self.assertRaises(pload.PackageNotFoundError, 
 			self.loader.load, 'external.one')

@@ -750,33 +750,7 @@ def load_class_by_name(loader, name):
 	if (name == ''):
 		return NullAgent ###?
 
-	pos = name.find('/')
-	if (pos < 0):
-		raise Exception('argument must be of the form package/Agent')
-	pkgname = name[ : pos ]
-	name = name[ pos+1 : ]
-
-	pkgspec = None
-	pos = pkgname.find(':')
-	if (pos >= 0):
-		val = pkgname[ pos+1 : ]
-		pkgname = pkgname[ : pos ]
-		if (val.startswith(':')):
-			val = val[ 1 : ]
-			pkgspec = version.VersionNumber(val)
-		else:
-			pkgspec = version.VersionSpec(val)
-
-	pkg = loader.load(pkgname, pkgspec)
-	mod = pkg.get_content()
-
-	namels = name.split('.')
-	try:
-		clas = mod
-		for el in namels:
-			clas = getattr(clas, el)
-	except AttributeError, ex:
-		raise ValueError('unable to load ' + name + ' (' + str(ex) + ')')
+	clas = loader.find_item_by_name(name)
 	
 	if (type(clas) != type(Agent)):
 		raise TypeError(name + ' is not a class')

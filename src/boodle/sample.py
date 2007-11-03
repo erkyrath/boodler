@@ -477,7 +477,7 @@ class MixinLoader(SampleLoader):
 			if (tok[0] == 'range'):
 				if (len(tok) < 4):
 					raise SampleError('range and filename required after range')
-				pair = self.parsepair(filename, dirname, tok[3:])
+				tup = self.parseparam(filename, dirname, tok[3:])
 				if (tok[1] == '-'):
 					if (len(ranges) == 0):
 						startval = 0.0
@@ -489,37 +489,46 @@ class MixinLoader(SampleLoader):
 					endval = MixIn.MAX
 				else:
 					endval = float(tok[2])
-				rn = MixIn.range(startval, endval, pair[0], pitch=pair[1])
+				rn = MixIn.range(startval, endval, tup[0], pitch=tup[1], volume=tup[2])
 				ranges.append(rn)
 			elif (tok[0] == 'else'):
 				if (len(tok) < 2):
 					raise SampleError('filename required after else')
-				pair = self.parsepair(filename, dirname, tok[1:])
-				rn = MixIn.default(pair[0], pitch=pair[1])
+				tup = self.parseparam(filename, dirname, tok[1:])
+				rn = MixIn.default(tup[0], pitch=tup[1], volume=tup[2])
 				defval = rn
 			else:
 				raise SampleError('unknown statement in mixin: ' + tok[0])
 
 		return MixinSample(filename, ranges, defval, modname)
 
-	def parsepair(self, filename, dirname, tok):
+	def parseparam(self, filename, dirname, tok):
 		if (dirname is None):
 			### parse qualified PKG/SOUND names as well.
-			val = filename.package.get_content()
-			ls = tok[0].split('.')
-			for el in ls:
-				val = getattr(val, el)
-			samp = get(val)
+			if ('/' in tok[0]):
+				samp = filename.package.loader.find_item_by_name(tok[0], package=filename.package)
+			else:
+				val = filename.package.get_content()
+				ls = tok[0].split('.')
+				for el in ls:
+					val = getattr(val, el)
+				samp = get(val)
 		else:
 			newname = os.path.join(dirname, tok[0])
 			newname = os.path.normpath(newname)
 			samp = get(newname)
 			
+		pitch = None
+		volume = None
+		
+		if (len(tok) > 2):
+			if (tok[2] != '-'):
+				volume = float(tok[2])
 		if (len(tok) > 1):
-			ratio = float(tok[1])
-		else:
-			ratio = None
-		return (samp, ratio)
+			if (tok[1] != '-'):
+				pitch = float(tok[1])
+
+		return (samp, pitch, volume)
 
 	def reload(self, samp):
 		pass

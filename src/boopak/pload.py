@@ -723,6 +723,51 @@ class PackageLoader:
 		self.module_info[mod] = pkg
 		pkg.content = mod
 
+	def find_item_by_name(self, name, package=None):
+		"""find_item_by_name(name, package=None) -> value
+
+		Given a string that names a resource -- for example,
+		'com.eblong.example/reptile.Hiss' -- import the module and
+		return the resource object.
+
+		If the package argument is supplied (a PackageInfo object), it
+		becomes the package to look in for unqualified resource names
+		('reptile.Hiss'). If no package argument is supplied, then
+		an unqualified resource name raises ValueError.
+		"""
+
+		pos = name.find('/')
+		if (pos < 0):
+			if (package is None):
+				raise ValueError('argument must be of the form package/Resource')
+		else:
+			pkgname = name[ : pos ]
+			name = name[ pos+1 : ]
+			
+			pkgspec = None
+			pos = pkgname.find(':')
+			if (pos >= 0):
+				val = pkgname[ pos+1 : ]
+				pkgname = pkgname[ : pos ]
+				if (val.startswith(':')):
+					val = val[ 1 : ]
+					pkgspec = version.VersionNumber(val)
+				else:
+					pkgspec = version.VersionSpec(val)
+
+			package = self.load(pkgname, pkgspec)
+
+		mod = package.get_content()
+
+		namels = name.split('.')
+		try:
+			res = mod
+			for el in namels:
+				res = getattr(res, el)
+			return res
+		except AttributeError, ex:
+			raise ValueError('unable to load ' + name + ' (' + str(ex) + ')')
+
 	def find_item_resources(self, obj):
 		### Given an object declared in a package module, try to find
 		### its Resource. If none, return a blank one. Cache nicely.
