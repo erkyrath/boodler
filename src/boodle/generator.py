@@ -332,7 +332,7 @@ class Channel:
 		if (createagent is None):
 			self.creatorname = '<boodler>'
 		else:
-			(dummy, self.creatorname) = createagent.get_class_name()
+			(dummy, self.creatorname, dummy2) = createagent.get_class_name()
 			
 		gen.channels[self] = self
 		self.logger.info('opened %s', self)

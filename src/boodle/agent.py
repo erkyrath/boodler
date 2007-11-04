@@ -43,7 +43,7 @@ class Agent:
 	Class methods:
 	
 	get_title() -- return a string which describes the agent
-	get_class_name() -- ###
+	get_class_name() -- return the qualified names of the module and Agent
 	"""
 
 	# Class members:
@@ -53,7 +53,8 @@ class Agent:
 	# Another default value; subclasses can override this.
 	selected_event = None
 
-	# Maps Agent subclasses to (pkgname, resname) pairs; see get_class_name().
+	# Maps Agent subclasses to (pkgname, resname, bool) pairs;
+	# see get_class_name().
 	# (This does not get wiped during loader.clear_cache(), which means
 	# obsolete classes stay alive forever, at least in an importing
 	# environment. If we really cared, we'd use weak key refs.)
@@ -69,7 +70,11 @@ class Agent:
 		self.origdelay = None
 		
 		tup = self.get_class_name()
-		self.logger = logging.getLogger('.'.join(tup))
+		if (tup[2]):
+			val = 'pkg.' + tup[0] + '.' + tup[1]
+		else:
+			val = tup[0] + '.' + tup[1]
+		self.logger = logging.getLogger(val)
 
 		try:
 			self.init(*args, **kwargs)
@@ -543,19 +548,30 @@ class Agent:
 		raise NotImplementedError('agent has no receive() method')
 
 	def get_class_name(cla):
-		### dot-separated names for class and name
+		"""get_class_name() -> (str, str, bool)
+
+		Return the qualified name of the module, and of the Agent class
+		within the module. These strings are intended for logging and
+		error messages.
+
+		If the bool return value is true, the module came from the
+		package collection; it is a package name (although with no version
+		information). If the value is false, the module came from
+		sys.path.
+		"""
+		
 		res = Agent.cached_class_names.get(cla)
 		if (res):
 			return res
 
 		# Default value
-		res = (cla.__module__, cla.__name__)
+		res = (cla.__module__, cla.__name__, False)
 		
 		loader = pload.PackageLoader.global_loader
 		if (loader):
 			try:
 				(pkg, resource) = loader.find_item_resources(cla)
-				res = ('pkg.'+pkg.name, resource.key)
+				res = (pkg.name, resource.key, True)
 			except:
 				pass
 			
