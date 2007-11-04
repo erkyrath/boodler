@@ -156,11 +156,13 @@ def adjust_timebase(trimoffset, maxage):
 def get(sname):
 	"""get(sample) -> Sample
 
-	###
-	Load a sample object, given a filename. (If the filename is relative,
-	$BOODLER_SOUND_PATH is searched.) The module maintains a cache of
-	sample objects, so if you load the same filename twice, the second
-	get() call will be fast.
+	Load a sample object, given a filename or File object. (You can also
+	pass a Sample object; it will be returned back to you.)
+
+	(If the filename is relative, $BOODLER_SOUND_PATH is searched.)
+
+	The module maintains a cache of sample objects, so if you load the
+	same filename twice, the second get() call will be fast.
 
 	This function is not useful, since agent.sched_note() and such methods
 	call it for you -- they accept filenames as well as sample objects. 
@@ -328,6 +330,12 @@ class MixIn:
 	sort_mixin_ranges = staticmethod(sort_mixin_ranges)
 	
 class SampleLoader:
+	"""SampleLoader: Base class for the facility to load a particular
+	form of sound sample from a file.
+
+	Subclasses of this are defined and instantiated later in the module.
+	"""
+	
 	suffixmap = {}
 
 	def __init__(self):
@@ -352,6 +360,13 @@ class SampleLoader:
 		self.raw_load(samp.filename, samp.csamp)
 
 def find_loader(suffix):
+	"""find_loader(suffix) -> SampleLoader
+
+	Locate the SampleLoader instance which handles the given file
+	suffix. (The suffix should be given as a dot followed by lower-case
+	characters.)
+	"""
+	
 	clas = SampleLoader.suffixmap.get(suffix)
 	if (clas is None):
 		raise SampleError('unknown sound file extension \'' 
