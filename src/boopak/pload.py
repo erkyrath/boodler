@@ -56,6 +56,7 @@ class PackageLoader:
 
 	currently_importing -- during an import operation, the package which is
 		being imported (at the moment)
+	collecdir -- the directory containing the package collection
 
 	Public methods:
 
@@ -70,7 +71,11 @@ class PackageLoader:
 	list_all_current_packages() -- return a list of all the available packages
 	load_package_dependencies() -- load all packages which a package depends on
 	import_package_content() -- import the package's content, if it hasn't been
+	load_item_by_name() -- import and return an item in a package
+	find_item_resources() -- find the Resource for an item in a package
 	attrify_filename() -- given a filename, add its File to the module
+	start_import_recording() -- stub, overridden in PackageCollection
+	stop_import_recording() -- stub, overridden in PackageCollection
 
 	Internal methods:
 
@@ -769,11 +774,19 @@ class PackageLoader:
 			raise ValueError('unable to load ' + name + ' (' + str(ex) + ')')
 
 	def find_item_resources(self, obj):
-		### Given an object declared in a package module, try to find
-		### its Resource. If none, return a blank one. Cache nicely.
-		### rename to "find_item_metadata"?
+		"""find_item_resources(obj) -> (PackageInfo, Resource)
 
-		### this ought to work for auto-created File objects.
+		Given an object in a package module, try to find the package,
+		and the Resource that represents the object. If it has no metadata
+		defined, this returns a blank Resource object.
+
+		This tries to use object attributes such as __module__ and __name__
+		to identify it. This will work on classes (but not instances)
+		defined in a module; this covers the normal case of Agent classes.
+		It will also work on File objects defined in a module. Beyond
+		that, results are questionable.
+		"""
+		### rename to "find_item_metadata"?
 
 		modname = getattr(obj, '__module__', None)
 		if (modname is None):
@@ -864,11 +877,19 @@ class PackageLoader:
 		file.__name__ = attr
 
 	def start_import_recording(self):
-		###
+		"""start_import_recording() -> None
+
+		Stub, overridden in PackageCollection. In a PackageLoader, this
+		does nothing.
+		"""
 		pass
 
 	def stop_import_recording(self):
-		###
+		"""stop_import_recording() -> dic
+
+		Stub, overridden in PackageCollection. In a PackageLoader, this
+		does nothing and returns an empty dict.
+		"""
 		return {}
 	
 class ExternalDir:

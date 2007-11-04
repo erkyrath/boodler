@@ -59,6 +59,33 @@ class PackageCollection(pload.PackageLoader):
 	If the importing_ok flag is false, this loader will refuse to load
 	(that is, execute) Python code in packages. This is the default.
 	It should only be true if the create-package command is to be used.
+
+	Publicly readable fields:
+
+	collecdir -- the directory containing the package collection
+	downloaddir -- the directory containing temporary files and directories
+
+	Public methods:
+
+	find_source() -- load a package from the collection, a .boop file, or
+		the Internet
+	install_source() -- install a package into the collection from a file
+		or the Internet
+	fetch_source() -- prepare to download a package from the Internet
+	delete_package() -- delete a package from the collection
+	delete_group() -- delete all versions of a package from the collection
+	delete_whole_collection() -- delete all packages in the entire collection
+	start_import_recording() -- begin noting all bimport() calls
+	stop_import_recording() -- stop noting bimport() calls, and return them
+	record_import() -- note a bimport() call by a package being imported
+	create_temp_dir() -- create a new, empty directory in the temporary dir
+	create_temp_file() -- create the pathname of a new temporary file
+	clean_temp() -- clean up the temporary workspace
+	shut_down() -- shut down the PackageCollection
+
+	Internal methods:
+	
+	rewrite_versions_file() -- write (or overwrite) a new Versions file
 	"""
 	
 	# Counter for creating unique names for the download directory.
@@ -153,7 +180,6 @@ class PackageCollection(pload.PackageLoader):
 		dirname = 'unpack-' + str(self.download_count)
 		dirname = os.path.join(self.downloaddir, dirname)
 
-		print '### unpacking', loc, 'to', dirname
 		unpack_zip_file(loc, dirname)
 
 		# Find the directory in the unzipped package which contains the
@@ -197,6 +223,7 @@ class PackageCollection(pload.PackageLoader):
 		"""
 		
 		if (srctype == Source_PACKAGE):
+			### should this fetch from a known URL on boodler.org?
 			(pkgname, vers) = loc
 			raise ValueError('Package is already installed: ' + pkgname + ' ' + str(vers))
 
@@ -369,13 +396,27 @@ class PackageCollection(pload.PackageLoader):
 			outfl.close()
 
 	def start_import_recording(self):
-		###
+		"""start_import_recording() -> None
+
+		Set the collection to noting all bimport() calls in packages being
+		imported. (This is used only during package creation, to figure
+		out dependencies.)
+		"""
+		
 		if (not (self.import_recorder is None)):
 			raise ValueError('Recording was already started')
 		self.import_recorder = {}
 
 	def stop_import_recording(self):
-		###
+		"""stop_import_recording() -> dic
+
+		Stop noting bimport() calls, and return a list of all such calls
+		noted. The return dict maps (name,version) pairs to lists
+		of import requests by that package. Each request in such a list
+		looks like (name,spec), or (name,version) for an exact request,
+		for (name,None) for an any-version request.
+		"""
+		
 		if (self.import_recorder is None):
 			raise ValueError('Recording was never started')
 		res = self.import_recorder
@@ -383,7 +424,12 @@ class PackageCollection(pload.PackageLoader):
 		return res
 
 	def record_import(self, pkg, name, spec=None):
-		###
+		"""record_import(pkg, name, spec=None) -> None
+
+		Note a bimport() call by a package being imported. This should
+		only be called by bimport().
+		"""
+		
 		if (type(spec) in [str, unicode]):
 			spec = version.VersionSpec(spec)
 			
@@ -554,7 +600,7 @@ def locate_package_directory(dirname):
 	destination directory; others create a subdirectory and unpack there.
 	We locate the "real" package directory by looking for a Metadata file.
 	If there is none, but there is a single subdirectory, we search
-	there. (Files and directorise beginning with "." are ignored in this
+	there. (Files and directories beginning with "." are ignored in this
 	process; that lets us cope with Mac directories and their ".DS_Store"
 	annoyances.)
 
