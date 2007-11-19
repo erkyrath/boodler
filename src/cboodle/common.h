@@ -22,6 +22,7 @@
 /* must be able to hold a value between -0x7FFF and 0x7FFF */
 typedef signed short value_t; 
 
+typedef struct stereo_struct stereo_t;
 typedef struct sample_struct sample_t;
 typedef struct note_struct note_t;
 

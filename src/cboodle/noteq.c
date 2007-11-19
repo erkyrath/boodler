@@ -77,14 +77,14 @@ static void noteq_remove(note_t **noteptr)
 }
 
 long note_create(sample_t *samp, double pitch, double volume,
-  double panscx, double panshx, double panscy, double panshy,
+  stereo_t *pan,
   long starttime, PyObject *channel, PyObject *removefunc)
 {
-  return note_create_reps(samp, pitch, volume, panscx, panshx, panscy, panshy, starttime, 1, channel, removefunc);
+  return note_create_reps(samp, pitch, volume, pan, starttime, 1, channel, removefunc);
 }
 
 long note_create_duration(sample_t *samp, double pitch, double volume,
-  double panscx, double panshx, double panscy, double panshy,
+  stereo_t *pan,
   long starttime, long duration, PyObject *channel, PyObject *removefunc)
 {
   int reps;
@@ -99,11 +99,11 @@ long note_create_duration(sample_t *samp, double pitch, double volume,
     reps = (duration - margins + (looplen-1)) / looplen;
   }
 
-  return note_create_reps(samp, pitch, volume, panscx, panshx, panscy, panshy, starttime, reps, channel, removefunc);
+  return note_create_reps(samp, pitch, volume, pan, starttime, reps, channel, removefunc);
 }
 
 long note_create_reps(sample_t *samp, double pitch, double volume,
-  double panscx, double panshx, double panscy, double panshy,
+  stereo_t *pan,
   long starttime, int reps, PyObject *channel, PyObject *removefunc)
 {
   note_t *note;
@@ -126,8 +126,9 @@ long note_create_reps(sample_t *samp, double pitch, double volume,
   note->sample = samp;
   note->pitch = pitch;
   note->volume = volume;
-  note->panscale = panscx;
-  note->panshift = panshx;
+  /* Must copy the pan struct that was passed in, because it is 
+     stack-allocated. */
+  note->pan = *pan;
   note->starttime = starttime;
   note->repetitions = reps;
   note->channel = channel;
@@ -203,8 +204,15 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
   end_time = current_time + framesperbuf;
 
+  /* The following code is unapologetically long, repetitive, and nasty.
+     This is the bottom loop for mixing sound, so we don't trade off
+     cycles for anything. */
+
   memset(buffer, 0, sizeof(long) * 2 * framesperbuf);
 
+  /* Loop through all the notes in the queue. (At least up to the
+     point where they're past the current buffer. For each note, add
+     its contribution into the buffer. */
   nptr = &queue;
   while (1) {
     note_t *note = (*nptr);
@@ -214,7 +222,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     double pitch;
     long lpitch;
     double volume;
-    double stereoshift, stereoscale;
+    stereo_t pan;
     int numranges;
     long *valptr;
     value_t *sampdata;
@@ -227,11 +235,14 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
     samp = note->sample;
 
-    stereoscale = note->panscale;
-    stereoshift = note->panshift;
-
+    pan = note->pan;
     volume = note->volume;
     numranges = 0;
+
+    /* We must compute a total volume, by multiplying the note's
+       volume by the volume factor of every channel it's in. We do
+       this by iterating up the channel tree. While we're at it, we
+       compose all the stereo pans. */
 
     if (note->channel) {
       PyObject *chan = note->channel;
@@ -285,12 +296,22 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
 	stereo = PyObject_GetAttrString(chan, "stereo");
 	if (stereo) {
-	  if (PyTuple_Check(stereo) && PyTuple_Size(stereo) == 2) {
-	    double chshift, chscale;
-	    chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 0));
-	    chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 1));
-	    stereoscale = stereoscale * chscale;
-	    stereoshift = (stereoshift * chscale) + chshift;
+	  if (PyTuple_Check(stereo)) {
+	    int tuplesize = PyTuple_Size(stereo);
+	    if (tuplesize >= 2) {
+	      double chshift, chscale;
+	      chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 0));
+	      chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 1));
+	      pan.scalex = pan.scalex * chscale;
+	      pan.shiftx = (pan.shiftx * chscale) + chshift;
+	    }
+	    if (tuplesize >= 4) {
+	      double chshift, chscale;
+	      chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 2));
+	      chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 3));
+	      pan.scaley = pan.scaley * chscale;
+	      pan.shifty = (pan.shifty * chscale) + chshift;
+	    }
 	  }
 
 	  Py_DECREF(stereo);
@@ -338,15 +359,15 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 #ifdef BOODLER_INTMATH
       long ivollftbase, ivolrgtbase;
 #endif      
-      if (stereoshift < 0.0) {
+      if (pan.shiftx < 0.0) {
 	vollft = 1.0;
-	volrgt = 1.0 + (stereoshift);
+	volrgt = 1.0 + (pan.shiftx);
 	if (volrgt < 0.0)
 	  volrgt = 0.0;
       }
       else {
 	volrgt = 1.0;
-	vollft = 1.0 - (stereoshift);
+	vollft = 1.0 - (pan.shiftx);
 	if (vollft < 0.0)
 	  vollft = 0.0;
       }
@@ -443,7 +464,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	}
       }
     }
-    else {
+    else { /* samp->numchannels == 2 */
       double panch0, panch1;
       double vol0lft, vol0rgt, vol1lft, vol1rgt;
       double normfac;
@@ -453,8 +474,8 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
       long ivol1lftbase, ivol1rgtbase;
 #endif      
 
-      panch0 = (stereoshift - stereoscale);
-      panch1 = (stereoshift + stereoscale);
+      panch0 = (pan.shiftx - pan.scalex);
+      panch1 = (pan.shiftx + pan.scalex);
 
       if (panch0 < 0.0) {
 	vol0lft = 1.0;
