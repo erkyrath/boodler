@@ -355,22 +355,52 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
     if (samp->numchannels == 1) {
       double vollft, volrgt;
+      /* Compute the volume adjustment for the left and right output
+	 channels, based on the pan position. */
+      {
+	double shiftx = pan.shiftx;
+	double shifty = pan.shifty;
+
+	double dist; /* max(abs(shiftx), abs(shifty)) */
+	if (shiftx >= 0.0)
+	  dist = shiftx;
+	else
+	  dist = -shiftx;
+	if (shifty >= 0.0) {
+	  if (shifty > dist)
+	    dist = shifty;
+	}
+	else {
+	  if (-shifty > dist)
+	    dist = -shifty;
+	}
+
+	if (dist > 1.0) {
+	  shiftx /= dist;
+	  shifty /= dist;
+	}
+	/* Now shiftx, shifty are in the range [-1, 1] */
+      
+	if (shiftx < 0.0) {
+	  vollft = 1.0;
+	  volrgt = 1.0 + shiftx;
+	}
+	else {
+	  volrgt = 1.0;
+	  vollft = 1.0 - shiftx;
+	}
+
+	if (dist > 1.0) {
+	  dist = dist*dist;
+	  vollft /= dist;
+	  volrgt /= dist;
+	}
+      }
+
       long ivollft, ivolrgt;
 #ifdef BOODLER_INTMATH
       long ivollftbase, ivolrgtbase;
-#endif      
-      if (pan.shiftx < 0.0) {
-	vollft = 1.0;
-	volrgt = 1.0 + (pan.shiftx);
-	if (volrgt < 0.0)
-	  volrgt = 0.0;
-      }
-      else {
-	volrgt = 1.0;
-	vollft = 1.0 - (pan.shiftx);
-	if (vollft < 0.0)
-	  vollft = 0.0;
-      }
+#endif
       ivollft = (long)(volume * vollft * 65536.0);
       ivolrgt = (long)(volume * volrgt * 65536.0);
 #ifdef BOODLER_INTMATH
@@ -465,70 +495,96 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
       }
     }
     else { /* samp->numchannels == 2 */
-      double panch0, panch1;
       double vol0lft, vol0rgt, vol1lft, vol1rgt;
-      double normfac;
+      /* Compute the volume adjustment for the left and right output
+	 channels, based on the pan position. We have to do this
+	 twice: for input channel 0 and for input channel 1. */
+      {
+	double shiftx = pan.shiftx - pan.scalex;
+	double shifty = pan.shifty;
+
+	double dist; /* max(abs(shiftx), abs(shifty)) */
+	if (shiftx >= 0.0)
+	  dist = shiftx;
+	else
+	  dist = -shiftx;
+	if (shifty >= 0.0) {
+	  if (shifty > dist)
+	    dist = shifty;
+	}
+	else {
+	  if (-shifty > dist)
+	    dist = -shifty;
+	}
+
+	if (dist > 1.0) {
+	  shiftx /= dist;
+	  shifty /= dist;
+	}
+	/* Now shiftx, shifty are in the range [-1, 1] */
+      
+	if (shiftx < 0.0) {
+	  vol0lft = 1.0;
+	  vol0rgt = 1.0 + shiftx;
+	}
+	else {
+	  vol0rgt = 1.0;
+	  vol0lft = 1.0 - shiftx;
+	}
+
+	if (dist > 1.0) {
+	  dist = dist*dist;
+	  vol0lft /= dist;
+	  vol0rgt /= dist;
+	}
+      }
+      {
+	double shiftx = pan.shiftx + pan.scalex;
+	double shifty = pan.shifty;
+
+	double dist; /* max(abs(shiftx), abs(shifty)) */
+	if (shiftx >= 0.0)
+	  dist = shiftx;
+	else
+	  dist = -shiftx;
+	if (shifty >= 0.0) {
+	  if (shifty > dist)
+	    dist = shifty;
+	}
+	else {
+	  if (-shifty > dist)
+	    dist = -shifty;
+	}
+
+	if (dist > 1.0) {
+	  shiftx /= dist;
+	  shifty /= dist;
+	}
+	/* Now shiftx, shifty are in the range [-1, 1] */
+      
+	if (shiftx < 0.0) {
+	  vol1lft = 1.0;
+	  vol1rgt = 1.0 + shiftx;
+	}
+	else {
+	  vol1rgt = 1.0;
+	  vol1lft = 1.0 - shiftx;
+	}
+
+	if (dist > 1.0) {
+	  dist = dist*dist;
+	  vol1lft /= dist;
+	  vol1rgt /= dist;
+	}
+      }
+
+      /* printf("(%gA+%gB , %gA+%gB)\n", vol0lft, vol1lft, vol0rgt, vol1rgt); */
+
       long ivol0lft, ivol0rgt, ivol1lft, ivol1rgt;
 #ifdef BOODLER_INTMATH
       long ivol0lftbase, ivol0rgtbase;
       long ivol1lftbase, ivol1rgtbase;
 #endif      
-
-      panch0 = (pan.shiftx - pan.scalex);
-      panch1 = (pan.shiftx + pan.scalex);
-
-      if (panch0 < 0.0) {
-	vol0lft = 1.0;
-	vol0rgt = 1.0 + (panch0);
-	if (vol0rgt < 0.0)
-	  vol0rgt = 0.0;
-      }
-      else {
-	vol0rgt = 1.0;
-	vol0lft = 1.0 - (panch0);
-	if (vol0lft < 0.0)
-	  vol0lft = 0.0;
-      }
-      if (panch1 < 0.0) {
-	vol1lft = 1.0;
-	vol1rgt = 1.0 + (panch1);
-	if (vol1rgt < 0.0)
-	  vol1rgt = 0.0;
-      }
-      else {
-	vol1rgt = 1.0;
-	vol1lft = 1.0 - (panch1);
-	if (vol1lft < 0.0)
-	  vol1lft = 0.0;
-      }
-
-      normfac = vol0lft + vol1lft;
-      if (normfac < 0.001) {
-	/* nothing */
-      }
-      else {
-	double scale0, scale1;
-	normfac = 1.0 / normfac;
-	scale0 = vol0lft * normfac;
-	scale1 = vol1lft * normfac;
-	vol0lft *= scale0;
-	vol1lft *= scale1;
-      }
-      normfac = vol0rgt + vol1rgt;
-      if (normfac < 0.001) {
-	/* nothing */
-      }
-      else {
-	double scale0, scale1;
-	normfac = 1.0 / normfac;
-	scale0 = vol0rgt * normfac;
-	scale1 = vol1rgt * normfac;
-	vol0rgt *= scale0;
-	vol1rgt *= scale1;
-      }
-
-      /* printf("(%gA+%gB , %gA+%gB)\n", vol0lft, vol1lft, vol0rgt, vol1rgt); */
-
       ivol0lft = (long)(volume * vol0lft * 65536.0);
       ivol0rgt = (long)(volume * vol0rgt * 65536.0);
       ivol1lft = (long)(volume * vol1lft * 65536.0);
