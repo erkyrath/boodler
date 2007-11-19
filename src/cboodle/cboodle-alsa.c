@@ -381,13 +381,15 @@ static PyObject *cboodle_create_note(PyObject *self, PyObject *args)
   int samplen;
   double pitch;
   double volume;
-  double panscale, panshift;
+  double panscx, panshx, panscy, panshy;
   long starttime;
   long retval;
   PyObject *channel, *removefunc;
 
-  if (!PyArg_ParseTuple(args, "s#ddddlOO:create_note", &sampstr, &samplen,
-    &pitch, &volume, &panscale, &panshift, 
+  if (!PyArg_ParseTuple(args, "s#ddddddlOO:create_note", 
+    &sampstr, &samplen,
+    &pitch, &volume, 
+    &panscx, &panshx, &panscy, &panshy,
     &starttime, &channel, &removefunc))
     return NULL;
 
@@ -398,7 +400,7 @@ static PyObject *cboodle_create_note(PyObject *self, PyObject *args)
   }
 
   samp = *((sample_t **)sampstr);
-  retval = note_create(samp, pitch, volume, panscale, panshift, starttime, channel, removefunc);
+  retval = note_create(samp, pitch, volume, panscx, panshx, panscy, panshy, starttime, channel, removefunc);
 
   return Py_BuildValue("l", retval);
 }
@@ -410,14 +412,16 @@ static PyObject *cboodle_create_note_reps(PyObject *self, PyObject *args)
   int samplen;
   double pitch;
   double volume;
-  double panscale, panshift;
+  double panscx, panshx, panscy, panshy;
   long starttime;
   int reps;
   long retval;
   PyObject *channel, *removefunc;
 
-  if (!PyArg_ParseTuple(args, "s#ddddliOO:create_note", &sampstr, &samplen,
-    &pitch, &volume, &panscale, &panshift, 
+  if (!PyArg_ParseTuple(args, "s#ddddddliOO:create_note",
+    &sampstr, &samplen,
+    &pitch, &volume,
+    &panscx, &panshx, &panscy, &panshy,
     &starttime, &reps, &channel, &removefunc))
     return NULL;
 
@@ -428,7 +432,7 @@ static PyObject *cboodle_create_note_reps(PyObject *self, PyObject *args)
   }
 
   samp = *((sample_t **)sampstr);
-  retval = note_create_reps(samp, pitch, volume, panscale, panshift, starttime, reps, channel, removefunc);
+  retval = note_create_reps(samp, pitch, volume, panscx, panshx, panscy, panshy, starttime, reps, channel, removefunc);
 
   return Py_BuildValue("l", retval);
 }
@@ -440,14 +444,16 @@ static PyObject *cboodle_create_note_duration(PyObject *self, PyObject *args)
   int samplen;
   double pitch;
   double volume;
-  double panscale, panshift;
+  double panscx, panshx, panscy, panshy;
   long starttime;
   long duration;
   long retval;
   PyObject *channel, *removefunc;
 
-  if (!PyArg_ParseTuple(args, "s#ddddllOO:create_note", &sampstr, &samplen,
-    &pitch, &volume, &panscale, &panshift, 
+  if (!PyArg_ParseTuple(args, "s#ddddddllOO:create_note",
+    &sampstr, &samplen,
+    &pitch, &volume,
+    &panscx, &panshx, &panscy, &panshy,
     &starttime, &duration, &channel, &removefunc))
     return NULL;
 
@@ -458,7 +464,7 @@ static PyObject *cboodle_create_note_duration(PyObject *self, PyObject *args)
   }
 
   samp = *((sample_t **)sampstr);
-  retval = note_create_duration(samp, pitch, volume, panscale, panshift, starttime, duration, channel, removefunc);
+  retval = note_create_duration(samp, pitch, volume, panscx, panshx, panscy, panshy, starttime, duration, channel, removefunc);
 
   return Py_BuildValue("l", retval);
 }

@@ -8,6 +8,7 @@ import boopak.test_version
 import boopak.test_pload
 import boopak.test_sparse
 import booman.create
+import boodle.stereo
 
 testlist = [
 	('version', boopak.test_version.TestVersion),
@@ -15,6 +16,7 @@ testlist = [
 	('pinfo', boopak.test_pinfo.TestPInfo),
 	('pload', boopak.test_pload.TestPLoad),
 	('create', booman.create.TestCreate),
+	('stereo', boodle.stereo.TestStereo),
 ]
 
 def run(arglist=[]):

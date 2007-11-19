@@ -36,7 +36,7 @@ class Sample:
 	def __repr__(self):
 		return '<Sample at ' + str(self.filename) + '>'
 		
-	def queue_note(self, pitch, volume, panscale, panshift, starttime, chan):
+	def queue_note(self, pitch, volume, pan, starttime, chan):
 		if (cboodle.is_sample_error(self.csamp)):
 			raise SampleError('sample is unplayable')
 		if (not cboodle.is_sample_loaded(self.csamp)):
@@ -44,17 +44,20 @@ class Sample:
 				self.reloader.reload(self)
 			if (not cboodle.is_sample_loaded(self.csamp)):
 				raise SampleError('sample is unloaded')
+		(panscx, panshx, panscy, panshy) = stereo.extend_tuple(pan)
 		def closure(samp=self, chan=chan):
-			samp.refcount = samp.refcount - 1
+			samp.refcount -= 1
 			chan.remnote()
-		dur = cboodle.create_note(self.csamp, pitch, volume, panscale, panshift, starttime, chan, closure)
+		dur = cboodle.create_note(self.csamp, pitch, volume,
+			panscx, panshx, panscy, panshy,
+			starttime, chan, closure)
 		chan.addnote()
-		self.refcount = self.refcount + 1
+		self.refcount += 1
 		if (self.lastused < starttime + dur):
 			self.lastused = starttime + dur
 		return dur
 
-	def queue_note_duration(self, pitch, volume, panscale, panshift, starttime, duration, chan):
+	def queue_note_duration(self, pitch, volume, pan, starttime, duration, chan):
 		if (cboodle.is_sample_error(self.csamp)):
 			raise SampleError('sample is unplayable')
 		if (not cboodle.is_sample_loaded(self.csamp)):
@@ -62,12 +65,15 @@ class Sample:
 				self.reloader.reload(self)
 			if (not cboodle.is_sample_loaded(self.csamp)):
 				raise SampleError('sample is unloaded')
+		(panscx, panshx, panscy, panshy) = stereo.extend_tuple(pan)
 		def closure(samp=self, chan=chan):
-			samp.refcount = samp.refcount - 1
+			samp.refcount -= 1
 			chan.remnote()
-		dur = cboodle.create_note_duration(self.csamp, pitch, volume, panscale, panshift, starttime, duration, chan, closure)
+		dur = cboodle.create_note_duration(self.csamp, pitch, volume,
+			panscx, panshx, panscy, panshy,
+			starttime, duration, chan, closure)
 		chan.addnote()
-		self.refcount = self.refcount + 1
+		self.refcount += 1
 		if (self.lastused < starttime + dur):
 			self.lastused = starttime + dur
 		return dur
@@ -115,23 +121,23 @@ class MixinSample(Sample):
 			
 		raise SampleError(str(pitch) + ' is outside mixin ranges')
 
-	def queue_note(self, pitch, volume, panscale, panshift, starttime, chan):
+	def queue_note(self, pitch, volume, pan, starttime, chan):
 		rn = self.find(pitch)
 		if (not (rn.pitch is None)):
 			pitch *= rn.pitch
 		if (not (rn.volume is None)):
 			volume *= rn.volume
 		samp = get(rn.sample)
-		return samp.queue_note(pitch, volume, panscale, panshift, starttime, chan)
+		return samp.queue_note(pitch, volume, pan, starttime, chan)
 
-	def queue_note_duration(self, pitch, volume, panscale, panshift, starttime, duration, chan):
+	def queue_note_duration(self, pitch, volume, pan, starttime, duration, chan):
 		rn = self.find(pitch)
 		if (not (rn.pitch is None)):
 			pitch *= rn.pitch
 		if (not (rn.volume is None)):
 			volume *= rn.volume
 		samp = get(rn.sample)
-		return samp.queue_note_duration(pitch, volume, panscale, panshift, starttime, duration, chan)
+		return samp.queue_note_duration(pitch, volume, pan, starttime, duration, chan)
 
 	def get_info(self, pitch=1.0):
 		rn = self.find(pitch)
@@ -544,6 +550,7 @@ mixin_loader = MixinLoader()
 # Late imports.
 
 import boodle
+from boodle import stereo
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
 

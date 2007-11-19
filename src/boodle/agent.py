@@ -137,13 +137,7 @@ class Agent:
 		starttime = gen.agentruntime + fdelay
 
 		pan = stereo.cast(pan)
-		if (pan is None):
-			panscale = 1.0
-			panshift = 0.0
-		else:
-			(panscale, panshift) = pan
-
-		dur = samp.queue_note(pitch, volume, panscale, panshift, starttime, chan)
+		dur = samp.queue_note(pitch, volume, pan, starttime, chan)
 		return float(dur) / float(fps)
 
 	def sched_note_duration(self, samp, duration, pitch=1.0, volume=1.0,
@@ -215,13 +209,7 @@ class Agent:
 		fduration = int(duration * fps)
 
 		pan = stereo.cast(pan)
-		if (pan is None):
-			panscale = 1.0
-			panshift = 0.0
-		else:
-			(panscale, panshift) = pan
-
-		dur = samp.queue_note_duration(pitch, volume, panscale, panshift, starttime, fduration, chan)
+		dur = samp.queue_note_duration(pitch, volume, pan, starttime, fduration, chan)
 		return float(dur) / float(fps)
 
 	def sched_note_params(self, samp, **args):
@@ -416,7 +404,7 @@ class Agent:
 		gen.addagent(ag, chan, starttime, handle)
 
 	def resched(self, delay=None, chan=None, handle=None):
-		"""resched([delay, chan=self.channel, handle=self.run])
+		"""resched(delay=None, chan=self.channel, handle=self.run)
 
 		Reschedule the current agent (self). The delay is a time (in
 		seconds) to delay before the agent runs again. The channel, if
@@ -438,7 +426,7 @@ class Agent:
 		self.sched_agent(self, delay, chan, handle)
 
 	def new_channel(self, startvolume=1.0, parent=None):
-		"""new_channel([startvolume=1, parent=self.channel]) -> channel
+		"""new_channel(startvolume=1, parent=self.channel) -> channel
 
 		Create a new channel. The startvolume is the volume the channel
 		is initially set to; this will affect all sounds played in the
@@ -455,7 +443,7 @@ class Agent:
 		return chan
 
 	def new_channel_pan(self, pan=None, startvolume=1.0, parent=None):
-		"""new_channel_pan([pan=stereo.default(), startvolume=1, parent=self.channel]) -> channel
+		"""new_channel_pan(pan=0, startvolume=1, parent=self.channel) -> channel
 
 		Create a new channel, panning the stereo origin of its sounds.
 		(See the stereo module.) The startvolume is the volume the channel
@@ -469,6 +457,8 @@ class Agent:
 			raise generator.ChannelError('creator is not in a channel')
 		if (parent is None):
 			parent = self.channel
+		
+		pan = stereo.cast(pan)
 		chan = generator.Channel(parent, self.generator, self, startvolume, pan)
 		return chan
 

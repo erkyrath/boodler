@@ -62,7 +62,8 @@ class Generator:
 
 		self.loader = loader
 
-		self.rootchannel = Channel(None, self, None, basevolume, None)
+		self.rootchannel = Channel(None, self, None, basevolume, ())
+		# Note that () is stereo.default()
 		self.agentruntime = None
 
 	def close(self):
@@ -306,7 +307,7 @@ class Channel:
 		Channel.ordinal += 1
 		self.ordinal = Channel.ordinal
 		self.volume = (0, 0, startvol, startvol)
-		self.stereo = stereo.cast(pan)
+		self.stereo = pan
 		self.lastvolume = startvol
 		self.notecount = 0
 		self.agentcount = 0
@@ -695,7 +696,7 @@ def run_agents(starttime, gen):
 # Late imports.
 
 import boodle
-from boodle import stereo, sample, listen
+from boodle import sample, listen
 from boodle import BoodlerError, StopGeneration
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle

@@ -31,13 +31,13 @@ extern void note_destroy_by_channel(PyObject *channel);
 extern void noteq_adjust_timebase(long offset);
 
 extern long note_create(sample_t *samp, double pitch, double volume,
-  double panscale, double panshift,
+  double panscx, double panshx, double panscy, double panshy,
   long starttime, PyObject *channel, PyObject *removefunc);
 extern long note_create_reps(sample_t *samp, double pitch, double volume,
-  double panscale, double panshift,
+  double panscx, double panshx, double panscy, double panshy,
   long starttime, int reps, PyObject *channel, PyObject *removefunc);
 extern long note_create_duration(sample_t *samp, double pitch, double volume,
-  double panscale, double panshift,
+  double panscx, double panshx, double panscy, double panshy,
   long starttime, long duration, PyObject *channel, PyObject *removefunc);
 extern void note_destroy(note_t **noteptr);
 

@@ -77,14 +77,14 @@ static void noteq_remove(note_t **noteptr)
 }
 
 long note_create(sample_t *samp, double pitch, double volume,
-  double panscale, double panshift,
+  double panscx, double panshx, double panscy, double panshy,
   long starttime, PyObject *channel, PyObject *removefunc)
 {
-  return note_create_reps(samp, pitch, volume, panscale, panshift, starttime, 1, channel, removefunc);
+  return note_create_reps(samp, pitch, volume, panscx, panshx, panscy, panshy, starttime, 1, channel, removefunc);
 }
 
 long note_create_duration(sample_t *samp, double pitch, double volume,
-  double panscale, double panshift,
+  double panscx, double panshx, double panscy, double panshy,
   long starttime, long duration, PyObject *channel, PyObject *removefunc)
 {
   int reps;
@@ -99,11 +99,11 @@ long note_create_duration(sample_t *samp, double pitch, double volume,
     reps = (duration - margins + (looplen-1)) / looplen;
   }
 
-  return note_create_reps(samp, pitch, volume, panscale, panshift, starttime, reps, channel, removefunc);
+  return note_create_reps(samp, pitch, volume, panscx, panshx, panscy, panshy, starttime, reps, channel, removefunc);
 }
 
 long note_create_reps(sample_t *samp, double pitch, double volume,
-  double panscale, double panshift,
+  double panscx, double panshx, double panscy, double panshy,
   long starttime, int reps, PyObject *channel, PyObject *removefunc)
 {
   note_t *note;
@@ -126,8 +126,8 @@ long note_create_reps(sample_t *samp, double pitch, double volume,
   note->sample = samp;
   note->pitch = pitch;
   note->volume = volume;
-  note->panscale = panscale;
-  note->panshift = panshift;
+  note->panscale = panscx;
+  note->panshift = panshx;
   note->starttime = starttime;
   note->repetitions = reps;
   note->channel = channel;
