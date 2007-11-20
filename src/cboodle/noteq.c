@@ -15,6 +15,8 @@
 #include "audev.h"
 #include "sample.h"
 
+/* This represents a linear volume fade, starting and ending at
+   particular times. */
 typedef struct volrange_struct {
   long start, end;
 #ifdef BOODLER_INTMATH
@@ -188,8 +190,6 @@ void note_destroy(note_t **noteptr)
 
 int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 {
-  int ranx;
-  long lx;
   note_t **nptr;
   long framesperbuf = audev_get_framesperbuf();
   long end_time;
@@ -254,12 +254,26 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	PyObject *vol = PyObject_GetAttrString(chan, "volume");
 	if (vol) {
 	  if (PyTuple_Check(vol) && PyTuple_Size(vol) == 4) {
+	    /* A channel's volume is a 4-tuple: 
+
+	       (int starttime, int endtime, float startvol, float endvol)
+
+	       This is the general case: the volume fades from
+	       startvol to endvol over an interval. Before starttime,
+	       we assume the volume is flat at startvol; after
+	       endtime, we assume endvol. 
+
+	       If the volume is completely constant, endtime will be
+	       zero, or perhaps just before current_time. (This fits
+	       nicely into the general case.) */
+
 	    long endtm;
 	    double endvol;
 	    endtm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 1));
 	    endvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 3));
 
 	    if (current_time >= endtm) {
+	      /* Channel volume is constant across the buffer. */
 	      volume *= endvol;
 	    }
 	    else {
@@ -268,13 +282,22 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	      starttm = PyInt_AsLong(PyTuple_GET_ITEM(vol, 0));
 	      startvol = PyFloat_AsDouble(PyTuple_GET_ITEM(vol, 2));
 	      if (starttm >= end_time) {
+		/* Channel volume is constant across the buffer. */
 		volume *= startvol;
 	      }
 	      else {
+		/* This is the nasty case; we're in the middle of a
+		   fade. Rather than multiplying volume, we create a
+		   new range in the ranges list. (The ranges list will
+		   be consulted once per frame, as we generate the
+		   note.) */
+
 		if (numranges >= maxranges) {
 		  maxranges *= 2;
 		  ranges = (volrange_t *)realloc(ranges, 
 		    sizeof(volrange_t) * maxranges);
+		  if (!ranges)
+		    return TRUE;
 		}
 		ranges[numranges].start = starttm;
 		ranges[numranges].end = endtm;
@@ -297,6 +320,10 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	stereo = PyObject_GetAttrString(chan, "stereo");
 	if (stereo) {
 	  if (PyTuple_Check(stereo)) {
+	    /* A stereo object is a 0-, 2-, or 4-tuple. In full form:
+	       (xscale, xshift, yscale, yshift)
+	       Missing entries are presumed to be (1,0,1,0) in that order. */
+
 	    int tuplesize = PyTuple_Size(stereo);
 	    if (tuplesize >= 2) {
 	      double chshift, chscale;
@@ -317,6 +344,9 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	  Py_DECREF(stereo);
 	}
 	stereo = NULL;
+
+	/* Point chan at chan.parent, and continue the loop (unless
+	   we've reached the top of the tree). */
 
 	newchan = PyObject_GetAttrString(chan, "parent");
 	Py_DECREF(chan);
@@ -354,6 +384,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     valptr = &buffer[notestart*2];
 
     if (samp->numchannels == 1) {
+      long lx;
       double vollft, volrgt;
       /* Compute the volume adjustment for the left and right output
 	 channels, based on the pan position. */
@@ -409,6 +440,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 #endif
 
       for (lx=notestart; lx<framesperbuf; lx++) {
+	int ranx;
 	long cursamp, nextsamp;
 	long val0, val1;
 	long result, reslef, resrgt;
@@ -495,6 +527,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
       }
     }
     else { /* samp->numchannels == 2 */
+      long lx;
       double vol0lft, vol0rgt, vol1lft, vol1rgt;
       /* Compute the volume adjustment for the left and right output
 	 channels, based on the pan position. We have to do this
@@ -618,6 +651,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	resch1 = (val0 * (0x10000-framefrac)) + (val1 * framefrac);
 
 	if (numranges) {
+	  int ranx;
 	  long curtime = current_time + lx;
 #ifdef BOODLER_INTMATH
 	  long ivarvols = 0x4000;
