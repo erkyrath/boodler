@@ -65,6 +65,7 @@ class Generator:
 		self.rootchannel = Channel(None, self, None, basevolume, ())
 		# Note that () is stereo.default()
 		self.agentruntime = None
+		self.bufferstarttime = None
 
 	def close(self):
 		"""close() -> None
@@ -308,7 +309,6 @@ class Channel:
 		self.ordinal = Channel.ordinal
 		self.volume = (0, 0, startvol, startvol)
 		self.stereo = pan
-		self.lastvolume = startvol
 		self.notecount = 0
 		self.agentcount = 0
 		self.childcount = 0
@@ -493,8 +493,26 @@ class Channel:
 
 		starttm = self.generator.agentruntime
 		endtm = starttm + int(interval * cboodle.framespersec())
-		if (endtm >= self.volume[1]):
-			self.volume = (starttm, endtm, self.lastvolume, newvol)
+
+		(oldstarttm, oldendtm, oldstartvol, oldendvol) = self.volume
+		if (endtm < oldendtm):
+			# The current fade runs past this one, so we leave it in place.
+			return
+			
+		# Work out the volume at the start of this buffer -- not at
+		# agentruntime. This is because we're discarding the old volume
+		# change. It's not going to have a chance to run up to the correct
+		# changeover point.
+
+		attm = self.generator.bufferstarttime
+		if (attm >= oldendtm):
+			atstart = oldendvol
+		elif (attm >= oldstarttm):
+			atstart = (attm - oldstarttm) / float(oldendtm - oldstarttm) * (oldendvol - oldstartvol) + oldstartvol
+		else:
+			atstart = oldstartvol
+			
+		self.volume = (starttm, endtm, atstart, newvol)
 
 	def get_prop(self, key, default=None):
 		"""get_prop(key, default=None) -> any
@@ -645,6 +663,8 @@ def run_agents(starttime, gen):
 	for lis in gen.listeners:
 		lis.poll()
 
+	gen.bufferstarttime = starttime
+	# Events received from the outside world run at the start of the buffer.
 	gen.agentruntime = starttime
 	while (gen.postqueue):
 		ev = gen.postqueue.pop(0)
@@ -666,15 +686,9 @@ def run_agents(starttime, gen):
 				exc_info=True)
 		ag.firsttime = False
 
-	for chan in gen.channels:
-		(starttm, endtm, startvol, endvol) = chan.volume
-		if (nexttime >= endtm):
-			chan.lastvolume = endvol
-		elif (nexttime >= starttm):
-			chan.lastvolume = (nexttime - starttm) / float(endtm - starttm) * (endvol - startvol) + startvol
-		else:
-			chan.lastvolume = startvol
-
+	gen.bufferstarttime = None
+	gen.agentruntime = None
+	
 	ls = [ chan for chan in gen.channels
 		if (chan.notecount == 0
 			and chan.agentcount == 0
