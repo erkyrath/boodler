@@ -560,7 +560,8 @@ class Channel:
 		elif (attm >= oldstarttm):
 			pan0 = stereo.extend_tuple(oldstartpan)
 			pan1 = stereo.extend_tuple(oldendpan)
-			atstart = [ ((attm - oldstarttm) / float(oldendtm - oldstarttm) * (pan1[ix] - pan0[ix]) + pan0[ix])
+			ratio = (attm - oldstarttm) / float(oldendtm - oldstarttm)
+			atstart = [ (ratio * (pan1[ix] - pan0[ix]) + pan0[ix])
 				for ix in range(4) ]
 			atstart = tuple(atstart)
 			self.logger.error('### interp %s -- %s => %s', oldstartpan, oldendpan, atstart)

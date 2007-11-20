@@ -36,6 +36,9 @@ int maxranges = 0;
 
 static note_t *last_added = NULL;
 
+static void leftright_volumes(double shiftx, double shifty,
+  double *outlft, double *outrgt);
+
 /* A quick introduction to Python reference-counting:
    (See <http://docs.python.org/api/api.html> for full docs.)
 
@@ -241,7 +244,8 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     double pitch;
     long lpitch;
     double volume;
-    stereo_t pan;
+    stereo_t pan0, pan1;
+    int bothpans;
     int numranges;
     long *valptr;
     value_t *sampdata;
@@ -254,14 +258,28 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
     samp = note->sample;
 
-    pan = note->pan;
+    pan0 = note->pan;
+    bothpans = FALSE;
     volume = note->volume;
     numranges = 0;
 
     /* We must compute a total volume, by multiplying the note's
        volume by the volume factor of every channel it's in. We do
-       this by iterating up the channel tree. While we're at it, we
-       compose all the stereo pans. */
+       this by iterating up the channel tree. 
+
+       The tricky part is that some channels might be in the middle of
+       a volume change, which means we can't just multiply in a
+       constant factor. Those channels (only) go onto the ranges list.
+       (The ranges list will be consulted once per frame, as we
+       generate the note.)
+
+       While we're at it, we compose all the stereo pans. As with the
+       volumes, we have to worry about channels that are in the middle
+       of a pan change. However, the solution is different. Once a pan
+       change appears, we keep track of two pan positions: that at the
+       beginning of the buffer, and that at the end. (Before the first
+       change appears, these are identical. The bothpans flag
+       indicates whether we've hit that first change yet.) */
 
     if (note->channel) {
       PyObject *chan = note->channel;
@@ -307,9 +325,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	      else {
 		/* This is the nasty case; we're in the middle of a
 		   fade. Rather than multiplying volume, we create a
-		   new range in the ranges list. (The ranges list will
-		   be consulted once per frame, as we generate the
-		   note.) */
+		   new range in the ranges list. */
 
 		if (numranges >= maxranges) {
 		  maxranges *= 2;
@@ -351,18 +367,16 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
 	    PyObject *usepan = NULL;
 
-	    long endtm;
-	    PyObject *endpan;
-	    PyObject *startpan;
-	    endtm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 1));
-	    endpan = PyTuple_GET_ITEM(stereo, 3);
+	    long starttm = 0;
+	    PyObject *startpan = NULL;
+	    long endtm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 1));
+	    PyObject *endpan = PyTuple_GET_ITEM(stereo, 3);
 
 	    if (current_time >= endtm) {
 	      /* Stereo is constant across the buffer. */
 	      usepan = endpan;
 	    }
 	    else {
-	      long starttm;
 	      starttm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 0));
 	      startpan = PyTuple_GET_ITEM(stereo, 2);
 
@@ -380,7 +394,9 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	       a stereo object if we're in the constant case. */
 
 	    if (usepan) {
-	      /* Apply constant transform to the pan value. */
+	      /* Apply constant transform to the pan value. (If we're
+		 already keeping track of two pan values, apply it to
+		 both of them.) */
 	      int tuplesize = 0;
 	      if (PyTuple_Check(usepan))
 		tuplesize = PyTuple_Size(usepan);
@@ -388,26 +404,124 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 		double chshift, chscale;
 		chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 0));
 		chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 1));
-		pan.scalex = pan.scalex * chscale;
-		pan.shiftx = (pan.shiftx * chscale) + chshift;
+		pan0.scalex = pan0.scalex * chscale;
+		pan0.shiftx = (pan0.shiftx * chscale) + chshift;
+		if (bothpans) {
+		  pan1.scalex = pan1.scalex * chscale;
+		  pan1.shiftx = (pan1.shiftx * chscale) + chshift;
+		}
 	      }
 	      if (tuplesize >= 4) {
 		double chshift, chscale;
 		chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 2));
 		chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 3));
-		pan.scaley = pan.scaley * chscale;
-		pan.shifty = (pan.shifty * chscale) + chshift;
+		pan0.scaley = pan0.scaley * chscale;
+		pan0.shifty = (pan0.shifty * chscale) + chshift;
+		if (bothpans) {
+		  pan1.scaley = pan1.scaley * chscale;
+		  pan1.shifty = (pan1.shifty * chscale) + chshift;
+		}
 	      }
 	    }
 	    else {
-	      /* Record the pan positions at the start and end of the buffer. */
-	      /* #### */
+	      /* Record the pan positions at the start and end of the 
+		 buffer (current_time and end_time). */
+	      if (!bothpans) {
+		/* This is the first non-constant pan we've hit. Set
+		   up pan1 to be the same as what we've computed so
+		   far. */
+		pan1 = pan0;
+		bothpans = TRUE;
+	      }
+	      /* Extract the stereo object values into stereo_t structs. */
+	      stereo_t tuplestart, tupleend;
+	      int tuplesizestart = 0;
+	      int tuplesizeend = 0;
+	      if (PyTuple_Check(startpan))
+		tuplesizestart = PyTuple_Size(startpan);
+	      if (tuplesizestart >= 2) {
+		tuplestart.scalex = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 0));
+		tuplestart.shiftx = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 1));
+	      }
+	      else {
+		tuplestart.scalex = 1.0;
+		tuplestart.shiftx = 0.0;
+	      }
+	      if (tuplesizestart >= 4) {
+		tuplestart.scaley = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 2));
+		tuplestart.shifty = PyFloat_AsDouble(PyTuple_GET_ITEM(startpan, 3));
+	      }
+	      else {
+		tuplestart.scaley = 1.0;
+		tuplestart.shifty = 0.0;
+	      }
+	      if (PyTuple_Check(endpan))
+		tuplesizeend = PyTuple_Size(endpan);
+	      if (tuplesizeend >= 2) {
+		tupleend.scalex = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 0));
+		tupleend.shiftx = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 1));
+	      }
+	      else {
+		tupleend.scalex = 1.0;
+		tupleend.shiftx = 0.0;
+	      }
+	      if (tuplesizeend >= 4) {
+		tupleend.scaley = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 2));
+		tupleend.shifty = PyFloat_AsDouble(PyTuple_GET_ITEM(endpan, 3));
+	      }
+	      else {
+		tupleend.scaley = 1.0;
+		tupleend.shifty = 0.0;
+	      }
+
+	      /* Interpolate for current_time, into pan0. */
+	      stereo_t usetuple;
+	      if (current_time >= endtm) {
+		usetuple = tupleend;
+	      }
+	      else if (current_time >= starttm) {
+		double ratio = ((double)(current_time - starttm)) / ((double)(endtm - starttm));
+		usetuple.scalex = ratio * (tupleend.scalex - tuplestart.scalex) + tuplestart.scalex;
+		usetuple.shiftx = ratio * (tupleend.shiftx - tuplestart.shiftx) + tuplestart.shiftx;
+		usetuple.scaley = ratio * (tupleend.scaley - tuplestart.scaley) + tuplestart.scaley;
+		usetuple.shifty = ratio * (tupleend.shifty - tuplestart.shifty) + tuplestart.shifty;
+	      }
+	      else {
+		usetuple = tuplestart;
+	      }
+	      pan0.scalex = pan0.scalex * usetuple.scalex;
+	      pan0.shiftx = (pan0.shiftx * usetuple.scalex) + usetuple.shiftx;
+	      pan0.scaley = pan0.scaley * usetuple.scaley;
+	      pan0.shifty = (pan0.shifty * usetuple.scaley) + usetuple.shifty;
+
+	      /* Interpolate for end_time, into pan1. */
+	      if (end_time >= endtm) {
+		usetuple = tupleend;
+	      }
+	      else if (end_time >= starttm) {
+		double ratio = ((double)(end_time - starttm)) / ((double)(endtm - starttm));
+		usetuple.scalex = ratio * (tupleend.scalex - tuplestart.scalex) + tuplestart.scalex;
+		usetuple.shiftx = ratio * (tupleend.shiftx - tuplestart.shiftx) + tuplestart.shiftx;
+		usetuple.scaley = ratio * (tupleend.scaley - tuplestart.scaley) + tuplestart.scaley;
+		usetuple.shifty = ratio * (tupleend.shifty - tuplestart.shifty) + tuplestart.shifty;
+	      }
+	      else {
+		usetuple = tuplestart;
+	      }
+	      pan1.scalex = pan1.scalex * usetuple.scalex;
+	      pan1.shiftx = (pan1.shiftx * usetuple.scalex) + usetuple.shiftx;
+	      pan1.scaley = pan1.scaley * usetuple.scaley;
+	      pan1.shifty = (pan1.shifty * usetuple.scaley) + usetuple.shifty;
 	    }
 	  }
 
 	  Py_DECREF(stereo);
 	}
 	stereo = NULL;
+
+	printf("### pan0: %.3f %.3f %.3f %.3f. pan1: %.3f %.3f %.3f %.3f.\n",
+	  pan0.scalex, pan0.shiftx, pan0.scaley, pan0.shifty,
+	  pan1.scalex, pan1.shiftx, pan1.scaley, pan1.shifty);
 
 	/* Point chan at chan.parent, and continue the loop (unless
 	   we've reached the top of the tree). */
@@ -452,46 +566,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
       double vollft, volrgt;
       /* Compute the volume adjustment for the left and right output
 	 channels, based on the pan position. */
-      {
-	double shiftx = pan.shiftx;
-	double shifty = pan.shifty;
-
-	double dist; /* max(abs(shiftx), abs(shifty)) */
-	if (shiftx >= 0.0)
-	  dist = shiftx;
-	else
-	  dist = -shiftx;
-	if (shifty >= 0.0) {
-	  if (shifty > dist)
-	    dist = shifty;
-	}
-	else {
-	  if (-shifty > dist)
-	    dist = -shifty;
-	}
-
-	if (dist > 1.0) {
-	  shiftx /= dist;
-	  shifty /= dist;
-	}
-	/* Now shiftx, shifty are in the range [-1, 1] */
-      
-	if (shiftx < 0.0) {
-	  vollft = 1.0;
-	  volrgt = 1.0 + shiftx;
-	}
-	else {
-	  volrgt = 1.0;
-	  vollft = 1.0 - shiftx;
-	}
-
-	if (dist > 1.0) {
-	  dist = dist*dist;
-	  vollft /= dist;
-	  volrgt /= dist;
-	}
-      }
-
+      leftright_volumes(pan0.shiftx, pan0.shifty, &vollft, &volrgt); /* ### */
       long ivollft, ivolrgt;
 #ifdef BOODLER_INTMATH
       long ivollftbase, ivolrgtbase;
@@ -596,84 +671,10 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
       /* Compute the volume adjustment for the left and right output
 	 channels, based on the pan position. We have to do this
 	 twice: for input channel 0 and for input channel 1. */
-      {
-	double shiftx = pan.shiftx - pan.scalex;
-	double shifty = pan.shifty;
-
-	double dist; /* max(abs(shiftx), abs(shifty)) */
-	if (shiftx >= 0.0)
-	  dist = shiftx;
-	else
-	  dist = -shiftx;
-	if (shifty >= 0.0) {
-	  if (shifty > dist)
-	    dist = shifty;
-	}
-	else {
-	  if (-shifty > dist)
-	    dist = -shifty;
-	}
-
-	if (dist > 1.0) {
-	  shiftx /= dist;
-	  shifty /= dist;
-	}
-	/* Now shiftx, shifty are in the range [-1, 1] */
-      
-	if (shiftx < 0.0) {
-	  vol0lft = 1.0;
-	  vol0rgt = 1.0 + shiftx;
-	}
-	else {
-	  vol0rgt = 1.0;
-	  vol0lft = 1.0 - shiftx;
-	}
-
-	if (dist > 1.0) {
-	  dist = dist*dist;
-	  vol0lft /= dist;
-	  vol0rgt /= dist;
-	}
-      }
-      {
-	double shiftx = pan.shiftx + pan.scalex;
-	double shifty = pan.shifty;
-
-	double dist; /* max(abs(shiftx), abs(shifty)) */
-	if (shiftx >= 0.0)
-	  dist = shiftx;
-	else
-	  dist = -shiftx;
-	if (shifty >= 0.0) {
-	  if (shifty > dist)
-	    dist = shifty;
-	}
-	else {
-	  if (-shifty > dist)
-	    dist = -shifty;
-	}
-
-	if (dist > 1.0) {
-	  shiftx /= dist;
-	  shifty /= dist;
-	}
-	/* Now shiftx, shifty are in the range [-1, 1] */
-      
-	if (shiftx < 0.0) {
-	  vol1lft = 1.0;
-	  vol1rgt = 1.0 + shiftx;
-	}
-	else {
-	  vol1rgt = 1.0;
-	  vol1lft = 1.0 - shiftx;
-	}
-
-	if (dist > 1.0) {
-	  dist = dist*dist;
-	  vol1lft /= dist;
-	  vol1rgt /= dist;
-	}
-      }
+      leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty,
+	&vol0lft, &vol0rgt); /* ### */
+      leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty,
+	&vol1lft, &vol1rgt); /* ### */
 
       /* printf("(%gA+%gB , %gA+%gB)\n", vol0lft, vol1lft, vol0rgt, vol1rgt); */
 
@@ -853,3 +854,46 @@ void noteq_adjust_timebase(long offset)
   }  
 }
 
+static void leftright_volumes(double shiftx, double shifty,
+  double *outlft, double *outrgt)
+{
+  double vollft, volrgt;
+
+  double dist; /* max(abs(shiftx), abs(shifty)) */
+  if (shiftx >= 0.0)
+    dist = shiftx;
+  else
+    dist = -shiftx;
+  if (shifty >= 0.0) {
+    if (shifty > dist)
+      dist = shifty;
+  }
+  else {
+    if (-shifty > dist)
+      dist = -shifty;
+  }
+
+  if (dist > 1.0) {
+    shiftx /= dist;
+    shifty /= dist;
+  }
+  /* Now shiftx, shifty are in the range [-1, 1] */
+      
+  if (shiftx < 0.0) {
+    vollft = 1.0;
+    volrgt = 1.0 + shiftx;
+  }
+  else {
+    volrgt = 1.0;
+    vollft = 1.0 - shiftx;
+  }
+
+  if (dist > 1.0) {
+    dist = dist*dist;
+    vollft /= dist;
+    volrgt /= dist;
+  }
+
+  *outlft = vollft;
+  *outrgt = volrgt;
+}
