@@ -62,8 +62,8 @@ class Generator:
 
 		self.loader = loader
 
-		self.rootchannel = Channel(None, self, None, basevolume, ())
-		# Note that () is stereo.default()
+		self.rootchannel = Channel(None, self, None, basevolume,
+			stereo.default())
 		self.agentruntime = None
 		self.bufferstarttime = None
 
@@ -308,7 +308,7 @@ class Channel:
 		Channel.ordinal += 1
 		self.ordinal = Channel.ordinal
 		self.volume = (0, 0, startvol, startvol)
-		self.stereo = pan
+		self.stereo = (0, 0, pan, pan)
 		self.notecount = 0
 		self.agentcount = 0
 		self.childcount = 0
@@ -514,6 +514,62 @@ class Channel:
 			
 		self.volume = (starttm, endtm, atstart, newvol)
 
+	def set_pan(self, newpan, interval=0.5):
+		"""set_pan(newpan, interval=0.5) -> None
+
+		Change the channel to a new pan position. This affects all notes
+		in the channel and any subchannels.
+
+		The position is specified relative to the parent. A value of 0
+		(or None, or stereo.default()) places the channel in the same
+		position as its parent. A positive number shifts it to the right
+		of the parent; a negative number shifts it left. The value may
+		also be any object created by the stereo module.
+
+		The change begins immediately, and occurs smoothly over the
+		interval given (in seconds). If no value is given, the interval
+		defaults to 0.5 (half a second). You should not use a shorter
+		interval; it may not be rendered correctly, particularly for
+		large changes.
+
+		Due to the way the stereo code is written (a cheap and dirty hack),
+		two stereo changes scheduled too close together on the same channel
+		(within about one second) can interfere with each other. The earlier
+		one may be ignored entirely in favor of the later. Therefore, you
+		should not rely on rapid sequences of set_pan() calls for your
+		sound effects. Set pan positions on individual notes instead, or
+		else create several channels.
+		"""
+
+		starttm = self.generator.agentruntime
+		endtm = starttm + int(interval * cboodle.framespersec())
+
+		(oldstarttm, oldendtm, oldstartpan, oldendpan) = self.stereo
+		if (endtm < oldendtm):
+			# The current swoop runs past this one, so we leave it in place.
+			return
+
+		# Work out the pan position at the start of this buffer -- not at
+		# agentruntime. This is because we're discarding the old pan
+		# change. It's not going to have a chance to run up to the correct
+		# changeover point.
+
+		attm = self.generator.bufferstarttime
+		if (attm >= oldendtm):
+			atstart = oldendpan
+		elif (attm >= oldstarttm):
+			pan0 = stereo.extend_tuple(oldstartpan)
+			pan1 = stereo.extend_tuple(oldendpan)
+			atstart = [ ((attm - oldstarttm) / float(oldendtm - oldstarttm) * (pan1[ix] - pan0[ix]) + pan0[ix])
+				for ix in range(4) ]
+			atstart = tuple(atstart)
+			self.logger.error('### interp %s -- %s => %s', oldstartpan, oldendpan, atstart)
+		else:
+			atstart = oldstartpan
+			
+		self.logger.error('### new stereo: %s', (starttm, endtm, atstart, newpan))
+		self.stereo = (starttm, endtm, atstart, newpan)
+
 	def get_prop(self, key, default=None):
 		"""get_prop(key, default=None) -> any
 
@@ -628,6 +684,13 @@ def run_agents(starttime, gen):
 			starttm -= TRIMOFFSET
 			endtm -= TRIMOFFSET
 			chan.volume = (starttm, endtm, startvol, endvol)
+		for chan in gen.channels:
+			(starttm, endtm, startpan, endpan) = chan.stereo
+			if (endtm <= starttime):
+				continue
+			starttm -= TRIMOFFSET
+			endtm -= TRIMOFFSET
+			chan.stereo = (starttm, endtm, startpan, endpan)
 		if (not (gen.stats_interval is None)):
 			gen.last_stats_dump -= TRIMOFFSET
 
@@ -710,7 +773,7 @@ def run_agents(starttime, gen):
 # Late imports.
 
 import boodle
-from boodle import sample, listen
+from boodle import sample, listen, stereo
 from boodle import BoodlerError, StopGeneration
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle

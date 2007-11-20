@@ -6,6 +6,8 @@
 
 import logging
 
+### Doc comments are all out of date
+
 class Agent:
 	"""Agent: base class for Boodler agents.
 
@@ -105,8 +107,8 @@ class Agent:
 
 		Schedule a note to play, panning the stereo origin of the sound.
 		The pan value defaults to 0, meaning no shift in origin;
-		-1 means all the way left; 1 means all the way right. The value
-		may also be an object created by the stereo module.
+		-1 means directly to the left; 1 means directly to the right. The
+		value may also be an object created by the stereo module.
 
 		The sound is loaded from the file sample (which is relative to 
 		$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
@@ -168,8 +170,8 @@ class Agent:
 
 		Schedule a note to play, panning the stereo origin of the sound.
 		The pan value defaults to 0, meaning no shift in origin;
-		-1 means all the way left; 1 means all the way right. The value
-		may also be an object created by the stereo module.
+		-1 means directly to the left; 1 means directly to the right. The
+		value may also be an object created by the stereo module.
 
 		The sound is loaded from the file sample (which is relative to 
 		$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
@@ -662,6 +664,7 @@ class Handler:
 
 				
 # And now, a bunch of agents which everybody will want to use.
+### Push into a different module? and import?
 ### Add UnlistenAgent? SendEventAgent?
 
 class NullAgent(Agent):
@@ -688,6 +691,38 @@ class StopAgent(Agent):
 	def get_title(self):
 		return 'Stop Channel'
 
+class SetVolumeAgent(Agent):
+	"""SetVolumeAgent:
+
+	This agent causes a channel to change to a given volume. (See
+	Channel.set_volume.)
+	"""
+
+	def __init__(self, newvol, duration=0.005):
+		Agent.__init__(self)
+		self.newvol = float(newvol)
+		self.duration = float(duration)
+	def run(self):
+		self.channel.set_volume(self.newvol, self.duration)
+	def get_title(self):
+		return 'Set Channel Volume'
+		
+class SetPanAgent(Agent):
+	"""SetPanAgent:
+
+	This agent causes a channel to change to a given pan position. (See
+	Channel.set_pan.)
+	"""
+
+	def __init__(self, newpan, duration=0.5):
+		Agent.__init__(self)
+		self.newpan = stereo.cast(newpan)
+		self.duration = float(duration)
+	def run(self):
+		self.channel.set_pan(self.newpan, self.duration)
+	def get_title(self):
+		return 'Set Channel Pan'
+		
 class FadeOutAgent(Agent):
 	"""FadeOutAgent(interval):
 

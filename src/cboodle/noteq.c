@@ -36,6 +36,25 @@ int maxranges = 0;
 
 static note_t *last_added = NULL;
 
+/* A quick introduction to Python reference-counting:
+   (See <http://docs.python.org/api/api.html> for full docs.)
+
+   C code embedded in Python is responsible for incrementing and
+   decrementing the reference counts of the objects it uses. We only
+   use a couple of idioms:
+
+   PyObject_GetAttrString() -- returns a new reference. The caller
+   must call Py_DECREF when finished with the value.
+
+   PyTuple_GET_ITEM() -- returns a "borrowed" reference. The caller
+   doesn't have to release the reference. But once the tuple is
+   released, items borrowed from the tuple may vanish too.
+
+   Python objects stored in a C object (for example, note->channel) --
+   we must call Py_INCREF for as long as the object is in use, and
+   Py_DECREF when we release it.
+ */
+
 int noteq_init()
 {
   last_added = NULL;
@@ -319,25 +338,70 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
 	stereo = PyObject_GetAttrString(chan, "stereo");
 	if (stereo) {
-	  if (PyTuple_Check(stereo)) {
-	    /* A stereo object is a 0-, 2-, or 4-tuple. In full form:
+	  if (PyTuple_Check(stereo) && PyTuple_Size(stereo) == 4) {
+	    /* A channel's stereo value is a 4-tuple:
+	       (int starttime, int endtime, tuple startpan, tuple endpan)
+
+	       Like the volume tuple, this is the general case. The
+	       startpan and endpan values are stereo objects. 
+
+	       A stereo object is a 0-, 2-, or 4-tuple. In full form:
 	       (xscale, xshift, yscale, yshift)
 	       Missing entries are presumed to be (1,0,1,0) in that order. */
 
-	    int tuplesize = PyTuple_Size(stereo);
-	    if (tuplesize >= 2) {
-	      double chshift, chscale;
-	      chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 0));
-	      chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 1));
-	      pan.scalex = pan.scalex * chscale;
-	      pan.shiftx = (pan.shiftx * chscale) + chshift;
+	    PyObject *usepan = NULL;
+
+	    long endtm;
+	    PyObject *endpan;
+	    PyObject *startpan;
+	    endtm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 1));
+	    endpan = PyTuple_GET_ITEM(stereo, 3);
+
+	    if (current_time >= endtm) {
+	      /* Stereo is constant across the buffer. */
+	      usepan = endpan;
 	    }
-	    if (tuplesize >= 4) {
-	      double chshift, chscale;
-	      chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 2));
-	      chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(stereo, 3));
-	      pan.scaley = pan.scaley * chscale;
-	      pan.shifty = (pan.shifty * chscale) + chshift;
+	    else {
+	      long starttm;
+	      starttm = PyInt_AsLong(PyTuple_GET_ITEM(stereo, 0));
+	      startpan = PyTuple_GET_ITEM(stereo, 2);
+
+	      if (starttm >= end_time) {
+		/* Stereo is constant across the buffer. */
+		usepan = startpan;
+	      }
+	      else {
+		/* Nasty case: we're in the middle of a stereo swoop. */
+		usepan = NULL;
+	      }
+	    }
+
+	    /* The value in usepan is now NULL if we're in a swoop, or
+	       a stereo object if we're in the constant case. */
+
+	    if (usepan) {
+	      /* Apply constant transform to the pan value. */
+	      int tuplesize = 0;
+	      if (PyTuple_Check(usepan))
+		tuplesize = PyTuple_Size(usepan);
+	      if (tuplesize >= 2) {
+		double chshift, chscale;
+		chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 0));
+		chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 1));
+		pan.scalex = pan.scalex * chscale;
+		pan.shiftx = (pan.shiftx * chscale) + chshift;
+	      }
+	      if (tuplesize >= 4) {
+		double chshift, chscale;
+		chscale = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 2));
+		chshift = PyFloat_AsDouble(PyTuple_GET_ITEM(usepan, 3));
+		pan.scaley = pan.scaley * chscale;
+		pan.shifty = (pan.shifty * chscale) + chshift;
+	      }
+	    }
+	    else {
+	      /* Record the pan positions at the start and end of the buffer. */
+	      /* #### */
 	    }
 	  }
 
