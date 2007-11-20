@@ -854,12 +854,18 @@ void noteq_adjust_timebase(long offset)
   }  
 }
 
+/* Given a point-source of sound at (shiftx, shifty), determine the
+   volume levels it produces in the left and right output channels.
+   These values will be between 0 and 1.
+*/
 static void leftright_volumes(double shiftx, double shifty,
   double *outlft, double *outrgt)
 {
   double vollft, volrgt;
+  double dist; 
 
-  double dist; /* max(abs(shiftx), abs(shifty)) */
+  /* compute dist = max(abs(shiftx), abs(shifty)) */
+
   if (shiftx >= 0.0)
     dist = shiftx;
   else
@@ -873,12 +879,18 @@ static void leftright_volumes(double shiftx, double shifty,
       dist = -shifty;
   }
 
+  /* Normalize shiftx, shifty by dist */
+
   if (dist > 1.0) {
     shiftx /= dist;
     shifty /= dist;
   }
+
   /* Now shiftx, shifty are in the range [-1, 1] */
       
+  /* Compute the volume levels, based on shiftx. (The Y value has no
+     effect inside the [-1, 1] range.) */
+
   if (shiftx < 0.0) {
     vollft = 1.0;
     volrgt = 1.0 + shiftx;
@@ -887,6 +899,8 @@ static void leftright_volumes(double shiftx, double shifty,
     volrgt = 1.0;
     vollft = 1.0 - shiftx;
   }
+
+  /* Now scale down the volumes, using the inverse square of the distance. */
 
   if (dist > 1.0) {
     dist = dist*dist;
