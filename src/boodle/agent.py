@@ -441,7 +441,7 @@ class Agent:
 			raise generator.ChannelError('creator is not in a channel')
 		if (parent is None):
 			parent = self.channel
-		chan = generator.Channel(parent, self.generator, self, startvolume, None)
+		chan = generator.Channel(parent, self.generator, self, startvolume, stereo.default())
 		return chan
 
 	def new_channel_pan(self, pan=None, startvolume=1.0, parent=None):
