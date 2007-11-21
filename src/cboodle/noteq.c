@@ -259,6 +259,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     samp = note->sample;
 
     pan0 = note->pan;
+    pan1 = pan0; /* #### delete */
     bothpans = FALSE;
     volume = note->volume;
     numranges = 0;
@@ -579,7 +580,6 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 #endif
 
       for (lx=notestart; lx<framesperbuf; lx++) {
-	int ranx;
 	long cursamp, nextsamp;
 	long val0, val1;
 	long result, reslef, resrgt;
@@ -597,6 +597,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	result = (val0 * (0x10000-framefrac)) + (val1 * framefrac);
 
 	if (numranges) {
+	  int ranx;
 	  long curtime = current_time + lx;
 #ifdef BOODLER_INTMATH
 	  long ivarvols = 0x4000;
@@ -879,7 +880,7 @@ static void leftright_volumes(double shiftx, double shifty,
       dist = -shifty;
   }
 
-  /* Normalize shiftx, shifty by dist */
+  /* Normalize shiftx, shifty by dist. Distances < 1 are considered to be 1. */
 
   if (dist > 1.0) {
     shiftx /= dist;
