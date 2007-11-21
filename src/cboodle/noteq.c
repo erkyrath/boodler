@@ -210,6 +210,58 @@ void note_destroy(note_t **noteptr)
   free(note);
 }
 
+/* The following macro breaks every rule of C style and moral
+   rectitude. It's a bunch of lines, it doesn't paren-protect its
+   arguments, and it doesn't act like an expression.
+
+   But it's the operation I need, and I need it inline.
+
+   The goal is to multiply FVOL by a factor taken from the
+   linear-interpolation range RANGE. CURTIME indicates the position in
+   RANGE to look at.
+
+   In integer-math mode, this operates on IVOL instead of FVOL. The
+   unused parameter is never touched, so it doesn't have to exist at
+   all. (I use two different variable names for the int and float
+   cases, to be absolutely sure no mistakes get covered up by magical
+   typecasting.)
+*/
+
+#ifdef BOODLER_INTMATH
+
+#define APPLY_RANGE(RANGE, CURTIME, FVOL, IVOL)    \
+    if (CURTIME >= RANGE.end) {                    \
+      IVOL = ((IVOL * RANGE.iendvol) >> 16);       \
+    }                                              \
+    else if (CURTIME <= RANGE.start) {             \
+      IVOL = ((IVOL * RANGE.istartvol) >> 16);     \
+    }                                              \
+    else {                                         \
+      long intermed = ((CURTIME-RANGE.start)       \
+	/ (((RANGE.end-RANGE.start) >> 8) | (long)1));                   \
+      intermed = ((intermed * (RANGE.iendvol - RANGE.istartvol)) >> 8);  \
+      intermed = intermed + RANGE.istartvol;       \
+      IVOL = ((IVOL * intermed) >> 16);            \
+    }
+
+#else /* BOODLER_INTMATH */
+
+#define APPLY_RANGE(RANGE, CURTIME, FVOL, IVOL)    \
+    if (CURTIME >= RANGE.end) {                    \
+      FVOL *= RANGE.endvol;                        \
+    }                                              \
+    else if (CURTIME <= RANGE.start) {             \
+      FVOL *= RANGE.startvol;                      \
+    }                                              \
+    else {                                         \
+      FVOL *= ((double)(CURTIME-RANGE.start)       \
+	/ (double)(RANGE.end-RANGE.start)          \
+	* (RANGE.endvol - RANGE.startvol)          \
+	+ RANGE.startvol);                         \
+    }
+
+#endif /* BOODLER_INTMATH */
+
 int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 {
   note_t **nptr;
@@ -259,7 +311,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     samp = note->sample;
 
     pan0 = note->pan;
-    pan1 = pan0; /* #### delete */
+    pan1 = pan0; /* #### delete? */
     bothpans = FALSE;
     volume = note->volume;
     numranges = 0;
@@ -520,9 +572,10 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	}
 	stereo = NULL;
 
+	/*
 	printf("### pan0: %.3f %.3f %.3f %.3f. pan1: %.3f %.3f %.3f %.3f.\n",
 	  pan0.scalex, pan0.shiftx, pan0.scaley, pan0.shifty,
-	  pan1.scalex, pan1.shiftx, pan1.scaley, pan1.shifty);
+	  pan1.scalex, pan1.shiftx, pan1.scaley, pan1.shifty); */
 
 	/* Point chan at chan.parent, and continue the loop (unless
 	   we've reached the top of the tree). */
@@ -564,10 +617,46 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
     if (samp->numchannels == 1) {
       long lx;
-      double vollft, volrgt;
+
       /* Compute the volume adjustment for the left and right output
 	 channels, based on the pan position. */
-      leftright_volumes(pan0.shiftx, pan0.shifty, &vollft, &volrgt); /* ### */
+      double vollft, volrgt;
+      volrange_t rangelft, rangergt;
+
+      if (!bothpans) {
+	leftright_volumes(pan0.shiftx, pan0.shifty, &vollft, &volrgt);
+	memset(&rangelft, 0, sizeof(rangelft)); /* ### delete? */
+	memset(&rangergt, 0, sizeof(rangergt)); /* ### delete? */
+      }
+      else {
+	/* The pan position is changing, so don't put anything in
+	   vollft/volrgt. Instead, work out the left and right volume
+	   ranges. */
+	double tmp0lft, tmp0rgt;
+	double tmp1lft, tmp1rgt;
+
+	vollft = 1.0;
+	volrgt = 1.0;
+	rangelft.start = current_time;
+	rangergt.start = current_time;
+	rangelft.end = end_time;
+	rangergt.end = end_time;
+
+	leftright_volumes(pan0.shiftx, pan0.shifty, &tmp0lft, &tmp0rgt);
+	leftright_volumes(pan1.shiftx, pan1.shifty, &tmp1lft, &tmp1rgt);
+#ifdef BOODLER_INTMATH
+	rangelft.istartvol = (long)(tmp0lft * 65536.0);
+	rangelft.iendvol = (long)(tmp1lft * 65536.0);
+	rangergt.istartvol = (long)(tmp0rgt * 65536.0);
+	rangergt.iendvol = (long)(tmp1rgt * 65536.0);
+#else
+	rangelft.startvol = tmp0lft;
+	rangelft.endvol = tmp1lft;
+	rangergt.startvol = tmp0rgt;
+	rangergt.endvol = tmp1rgt;
+#endif
+      }
+
       long ivollft, ivolrgt;
 #ifdef BOODLER_INTMATH
       long ivollftbase, ivolrgtbase;
@@ -596,52 +685,56 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	val1 = (long)sampdata[nextsamp];
 	result = (val0 * (0x10000-framefrac)) + (val1 * framefrac);
 
-	if (numranges) {
+	if (numranges || bothpans) {
 	  int ranx;
 	  long curtime = current_time + lx;
 #ifdef BOODLER_INTMATH
+	  /* Start with 0x4000, instead of 0x10000, to allow some
+	     headroom when we multiply by values over 0x10000. We'll
+	     compensate later by downshifting >>14 instead of >>16. */
 	  long ivarvols = 0x4000;
 #else
 	  double varvols = 1.0;
 #endif
 	  for (ranx=0; ranx<numranges; ranx++) {
-	    if (curtime >= ranges[ranx].end) {
-#ifdef BOODLER_INTMATH
-	      ivarvols = ((ivarvols * ranges[ranx].iendvol) >> 16);
-#else
-	      varvols *= ranges[ranx].endvol;
-#endif
-	    }
-	    else if (curtime <= ranges[ranx].start) {
-#ifdef BOODLER_INTMATH
-	      ivarvols = ((ivarvols * ranges[ranx].istartvol) >> 16);
-#else
-	      varvols *= ranges[ranx].startvol;
-#endif
-	    }
-	    else {
-#ifdef BOODLER_INTMATH
-	      long intermed = ((curtime-ranges[ranx].start)
-		/ (((ranges[ranx].end-ranges[ranx].start) >> 8) | (long)1));
-	      intermed = ((intermed * (ranges[ranx].iendvol - ranges[ranx].istartvol)) >> 8);
-	      intermed = intermed + ranges[ranx].istartvol;
-	      ivarvols = ((ivarvols * intermed) >> 16);
-#else
-	      varvols *= ((double)(curtime-ranges[ranx].start) 
-		/ (double)(ranges[ranx].end-ranges[ranx].start) 
-		* (ranges[ranx].endvol - ranges[ranx].startvol) 
-		+ ranges[ranx].startvol);
-#endif
-	    }
+	    APPLY_RANGE(ranges[ranx], curtime, varvols, ivarvols);
 	  }
+
+	  if (!bothpans) {
+	    /* Done. */
 #ifdef BOODLER_INTMATH
-	  ivollft = ((ivarvols * ivollftbase) >> 14);
-	  ivolrgt = ((ivarvols * ivolrgtbase) >> 14);
+	    ivollft = ((ivarvols * ivollftbase) >> 14);
+	    ivolrgt = ((ivarvols * ivolrgtbase) >> 14);
 #else
-	  ivollft = (long)(volume * varvols * vollft * 65536.0);
-	  ivolrgt = (long)(volume * varvols * volrgt * 65536.0);
+	    ivollft = (long)(volume * varvols * vollft * 65536.0);
+	    ivolrgt = (long)(volume * varvols * volrgt * 65536.0);
 #endif
+	  }
+	  else {
+	    /* More to do -- we need to throw rangelft/rangergt into
+	       the mix. */
+#ifdef BOODLER_INTMATH
+	    long ivarvolslft = ivarvols;
+	    long ivarvolsrgt = ivarvols;
+#else
+	    double varvolslft = varvols;
+	    double varvolsrgt = varvols;
+#endif
+	    APPLY_RANGE(rangelft, curtime, varvolslft, ivarvolslft);
+	    APPLY_RANGE(rangergt, curtime, varvolsrgt, ivarvolsrgt);
+
+#ifdef BOODLER_INTMATH
+	    ivollft = ((ivarvolslft * ivollftbase) >> 14);
+	    ivolrgt = ((ivarvolsrgt * ivolrgtbase) >> 14);
+#else
+	    ivollft = (long)(volume * varvolslft * vollft * 65536.0);
+	    ivolrgt = (long)(volume * varvolsrgt * volrgt * 65536.0);
+#endif
+	  }
 	}
+
+	/* All of the volume and pan information has been boiled down
+	   into ivollft/ivolrgt. Apply it to the sample. */
 
 	reslef = ((result >> 16) * ivollft) >> 16;
 	resrgt = ((result >> 16) * ivolrgt) >> 16;
@@ -668,14 +761,76 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     }
     else { /* samp->numchannels == 2 */
       long lx;
-      double vol0lft, vol0rgt, vol1lft, vol1rgt;
+
       /* Compute the volume adjustment for the left and right output
 	 channels, based on the pan position. We have to do this
 	 twice: for input channel 0 and for input channel 1. */
-      leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty,
-	&vol0lft, &vol0rgt); /* ### */
-      leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty,
-	&vol1lft, &vol1rgt); /* ### */
+      double vol0lft, vol0rgt, vol1lft, vol1rgt;
+      volrange_t range0lft, range0rgt, range1lft, range1rgt;
+
+      if (!bothpans) {
+	leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty,
+	  &vol0lft, &vol0rgt); 
+	leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty,
+	  &vol1lft, &vol1rgt);
+	memset(&range0lft, 0, sizeof(range0lft)); /* ### delete? */
+	memset(&range0rgt, 0, sizeof(range0rgt)); /* ### delete? */
+	memset(&range1lft, 0, sizeof(range1lft)); /* ### delete? */
+	memset(&range1rgt, 0, sizeof(range1rgt)); /* ### delete? */
+      }
+      else {
+	/* The pan position is changing, so don't put anything in
+	   vol*lft/vol*rgt. Instead, work out the left and right volume
+	   ranges for each channel. */
+	double tmp0lft, tmp0rgt;
+	double tmp1lft, tmp1rgt;
+
+	vol0lft = 1.0;
+	vol0rgt = 1.0;
+	range0lft.start = current_time;
+	range0rgt.start = current_time;
+	range0lft.end = end_time;
+	range0rgt.end = end_time;
+
+	leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty,
+	  &tmp0lft, &tmp0rgt);
+	leftright_volumes(pan1.shiftx - pan1.scalex, pan1.shifty,
+	  &tmp1lft, &tmp1rgt);
+#ifdef BOODLER_INTMATH
+	range0lft.istartvol = (long)(tmp0lft * 65536.0);
+	range0lft.iendvol = (long)(tmp1lft * 65536.0);
+	range0rgt.istartvol = (long)(tmp0rgt * 65536.0);
+	range0rgt.iendvol = (long)(tmp1rgt * 65536.0);
+#else
+	range0lft.startvol = tmp0lft;
+	range0lft.endvol = tmp1lft;
+	range0rgt.startvol = tmp0rgt;
+	range0rgt.endvol = tmp1rgt;
+#endif
+
+	vol1lft = 1.0;
+	vol1rgt = 1.0;
+	range1lft.start = current_time;
+	range1rgt.start = current_time;
+	range1lft.end = end_time;
+	range1rgt.end = end_time;
+
+	leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty,
+	  &tmp0lft, &tmp0rgt);
+	leftright_volumes(pan1.shiftx + pan1.scalex, pan1.shifty,
+	  &tmp1lft, &tmp1rgt);
+#ifdef BOODLER_INTMATH
+	range1lft.istartvol = (long)(tmp0lft * 65536.0);
+	range1lft.iendvol = (long)(tmp1lft * 65536.0);
+	range1rgt.istartvol = (long)(tmp0rgt * 65536.0);
+	range1rgt.iendvol = (long)(tmp1rgt * 65536.0);
+#else
+	range1lft.startvol = tmp0lft;
+	range1lft.endvol = tmp1lft;
+	range1rgt.startvol = tmp0rgt;
+	range1rgt.endvol = tmp1rgt;
+#endif
+      }
 
       /* printf("(%gA+%gB , %gA+%gB)\n", vol0lft, vol1lft, vol0rgt, vol1rgt); */
 
@@ -716,7 +871,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	val1 = (long)sampdata[nextsamp+1];
 	resch1 = (val0 * (0x10000-framefrac)) + (val1 * framefrac);
 
-	if (numranges) {
+	if (numranges || bothpans) {
 	  int ranx;
 	  long curtime = current_time + lx;
 #ifdef BOODLER_INTMATH
@@ -725,47 +880,58 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	  double varvols = 1.0;
 #endif
 	  for (ranx=0; ranx<numranges; ranx++) {
-	    if (curtime >= ranges[ranx].end) {
-#ifdef BOODLER_INTMATH
-	      ivarvols = ((ivarvols * ranges[ranx].iendvol) >> 16);
-#else
-	      varvols *= ranges[ranx].endvol;
-#endif
-	    }
-	    else if (curtime <= ranges[ranx].start) {
-#ifdef BOODLER_INTMATH
-	      ivarvols = ((ivarvols * ranges[ranx].istartvol) >> 16);
-#else
-	      varvols *= ranges[ranx].startvol;
-#endif
-	    }
-	    else {
-#ifdef BOODLER_INTMATH
-	      long intermed = ((curtime-ranges[ranx].start)
-		/ (((ranges[ranx].end-ranges[ranx].start) >> 8) | (long)1));
-	      intermed = ((intermed * (ranges[ranx].iendvol - ranges[ranx].istartvol)) >> 8);
-	      intermed = intermed + ranges[ranx].istartvol;
-	      ivarvols = ((ivarvols * intermed) >> 16);
-#else
-	      varvols *= ((double)(curtime-ranges[ranx].start) 
-		/ (double)(ranges[ranx].end-ranges[ranx].start) 
-		* (ranges[ranx].endvol - ranges[ranx].startvol) 
-		+ ranges[ranx].startvol);
-#endif
-	    }
+	    APPLY_RANGE(ranges[ranx], curtime, varvols, ivarvols);
 	  }
+
+	  if (!bothpans) {
+	    /* Done. */
 #ifdef BOODLER_INTMATH
-	  ivol0lft = ((ivarvols * ivol0lftbase) >> 14);
-	  ivol0rgt = ((ivarvols * ivol0rgtbase) >> 14);
-	  ivol1lft = ((ivarvols * ivol1lftbase) >> 14);
-	  ivol1rgt = ((ivarvols * ivol1rgtbase) >> 14);
+	    ivol0lft = ((ivarvols * ivol0lftbase) >> 14);
+	    ivol0rgt = ((ivarvols * ivol0rgtbase) >> 14);
+	    ivol1lft = ((ivarvols * ivol1lftbase) >> 14);
+	    ivol1rgt = ((ivarvols * ivol1rgtbase) >> 14);
 #else
-	  ivol0lft = (long)(volume * vol0lft * varvols * 65536.0);
-	  ivol0rgt = (long)(volume * vol0rgt * varvols * 65536.0);
-	  ivol1lft = (long)(volume * vol1lft * varvols * 65536.0);
-	  ivol1rgt = (long)(volume * vol1rgt * varvols * 65536.0);
+	    ivol0lft = (long)(volume * vol0lft * varvols * 65536.0);
+	    ivol0rgt = (long)(volume * vol0rgt * varvols * 65536.0);
+	    ivol1lft = (long)(volume * vol1lft * varvols * 65536.0);
+	    ivol1rgt = (long)(volume * vol1rgt * varvols * 65536.0);
 #endif
+	  }
+	  else {
+	    /* More to do -- we need to throw range*lft/range*rgt into
+	       the mix. */
+#ifdef BOODLER_INTMATH
+	    long ivarvolslft0 = ivarvols;
+	    long ivarvolsrgt0 = ivarvols;
+	    long ivarvolslft1 = ivarvols;
+	    long ivarvolsrgt1 = ivarvols;
+#else
+	    double varvolslft0 = varvols;
+	    double varvolsrgt0 = varvols;
+	    double varvolslft1 = varvols;
+	    double varvolsrgt1 = varvols;
+#endif
+	    APPLY_RANGE(range0lft, curtime, varvolslft0, ivarvolslft0);
+	    APPLY_RANGE(range0rgt, curtime, varvolsrgt0, ivarvolsrgt0);
+	    APPLY_RANGE(range1lft, curtime, varvolslft1, ivarvolslft1);
+	    APPLY_RANGE(range1rgt, curtime, varvolsrgt1, ivarvolsrgt1);
+
+#ifdef BOODLER_INTMATH
+	    ivol0lft = ((ivarvolslft0 * ivol0lftbase) >> 14);
+	    ivol0rgt = ((ivarvolsrgt0 * ivol0rgtbase) >> 14);
+	    ivol1lft = ((ivarvolslft1 * ivol1lftbase) >> 14);
+	    ivol1rgt = ((ivarvolsrgt1 * ivol1rgtbase) >> 14);
+#else
+	    ivol0lft = (long)(volume * vol0lft * varvolslft0 * 65536.0);
+	    ivol0rgt = (long)(volume * vol0rgt * varvolsrgt0 * 65536.0);
+	    ivol1lft = (long)(volume * vol1lft * varvolslft1 * 65536.0);
+	    ivol1rgt = (long)(volume * vol1rgt * varvolsrgt1 * 65536.0);
+#endif
+	  }
 	}
+
+	/* All of the volume and pan information has been boiled down
+	   into ivol*lft/ivol*rgt. Apply it to the sample. */
 
 	res0lef = ((resch0 >> 16) * ivol0lft) >> 16;
 	res0rgt = ((resch0 >> 16) * ivol0rgt) >> 16;

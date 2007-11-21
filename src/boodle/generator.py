@@ -544,6 +544,7 @@ class Channel:
 		starttm = self.generator.agentruntime
 		endtm = starttm + int(interval * cboodle.framespersec())
 
+		self.logger.error('### old stereo: %s', self.stereo)
 		(oldstarttm, oldendtm, oldstartpan, oldendpan) = self.stereo
 		if (endtm < oldendtm):
 			# The current swoop runs past this one, so we leave it in place.
