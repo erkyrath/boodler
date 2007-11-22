@@ -268,6 +268,11 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
   long framesperbuf = audev_get_framesperbuf();
   long end_time;
 
+  /* These could be declared inside the loop, but if I put them
+     outside I can initialize them early, which squashes some stupid
+     compiler warnings. */
+  stereo_t pan0, pan1;
+
   if (genfunc) {
     int res = (*genfunc)(current_time, rock);
     if (res)
@@ -277,6 +282,9 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
      change the current_time */
 
   end_time = current_time + framesperbuf;
+
+  /* Squash stupid compiler warnings. */
+  memset(&pan1, 0, sizeof(pan1));
 
   /* The following code is unapologetically long, repetitive, and nasty.
      This is the bottom loop for mixing sound, so we don't trade off
@@ -296,7 +304,6 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     double pitch;
     long lpitch;
     double volume;
-    stereo_t pan0, pan1;
     int bothpans;
     int numranges;
     long *valptr;
@@ -311,7 +318,6 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
     samp = note->sample;
 
     pan0 = note->pan;
-    pan1 = pan0; /* #### delete? */
     bothpans = FALSE;
     volume = note->volume;
     numranges = 0;
@@ -780,7 +786,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
       }
       else {
 	/* The pan position is changing, so don't put anything in
-	   vol*lft/vol*rgt. Instead, work out the left and right volume
+	   vol#lft/vol#rgt. Instead, work out the left and right volume
 	   ranges for each channel. */
 	double tmp0lft, tmp0rgt;
 	double tmp1lft, tmp1rgt;
@@ -931,7 +937,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	}
 
 	/* All of the volume and pan information has been boiled down
-	   into ivol*lft/ivol*rgt. Apply it to the sample. */
+	   into ivol#lft/ivol#rgt. Apply it to the sample. */
 
 	res0lef = ((resch0 >> 16) * ivol0lft) >> 16;
 	res0rgt = ((resch0 >> 16) * ivol0rgt) >> 16;

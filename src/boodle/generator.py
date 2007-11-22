@@ -541,10 +541,10 @@ class Channel:
 		else create several channels.
 		"""
 
+		newpan = stereo.cast(newpan)
 		starttm = self.generator.agentruntime
 		endtm = starttm + int(interval * cboodle.framespersec())
 
-		self.logger.error('### old stereo: %s', self.stereo)
 		(oldstarttm, oldendtm, oldstartpan, oldendpan) = self.stereo
 		if (endtm < oldendtm):
 			# The current swoop runs past this one, so we leave it in place.
@@ -565,11 +565,9 @@ class Channel:
 			atstart = [ (ratio * (pan1[ix] - pan0[ix]) + pan0[ix])
 				for ix in range(4) ]
 			atstart = tuple(atstart)
-			self.logger.error('### interp %s -- %s => %s', oldstartpan, oldendpan, atstart)
 		else:
 			atstart = oldstartpan
 			
-		self.logger.error('### new stereo: %s', (starttm, endtm, atstart, newpan))
 		self.stereo = (starttm, endtm, atstart, newpan)
 
 	def get_prop(self, key, default=None):

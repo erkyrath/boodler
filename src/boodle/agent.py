@@ -716,7 +716,7 @@ class SetPanAgent(Agent):
 
 	def __init__(self, newpan, duration=0.5):
 		Agent.__init__(self)
-		self.newpan = stereo.cast(newpan)
+		self.newpan = newpan
 		self.duration = float(duration)
 	def run(self):
 		self.channel.set_pan(self.newpan, self.duration)
