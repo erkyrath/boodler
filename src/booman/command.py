@@ -202,6 +202,8 @@ class InstallCmd(Command):
 		print 'Package:', pkg.name, '   Version:', str(pkg.version)
 		meta = pkg.metadata
 		print 'Title:', meta.get_one('dc.title', '<not available>')
+
+		### check dependencies!
 		
 class CurrentCmd(Command):
 	name = 'current'
