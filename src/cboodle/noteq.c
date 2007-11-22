@@ -272,6 +272,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
      outside I can initialize them early, which squashes some stupid
      compiler warnings. */
   stereo_t pan0, pan1;
+  volrange_t range0lft, range0rgt, range1lft, range1rgt;
 
   if (genfunc) {
     int res = (*genfunc)(current_time, rock);
@@ -285,6 +286,8 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
   /* Squash stupid compiler warnings. */
   memset(&pan1, 0, sizeof(pan1));
+  memset(&range0lft, 0, sizeof(range0lft));
+  range0rgt = range1lft = range1rgt = range0lft;
 
   /* The following code is unapologetically long, repetitive, and nasty.
      This is the bottom loop for mixing sound, so we don't trade off
@@ -579,7 +582,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	stereo = NULL;
 
 	/*
-	printf("### pan0: %.3f %.3f %.3f %.3f. pan1: %.3f %.3f %.3f %.3f.\n",
+	printf("pan0: %.3f %.3f %.3f %.3f. pan1: %.3f %.3f %.3f %.3f.\n",
 	  pan0.scalex, pan0.shiftx, pan0.scaley, pan0.shifty,
 	  pan1.scalex, pan1.shiftx, pan1.scaley, pan1.shifty); */
 
@@ -627,12 +630,9 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
       /* Compute the volume adjustment for the left and right output
 	 channels, based on the pan position. */
       double vollft, volrgt;
-      volrange_t rangelft, rangergt;
 
       if (!bothpans) {
 	leftright_volumes(pan0.shiftx, pan0.shifty, &vollft, &volrgt);
-	memset(&rangelft, 0, sizeof(rangelft)); /* ### delete? */
-	memset(&rangergt, 0, sizeof(rangergt)); /* ### delete? */
       }
       else {
 	/* The pan position is changing, so don't put anything in
@@ -643,23 +643,23 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 
 	vollft = 1.0;
 	volrgt = 1.0;
-	rangelft.start = current_time;
-	rangergt.start = current_time;
-	rangelft.end = end_time;
-	rangergt.end = end_time;
+	range0lft.start = current_time;
+	range0rgt.start = current_time;
+	range0lft.end = end_time;
+	range0rgt.end = end_time;
 
 	leftright_volumes(pan0.shiftx, pan0.shifty, &tmp0lft, &tmp0rgt);
 	leftright_volumes(pan1.shiftx, pan1.shifty, &tmp1lft, &tmp1rgt);
 #ifdef BOODLER_INTMATH
-	rangelft.istartvol = (long)(tmp0lft * 65536.0);
-	rangelft.iendvol = (long)(tmp1lft * 65536.0);
-	rangergt.istartvol = (long)(tmp0rgt * 65536.0);
-	rangergt.iendvol = (long)(tmp1rgt * 65536.0);
+	range0lft.istartvol = (long)(tmp0lft * 65536.0);
+	range0lft.iendvol = (long)(tmp1lft * 65536.0);
+	range0rgt.istartvol = (long)(tmp0rgt * 65536.0);
+	range0rgt.iendvol = (long)(tmp1rgt * 65536.0);
 #else
-	rangelft.startvol = tmp0lft;
-	rangelft.endvol = tmp1lft;
-	rangergt.startvol = tmp0rgt;
-	rangergt.endvol = tmp1rgt;
+	range0lft.startvol = tmp0lft;
+	range0lft.endvol = tmp1lft;
+	range0rgt.startvol = tmp0rgt;
+	range0rgt.endvol = tmp1rgt;
 #endif
       }
 
@@ -717,7 +717,7 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 #endif
 	  }
 	  else {
-	    /* More to do -- we need to throw rangelft/rangergt into
+	    /* More to do -- we need to throw range0lft/range0rgt into
 	       the mix. */
 #ifdef BOODLER_INTMATH
 	    long ivarvolslft = ivarvols;
@@ -726,8 +726,8 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	    double varvolslft = varvols;
 	    double varvolsrgt = varvols;
 #endif
-	    APPLY_RANGE(rangelft, curtime, varvolslft, ivarvolslft);
-	    APPLY_RANGE(rangergt, curtime, varvolsrgt, ivarvolsrgt);
+	    APPLY_RANGE(range0lft, curtime, varvolslft, ivarvolslft);
+	    APPLY_RANGE(range0rgt, curtime, varvolsrgt, ivarvolsrgt);
 
 #ifdef BOODLER_INTMATH
 	    ivollft = ((ivarvolslft * ivollftbase) >> 14);
@@ -772,17 +772,12 @@ int noteq_generate(long *buffer, generate_func_t genfunc, void *rock)
 	 channels, based on the pan position. We have to do this
 	 twice: for input channel 0 and for input channel 1. */
       double vol0lft, vol0rgt, vol1lft, vol1rgt;
-      volrange_t range0lft, range0rgt, range1lft, range1rgt;
 
       if (!bothpans) {
 	leftright_volumes(pan0.shiftx - pan0.scalex, pan0.shifty,
 	  &vol0lft, &vol0rgt); 
 	leftright_volumes(pan0.shiftx + pan0.scalex, pan0.shifty,
 	  &vol1lft, &vol1rgt);
-	memset(&range0lft, 0, sizeof(range0lft)); /* ### delete? */
-	memset(&range0rgt, 0, sizeof(range0rgt)); /* ### delete? */
-	memset(&range1lft, 0, sizeof(range1lft)); /* ### delete? */
-	memset(&range1rgt, 0, sizeof(range1rgt)); /* ### delete? */
       }
       else {
 	/* The pan position is changing, so don't put anything in
