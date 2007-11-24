@@ -35,6 +35,8 @@ class Generator:
 		are handled at the beginning of the next run cycle
 
 	loader -- the package loader
+
+	Internal methods: ###
 	"""
 
 	def __init__(self, basevolume=0.5, stdinlisten=False,
@@ -79,6 +81,84 @@ class Generator:
 			lis = self.listeners.pop(0)
 			lis.close()
 		self.logger.info('generator shut down')
+
+	def select_time(self, delay):
+		"""select_time(delay) -> long
+
+		Determine the schedule time represented by a value. Typically this 
+		is a number (in seconds), measured from the current agentruntime.
+		It may also be a FrameCount object.
+
+		This should only be called from Agent methods used by agent run()
+		code. (Outside of run() time, the agentruntime is not set.)
+
+		Raises ScheduleError for illegal values.
+		"""
+
+		fps = cboodle.framespersec()
+		
+		typ = type(delay)
+		if (typ in [float, int, long]):
+			if (delay < 0):
+				raise ScheduleError('negative delay time')
+			if (delay > 3605): 
+				# about one hour
+				### need to think about this
+				raise ScheduleError('delay too long')
+			# int() is willing to return a long if necessary
+			fdelay = int(delay * fps)
+		elif (isinstance(delay, FrameCount)):
+			fdelay = delay.frames
+			if (fdelay < 0):
+				raise ScheduleError('negative delay time')
+			if (fdelay > 3605L * fps): 
+				# about one hour
+				### need to think about this
+				raise ScheduleError('delay too long')
+		else:
+			raise ScheduleError('unknown type for delay')
+
+		# fdelay is now an interval in frames.
+		starttime = self.agentruntime + fdelay
+		return starttime
+
+	def select_duration(self, duration):
+		"""select_duration(duration) -> long
+
+		Determine the duration represented by a value. Typically this is
+		a number (in seconds). It may also be a FrameCount object.
+
+		This should only be called from Agent methods used by agent run()
+		code.
+
+		Raises ScheduleError for illegal values.
+		"""
+
+		fps = cboodle.framespersec()
+			
+		typ = type(duration)
+		if (typ in [float, int, long]):
+			if (duration < 0):
+				raise ScheduleError('negative duration time')
+			if (duration > 3605): 
+				# about one hour
+				### need to think about this
+				raise ScheduleError('duration too long')
+			# int() is willing to return a long if necessary
+			fduration = int(duration * fps)
+		elif (isinstance(duration, FrameCount)):
+			fduration = duration.frames
+			if (fduration < 0):
+				raise ScheduleError('negative duration time')
+			if (fduration > 3605L * fps): 
+				# about one hour
+				### need to think about this
+				raise ScheduleError('duration too long')
+		else:
+			raise ScheduleError('unknown type for duration')
+
+		# fduration is now an interval in frames.
+		return fduration
 
 	def set_stats_interval(self, val):
 		"""set_stats_interval(val) -> None
@@ -637,7 +717,31 @@ class Channel:
 		return cmp(ch2.depth, ch1.depth)
 	compare = staticmethod(compare)
 
-	
+class FrameCount:
+	"""FrameCount: Represents a time (or duration) measured in a fixed
+	number of sound frames. A frame is a group of values, one for each
+	channel. (For a mono sound file, therefore, a frame is the same as
+	a sample value.) When you see a sound rate like 44100 Hz, that's
+	measuring frames per second.
+
+	FrameCount objects can be passed as the delay (or duration) value
+	for sched_note(), etc. However, you should only do this when you
+	need exact-frame scheduling. A soundscape which uses FrameCount
+	values will come out different on different computers, because
+	not all audio devices play at the same frame rate. Boodler normally
+	compensates for this, but if you use FrameCounts, you are bypassing
+	that compensation.
+
+	FrameCount(frames) -- constructor.
+
+	The argument should be an integer (or long) number of frames. No
+	range-checking is done at constructor-time.
+	"""
+
+	def __init__(self, frames):
+		self.frames = long(frames)
+
+		
 TRIMTIME   = 317520000   # two hours
 TRIMOFFSET = 158760000   # one hour
 UNLOADTIME =  13230000   # five minutes

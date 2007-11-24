@@ -40,6 +40,8 @@ def examine_directory(loader, dirname, destname=None):
 			package.
 		- a Metadata object.
 		- a Resources object.
+
+	### ignore .pyc and ~ files in contents? Or warn about them?
 	"""
 	
 	# Read in the source Metadata file (which may be missing or

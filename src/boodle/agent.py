@@ -129,18 +129,10 @@ class Agent:
 		gen = self.generator
 		samp = sample.get(samp)
 
-		if (delay < 0):
-			raise generator.ScheduleError('negative delay time')
-		if (delay > 3605): 
-			# about one hour
-			raise generator.ScheduleError('delay too long')
-		fps = cboodle.framespersec()
-		fdelay = int(delay * fps)
-		starttime = gen.agentruntime + fdelay
-
+		starttime = gen.select_time(delay)
 		pan = stereo.cast(pan)
 		dur = samp.queue_note(pitch, volume, pan, starttime, chan)
-		return float(dur) / float(fps)
+		return float(dur) / float(cboodle.framespersec())
 
 	def sched_note_duration(self, samp, duration, pitch=1.0, volume=1.0,
 		delay=0, chan=None):
@@ -195,24 +187,12 @@ class Agent:
 		gen = self.generator
 		samp = sample.get(samp)
 
-		if (delay < 0):
-			raise generator.ScheduleError('negative delay time')
-		if (delay > 3605): 
-			# about one hour
-			raise generator.ScheduleError('delay too long')
-		if (duration < 0):
-			raise generator.ScheduleError('negative duration')
-		if (duration > 3605): 
-			# about one hour
-			raise generator.ScheduleError('duration too long')
-		fps = cboodle.framespersec()
-		fdelay = int(delay * fps)
-		starttime = gen.agentruntime + fdelay
-		fduration = int(duration * fps)
+		starttime = gen.select_time(delay)
+		fduration = gen.select_duration(duration)
 
 		pan = stereo.cast(pan)
 		dur = samp.queue_note_duration(pitch, volume, pan, starttime, fduration, chan)
-		return float(dur) / float(fps)
+		return float(dur) / float(cboodle.framespersec())
 
 	def sched_note_params(self, samp, **args):
 		"""sched_note_params(sample, param=value, param=value...) -> duration
@@ -395,14 +375,8 @@ class Agent:
 			handle = ag.run
 		gen = self.generator
 
-		if (delay < 0):
-			raise generator.ScheduleError('negative delay time')
-		if (delay > 3605): 
-			# about one hour
-			raise generator.ScheduleError('delay too long')
+		starttime = gen.select_time(delay)
 		ag.origdelay = delay
-		fdelay = int(delay * cboodle.framespersec())
-		starttime = gen.agentruntime + fdelay
 		gen.addagent(ag, chan, starttime, handle)
 
 	def resched(self, delay=None, chan=None, handle=None):
@@ -808,5 +782,6 @@ import boodle
 from boodle import generator, sample, stereo
 # cboodle may be updated later, by a set_driver() call.
 cboodle = boodle.cboodle
+from boodle.generator import FrameCount
 
 from boopak import version, pload
