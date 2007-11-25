@@ -3,6 +3,7 @@ import types
 import os
 import os.path
 import re
+import inspect
 
 from booman import CommandError
 from boodle.agent import Agent
@@ -116,6 +117,8 @@ def examine_directory(loader, dirname, destname=None):
 		pkgvers = version.VersionNumber()
 
 	# Validate package name.
+	if (pkgname is None):
+		raise ConstructError(dirname, 'Package name must be given in Metadata or inferred from directory name')
 	ls = pinfo.parse_package_name(pkgname)
 	if (len(ls) < 3):
 		raise ConstructError(dirname, 'Package name must have at least three elements: ' + pkgname)
@@ -376,6 +379,19 @@ def examine_directory(loader, dirname, destname=None):
 		revmap[realname] = key
 		
 		res.add('boodler.use', 'agent')
+		
+	for key in context.agents:
+		(ag, origloc) = context.agents[key]
+		res = resources.get(key)
+		if (not res):
+			continue
+			
+		# Inspect the agent to discover its argument metadata.
+		### Skip if argument metadata is already declared
+		
+		(args, varargs, varkw, defaults) = inspect.getargspec(ag.init)
+		print '###', key, 'init():'
+		print '###', (args, varargs, varkw, defaults)
 
 	try:
 		resources.build_tree()
