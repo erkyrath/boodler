@@ -213,20 +213,22 @@ class PackageLoader:
 			dirname = None
 
 		# Open the Versions file in the package directory. (If we have
-		# a package directory.)
+		# a package directory, and a Versions file.)
 
 		if (dirname):
 			versionfile = os.path.join(dirname, Filename_Versions)
 			if (not os.path.isfile(versionfile)):
-				raise PackageLoadError(pkgname,
-					'package has no versions file')
+				# We don't raise an exception here, because the install
+				# command needs to tolerate a screwy Collection long
+				# enough to fix it.
+				versionfile = None
 
 		# Create the PackageGroup object itself.
 		pgroup = PackageGroup(self, pkgname, dirname)
 
 		fl = None
 		try:
-			if (dirname):
+			if (dirname and versionfile):
 				fl = open(versionfile, 'rbU')
 			# Go through the Versions file and the external versions list
 			# (either of which may be nonexistent).

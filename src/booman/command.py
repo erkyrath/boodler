@@ -182,11 +182,12 @@ class InstallCmd(Command):
 			raise CommandError('### Not yet able to search boodler.org')
 
 		ensure_fetched(srctype, loc)
-		pkg = frame.loader.find_source(srctype, loc)
 		try:
+			pkg = frame.loader.find_source(srctype, loc)
 			frame.loader.load(pkg.name, pkg.version)
 			already_got = True
 		except:
+			pkg = None
 			already_got = False
 
 		if (already_got and (not frame.is_force)):
@@ -427,7 +428,7 @@ class CreateCmd(Command):
 		
 		writer = codecs.getwriter('utf-8')
 
-		fl = open(metafile, 'wbU')
+		fl = open(metafile, 'wb')
 		ufl = writer(fl)
 		try:
 			meta.dump(ufl, comments)
@@ -436,7 +437,7 @@ class CreateCmd(Command):
 			fl.close()
 			
 		if (ress):
-			fl = open(ressfile, 'wbU')
+			fl = open(ressfile, 'wb')
 			ufl = writer(fl)
 			try:
 				ress.dump(ufl, comments)

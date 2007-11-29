@@ -341,6 +341,7 @@ int audev_init_device(char *wantdevname, long ratewanted, int verbose, extraopt_
 
   }
 
+  /* ### AudioDeviceAddIOProc is deprecated as of OSX 10.5 */
   status = AudioDeviceAddIOProc(audevice, PlaybackIOProc, (void *)1);
   if (status) {
     fprintf(stderr, "Could not add IOProc to device.\n");

@@ -387,7 +387,7 @@ class PackageCollection(pload.PackageLoader):
 		if (not os.path.isdir(dirname)):
 			os.makedirs(dirname)
 		filename = os.path.join(dirname, pload.Filename_Versions)
-		outfl = open(filename, 'wU')
+		outfl = open(filename, 'w')
 		try:
 			outfl.write('# Package: ' + pkgname + '\n')
 			for vers in versionlist:

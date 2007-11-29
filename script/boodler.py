@@ -251,6 +251,8 @@ import boodle
 import boopak.pload
 
 loader = boopak.pload.PackageLoader(coldir, importing_ok=True)
+### Catch error if no collection directory exists? Or check first.
+### Print appropriate error.
 
 if (opts.externaldirs):
 	import booman.command
