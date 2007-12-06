@@ -61,6 +61,9 @@ class Agent:
 	# obsolete classes stay alive forever, at least in an importing
 	# environment. If we really cared, we'd use weak key refs.)
 	cached_class_names = {}
+
+	###
+	_args = None
 	
 	def __init__(self, *args, **kwargs):
 		self.inited = True

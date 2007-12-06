@@ -389,9 +389,25 @@ def examine_directory(loader, dirname, destname=None):
 		# Inspect the agent to discover its argument metadata.
 		### Skip if argument metadata is already declared
 		
-		(args, varargs, varkw, defaults) = inspect.getargspec(ag.init)
-		print '###', key, 'init():'
-		print '###', (args, varargs, varkw, defaults)
+		argspec = inspect.getargspec(ag.init)
+		# argspec = (args, varargs, varkw, defaults)
+		print '###', key, '. init(...):', argspec
+		arglist = None
+		try:
+			arglist = argdef.Arglist.from_argspec(*argspec)
+		except argdef.ArgDefError, ex:
+			warning(dirname, key + '.init() could not be inspected: ' + str(ex))
+
+		if (not (ag._args is None)):
+			try:
+				arglist = argdef.Arglist.merge(ag._args, arglist)
+			except argdef.ArgDefError, ex:
+				warning(dirname, key + '.init() does not match _args: ' + str(ex))
+				arglist = ag._args
+
+		if (not (arglist is None)):
+			print '### ...',
+			arglist.dump()
 
 	try:
 		resources.build_tree()
@@ -563,6 +579,7 @@ from boopak import version
 from boopak import pinfo
 from boopak import pload
 from boopak import collect
+from boopak import argdef
 import booman
 
 # Unit tests
