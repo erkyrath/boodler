@@ -1,6 +1,6 @@
 import sys
 
-class Arglist:
+class ArgList:
 	def __init__(self, *ls, **dic):
 		self.args = []
 		
@@ -15,13 +15,27 @@ class Arglist:
 			arg = dic[key]
 			if (arg.name is None):
 				arg.name = key
+			else:
+				if (arg.name != key):
+					raise ArgDefError('argument name does not match: ' + key + ', ' + arg.name)
 			self.args.append(arg)
 
 		self.sort_args()
 
 	def sort_args(self):
-		pass ###
-		### raise on index or name conflicts.
+		self.args.sort(_argument_sort_func)
+		for arg in self.args:
+			if (arg.index is None):
+				continue
+			ls = [ arg2 for arg2 in self.args if arg2.index == arg.index ]
+			if (len(ls) > 1):
+				raise ArgDefError('more than one argument with index ' + str(arg.index))
+		for arg in self.args:
+			if (arg.name is None):
+				continue
+			ls = [ arg2 for arg2 in self.args if arg2.name == arg.name ]
+			if (len(ls) > 1):
+				raise ArgDefError('more than one argument with name ' + str(arg.name))
 
 	def __len__(self):
 		return len(self.args)
@@ -29,14 +43,27 @@ class Arglist:
 	def __nonzero__(self):
 		return True
 
+	def get_index(self, val):
+		for arg in self.args:
+			if ((not (arg.index is None)) and (arg.index == val)):
+				return arg
+		return None
+
+	def get_name(self, val):
+		for arg in self.args:
+			if ((not (arg.name is None)) and (arg.name == val)):
+				return arg
+		return None
+
 	def clone(self):
-		arglist = Arglist()
+		arglist = ArgList()
 		for arg in self.args:
 			arglist.args.append(arg.clone())
 		# Don't need to sort, because self is already sorted.
+		return arglist
 
 	def dump(self, fl=sys.stdout):
-		fl.write('Arglist:\n')
+		fl.write('ArgList:\n')
 		for arg in self.args:
 			fl.write('  Arg:\n')
 			if (not (arg.index is None)):
@@ -53,7 +80,7 @@ class Arglist:
 			raise ArgDefError('cannot understand *' + varargs)
 		if (varkw):
 			raise ArgDefError('cannot understand **' + varkw)
-		arglist = Arglist()
+		arglist = ArgList()
 
 		if (defaults is None):
 			defstart = len(args)
@@ -80,36 +107,101 @@ class Arglist:
 		arglist = arglist1.clone()
 		if (arglist2 is None):
 			return arglist
-		return arglist ###
+
+		unmerged = []
+		for arg2 in arglist2.args:
+			arg = None
+			if (not (arg2.index is None)):
+				arg = arglist.get_index(arg2.index)
+			if ((arg is None) and not (arg2.name is None)):
+				arg = arglist.get_name(arg2.name)
+			if (arg is None):
+				unmerged.append(arg2)
+			else:
+				arg.absorb(arg2)
+		for arg in unmerged:
+			arglist.args.append(arg)
+		arglist.sort_args()
+		return arglist
 	merge = staticmethod(merge)
 
-DummyDefault = object()
+def _argument_sort_func(arg1, arg2):
+	ix1 = arg1.index
+	ix2 = arg2.index
+	if (ix1 is None and ix2 is None):
+		return 0
+	if (ix1 is None):
+		return 1
+	if (ix2 is None):
+		return -1
+	return cmp(ix1, ix2)
+	
+_DummyDefault = object()
 	
 class Arg:
 	def __init__(self, name=None, index=None,
-		type=None, default=DummyDefault,
+		type=None, default=_DummyDefault,
 		description=None):
 		
 		self.name = name
 		self.index = index
 		self.type = type
-		if (default is DummyDefault):
+		if (default is _DummyDefault):
 			self.hasdefault = False
 			self.default = None
 		else:
 			self.hasdefault = True
 			self.default = default
 		self.description = description
+
+	def __repr__(self):
+		val = '<Arg'
+		if (not (self.index is None)):
+			val += ' ' + str(self.index)
+		if (not (self.name is None)):
+			val += " '" + self.name + "'"
+		val += '>'
+		return val
 	
 	def clone(self):
 		if (self.hasdefault):
 			default = self.default
 		else:
-			default = DummyDefault
+			default = _DummyDefault
 		arg = Arg(name=self.name, index=self.index,
 			type=self.type, default=default,
 			description=self.description)
 		return arg
-	
+
+	def absorb(self, arg):
+		attrlist = ['name', 'index']
+		for key in attrlist:
+			val = getattr(arg, key)
+			if (val is None):
+				continue
+			sval = getattr(self, key)
+			if (sval is None):
+				setattr(self, key, val)
+				continue
+			if (val != sval):
+				raise ArgDefError('argument ' + key + ' does not match: ' + str(val) + ', ' + str(sval))
+			
+		attrlist = ['type', 'description']
+		for key in attrlist:
+			val = getattr(arg, key)
+			if (val is None):
+				continue
+			sval = getattr(self, key)
+			if (sval is None):
+				setattr(self, key, val)
+				continue
+			# No warning if these attrs don't match
+			
+		if (arg.hasdefault):
+			if (not self.hasdefault):
+				self.hasdefault = True
+				self.default = arg.default
+			# No warning if defaults don't match
+
 class ArgDefError(ValueError):
 	pass

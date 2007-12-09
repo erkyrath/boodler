@@ -190,7 +190,8 @@ class LogFormatter(logging.Formatter):
 			tr = tup[2]
 			while (tr):
 				modname = tr.tb_frame.f_globals.get('__name__', '')
-				if (modname == 'boodle' or modname.startswith('boodle.')):
+				if (modname == 'boodle' or modname.startswith('boodle.')
+					or modname == 'boopak' or modname.startswith('boopak.')):
 					inboodle = True
 				else:
 					if (inboodle):

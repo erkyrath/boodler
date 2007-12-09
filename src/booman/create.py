@@ -394,13 +394,13 @@ def examine_directory(loader, dirname, destname=None):
 		print '###', key, '. init(...):', argspec
 		arglist = None
 		try:
-			arglist = argdef.Arglist.from_argspec(*argspec)
+			arglist = argdef.ArgList.from_argspec(*argspec)
 		except argdef.ArgDefError, ex:
 			warning(dirname, key + '.init() could not be inspected: ' + str(ex))
 
 		if (not (ag._args is None)):
 			try:
-				arglist = argdef.Arglist.merge(ag._args, arglist)
+				arglist = argdef.ArgList.merge(ag._args, arglist)
 			except argdef.ArgDefError, ex:
 				warning(dirname, key + '.init() does not match _args: ' + str(ex))
 				arglist = ag._args

@@ -7,12 +7,14 @@ import boopak.test_pinfo
 import boopak.test_version
 import boopak.test_pload
 import boopak.test_sparse
+import boopak.test_argdef
 import booman.create
 import boodle.stereo
 
 testlist = [
 	('version', boopak.test_version.TestVersion),
 	('sparse', boopak.test_sparse.TestSParse),
+	('argdef', boopak.test_argdef.TestArgDef),
 	('pinfo', boopak.test_pinfo.TestPInfo),
 	('pload', boopak.test_pload.TestPLoad),
 	('create', booman.create.TestCreate),
