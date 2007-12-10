@@ -7,11 +7,12 @@ class Node:
 	pass
 
 class List(Node):
-	def __init__(self, *args):
+	def __init__(self, *args, **attrs):
 		self.list = list(args)
-		self.attrs = {}
+		self.attrs = dict(attrs)
 
 	def append(self, val):
+		### append(Node) -> None
 		self.list.append(val)
 
 	def __len__(self):
@@ -35,8 +36,31 @@ class List(Node):
 class ID(Node):
 	def __init__(self, id):
 		self.id = id
+		self.delimiter = None
+		self.escape = False
 		
+		for ch in id:
+			if (ch.isspace() or ch in ['=', '"', "'", '(', ')', '\\']):
+				self.delimiter = '"'
+				break
+
+		if (self.delimiter):
+			if ('"' in id):
+				if ("'" in id):
+					self.escape = True
+				else:
+					self.delimiter = "'"
+		
+		if ('\\' in id):
+			self.escape = True
+
 	def __repr__(self):
+		if (self.delimiter):
+			val = self.id
+			if (self.escape):
+				val = val.replace('\\', '\\\\')
+				val = val.replace(self.delimiter, '\\'+self.delimiter)
+			return (self.delimiter + val + self.delimiter)
 		return self.id
 		
 	def __len__(self):
@@ -175,6 +199,13 @@ class ParseContext:
 				break
 			if (isinstance(val, AttrToken)):
 				key = val.key
+				if (not key):
+					if (len(nod) == 0):
+						raise ParseError('= must be preceded by a key')
+					key = nod.list.pop()
+					if (not isinstance(key, ID)):
+						raise ParseError('= may not be preceded by a list')
+					key = key.id
 				val = self.parseattr()
 				nod.attrs[key] = val
 				continue
