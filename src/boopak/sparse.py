@@ -4,6 +4,9 @@ class ParseError(Exception):
 	pass
 
 class Node:
+	pass
+
+class List(Node):
 	def __init__(self, *args):
 		self.list = list(args)
 		self.attrs = {}
@@ -29,7 +32,7 @@ class Node:
 		return self.list.__iter__()
 		
 
-class ID:
+class ID(Node):
 	def __init__(self, id):
 		self.id = id
 		
@@ -53,7 +56,7 @@ class AttrToken:
 		self.key = key
 
 def parse(val):
-	### str/unicode -> Node, str, int
+	### str/unicode -> Node
 	fl = StringIO.StringIO(val)
 	context = ParseContext(fl)
 	try:
@@ -109,42 +112,13 @@ class ParseContext:
 			self.nextch = None
 			return EndOfList
 
-		if (ch=='-' or ch.isdigit()):
-			self.nextch = ch
-			return self.parsenumber()
-
-		if (ch.isalpha() or ch=='_'):
-			self.nextch = ch
-			return self.parseid()
-
 		if (ch in ['"', "'"]):
 			self.nextch = None
 			return self.parsestring(ch)
 
-		raise ParseError('unknown character: ' + ch)
-
-	def parsenumber(self):
-		ch = self.nextch
-		fl = self.fl
-
-		if (ch is None):
-			raise Exception('internal error: lookahead char missing')
-		
-		idfl = StringIO.StringIO()
-		while (ch and not (ch in ['(', ')', '"', "'"]) and not ch.isspace()):
-			idfl.write(ch)
-			ch = fl.read(1)
-		self.nextch = ch
-
-		st = idfl.getvalue()
-		try:
-			if ('.' in st):
-				val = float(st)
-			else:
-				val = int(st)
-		except ValueError, ex:
-			raise ParseError(str(ex))
-		return val
+		if (True):
+			self.nextch = ch
+			return self.parseid()
 
 	def parseid(self):
 		ch = self.nextch
@@ -161,11 +135,6 @@ class ParseContext:
 		self.nextch = ch
 
 		st = idfl.getvalue()
-		if (type(st) == unicode):
-			try:
-				st = str(st)
-			except:
-				raise ParseError('ID may only contain ASCII')
 
 		if (ch == '='):
 			self.nextch = None
@@ -192,13 +161,14 @@ class ParseContext:
 			ch = fl.read(1)
 
 		self.nextch = None
-		return idfl.getvalue()
+		st = idfl.getvalue()
+		return ID(st)
 
 	def parselist(self):
 		if (not (self.nextch is None)):
 			raise Exception('internal error: lookahead char')
 		
-		nod = Node()
+		nod = List()
 		while True:
 			val = self.parsenode()
 			if (val is EndOfList):

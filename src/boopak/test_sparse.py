@@ -1,6 +1,6 @@
 import unittest
 
-from boopak.sparse import parse, ID, Node, ParseError
+from boopak.sparse import parse, ID, List, ParseError
 
 class TestSParse(unittest.TestCase):
 
@@ -26,7 +26,7 @@ class TestSParse(unittest.TestCase):
 		self.assert_('goodbye' != id)
 
 	def test_node_basics(self):
-		nod = Node()
+		nod = List()
 		self.assertEqual(len(nod), 0)
 		self.assertEqual(str(nod), '()')
 		self.assertEqual(repr(nod), '()')
@@ -37,13 +37,13 @@ class TestSParse(unittest.TestCase):
 		self.assertEqual(str(nod), "(1 'hello')")
 		self.assertEqual(repr(nod), "(1 'hello')")
 
-		nod.append(Node(2))
+		nod.append(List(2))
 		self.assertEqual(len(nod), 3)
 		self.assertEqual(str(nod), "(1 'hello' (2))")
 		self.assertEqual(repr(nod), "(1 'hello' (2))")
 
 	def test_node_attr(self):
-		nod = Node()
+		nod = List()
 		nod.attrs['xyz'] = 1
 		self.assertEqual(repr(nod), '(xyz=1)')
 
@@ -52,7 +52,7 @@ class TestSParse(unittest.TestCase):
 		self.assertEqual(repr(nod), "(2 'zz' xyz=1)")
 	
 	def test_node_list(self):
-		nod = Node(1, 'x', ID('a'))
+		nod = List(1, 'x', ID('a'))
 		self.assertEqual(len(nod), 3)
 		self.assertEqual(nod[0], 1)
 		self.assertEqual(nod[1], 'x')
@@ -94,7 +94,7 @@ class TestSParse(unittest.TestCase):
 				self.assertEqual(nod, res)
 
 	def compare(self, nod, ls):
-		if (not isinstance(nod, Node)):
+		if (not isinstance(nod, List)):
 			return False
 		if (type(ls) != list):
 			return False
@@ -102,7 +102,7 @@ class TestSParse(unittest.TestCase):
 			return False
 
 		for (el, val) in zip(nod.list, ls):
-			if (isinstance(el, Node)):
+			if (isinstance(el, List)):
 				if (not self.compare(el, val)):
 					return False
 				continue
@@ -119,7 +119,7 @@ class TestSParse(unittest.TestCase):
 
 		return True
 
-	def test_parse_node(self):
+	def test_parse_list(self):
 		ls = [
 			('()', []),
 			('  (  )    ', []),
