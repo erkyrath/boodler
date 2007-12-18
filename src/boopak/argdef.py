@@ -1,5 +1,9 @@
 import sys
 
+# We use "type" as an argument and local variable sometimes, but we need
+# to keep track of the standard type() function.
+_typeof = type
+
 class ArgList:
 	def __init__(self, *ls, **dic):
 		self.args = []
@@ -94,7 +98,7 @@ class ArgList:
 				val = defaults[pos-defstart]
 				dic['default'] = val
 				if (not (val is None)):
-					dic['type'] = type(val)
+					dic['type'] = _typeof(val)
 			arg = Arg(name=key, index=pos, **dic)
 			pos += 1
 			arglist.args.append(arg)
@@ -144,6 +148,8 @@ class Arg:
 		description=None):
 		
 		self.name = name
+		if (not (index is None) and index <= 0):
+			raise ArgDefError('index must be positive')
 		self.index = index
 		self.type = type
 		if (default is _DummyDefault):
@@ -152,6 +158,8 @@ class Arg:
 		else:
 			self.hasdefault = True
 			self.default = default
+			if ((self.type is None) and not (default is None)):
+				self.type = _typeof(default)
 		self.description = description
 
 	def __repr__(self):

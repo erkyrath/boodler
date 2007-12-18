@@ -406,6 +406,20 @@ def examine_directory(loader, dirname, destname=None):
 				arglist = ag._args
 
 		if (not (arglist is None)):
+			ls = [ arg for arg in arglist.args if (arg.index is None) ]
+			unindexed = len(ls)
+			indexed = len(arglist.args) - unindexed
+			ls = [ arg.index for arg in arglist.args ]
+			if (ls[ : indexed] != range(1,1+indexed)):
+				ls1 = [ str(val) for val in ls[ : indexed] ]
+				ls2 = [ str(val) for val in range(1,1+indexed) ]
+				warning(dirname, 'found arguments ' + (', '.join(ls1))
+					+ '; should have been ' + (', '.join(ls2)))
+			else:
+				if (ls[ indexed : ] != [ None ] * unindexed):
+					warning(dirname, 'the ' + str(unindexed) + ' unindexed arguments must be last')
+				
+		if (not (arglist is None)):
 			print '### ...',
 			arglist.dump()
 

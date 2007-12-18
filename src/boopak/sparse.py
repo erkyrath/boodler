@@ -4,7 +4,8 @@ class ParseError(Exception):
 	pass
 
 class Node:
-	pass
+	def as_string(self):
+		raise ValueError('not a string')
 
 class List(Node):
 	def __init__(self, *args, **attrs):
@@ -71,9 +72,10 @@ class ID(Node):
 			other = other.id
 		return cmp(self.id, other)
 
-class EndOfList:
-	pass
-EndOfList = EndOfList()
+	def as_string(self):
+		return self.id
+
+EndOfList = object()
 
 class AttrToken:
 	def __init__(self, key):
