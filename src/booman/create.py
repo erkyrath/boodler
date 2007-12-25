@@ -393,8 +393,13 @@ def examine_directory(loader, dirname, destname=None):
 		# argspec = (args, varargs, varkw, defaults)
 		print '###', key, '. init(...):', argspec
 		arglist = None
+		maxinitargs = None
+		mininitargs = None
+		
 		try:
 			arglist = argdef.ArgList.from_argspec(*argspec)
+			maxinitargs = arglist.max_accepted()
+			mininitargs = arglist.min_accepted()
 		except argdef.ArgDefError, ex:
 			warning(dirname, key + '.init() could not be inspected: ' + str(ex))
 
@@ -418,7 +423,23 @@ def examine_directory(loader, dirname, destname=None):
 			else:
 				if (ls[ indexed : ] != [ None ] * unindexed):
 					warning(dirname, 'the ' + str(unindexed) + ' unindexed arguments must be last')
-				
+
+			ls = [ arg for arg in arglist.args if (not arg.optional) ]
+			mandatory = len(ls)
+			ls = [ arg.optional for arg in arglist.args ]
+			if (True in ls[ : mandatory] or False in ls[mandatory : ]):
+				warning(dirname, 'the ' + str(mandatory) + ' mandatory arguments must be first')
+
+			val = arglist.max_accepted()
+			if ((not (val is None)) and (not (maxinitargs is None))):
+				if (val > maxinitargs):
+					warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but including _args describes ' + str(val))
+			
+			val = arglist.min_accepted()
+			if ((not (val is None)) and (not (mininitargs is None))):
+				if (val < mininitargs):
+					warning(dirname, key + '.init() takes at least ' + str(mininitargs) + ' arguments, but including _args describes ' + str(val))
+			
 		if (not (arglist is None)):
 			print '### ...',
 			arglist.dump()

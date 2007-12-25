@@ -71,14 +71,24 @@ class ArgList:
 		for arg in self.args:
 			fl.write('  Arg:\n')
 			if (not (arg.index is None)):
-				fl.write('    index: ' + str(arg.index) + '\n')
+				val = ''
+				if (arg.optional):
+					val = ' (optional)'
+				fl.write('    index: ' + str(arg.index) + val + '\n')
 			if (not (arg.name is None)):
 				fl.write('    name: ' + arg.name + '\n')
 			if (arg.hasdefault):
 				fl.write('    default: ' + repr(arg.default) + '\n')
 			if (not (arg.type is None)):
 				fl.write('    type: ' + repr(arg.type) + '\n')
+
+	def max_accepted(self):
+		return len(self.args)
 		
+	def min_accepted(self):
+		ls = [ arg for arg in self.args if (not arg.optional) ]
+		return len(ls)
+	
 	def from_argspec(args, varargs, varkw, defaults):
 		if (varargs):
 			raise ArgDefError('cannot understand *' + varargs)
@@ -144,7 +154,7 @@ _DummyDefault = object()
 	
 class Arg:
 	def __init__(self, name=None, index=None,
-		type=None, default=_DummyDefault,
+		type=None, default=_DummyDefault, optional=None,
 		description=None):
 		
 		self.name = name
@@ -152,6 +162,7 @@ class Arg:
 			raise ArgDefError('index must be positive')
 		self.index = index
 		self.type = type
+		self.optional = optional
 		if (default is _DummyDefault):
 			self.hasdefault = False
 			self.default = None
@@ -160,6 +171,10 @@ class Arg:
 			self.default = default
 			if ((self.type is None) and not (default is None)):
 				self.type = _typeof(default)
+		if (self.optional is None):
+			self.optional = self.hasdefault
+		else:
+			self.optional = bool(self.optional)
 		self.description = description
 
 	def __repr__(self):
@@ -177,7 +192,7 @@ class Arg:
 		else:
 			default = _DummyDefault
 		arg = Arg(name=self.name, index=self.index,
-			type=self.type, default=default,
+			type=self.type, default=default, optional=self.optional,
 			description=self.description)
 		return arg
 
@@ -210,6 +225,9 @@ class Arg:
 				self.hasdefault = True
 				self.default = arg.default
 			# No warning if defaults don't match
+
+		self.optional = arg.optional
+		# Always absorb the optional attribute
 
 class ArgDefError(ValueError):
 	pass

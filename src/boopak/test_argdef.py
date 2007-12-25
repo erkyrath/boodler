@@ -13,6 +13,7 @@ class TestArgDef(unittest.TestCase):
         self.assert_(arg.description is None)
         self.assert_(arg.hasdefault is False)
         self.assert_(arg.default is None)
+        self.assert_(arg.optional is False)
         
         arg = Arg(name='foo', index=2, type=float, default=1.5,
             description='Argument')
@@ -22,6 +23,7 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.description, 'Argument')
         self.assert_(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
+        self.assert_(arg.optional is True)
         
     def test_clone_arg(self):
         origarg = Arg()
@@ -34,6 +36,7 @@ class TestArgDef(unittest.TestCase):
         self.assert_(arg.description is None)
         self.assert_(arg.hasdefault is False)
         self.assert_(arg.default is None)
+        self.assert_(arg.optional is False)
         
         origarg = Arg(name='foo', index=2, type=float, default=1.5,
             description='Argument')
@@ -46,6 +49,7 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.description, 'Argument')
         self.assert_(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
+        self.assert_(arg.optional is True)
 
     def test_arg_absorb(self):
         arg = Arg()
@@ -60,6 +64,11 @@ class TestArgDef(unittest.TestCase):
         arg.absorb(Arg(default=1.5))
         self.assert_(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
+        self.assert_(arg.optional is True)
+        arg.absorb(Arg(optional=False))
+        self.assert_(arg.optional is False)
+        arg.absorb(Arg(optional=True))
+        self.assert_(arg.optional is True)
 
         arg.absorb(Arg())
         
@@ -69,6 +78,7 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.description, 'Argument')
         self.assert_(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
+        self.assert_(arg.optional is False)
 
         arg2 = Arg(type=str, description='Undescribed', default=2.0)
         arg.absorb(arg2)
@@ -79,6 +89,7 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.description, 'Argument')
         self.assert_(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
+        self.assert_(arg.optional is True)
 
     def test_arg_absorb_mismatch(self):
         arg = Arg(index=1)
@@ -113,22 +124,27 @@ class TestArgDef(unittest.TestCase):
         self.assertEquals(arg.index, 1)
         self.assertEquals(arg.name, 'baz')
         self.assertEquals(arg.hasdefault, False)
+        self.assert_(arg.optional is False)
         
         arg = arglist.args[1]
         self.assert_(arglist.get_index(2) is arg)
         self.assert_(arglist.get_name('foo') is arg)
         self.assertEquals(arg.index, 2)
         self.assertEquals(arg.name, 'foo')
+        self.assert_(arg.hasdefault is True)
         self.assertEquals(arg.default, 3)
         self.assertEquals(arg.type, int)
+        self.assert_(arg.optional is True)
         
         arg = arglist.args[2]
         self.assert_(arglist.get_index(3) is arg)
         self.assert_(arglist.get_name('bar') is arg)
         self.assertEquals(arg.index, 3)
         self.assertEquals(arg.name, 'bar')
+        self.assert_(arg.hasdefault is True)
         self.assertEquals(arg.default, 'two')
         self.assertEquals(arg.type, str)
+        self.assert_(arg.optional is True)
         
     def test_init_arglist(self):
         arglist = ArgList(
@@ -205,14 +221,17 @@ class TestArgDef(unittest.TestCase):
         arg = arglist.args[0]
         self.assertEquals(arg.description, 'Baz')
         self.assertEquals(arg.default, 1.5)
+        self.assert_(arg.optional is False)
         
         arg = arglist.args[1]
         self.assertEquals(arg.description, 'Foo')
         self.assertEquals(arg.default, 3)
+        self.assert_(arg.optional is True)
         
         arg = arglist.args[2]
         self.assertEquals(arg.description, 'Bar')
         self.assertEquals(arg.default, 'two')
+        self.assert_(arg.optional is True)
         
     def test_clone_arglist(self):
         arglist2 = ArgList(
