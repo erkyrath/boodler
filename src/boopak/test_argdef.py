@@ -117,6 +117,8 @@ class TestArgDef(unittest.TestCase):
         argspec = inspect.getargspec(self.argspec_testfunc)
         arglist = ArgList.from_argspec(*argspec)
         self.assertEquals(len(arglist), 3)
+        self.assertEquals(arglist.max_accepted(), 3)
+        self.assertEquals(arglist.min_accepted(), 1)
         
         arg = arglist.args[0]
         self.assert_(arglist.get_index(1) is arg)
