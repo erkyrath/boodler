@@ -552,8 +552,9 @@ class Agent:
 	def get_title(cla):
 		"""get_title() -> string
 
-		Return the name of the agent. This defaults to returning the
-		title value from the agent's metadata.
+		Return the name of the agent. This normally returns the title
+		value from the agent's metadata. (An agent class can override
+		this behavior, but there is usually no reason to do so.)
 		"""
 
 		loader = pload.PackageLoader.global_loader
@@ -777,8 +778,42 @@ def load_class_by_name(loader, name):
 
 	return clas
 
+def load_described(loader, args):
+	### Node, str, or list of str -> class
+	if (type(args) in [str, unicode]):
+		args = [ '(', args, ')' ]
+	elif (type(args) == list):
+		args = [ '(' ] + args + [ ')' ]
+	elif (type(args) == tuple):
+		args = [ '(' ] + list(args) + [ ')' ]
+	elif (isinstance(args, sparse.Node)):
+		pass
+	else:
+		raise TypeError('args must be a str, list of str, or Node')
 
+	if (not isinstance(args, sparse.Node)):
+		args = sparse.parse(' '.join(args))
 
+	if (not isinstance(args, sparse.List)):
+		raise ValueError('arguments must be a list')
+	if (len(args) == 0):
+		raise ValueError('arguments must contain a class name') ###?
+	classarg = args[0]
+	if (not isinstance(classarg, sparse.ID)):
+		raise ValueError('arguments must begin with a class name')
+
+	clas = loader.load_item_by_name(classarg)
+	
+	if (type(clas) != type(Agent)):
+		raise TypeError(name + ' is not a class')
+	if (not issubclass(clas, Agent)):
+		raise TypeError(name + ' is not an Agent class')
+
+	arglist = clas.get_argument_list()
+
+	ag = arglist.invoke(clas, args) ### possibly elsewhere
+	return ag
+	
 # Late imports.
 
 import boodle
@@ -787,4 +822,4 @@ from boodle import generator, sample, stereo
 cboodle = boodle.cboodle
 from boodle.generator import FrameCount
 
-from boopak import version, pload
+from boopak import version, pload, sparse

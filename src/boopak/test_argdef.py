@@ -153,6 +153,8 @@ class TestArgDef(unittest.TestCase):
             Arg(default=11), Arg(default=22),
             foo=Arg(default=33), bar=Arg(default=44))
         self.assertEquals(len(arglist), 4)
+        self.assertEquals(arglist.max_accepted(), 4)
+        self.assertEquals(arglist.min_accepted(), 0)
 
         arg = arglist.args[0]
         self.assertEquals(arg.index, 1)

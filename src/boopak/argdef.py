@@ -88,6 +88,11 @@ class ArgList:
 	def min_accepted(self):
 		ls = [ arg for arg in self.args if (not arg.optional) ]
 		return len(ls)
+
+	def invoke(self, func, node):
+		ls = [] ###
+		dic = {} ###
+		return func(*ls, **dic)
 	
 	def from_argspec(args, varargs, varkw, defaults):
 		if (varargs):
@@ -231,3 +236,57 @@ class Arg:
 
 class ArgDefError(ValueError):
 	pass
+
+
+class ArgWrapper:
+	pass
+
+class ArgClassWrapper(ArgWrapper):
+	def create(cla, ls, dic=None):
+		ls = list(ls)
+		return ArgClassWrapper(ls, dic)
+	create = staticmethod(create)
+
+	def __init__(self, cla, ls, dic=None):
+		self.cla = cla
+		self.argls = ls
+		self.argdic = dic
+	def unwrap(self):
+		ls = [ instantiate(val) for val in self.argls ]
+		if (not self.argdic):
+			return self.cla(*ls)
+		dic = dict([ (key,instantiate(val)) for (key,val) in self.argdic.items() ])
+		return self.cla(*ls, **dic)
+
+class ArgListWrapper(ArgWrapper):
+	def create(ls):
+		ls = list(ls)
+		return ArgListWrapper(ls)
+	create = staticmethod(create)
+	
+	def __init__(self, ls):
+		self.ls = ls
+	def unwrap(self):
+		return [ instantiate(val) for val in self.ls ]
+
+class ArgTupleWrapper(ArgWrapper):
+	def create(tup):
+		tup = tuple(tup)
+		muts = [ val for val in tup if isinstance(val, ArgWrapper) ]
+		if (not muts):
+			return tup
+		return ArgTupleWrapper(tup)
+	create = staticmethod(create)
+	
+	def __init__(self, tup):
+		self.tup = tup
+	def unwrap(self):
+		ls = [ instantiate(val) for val in self.tup ]
+		return tuple(ls)
+
+	
+def instantiate(val):
+	if (not isinstance(val, ArgWrapper)):
+		return val
+	return val.unwrap()
+
