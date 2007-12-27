@@ -5,7 +5,16 @@ class ParseError(Exception):
 
 class Node:
 	def as_string(self):
-		raise ValueError('not a string')
+		raise ValueError('a list cannot be understood as a string')
+
+	def as_integer(self):
+		raise ValueError('a list cannot be understood as a number')
+
+	def as_float(self):
+		raise ValueError('a list cannot be understood as a number')
+
+	def as_boolean(self):
+		raise ValueError('a list cannot be understood as a boolean')
 
 class List(Node):
 	def __init__(self, *args, **attrs):
@@ -73,8 +82,26 @@ class ID(Node):
 		return cmp(self.id, other)
 
 	def as_string(self):
+		### str or unicode
 		return self.id
 
+	def as_integer(self):
+		### int or long
+		return int(self.id)
+
+	def as_float(self):
+		return float(self.id)
+
+	def as_boolean(self):
+		val = self.id.lower()
+		if (not val):
+			return False
+		val = val[0]
+		if (val in ['0', 'n', 'f']):
+			return False
+		return True
+
+		
 EndOfList = object()
 
 class AttrToken:

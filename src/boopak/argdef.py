@@ -366,7 +366,7 @@ class ArgDefError(ValueError):
 class ListOf:
 	def __init__(self, *types):
 		if (not types):
-			self.types = [ str ]
+			self.types = [ None ]
 		else:
 			# check type types?
 			self.types = types
@@ -376,8 +376,37 @@ class ListOf:
 
 
 def parse_argument(type, node):
-	return str(node) ###
+	if (type is None):
+		if (isinstance(node, ID)):
+			type = str
+		else:
+			type = list
 		
+	if (type in [str, unicode]):
+		return node.as_string()
+	if (type in [int, long]):
+		return node.as_integer()
+	if (type == float):
+		return node.as_float()
+	if (type == bool):
+		return node.as_boolean()
+	if (type == list or isinstance(type, ListOf)):
+		if (not isinstance(node, List)):
+			raise ValueError('argument must be a list')
+		if (type == list):
+			typelist = [ None ]
+		else:
+			typelist = types.types
+		ls = []
+		pos = 0
+		for valnod in node.list:
+			val = parse_argument(typelist[pos], valnod)
+			ls.append(val)
+			pos += 1
+			if (pos >= len(typelist)):
+				pos = 0
+		return ArgListWrapper.create(ls)
+	raise ValueError('cannot handle type: ' + str(type))
 		
 class ArgWrapper:
 	pass
