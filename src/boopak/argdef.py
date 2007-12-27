@@ -7,9 +7,15 @@ _typeof = type
 class ArgList:
 	def __init__(self, *ls, **dic):
 		self.args = []
+		self.listtype = None
 		
 		pos = 1
 		for arg in ls:
+			if (isinstance(arg, ArgExtra)):
+				self.listtype = arg.type
+				continue
+			if (not isinstance(arg, Arg)):
+				raise ArgDefError('ArgList argument must be Arg')
 			if (arg.index is None):
 				arg.index = pos
 			pos += 1
@@ -17,6 +23,8 @@ class ArgList:
 			
 		for key in dic.keys():
 			arg = dic[key]
+			if (not isinstance(arg, Arg)):
+				raise ArgDefError('ArgList argument must be Arg')
 			if (arg.name is None):
 				arg.name = key
 			else:
@@ -61,6 +69,7 @@ class ArgList:
 
 	def clone(self):
 		arglist = ArgList()
+		arglist.listtype = self.listtype
 		for arg in self.args:
 			arglist.args.append(arg.clone())
 		# Don't need to sort, because self is already sorted.
@@ -81,25 +90,25 @@ class ArgList:
 				fl.write('    default: ' + repr(arg.default) + '\n')
 			if (not (arg.type is None)):
 				fl.write('    type: ' + repr(arg.type) + '\n')
+		if (self.listtype):
+			fl.write('  *Args: ' + repr(self.listtype) + '\n')
 
 	def max_accepted(self):
+		if (self.listtype):
+			return None
 		return len(self.args)
 		
 	def min_accepted(self):
 		ls = [ arg for arg in self.args if (not arg.optional) ]
 		return len(ls)
 
-	def invoke(self, func, node):
-		ls = [] ###
-		dic = {} ###
-		return func(*ls, **dic)
-	
 	def from_argspec(args, varargs, varkw, defaults):
-		if (varargs):
-			raise ArgDefError('cannot understand *' + varargs)
 		if (varkw):
 			raise ArgDefError('cannot understand **' + varkw)
 		arglist = ArgList()
+
+		if (varargs):
+			arglist.listtype = list
 
 		if (defaults is None):
 			defstart = len(args)
@@ -143,7 +152,115 @@ class ArgList:
 		arglist.sort_args()
 		return arglist
 	merge = staticmethod(merge)
+	
+	def invoke(self, func, node):
+		### right API?
+		ls = [] ###
+		dic = {} ###
+		return func(*ls, **dic)
 
+	def resolve(self, node):
+		### ignores first element of node
+		if (not isinstance(node, sparse.List)):
+			raise ArgDefError('arguments must be a list')
+		if (len(node) == 0):
+			raise ArgDefError('arguments must contain a class name')
+		
+		valls = node[ 1 : ]
+		valdic = node.attrs
+
+		posmap = {}
+		pos = 0
+		for arg in self.args:
+			if (not (arg.index is None)):
+				posmap[arg.index] = pos
+			if (not (arg.name is None)):
+				posmap[arg.name] = pos
+			pos += 1
+
+		filled = [ False for arg in self.args ]
+		values = [ None for arg in self.args ]
+		extraindexed = []
+		extranamed = {}
+
+		index = 1
+		for valnod in valls:
+			pos = posmap.get(index)
+			if (pos is None):
+				extraindexed.append(valnod)
+				index += 1
+				continue
+			arg = self.args[pos]
+			if (filled[pos]):
+				raise ArgDefError('multiple values for indexed argument ' + str(index))
+			filled[pos] = True
+			values[pos] = parse_argument(arg.type, valnod)
+			index += 1
+
+		for key in valdic:
+			valnod = valdic[key]
+			pos = posmap.get(key)
+			if (pos is None):
+				extranamed[key] = valnod
+				continue
+			arg = self.args[pos]
+			if (filled[pos]):
+				raise ArgDefError('multiple values for named argument ' + key)
+			filled[pos] = True
+			values[pos] = parse_argument(arg.type, valnod)
+
+		pos = 0
+		for arg in self.args:
+			if (not filled[pos] and not arg.optional):
+				if (arg.hasdefault):
+					filled[pos] = True
+					values[pos] = arg.default
+				else:
+					raise ArgDefError(str(self.min_accepted()) + ' arguments required')
+			pos += 1
+
+		print '### got', values
+		print '### extra', extraindexed, extranamed
+
+		if (extranamed):
+			raise ArgDefError('unknown named argument: ' + (', '.join(extranamed.keys())))
+
+		resultls = []
+		resultdic = {}
+
+		indexonly = 0
+		pos = 0
+		for arg in self.args:
+			if (arg.name is None and filled[pos]):
+				indexonly = pos+1
+			pos += 1
+
+		pos = 0
+		for arg in self.args:
+			if (filled[pos]):
+				if (pos < indexonly):
+					resultls.append(values[pos])
+				else:
+					resultdic[arg.name] = values[pos]
+			pos += 1
+
+		if (extraindexed):
+			if (not self.listtype):
+				raise ArgDefError('at most ' + str(self.max_accepted()) + ' arguments accepted')
+			listof = self.listtype
+			if (listof == list):
+				listof = ListOf()
+			pos = 0
+			for valnod in extraindexed:
+				val = parse_argument(listof.types[pos], valnod)
+				resultls.append(val)
+				pos += 1
+				if (pos >= len(listof.types)):
+					pos = 0
+		# extranamed are not currently supported
+
+		return (resultls, resultdic)
+		
 def _argument_sort_func(arg1, arg2):
 	ix1 = arg1.index
 	ix2 = arg2.index
@@ -166,6 +283,7 @@ class Arg:
 		if (not (index is None) and index <= 0):
 			raise ArgDefError('index must be positive')
 		self.index = index
+		# check type types?
 		self.type = type
 		self.optional = optional
 		if (default is _DummyDefault):
@@ -175,6 +293,7 @@ class Arg:
 			self.hasdefault = True
 			self.default = default
 			if ((self.type is None) and not (default is None)):
+				# check type types?
 				self.type = _typeof(default)
 		if (self.optional is None):
 			self.optional = self.hasdefault
@@ -234,10 +353,32 @@ class Arg:
 		self.optional = arg.optional
 		# Always absorb the optional attribute
 
+class ArgExtra:
+	def __init__(self, type=list):
+		if (not (type == list or isinstance(type, ListOf))):
+			raise ArgDefError('ArgExtra must be a list or ListOf: was ' + str(type))
+		self.type = type
+		
 class ArgDefError(ValueError):
 	pass
 
 
+class ListOf:
+	def __init__(self, *types):
+		if (not types):
+			self.types = [ str ]
+		else:
+			# check type types?
+			self.types = types
+	def __repr__(self):
+		ls = [ repr(val) for val in self.types ]
+		return '<ListOf ' + (', '.join(ls)) + '>'
+
+
+def parse_argument(type, node):
+	return str(node) ###
+		
+		
 class ArgWrapper:
 	pass
 
@@ -290,3 +431,6 @@ def instantiate(val):
 		return val
 	return val.unwrap()
 
+# Late imports.
+
+from boopak import sparse

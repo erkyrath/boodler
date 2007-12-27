@@ -431,6 +431,8 @@ def examine_directory(loader, dirname, destname=None):
 				warning(dirname, 'the ' + str(mandatory) + ' mandatory arguments must be first')
 
 			val = arglist.max_accepted()
+			if ((val is None) and (not (maxinitargs is None))):
+				warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but _args describes extra arguments')
 			if ((not (val is None)) and (not (maxinitargs is None))):
 				if (val > maxinitargs):
 					warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but including _args describes ' + str(val))
