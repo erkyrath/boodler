@@ -364,6 +364,7 @@ class ArgDefError(ValueError):
 
 
 class ListOf:
+	### also support fixed-length lists?
 	def __init__(self, *types):
 		if (not types):
 			self.types = [ None ]
@@ -377,7 +378,7 @@ class ListOf:
 
 def parse_argument(type, node):
 	if (type is None):
-		if (isinstance(node, ID)):
+		if (isinstance(node, sparse.ID)):
 			type = str
 		else:
 			type = list
@@ -391,12 +392,14 @@ def parse_argument(type, node):
 	if (type == bool):
 		return node.as_boolean()
 	if (type == list or isinstance(type, ListOf)):
-		if (not isinstance(node, List)):
+		if (not isinstance(node, sparse.List)):
 			raise ValueError('argument must be a list')
+		if (node.attrs):
+			raise ValueError('list argument may not have attributes')
 		if (type == list):
 			typelist = [ None ]
 		else:
-			typelist = types.types
+			typelist = type.types
 		ls = []
 		pos = 0
 		for valnod in node.list:

@@ -2,6 +2,7 @@ import unittest
 import inspect
 
 from boopak.argdef import *
+from boopak import sparse
 
 class TestArgDef(unittest.TestCase):
 
@@ -262,3 +263,78 @@ class TestArgDef(unittest.TestCase):
         self.assertEquals(arg1.name, 'foo')
         self.assertEquals(arg2.default, 44)
         self.assertEquals(arg2.name, 'bar')
+
+    def test_simple_parse_args(self):
+
+        goodls = [
+            (int, '5', 5),
+            (long, '5', 5),
+            (float, '5', 5.0),
+            (str, '5', '5'),
+            (str, 'foo', 'foo'),
+            (unicode, 'foo', 'foo'),
+            (str, u'foo', u'foo'),
+            (bool, '""', False),
+            (bool, '0', False),
+            (bool, 'no', False),
+            (bool, 'FALSE', False),
+            (bool, '1', True),
+            (bool, 'YES', True),
+            (bool, 'true', True),
+            (list, '(() foo)', [[], 'foo']),
+            (ListOf(), '(())', [[]]),
+            (ListOf(), '(() foo)', [[], 'foo']),
+            (ListOf(str), '(foo bar)', ['foo', 'bar']),
+            (ListOf(int), '(1 3 2)', [1, 3, 2]),
+            (ListOf(bool), '(0 1 false true NO YES)', [False, True, False, True, False, True]),
+            (ListOf(int, str), '(1 2 3 4)', [1, '2', 3, '4']),
+            (ListOf(str, None), '(foo (bar) baz (()))', ['foo', ['bar'], 'baz', [[]]]),
+            (None, 'foo', 'foo'),
+            (None, '()', []),
+            (None, '(foo (1) ())', ['foo', ['1'], []]),
+        ]
+        
+        badls = [
+            (int, '()'),
+            (int, '(1)'),
+            (int, 'foo'),
+            (int, '5.0'),
+            (int, '5x'),
+            (str, '()'),
+            (float, '()'),
+            (float, 'foo'),
+            (bool, '()'),
+            (list, 'foo'),
+            (list, '(foo x=1)'),
+            (ListOf(), 'foo'),
+            (ListOf(str), 'foo'),
+            (ListOf(str), '(())'),
+            (ListOf(int), '(foo)'),
+            (ListOf(str, int), '(foo bar)'),
+            (ListOf(int, str), '(1 foo bar)'),
+        ]
+
+        for (typ, st, res) in goodls:
+            nod = sparse.parse(st)
+            val = parse_argument(typ, nod)
+            val = instantiate(val)
+            self.assertEqual(val, res)
+            self.assertEqual(type(val), type(res))
+            if (type(val) == list):
+                for (sub1, sub2) in zip(val, res):
+                    self.assertEqual(type(sub1), type(sub2))
+
+        for (typ, st) in badls:
+            nod = sparse.parse(st)
+            self.assertRaises(ValueError, parse_argument, typ, nod)
+
+    def test_wrapping_parse_args(self):
+        nod = sparse.parse('foo')
+        val = parse_argument(str, nod)
+        self.assertEqual(type(val), str)
+        self.assertEqual(val, 'foo')
+
+        nod = sparse.parse('(foo bar)')
+        val = parse_argument(list, nod)
+        self.assert_(isinstance(val, ArgListWrapper))
+        self.assertEqual(val.ls, ['foo', 'bar'])
