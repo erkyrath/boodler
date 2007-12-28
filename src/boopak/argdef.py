@@ -219,8 +219,8 @@ class ArgList:
 					raise ArgDefError(str(self.min_accepted()) + ' arguments required')
 			pos += 1
 
-		print '### got', values
-		print '### extra', extraindexed, extranamed
+		#print '### got', values
+		#print '### extra', extraindexed, extranamed
 
 		if (extranamed):
 			raise ArgDefError('unknown named argument: ' + (', '.join(extranamed.keys())))
@@ -367,7 +367,7 @@ class ListOf:
 	### also support fixed-length lists?
 	def __init__(self, *types):
 		if (not types):
-			self.types = [ None ]
+			self.types = ( None, )
 		else:
 			# check type types?
 			self.types = types

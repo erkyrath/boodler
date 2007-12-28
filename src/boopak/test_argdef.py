@@ -174,6 +174,33 @@ class TestArgDef(unittest.TestCase):
         self.assertEquals(arg2.default, 44)
         self.assertEquals(arg2.name, 'bar')
 
+    def test_arglist_bad_format(self):
+        self.assertRaises(ArgDefError, ArgList, 1)
+        self.assertRaises(ArgDefError, ArgList, str)
+        self.assertRaises(ArgDefError, ArgList, x=str)
+        self.assertRaises(ArgDefError, ArgExtra, 1)
+        self.assertRaises(ArgDefError, ArgExtra, str)
+
+    def test_arglist_extra(self):
+        arglist = ArgList(Arg('x'), ArgExtra(ListOf(int)), Arg('y'))
+        self.assertEquals(arglist.min_accepted(), 2)
+        self.assertEquals(arglist.max_accepted(), None)
+        arg = arglist.get_index(1)
+        self.assertEquals(arg.name, 'x')
+        arg = arglist.get_index(2)
+        self.assertEquals(arg.name, 'y')
+
+        arglist2 = arglist.clone()
+        self.assertEquals(arglist2.min_accepted(), 2)
+        self.assertEquals(arglist2.max_accepted(), None)
+        arg = arglist2.get_index(1)
+        self.assertEquals(arg.name, 'x')
+        arg = arglist2.get_index(2)
+        self.assertEquals(arg.name, 'y')
+
+        self.assert_(isinstance(arglist2.listtype, ListOf))
+        self.assertEqual(arglist2.listtype.types, (int,))
+
     def test_sort_arglist(self):
         arglist = ArgList(
             foo=Arg(index=3, default=33),
@@ -268,6 +295,8 @@ class TestArgDef(unittest.TestCase):
 
         goodls = [
             (int, '5', 5),
+            (int, '005', 5),
+            (int, '"5"', 5),
             (long, '5', 5),
             (float, '5', 5.0),
             (str, '5', '5'),
@@ -338,3 +367,80 @@ class TestArgDef(unittest.TestCase):
         val = parse_argument(list, nod)
         self.assert_(isinstance(val, ArgListWrapper))
         self.assertEqual(val.ls, ['foo', 'bar'])
+
+    def one_test_resolve(self, arglist, goodls, badls):
+        if (goodls):
+            for (src, wantls, wantdic) in goodls:
+                nod = sparse.parse(src)
+                (ls, dic) = arglist.resolve(nod)
+                ils = [ instantiate(val) for val in ls ]
+                idic = dict([ (key, instantiate(val)) for (key,val) in dic.items() ])
+                self.assertEqual(ils, wantls)
+                self.assertEqual(idic, wantdic)
+        if (badls):
+            for src in badls:
+                nod = sparse.parse(src)
+                self.assertRaises(ValueError, arglist.resolve, nod)
+        
+    def test_resolve(self):
+        arglist = ArgList(Arg('x'), Arg('y'))
+        goodls = [
+            ('(A xx yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A xx ())', [], {'x':'xx', 'y':[]}),
+            ('(A ((xx)) (yy))', [], {'x':[['xx']], 'y':['yy']}),
+        ]
+        badls = [
+            '(A)',
+            '(A xx)',
+            '(A xx yy z=1)',
+            '(A xx yy zz)',
+            '(A xx x=xxx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(Arg(name='x', type=int), Arg(name='y', type=str))
+        goodls = [
+            ('(A 1 yy)', [], {'x':1, 'y':'yy'}),
+            ('(A -5 "1 2 3")', [], {'x':-5, 'y':'1 2 3'}),
+            ('(A y=yy x=1)', [], {'x':1, 'y':'yy'}),
+            ('(A 1 y=yy)', [], {'x':1, 'y':'yy'}),
+        ]
+        badls = [
+            '(A)',
+            '(A 1)',
+            '(A xx yy)',
+            '(A 1 yy zz)',
+            '(A 1 ())',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+        
+        arglist = ArgList(Arg(name='x', type=str), ArgExtra(ListOf(int)))
+        goodls = [
+            ('(A xx)', [], {'x':'xx'}),
+            ('(A xx 1 2 3)', [1, 2, 3], {'x':'xx'}),
+            ('(A 0 1 2 3)', [1, 2, 3], {'x':'0'}),
+        ]
+        badls = [
+            '(A xx 1 2 z)', '(A xx z 2 3)',
+            '(A xx 1 2 3 z=0)',
+            '(A 1 2 3 x=xx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(Arg(type=int), Arg(type=str))
+        goodls = [
+            ('(A 1 yy)', [1, 'yy'], {}),
+        ]
+        badls = [
+            '(A)',
+            '(A 1)',
+            '(A 1 ())',
+            '(A 1 yy zz)',
+            '(A xx yy)',
+            '(A 1 yy z=zz)',
+            '(A x=1 y=yy)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        ### optionals and defaults
+        
