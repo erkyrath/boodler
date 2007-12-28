@@ -390,6 +390,8 @@ class TestArgDef(unittest.TestCase):
             ('(A ((xx)) (yy))', [], {'x':[['xx']], 'y':['yy']}),
         ]
         badls = [
+            'A',
+            '()',
             '(A)',
             '(A xx)',
             '(A xx yy z=1)',
@@ -442,5 +444,102 @@ class TestArgDef(unittest.TestCase):
         ]
         self.one_test_resolve(arglist, goodls, badls)
 
-        ### optionals and defaults
+        arglist = ArgList(Arg(type=ListOf(int)), Arg(type=list))
+        goodls = [
+            ('(A () ())', [[], []], {}),
+            ('(A (1) (yy))', [[1], ['yy']], {}),
+            ('(A (1 2 3) (yy () 33))', [[1,2,3], ['yy',[],'33']], {}),
+        ]
+        badls = [
+            '(A)',
+            '(A 1)',
+            '(A 1 ())',
+            '(A (x) ())',
+            '(A (()) ())',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(x=Arg(), y=Arg())
+        goodls = [
+            ('(A x=xx y=yy)', [], {'x':'xx', 'y':'yy'}),
+        ]
+        badls = [
+            '(A)',
+            '(A xx)',
+            '(A xx yy)',
+            '(A xx yy zz)',
+            '(A x=xx)',
+            '(A y=yy)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(Arg('x', default='xd'), Arg('y', default='yd'))
+        goodls = [
+            ('(A xx yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A xx y=yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A x=xx y=yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A xx)', [], {'x':'xx'}),
+            ('(A x=xx)', [], {'x':'xx'}),
+            ('(A y=yy)', [], {'y':'yy'}),
+            ('(A)', [], {}),
+        ]
+        badls = [
+            '(A xx yy z=1)',
+            '(A xx yy zz)',
+            '(A xx x=xxx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(x=Arg(default='xd'), y=Arg(default='yd'))
+        goodls = [
+            ('(A x=xx)', [], {'x':'xx'}),
+            ('(A y=yy)', [], {'y':'yy'}),
+            ('(A x=xx y=yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A)', [], {}),
+        ]
+        badls = [
+            '(A xx)',
+            '(A xx yy)',
+            '(A xx y=yy)',
+            '(A xx yy z=1)',
+            '(A xx yy zz)',
+            '(A xx x=xxx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(Arg('x', default='xd', optional=False), Arg('y', default='yd'))
+        goodls = [
+            ('(A xx yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A xx y=yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A x=xx y=yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A xx)', [], {'x':'xx'}),
+            ('(A x=xx)', [], {'x':'xx'}),
+            ('(A y=yy)', [], {'x':'xd', 'y':'yy'}),
+            ('(A)', [], {'x':'xd'}),
+        ]
+        badls = [
+            '(A xx yy z=1)',
+            '(A xx yy zz)',
+            '(A xx x=xxx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(x=Arg(default='xd', optional=False), y=Arg(default='yd'))
+        goodls = [
+            ('(A x=xx)', [], {'x':'xx'}),
+            ('(A y=yy)', [], {'x':'xd', 'y':'yy'}),
+            ('(A x=xx y=yy)', [], {'x':'xx', 'y':'yy'}),
+            ('(A)', [], {'x':'xd'}),
+        ]
+        badls = [
+            '(A xx)',
+            '(A xx yy)',
+            '(A xx y=yy)',
+            '(A xx yy z=1)',
+            '(A xx yy zz)',
+            '(A xx x=xxx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+
         

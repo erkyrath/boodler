@@ -365,6 +365,8 @@ class ArgDefError(ValueError):
 
 class ListOf:
 	### also support fixed-length lists?
+	### lists with shorter tails? (int, str, str, str...)
+	### lists with a maximum length?
 	def __init__(self, *types):
 		if (not types):
 			self.types = ( None, )
