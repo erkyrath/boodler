@@ -244,19 +244,17 @@ class ArgList:
 					resultdic[arg.name] = values[pos]
 			pos += 1
 
-		if (extraindexed):
-			if (not self.listtype):
+		if (not self.listtype):
+			if (extraindexed):
 				raise ArgDefError('at most ' + str(self.max_accepted()) + ' arguments accepted')
-			listof = self.listtype
-			if (listof == list):
-				listof = ListOf()
-			pos = 0
-			for valnod in extraindexed:
-				val = parse_argument(listof.types[pos], valnod)
+		else:
+			exls = parse_seq_argument(self.listtype, extraindexed)
+			if (isinstance(exls, ArgListWrapper)
+				or isinstance(exls, ArgTupleWrapper)):
+				exls = exls.ls
+			for val in exls:
 				resultls.append(val)
-				pos += 1
-				if (pos >= len(listof.types)):
-					pos = 0
+				
 		# extranamed are not currently supported
 
 		return (resultls, resultdic)
@@ -283,7 +281,6 @@ class Arg:
 		if (not (index is None) and index <= 0):
 			raise ArgDefError('index must be positive')
 		self.index = index
-		# check type types?
 		self.type = type
 		self.optional = optional
 		if (default is _DummyDefault):
@@ -293,8 +290,8 @@ class Arg:
 			self.hasdefault = True
 			self.default = default
 			if ((self.type is None) and not (default is None)):
-				# check type types?
 				self.type = _typeof(default)
+		check_valid_type(self.type)
 		if (self.optional is None):
 			self.optional = self.hasdefault
 		else:
@@ -355,28 +352,88 @@ class Arg:
 
 class ArgExtra:
 	def __init__(self, type=list):
-		if (not (type == list or isinstance(type, ListOf))):
-			raise ArgDefError('ArgExtra must be a list or ListOf: was ' + str(type))
+		if (not (type in [list, tuple]
+			or isinstance(type, ListOf)
+			or isinstance(type, TupleOf))):
+			raise ArgDefError('ArgExtra must be a list, tuple, ListOf, or TupleOf: was ' + str(type))
 		self.type = type
 		
 class ArgDefError(ValueError):
 	pass
 
+def check_valid_type(type):
+	if (type is None):
+		return
+	if (type in [str, unicode, int, long, float, bool, list, tuple]):
+		return
+	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
+		return
+	raise ArgDefError('unrecognized type: ' + str(type))
 
-class ListOf:
-	### also support fixed-length lists?
-	### lists with shorter tails? (int, str, str, str...)
-	### lists with a maximum length?
-	def __init__(self, *types):
+class SequenceOf:
+	classname = None
+	def __init__(self, *types, **opts):
+		if (not self.classname):
+			raise Exception('you cannot instantiate SequenceOf directly; use ListOf or TupleOf')
 		if (not types):
-			self.types = ( None, )
+			notypes = True
+			types = ( None, )
 		else:
-			# check type types?
-			self.types = types
+			notypes = False
+		self.types = types
+		for typ in self.types:
+			check_valid_type(typ)
+		if (not opts):
+			self.default_setup(notypes)
+		else:
+			self.min = opts.pop('min', 0)
+			self.max = opts.pop('max', None)
+			self.repeat = opts.pop('repeat', len(self.types))
+			if (opts):
+				raise ArgDefError(self.classname + ' got unknown keyword argument: ' + (', '.join(opts.keys())))
+		if (self.min < 0):
+			raise ArgDefError(self.classname + ' min is negative')
+		if (not (self.max is None)):
+			if (self.max < self.min):
+				raise ArgDefError(self.classname + ' max is less than min')
+		if (self.repeat > len(self.types)):
+			raise ArgDefError(self.classname + ' repeat is greater than number of types')
+		if (self.repeat <= 0):
+			raise ArgDefError(self.classname + ' repeat is less than one')
+			
 	def __repr__(self):
 		ls = [ repr(val) for val in self.types ]
-		return '<ListOf ' + (', '.join(ls)) + '>'
+		if (self.repeat < len(self.types)):
+			ls.insert(len(self.types) - self.repeat, '...')
+			ls.append('...')
+		res = (', '.join(ls))
+		if (self.min == 0 and self.max is None):
+			pass
+		elif (self.max is None):
+			res = str(self.min) + ' or more: ' + res
+		elif (self.min == self.max):
+			res = 'exactly ' + str(self.min) + ': ' + res
+		else:
+			res = str(self.min) + ' to ' + str(self.max) + ': ' + res
+		return '<' + self.classname + ' ' + res + '>'
 
+class ListOf(SequenceOf):
+	classname = 'ListOf'
+	def default_setup(self, notypes):
+		self.min = 0
+		self.max = None
+		self.repeat = len(self.types)
+
+class TupleOf(SequenceOf):
+	classname = 'TupleOf'
+	def default_setup(self, notypes):
+		if (notypes):
+			self.min = 0
+			self.max = None
+		else:
+			self.min = len(self.types)
+			self.max = len(self.types)
+		self.repeat = len(self.types)
 
 def parse_argument(type, node):
 	if (type is None):
@@ -393,26 +450,50 @@ def parse_argument(type, node):
 		return node.as_float()
 	if (type == bool):
 		return node.as_boolean()
-	if (type == list or isinstance(type, ListOf)):
+	if (type in [list, tuple]
+		or isinstance(type, ListOf)
+		or isinstance(type, TupleOf)):
 		if (not isinstance(node, sparse.List)):
 			raise ValueError('argument must be a list')
 		if (node.attrs):
 			raise ValueError('list argument may not have attributes')
-		if (type == list):
-			typelist = [ None ]
-		else:
-			typelist = type.types
-		ls = []
-		pos = 0
-		for valnod in node.list:
-			val = parse_argument(typelist[pos], valnod)
-			ls.append(val)
-			pos += 1
-			if (pos >= len(typelist)):
-				pos = 0
-		return ArgListWrapper.create(ls)
+		return parse_seq_argument(type, node.list)
 	raise ValueError('cannot handle type: ' + str(type))
+
+def parse_seq_argument(type, nodelist):
+	if (type == list):
+		type = ListOf()
+	elif (type == tuple):
+		type = TupleOf()
 		
+	if isinstance(type, ListOf):
+		wrapper = ArgListWrapper
+	elif isinstance(type, TupleOf):
+		wrapper = ArgTupleWrapper
+	else:
+		raise ValueError('cannot handle type: ' + str(type))
+
+	typelist = type.types
+
+	if (type.min == type.max and len(nodelist) != type.min):
+		raise ValueError('exactly ' + str(type.min) + ' elements required: ' + str(len(nodelist)) + ' found')
+	if (len(nodelist) < type.min):
+		raise ValueError('at least ' + str(type.min) + ' elements required: ' + str(len(nodelist)) + ' found')
+	if (not (type.max is None)):
+		if (len(nodelist) > type.max):
+			raise ValueError('at most ' + str(type.max) + ' elements required: ' + str(len(nodelist)) + ' found')
+	
+	ls = []
+	pos = 0
+	for valnod in nodelist:
+		val = parse_argument(typelist[pos], valnod)
+		ls.append(val)
+		pos += 1
+		if (pos >= len(typelist)):
+			pos = len(typelist) - type.repeat
+			
+	return wrapper.create(ls)
+
 class ArgWrapper:
 	pass
 

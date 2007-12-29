@@ -291,6 +291,16 @@ class TestArgDef(unittest.TestCase):
         self.assertEquals(arg2.default, 44)
         self.assertEquals(arg2.name, 'bar')
 
+    def test_bad_format_sequenceof(self):
+        self.assertRaises(Exception, SequenceOf)
+        self.assertRaises(ArgDefError, ListOf, 1)
+        self.assertRaises(ArgDefError, ListOf, complex)
+        self.assertRaises(ArgDefError, ListOf, min=-1)
+        self.assertRaises(ArgDefError, ListOf, min=5, max=4)
+        self.assertRaises(ArgDefError, ListOf, repeat=2)
+        self.assertRaises(ArgDefError, ListOf, repeat=0)
+        self.assertRaises(ArgDefError, ListOf, foo=0)
+        
     def test_simple_parse_args(self):
 
         goodls = [
@@ -318,6 +328,10 @@ class TestArgDef(unittest.TestCase):
             (ListOf(bool), '(0 1 false true NO YES)', [False, True, False, True, False, True]),
             (ListOf(int, str), '(1 2 3 4)', [1, '2', 3, '4']),
             (ListOf(str, None), '(foo (bar) baz (()))', ['foo', ['bar'], 'baz', [[]]]),
+            (ListOf(TupleOf(int, str)), '((1 2) (3 4))', [(1, '2'), (3, '4')]),
+            (tuple, '(() foo)', ([], 'foo')),
+            (TupleOf(), '(() 1 2)', ([], '1', '2')),
+            (TupleOf(int, str), '(1 2)', (1, '2')),
             (None, 'foo', 'foo'),
             (None, '()', []),
             (None, '(foo (1) ())', ['foo', ['1'], []]),
@@ -341,6 +355,81 @@ class TestArgDef(unittest.TestCase):
             (ListOf(int), '(foo)'),
             (ListOf(str, int), '(foo bar)'),
             (ListOf(int, str), '(1 foo bar)'),
+            (TupleOf(str, str), '(baz)'),
+            (TupleOf(str, str), '(baz foo bar)'),
+        ]
+
+        for (typ, st, res) in goodls:
+            nod = sparse.parse(st)
+            val = parse_argument(typ, nod)
+            val = instantiate(val)
+            self.assertEqual(val, res)
+            self.assertEqual(type(val), type(res))
+            if (type(val) == list):
+                for (sub1, sub2) in zip(val, res):
+                    self.assertEqual(type(sub1), type(sub2))
+
+        for (typ, st) in badls:
+            nod = sparse.parse(st)
+            self.assertRaises(ValueError, parse_argument, typ, nod)
+
+    def test_sequence_parse_args(self):
+        typ = ListOf()
+        self.assertEqual(typ.min, 0)
+        self.assertEqual(typ.max, None)
+        self.assertEqual(typ.repeat, 1)
+
+        typ = TupleOf()
+        self.assertEqual(typ.min, 0)
+        self.assertEqual(typ.max, None)
+        self.assertEqual(typ.repeat, 1)
+
+        typ = ListOf(int, str, bool)
+        self.assertEqual(typ.min, 0)
+        self.assertEqual(typ.max, None)
+        self.assertEqual(typ.repeat, 3)
+
+        typ = TupleOf(int, str, bool)
+        self.assertEqual(typ.min, 3)
+        self.assertEqual(typ.max, 3)
+        self.assertEqual(typ.repeat, 3)
+
+        typ = ListOf(int, str, bool, min=1, max=4, repeat=2)
+        self.assertEqual(typ.min, 1)
+        self.assertEqual(typ.max, 4)
+        self.assertEqual(typ.repeat, 2)
+
+        typ = TupleOf(int, str, bool, min=1, max=4, repeat=2)
+        self.assertEqual(typ.min, 1)
+        self.assertEqual(typ.max, 4)
+        self.assertEqual(typ.repeat, 2)
+
+        typ = TupleOf(int, str, bool, max=4)
+        self.assertEqual(typ.min, 0)
+        self.assertEqual(typ.max, 4)
+        self.assertEqual(typ.repeat, 3)
+
+        typ = ListOf(int, str, bool, min=1)
+        self.assertEqual(typ.min, 1)
+        self.assertEqual(typ.max, None)
+        self.assertEqual(typ.repeat, 3)
+
+        goodls = [
+            (TupleOf(str, str), '(x y)', ('x', 'y')),
+            (TupleOf(str, int, max=4), '(1 2 3 4)', ('1', 2, '3', 4)),
+            (TupleOf(str, min=1, max=3), '(x)', ('x',)),
+            (TupleOf(str, min=1, max=3), '(x y)', ('x', 'y')),
+            (TupleOf(str, min=1, max=3), '(x y z)', ('x', 'y', 'z')),
+            (TupleOf(str, int, repeat=1), '(1)', ('1',)),
+            (TupleOf(str, int, repeat=1), '(1 2)', ('1', 2)),
+            (TupleOf(str, int, repeat=1), '(1 2 3)', ('1', 2, 3)),
+            (TupleOf(str, int, bool, repeat=2), '(1 2 3 4)', ('1', 2, True, 4)),
+        ]
+        badls = [
+            (TupleOf(str, str), '(x)'),
+            (TupleOf(str, str), '(x y z)'),
+            (TupleOf(str, min=1, max=3), '()'),
+            (TupleOf(str, min=1, max=3), '(x y z w)'),
         ]
 
         for (typ, st, res) in goodls:
@@ -367,6 +456,14 @@ class TestArgDef(unittest.TestCase):
         val = parse_argument(list, nod)
         self.assert_(isinstance(val, ArgListWrapper))
         self.assertEqual(val.ls, ['foo', 'bar'])
+
+        nod = sparse.parse('(foo bar)')
+        val = parse_argument(tuple, nod)
+        self.assertEqual(val, ('foo', 'bar'))
+
+        nod = sparse.parse('(foo ())')
+        val = parse_argument(tuple, nod)
+        self.assert_(isinstance(val, ArgTupleWrapper))
 
     def one_test_resolve(self, arglist, goodls, badls):
         if (goodls):
@@ -426,6 +523,31 @@ class TestArgDef(unittest.TestCase):
             '(A xx 1 2 z)', '(A xx z 2 3)',
             '(A xx 1 2 3 z=0)',
             '(A 1 2 3 x=xx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(Arg(name='x', type=str), ArgExtra(TupleOf(int, int)))
+        goodls = [
+            ('(A xx 1 2)', [1, 2], {'x':'xx'}),
+        ]
+        badls = [
+            '(A xx)',
+            '(A xx 1 2 3)',
+            '(A xx 1 2 z)', '(A xx z 2 3)',
+            '(A xx 1 2 3 z=0)',
+            '(A 1 2 3 x=xx)',
+        ]
+        self.one_test_resolve(arglist, goodls, badls)
+
+        arglist = ArgList(Arg(name='x', type=str), ArgExtra(ListOf(int, str, repeat=1, min=1, max=3)))
+        goodls = [
+            ('(A xx 1)', [1], {'x':'xx'}),
+            ('(A xx 1 2)', [1, '2'], {'x':'xx'}),
+            ('(A xx 1 2 3)', [1, '2', '3'], {'x':'xx'}),
+        ]
+        badls = [
+            '(A xx)',
+            '(A xx 1 2 3 4)',
         ]
         self.one_test_resolve(arglist, goodls, badls)
 
