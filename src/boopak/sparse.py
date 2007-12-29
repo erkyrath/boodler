@@ -1,9 +1,21 @@
 import StringIO
+import codecs
+
+escaper = codecs.getencoder('unicode_escape')
 
 class ParseError(Exception):
 	pass
 
 class Node:
+	def serialize(self):
+		return '<Node: unimplemented>'
+	
+	def __repr__(self):
+		val = self.serialize()
+		if (type(val) == unicode):
+			(val, dummy) = escaper(val)
+		return val
+
 	def as_string(self):
 		raise ValueError('a list cannot be understood as a string')
 
@@ -25,13 +37,14 @@ class List(Node):
 		### append(Node) -> None
 		self.list.append(val)
 
+	def serialize(self):
+		ls = [ val.serialize() for val in self.list ]
+		ls = ls + [ key+'='+(self.attrs[key].serialize())
+			for key in self.attrs ]
+		return '(' + ' '.join(ls) + ')'
+
 	def __len__(self):
 		return len(self.list)
-
-	def __repr__(self):
-		ls = [ repr(val) for val in self.list ]
-		ls = ls + [ key+'='+repr(self.attrs[key]) for key in self.attrs ]
-		return '(' + ' '.join(ls) + ')'
 
 	def __getitem__(self, key):
 		return self.list.__getitem__(key)
@@ -48,7 +61,9 @@ class ID(Node):
 		self.id = id
 		self.delimiter = None
 		self.escape = False
-		
+
+		if (not id):
+			self.delimiter = '"'
 		for ch in id:
 			if (ch.isspace() or ch in ['=', '"', "'", '(', ')', '\\']):
 				self.delimiter = '"'
@@ -64,14 +79,16 @@ class ID(Node):
 		if ('\\' in id):
 			self.escape = True
 
-	def __repr__(self):
+	def serialize(self):
+		### str or unicode
 		if (self.delimiter):
 			val = self.id
 			if (self.escape):
 				val = val.replace('\\', '\\\\')
 				val = val.replace(self.delimiter, '\\'+self.delimiter)
 			return (self.delimiter + val + self.delimiter)
-		return self.id
+		else:
+			return self.id
 		
 	def __len__(self):
 		return len(self.id)

@@ -25,7 +25,7 @@ class TestSParse(unittest.TestCase):
         self.assert_(id != u'goodbye')
         self.assert_('goodbye' != id)
 
-    def test_id_repr(self):
+    def test_id_serialize(self):
         ls = [
             ('xyz', 'xyz'),
             ('"xyz"', 'xyz'),
@@ -46,35 +46,54 @@ class TestSParse(unittest.TestCase):
 
         for (src, dest) in ls:
             nod = parse(src)
-            self.assertEqual(str(nod), dest)
-            nod2 = parse(str(nod))
+            self.assertEqual(nod.serialize(), dest)
+            nod2 = parse(nod.serialize())
             self.assertEqual(nod, nod2)
             
+    def test_id_completeness(self):
+        ls = [
+            '', 'a', 'Abd', '    ', ' $ # ^ ',
+            '"', ' " ', "'", " ' ", ' \' " ', ' "\' \'" ',
+            '\\', ' \\ \\ ', '\\\'', '\\"', '\\" \\\'',
+            'tab\tnew\nspace ',
+            u'unicode', u'unic\u00F8de', u'unic\u0153de',
+        ]
+
+        for val in ls:
+            nod = ID(val)
+            st = nod.serialize()
+            nod2 = parse(st)
+            self.assertEqual(nod, nod2)
+            self.assertEqual(val, nod2.id)
+        
     def test_node_basics(self):
         nod = List()
         self.assertEqual(len(nod), 0)
+        self.assertEqual(nod.serialize(), '()')
         self.assertEqual(str(nod), '()')
         self.assertEqual(repr(nod), '()')
 
         nod.append(ID('1'))
         nod.append(ID('hello'))
         self.assertEqual(len(nod), 2)
+        self.assertEqual(nod.serialize(), "(1 hello)")
         self.assertEqual(str(nod), "(1 hello)")
         self.assertEqual(repr(nod), "(1 hello)")
 
         nod.append(List(ID('2')))
         self.assertEqual(len(nod), 3)
+        self.assertEqual(nod.serialize(), "(1 hello (2))")
         self.assertEqual(str(nod), "(1 hello (2))")
         self.assertEqual(repr(nod), "(1 hello (2))")
 
     def test_node_attr(self):
         nod = List()
         nod.attrs['xyz'] = ID('1')
-        self.assertEqual(repr(nod), '(xyz=1)')
+        self.assertEqual(nod.serialize(), '(xyz=1)')
 
         nod.append(ID('2'))
         nod.append(ID('zz'))
-        self.assertEqual(repr(nod), "(2 zz xyz=1)")
+        self.assertEqual(nod.serialize(), "(2 zz xyz=1)")
 
         nod = List(foo=ID('x'))
         self.assert_(isinstance(nod.attrs['foo'], ID))
