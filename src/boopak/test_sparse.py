@@ -88,7 +88,7 @@ class TestSParse(unittest.TestCase):
 
     def test_node_attr(self):
         nod = List()
-        nod.attrs['xyz'] = ID('1')
+        nod.set_attr('xyz', ID('1'))
         self.assertEqual(nod.serialize(), '(xyz=1)')
 
         nod.append(ID('2'))
@@ -96,6 +96,8 @@ class TestSParse(unittest.TestCase):
         self.assertEqual(nod.serialize(), "(2 zz xyz=1)")
 
         nod = List(foo=ID('x'))
+        self.assert_(nod.attrs['foo'], nod.get_attr('foo'))
+        self.assert_(nod.get_attr('bar') is None)
         self.assert_(isinstance(nod.attrs['foo'], ID))
         self.assertEqual(nod.attrs['foo'], 'x')
     
@@ -183,11 +185,11 @@ class TestSParse(unittest.TestCase):
         self.assertEqual(len(nod), 0)
         
         self.assertEqual(len(nod.attrs), 4)
-        self.assertEqual(nod.attrs['a'], '1')
-        self.assert_(isinstance(nod.attrs['a'], ID))
-        self.assertEqual(nod.attrs['b'], '2')
-        self.assertEqual(nod.attrs['c'], 'three')
-        val = nod.attrs['d']
+        self.assertEqual(nod.get_attr('a'), '1')
+        self.assert_(isinstance(nod.get_attr('a'), ID))
+        self.assertEqual(nod.get_attr('b'), '2')
+        self.assertEqual(nod.get_attr('c'), 'three')
+        val = nod.get_attr('d')
         self.assert_(isinstance(val, List))
         self.assertEqual(len(val), 0)
         self.assertEqual(len(val.attrs), 0)
@@ -197,8 +199,8 @@ class TestSParse(unittest.TestCase):
         self.assert_(self.compare(nod, res))
 
         self.assertEqual(len(nod.attrs), 3)
-        self.assertEqual(nod.attrs['x'], 'a')
-        self.assert_(self.compare(nod.attrs['y'], []))
+        self.assertEqual(nod.get_attr('x'), 'a')
+        self.assert_(self.compare(nod.get_attr('y'), []))
         val = nod[-1]
         self.assert_(self.compare(val, []))
         self.assertEqual(val.attrs['z1'], 'z2')
@@ -206,19 +208,19 @@ class TestSParse(unittest.TestCase):
         nod = parse('("#=$" $=#)')
         self.assertEqual(len(nod), 1)
         self.assertEqual(nod[0], "#=$")
-        self.assertEqual(nod.attrs['$'], '#')
+        self.assertEqual(nod.get_attr('$'), '#')
         
         nod = parse('(a = x)')
         self.assertEqual(len(nod), 0)
-        self.assertEqual(nod.attrs['a'], 'x')
+        self.assertEqual(nod.get_attr('a'), 'x')
         
         nod = parse('("a" = x)')
         self.assertEqual(len(nod), 0)
-        self.assertEqual(nod.attrs['a'], 'x')
+        self.assertEqual(nod.get_attr('a'), 'x')
         
         nod = parse('("a"=x)')
         self.assertEqual(len(nod), 0)
-        self.assertEqual(nod.attrs['a'], 'x')
+        self.assertEqual(nod.get_attr('a'), 'x')
         
     def test_parse_bad(self):
         ls = [

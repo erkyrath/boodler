@@ -37,6 +37,13 @@ class List(Node):
 		### append(Node) -> None
 		self.list.append(val)
 
+	def set_attr(self, key, val):
+		### set_attr(str, Node) -> None
+		self.attrs[key] = val
+
+	def get_attr(self, key):
+		return self.attrs.get(key)
+		
 	def serialize(self):
 		ls = [ val.serialize() for val in self.list ]
 		ls = ls + [ key+'='+(self.attrs[key].serialize())
@@ -253,7 +260,7 @@ class ParseContext:
 						raise ParseError('= may not be preceded by a list')
 					key = key.id
 				val = self.parseattr()
-				nod.attrs[key] = val
+				nod.set_attr(key, val)
 				continue
 			nod.append(val)
 
