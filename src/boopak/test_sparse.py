@@ -98,7 +98,9 @@ class TestSParse(unittest.TestCase):
         self.assertEqual(nod.serialize(), "(2 zz xyz=1)")
 
         nod = List(foo=ID('x'))
-        self.assert_(nod.attrs['foo'], nod.get_attr('foo'))
+        self.assert_(nod.has_attr('foo'))
+        self.assert_(not nod.has_attr('bar'))
+        self.assertEqual(nod.attrs['foo'], nod.get_attr('foo'))
         self.assert_(nod.get_attr('bar') is None)
         self.assert_(isinstance(nod.attrs['foo'], ID))
         self.assertEqual(nod.attrs['foo'], 'x')

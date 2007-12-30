@@ -25,32 +25,45 @@ class TestArgDef(unittest.TestCase):
         self.assert_(arg.hasdefault is True)
         self.assertEqual(arg.default, 1.5)
         self.assert_(arg.optional is True)
+
+    def assert_args_identical(self, arg1, arg2):
+        self.assertEqual(arg1.index,       arg2.index)
+        self.assertEqual(arg1.name,        arg2.name)
+        if (isinstance(arg1.type, SequenceOf)):
+            self.assertEqual(arg1.type.classname, arg2.type.classname)
+        else:
+            self.assertEqual(arg1.type,    arg2.type)
+        self.assertEqual(arg1.description, arg2.description)
+        self.assertEqual(arg1.hasdefault,  arg2.hasdefault)
+        self.assertEqual(arg1.default,     arg2.default)
+        self.assertEqual(arg1.optional,    arg2.optional)
+
+    def assert_types_identical(self, typ1, typ2):
+        if (not isinstance(typ1, SequenceOf)):
+            self.assertEqual(typ1, typ2)
+            return
+
+        self.assert_(isinstance(typ1, SequenceOf))
+        self.assert_(isinstance(typ2, SequenceOf))
+        self.assertEqual(typ1.classname, typ2.classname)
+        self.assertEqual(typ1.min, typ2.min)
+        self.assertEqual(typ1.max, typ2.max)
+        self.assertEqual(typ1.repeat, typ2.repeat)
+        self.assertEqual(len(typ1.types), len(typ2.types))
+        for (val1, val2) in zip(typ1.types, typ2.types):
+            self.assert_types_identical(val1, val2)
         
     def test_clone_arg(self):
         origarg = Arg()
         arg = origarg.clone()
         self.assertFalse(arg is origarg)
-        
-        self.assert_(arg.index is None)
-        self.assert_(arg.name is None)
-        self.assert_(arg.type is None)
-        self.assert_(arg.description is None)
-        self.assert_(arg.hasdefault is False)
-        self.assert_(arg.default is None)
-        self.assert_(arg.optional is False)
+        self.assert_args_identical(arg, origarg)
         
         origarg = Arg(name='foo', index=2, type=float, default=1.5,
             description='Argument')
         arg = origarg.clone()
         self.assertFalse(arg is origarg)
-        
-        self.assertEqual(arg.index, 2)
-        self.assertEqual(arg.name, 'foo')
-        self.assertEqual(arg.type, float)
-        self.assertEqual(arg.description, 'Argument')
-        self.assert_(arg.hasdefault is True)
-        self.assertEqual(arg.default, 1.5)
-        self.assert_(arg.optional is True)
+        self.assert_args_identical(arg, origarg)
 
     def test_arg_absorb(self):
         arg = Arg()
@@ -110,6 +123,25 @@ class TestArgDef(unittest.TestCase):
         arg = Arg(name='foo')
         arg2 = Arg(name='bar')
         self.assertRaises(ArgDefError, arg.absorb, arg2)
+
+    def test_arg_serialize(self):
+        ls = [
+            Arg(),
+            Arg(name='foo'),
+            Arg(name='foo', index=5, default=3.1, description='A thing.'),
+            Arg(type=bool),
+            Arg(type=ListOf(int, str, bool, repeat=2)),
+            Arg(optional=True),
+            Arg(default=[]),
+            Arg(name='bar', optional=False),
+            Arg(default='foo', optional=False),
+            Arg(default=True, optional=True),
+        ]
+
+        for arg in ls:
+            nod = arg.to_node()
+            arg2 = Arg.from_node(nod)
+            self.assert_args_identical(arg, arg2)
         
     def argspec_testfunc(self, baz, foo=3, bar='two'):
         pass
@@ -742,11 +774,7 @@ class TestArgDef(unittest.TestCase):
         for typ in ls:
             val = typ.to_node()
             typ2 = node_to_type(val)
-            self.assertEqual(typ.classname, typ2.classname)
-            self.assertEqual(typ.types, typ2.types)
-            self.assertEqual(typ.min, typ2.min)
-            self.assertEqual(typ.max, typ2.max)
-            self.assertEqual(typ.repeat, typ2.repeat)
+            self.assert_types_identical(typ, typ2)
             
         typ = ListOf(
             TupleOf(int, str, bool),
@@ -756,4 +784,3 @@ class TestArgDef(unittest.TestCase):
         val = typ.to_node()
         typ2 = node_to_type(val)
         self.assertEqual(repr(typ), repr(typ2))
-        

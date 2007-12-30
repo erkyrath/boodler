@@ -75,6 +75,14 @@ class ArgList:
 		# Don't need to sort, because self is already sorted.
 		return arglist
 
+	def to_node(self):
+		nod = sparse.List(sparse.ID('arglist'))
+		ls = [ arg.to_node() for arg in self.args ]
+		nod.append(sparse.List(*ls))
+		if (self.listtype):
+			nod.set_attr('listtype', type_to_node(self.listtype))
+		return nod
+
 	def dump(self, fl=sys.stdout):
 		fl.write('ArgList:\n')
 		for arg in self.args:
@@ -318,7 +326,7 @@ class Arg:
 		return arg
 
 	def to_node(self):
-		nod = sparse.List()
+		nod = sparse.List(sparse.ID('arg'))
 		if (not (self.name is None)):
 			nod.set_attr('name', sparse.ID(self.name))
 		if (not (self.index is None)):
@@ -367,6 +375,29 @@ class Arg:
 		self.optional = arg.optional
 		# Always absorb the optional attribute
 
+	def from_node(node):
+		if (not isinstance(node, sparse.List) or len(node) != 1
+			or not isinstance(node[0], sparse.ID)
+			or node[0].as_string() != 'arg'):
+			raise ArgDefError('must be an (arg) list')
+		dic = {}
+		if (node.has_attr('name')):
+			dic['name'] = node.get_attr('name').as_string()
+		if (node.has_attr('index')):
+			dic['index'] = node.get_attr('index').as_integer()
+		if (node.has_attr('description')):
+			dic['description'] = node.get_attr('description').as_string()
+		if (node.has_attr('optional')):
+			dic['optional'] = node.get_attr('optional').as_boolean()
+		if (node.has_attr('type')):
+			dic['type'] = node_to_type(node.get_attr('type'))
+		if (node.has_attr('default')):
+			wrap = node_to_value(dic.get('type'), node.get_attr('default'))
+			dic['default'] = instantiate(wrap)
+			### What if this is an AgentClass?
+		return Arg(**dic)
+	from_node = staticmethod(from_node)
+	
 class ArgExtra:
 	def __init__(self, type=list):
 		if (not (type in [list, tuple]

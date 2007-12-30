@@ -52,6 +52,9 @@ class List(Node):
 	def get_attr(self, key):
 		return self.attrs.get(key)
 		
+	def has_attr(self, key):
+		return self.attrs.has_key(key)
+		
 	def serialize(self):
 		ls = [ val.serialize() for val in self.list ]
 		ls = ls + [ key+'='+(self.attrs[key].serialize())
