@@ -335,6 +335,11 @@ class TestArgDef(unittest.TestCase):
             (None, 'foo', 'foo'),
             (None, '()', []),
             (None, '(foo (1) ())', ['foo', ['1'], []]),
+            (int, '(none=none)', None),
+            (str, '(none=none)', None),
+            (list, '(none=none)', None),
+            (ListOf(), '(none=none)', None),
+            (None, '(none=none)', None),
         ]
         
         badls = [
@@ -357,6 +362,8 @@ class TestArgDef(unittest.TestCase):
             (ListOf(int, str), '(1 foo bar)'),
             (TupleOf(str, str), '(baz)'),
             (TupleOf(str, str), '(baz foo bar)'),
+            (int, '(none=one)'),
+            (int, '(foo none=none)'),
         ]
 
         for (typ, st, res) in goodls:
@@ -464,6 +471,43 @@ class TestArgDef(unittest.TestCase):
         nod = sparse.parse('(foo ())')
         val = node_to_value(tuple, nod)
         self.assert_(isinstance(val, ArgTupleWrapper))
+
+    def test_value_to_node(self):
+        ls = [
+            (int, 5, '5'),
+            (long, 5, '5'),
+            (float, 5.1, '5.1'),
+            (bool, False, 'false'),
+            (bool, True, 'true'),
+            (bool, 0, 'false'),
+            (bool, 3, 'true'),
+            (str, 'foo', 'foo'),
+            (str, 'foo space', '"foo space"'),
+            (unicode, 'foo', 'foo'),
+            (str, u'foo', 'foo'),
+            (str, u'unic\u0153de', u'unic\u0153de'),
+            (list, [], '()'),
+            (tuple, (), '()'),
+            (list, ['foo', 'bar', ('x', 'y')], '(foo bar (x y))'),
+            (tuple, ['foo', 'bar', ('x', 'y')], '(foo bar (x y))'),
+            (ListOf(bool), [1, 0], '(true false)'),
+            (TupleOf(int, bool, repeat=1), [1,1,0], '(1 true false)'),
+            (None, 'foo', 'foo'),
+            (None, 12, '12'),
+            (None, [], '()'),
+            (None, (), '()'),
+            (None, ['foo', 'bar', ['x']], '(foo bar (x))'),
+            (int, None, '(none=none)'),
+            (str, None, '(none=none)'),
+            (list, None, '(none=none)'),
+            (ListOf(), None, '(none=none)'),
+            (None, None, '(none=none)'),
+        ]
+
+        for (typ, val, res) in ls:
+            nod = value_to_node(typ, val)
+            st = nod.serialize()
+            self.assertEqual(st, res)
 
     def one_test_resolve(self, arglist, goodls, badls):
         if (goodls):

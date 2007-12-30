@@ -525,6 +525,15 @@ def node_to_type(nod):
 	raise ArgDefError('unrecognized type: ' + id)
 
 def value_to_node(type, val):
+	if (val is None):
+		return sparse.List(none=sparse.ID('none'))
+	
+	if (type is None):
+		if (_typeof(val) in [list, tuple]):
+			type = list
+		else:
+			type = str
+	
 	if (type in [str, unicode]):
 		if (_typeof(val) in [str, unicode]):
 			return sparse.ID(val)
@@ -539,7 +548,7 @@ def value_to_node(type, val):
 		or isinstance(type, ListOf)
 		or isinstance(type, TupleOf)):
 		return seq_value_to_node(type, val)
-	### None
+
 	raise ArgDefError('unrecognized type: ' + str(type))
 
 def seq_value_to_node(type, vallist):
@@ -561,6 +570,12 @@ def seq_value_to_node(type, vallist):
 	return ls
 
 def node_to_value(type, node):
+	if (isinstance(node, sparse.List) and len(node) == 0):
+		subnod = node.get_attr('none')
+		if (subnod and isinstance(subnod, sparse.ID)
+			and subnod.as_string() == 'none'):
+			return None
+	
 	if (type is None):
 		if (isinstance(node, sparse.ID)):
 			type = str
