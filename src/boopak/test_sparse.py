@@ -53,8 +53,10 @@ class TestSParse(unittest.TestCase):
     def test_id_completeness(self):
         ls = [
             '', 'a', 'Abd', '    ', ' $ # ^ ',
+            'a(b', 'a)b', 'a()b', 'a=b',
             '"', ' " ', "'", " ' ", ' \' " ', ' "\' \'" ',
             '\\', ' \\ \\ ', '\\\'', '\\"', '\\" \\\'',
+            'a(\')b', 'a(")b', 'a("\')b', 'a("\')b\\c',
             'tab\tnew\nspace ',
             u'unicode', u'unic\u00F8de', u'unic\u0153de',
         ]

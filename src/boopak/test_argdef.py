@@ -663,5 +663,53 @@ class TestArgDef(unittest.TestCase):
         ]
         self.one_test_resolve(arglist, goodls, badls)
 
+    def test_basetype_serialize(self):
+        ls = [ int, str, bool, float, list, tuple ]
+        
+        for typ in ls:
+            val = type_to_node(typ)
+            typ2 = node_to_type(val)
+            self.assertEqual(typ, typ2)
 
+        ls = [ (long,int), (unicode,str) ]
+        for (typ, restyp) in ls:
+            val = type_to_node(typ)
+            typ2 = node_to_type(val)
+            self.assertEqual(restyp, typ2)
+        
+    def test_seqtype_serialize(self):
+        ls = [
+            ListOf(),
+            ListOf(int),
+            ListOf(int, str, bool, float),
+            ListOf(int, str, min=1),
+            ListOf(int, str, max=5),
+            ListOf(int, str, bool, repeat=2),
+            ListOf(int, str, bool, min=1, max=5, repeat=2),
+            TupleOf(),
+            TupleOf(int),
+            TupleOf(int, str, bool, float),
+            TupleOf(int, str, min=1),
+            TupleOf(int, str, max=5),
+            TupleOf(int, str, bool, repeat=2),
+            TupleOf(int, str, bool, min=1, max=5, repeat=2),
+        ]
+
+        for typ in ls:
+            val = typ.to_node()
+            typ2 = node_to_type(val)
+            self.assertEqual(typ.classname, typ2.classname)
+            self.assertEqual(typ.types, typ2.types)
+            self.assertEqual(typ.min, typ2.min)
+            self.assertEqual(typ.max, typ2.max)
+            self.assertEqual(typ.repeat, typ2.repeat)
+            
+        typ = ListOf(
+            TupleOf(int, str, bool),
+            TupleOf(int, str, min=1, max=5, repeat=1),
+            ListOf()
+        )
+        val = typ.to_node()
+        typ2 = node_to_type(val)
+        self.assertEqual(repr(typ), repr(typ2))
         

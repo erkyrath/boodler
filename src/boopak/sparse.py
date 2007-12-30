@@ -32,6 +32,12 @@ class List(Node):
 	def __init__(self, *args, **attrs):
 		self.list = list(args)
 		self.attrs = dict(attrs)
+		for val in self.list:
+			if (not isinstance(val, Node)):
+				raise ValueError('List may only contain Lists and IDs')
+		for val in self.attrs.values():
+			if (not isinstance(val, Node)):
+				raise ValueError('List attribute must be List or ID')
 
 	def append(self, val):
 		### append(Node) -> None
@@ -39,6 +45,8 @@ class List(Node):
 
 	def set_attr(self, key, val):
 		### set_attr(str, Node) -> None
+		if (not isinstance(val, Node)):
+			raise ValueError('List attribute must be List or ID')
 		self.attrs[key] = val
 
 	def get_attr(self, key):
@@ -65,6 +73,8 @@ class List(Node):
 
 class ID(Node):
 	def __init__(self, id):
+		if (not (type(id) in [str, unicode])):
+			raise ValueError('ID must contain a string')
 		self.id = id
 		self.delimiter = None
 		self.escape = False
