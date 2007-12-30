@@ -267,6 +267,22 @@ class ArgList:
 
 		return (resultls, resultdic)
 		
+	def from_node(node):
+		if (not isinstance(node, sparse.List) or len(node) < 1
+			or not isinstance(node[0], sparse.ID)
+			or node[0].as_string() != 'arglist'):
+			raise ArgDefError('must be an (arglist) list')
+		if (len(node) != 2 or not isinstance(node[1], sparse.List)):
+			raise ArgDefError('second element must be a list of types')
+
+		res = ArgList()
+		for val in node[1]:
+			res.args.append(Arg.from_node(val))
+		if (node.has_attr('listtype')):
+			res.listtype = node_to_type(node.get_attr('listtype'))
+		return res
+	from_node = staticmethod(from_node)
+	
 def _argument_sort_func(arg1, arg2):
 	ix1 = arg1.index
 	ix2 = arg2.index

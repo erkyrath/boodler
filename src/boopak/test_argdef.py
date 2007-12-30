@@ -26,6 +26,12 @@ class TestArgDef(unittest.TestCase):
         self.assertEqual(arg.default, 1.5)
         self.assert_(arg.optional is True)
 
+    def assert_arglists_identical(self, arglist1, arglist2):
+        self.assertEqual(len(arglist1.args), len(arglist2.args))
+        for (arg1, arg2) in zip(arglist1.args, arglist2.args):
+            self.assert_args_identical(arg1, arg2)
+        self.assert_types_identical(arglist1.listtype, arglist2.listtype)
+        
     def assert_args_identical(self, arg1, arg2):
         self.assertEqual(arg1.index,       arg2.index)
         self.assertEqual(arg1.name,        arg2.name)
@@ -323,6 +329,20 @@ class TestArgDef(unittest.TestCase):
         self.assertEquals(arg2.default, 44)
         self.assertEquals(arg2.name, 'bar')
 
+    def test_arglist_serialize(self):
+        ls = [
+            ArgList(),
+            ArgList(Arg('x'), Arg('y')),
+            ArgList(Arg(name='x', type=str), ArgExtra(TupleOf(int, int))),
+            ArgList(Arg(name='foo'), x=Arg(default=3.1), y=Arg(type=ListOf())),
+            ArgList(Arg(type=ListOf(bool), default=[False,True])),
+        ]
+
+        for arglist in ls:
+            nod = arglist.to_node()
+            arglist2 = ArgList.from_node(nod)
+            self.assert_arglists_identical(arglist, arglist2)
+        
     def test_bad_format_sequenceof(self):
         self.assertRaises(Exception, SequenceOf)
         self.assertRaises(ArgDefError, ListOf, 1)
