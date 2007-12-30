@@ -301,7 +301,7 @@ class TestArgDef(unittest.TestCase):
         self.assertRaises(ArgDefError, ListOf, repeat=0)
         self.assertRaises(ArgDefError, ListOf, foo=0)
         
-    def test_simple_parse_args(self):
+    def test_simple_node_to_val(self):
 
         goodls = [
             (int, '5', 5),
@@ -361,7 +361,7 @@ class TestArgDef(unittest.TestCase):
 
         for (typ, st, res) in goodls:
             nod = sparse.parse(st)
-            val = parse_argument(typ, nod)
+            val = node_to_value(typ, nod)
             val = instantiate(val)
             self.assertEqual(val, res)
             self.assertEqual(type(val), type(res))
@@ -371,9 +371,9 @@ class TestArgDef(unittest.TestCase):
 
         for (typ, st) in badls:
             nod = sparse.parse(st)
-            self.assertRaises(ValueError, parse_argument, typ, nod)
+            self.assertRaises(ValueError, node_to_value, typ, nod)
 
-    def test_sequence_parse_args(self):
+    def test_sequence_node_to_val(self):
         typ = ListOf()
         self.assertEqual(typ.min, 0)
         self.assertEqual(typ.max, None)
@@ -434,7 +434,7 @@ class TestArgDef(unittest.TestCase):
 
         for (typ, st, res) in goodls:
             nod = sparse.parse(st)
-            val = parse_argument(typ, nod)
+            val = node_to_value(typ, nod)
             val = instantiate(val)
             self.assertEqual(val, res)
             self.assertEqual(type(val), type(res))
@@ -444,25 +444,25 @@ class TestArgDef(unittest.TestCase):
 
         for (typ, st) in badls:
             nod = sparse.parse(st)
-            self.assertRaises(ValueError, parse_argument, typ, nod)
+            self.assertRaises(ValueError, node_to_value, typ, nod)
 
-    def test_wrapping_parse_args(self):
+    def test_wrapping_node_to_val(self):
         nod = sparse.parse('foo')
-        val = parse_argument(str, nod)
+        val = node_to_value(str, nod)
         self.assertEqual(type(val), str)
         self.assertEqual(val, 'foo')
 
         nod = sparse.parse('(foo bar)')
-        val = parse_argument(list, nod)
+        val = node_to_value(list, nod)
         self.assert_(isinstance(val, ArgListWrapper))
         self.assertEqual(val.ls, ['foo', 'bar'])
 
         nod = sparse.parse('(foo bar)')
-        val = parse_argument(tuple, nod)
+        val = node_to_value(tuple, nod)
         self.assertEqual(val, ('foo', 'bar'))
 
         nod = sparse.parse('(foo ())')
-        val = parse_argument(tuple, nod)
+        val = node_to_value(tuple, nod)
         self.assert_(isinstance(val, ArgTupleWrapper))
 
     def one_test_resolve(self, arglist, goodls, badls):

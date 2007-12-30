@@ -194,7 +194,7 @@ class ArgList:
 			if (filled[pos]):
 				raise ArgDefError('multiple values for indexed argument ' + str(index))
 			filled[pos] = True
-			values[pos] = parse_argument(arg.type, valnod)
+			values[pos] = node_to_value(arg.type, valnod)
 			index += 1
 
 		for key in valdic:
@@ -207,7 +207,7 @@ class ArgList:
 			if (filled[pos]):
 				raise ArgDefError('multiple values for named argument ' + key)
 			filled[pos] = True
-			values[pos] = parse_argument(arg.type, valnod)
+			values[pos] = node_to_value(arg.type, valnod)
 
 		pos = 0
 		for arg in self.args:
@@ -248,7 +248,7 @@ class ArgList:
 			if (extraindexed):
 				raise ArgDefError('at most ' + str(self.max_accepted()) + ' arguments accepted')
 		else:
-			exls = parse_seq_argument(self.listtype, extraindexed)
+			exls = node_to_seq_value(self.listtype, extraindexed)
 			if (isinstance(exls, ArgListWrapper)
 				or isinstance(exls, ArgTupleWrapper)):
 				exls = exls.ls
@@ -378,91 +378,6 @@ class ArgExtra:
 class ArgDefError(ValueError):
 	pass
 
-_type_to_name_mapping = {
-	None: 'none',
-	str: 'str', unicode: 'str',
-	int: 'int', long: 'int',
-	float: 'float',
-	bool: 'bool',
-	list: 'list',
-	tuple: 'tuple',
-}
-
-_name_to_type_mapping = {
-	'none': None,
-	'str': str,
-	'int': int,
-	'float': float,
-	'bool': bool,
-	'list': list,
-	'tuple': tuple,
-}
-
-def check_valid_type(type):
-	if (_type_to_name_mapping.has_key(type)):
-		return
-	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
-		return
-	raise ArgDefError('unrecognized type: ' + str(type))
-
-def type_to_node(type):
-	if (_type_to_name_mapping.has_key(type)):
-		name = _type_to_name_mapping[type]
-		return sparse.ID(name)
-	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
-		return type.to_node()
-	raise ArgDefError('unrecognized type: ' + str(type))
-
-def node_to_type(nod):
-	if (isinstance(nod, sparse.ID)):
-		id = nod.as_string()
-		if (_name_to_type_mapping.has_key(id)):
-			return _name_to_type_mapping[id]
-		raise ArgDefError('unrecognized type: ' + id)
-
-	# the node is a List
-
-	if (len(nod) < 1 or (not isinstance(nod[0], sparse.ID))):
-		raise ArgDefError('type list must begin with an ID')
-	id = nod[0].as_string()
-	
-	if (id in [ListOf.classname, TupleOf.classname]):
-		if (len(nod) != 2 or (not isinstance(nod[1], sparse.List))):
-			raise ArgDefError(id + ' list must be followed by one list')
-		if (id == ListOf.classname):
-			cla = ListOf
-		else:
-			cla = TupleOf
-		ls = [ node_to_type(val) for val in nod[1] ]
-		dic = {}
-		val = nod.get_attr('min')
-		if (val):
-			dic['min'] = val.as_integer()
-		val = nod.get_attr('max')
-		if (val):
-			dic['max'] = val.as_integer()
-		val = nod.get_attr('repeat')
-		if (val):
-			dic['repeat'] = val.as_integer()
-		return cla(*ls, **dic)
-			
-	raise ArgDefError('unrecognized type: ' + id)
-
-def value_to_node(type, val):
-	if (type in [int, long, float]):
-		return sparse.ID(str(val))
-	if (type in [str, unicode]):
-		if (_typeof(val) in [str, unicode]):
-			return sparse.ID(val)
-		else:
-			return sparse.ID(str(val))
-	if (type == bool):
-		val = str(bool(val)).lower()
-		return sparse.ID(val)
-	### None
-	### lists and tuples
-	raise ArgDefError('unrecognized type: ' + str(type))
-
 class SequenceOf:
 	classname = None
 	def __init__(self, *types, **opts):
@@ -539,7 +454,113 @@ class TupleOf(SequenceOf):
 			self.max = len(self.types)
 		self.repeat = len(self.types)
 
-def parse_argument(type, node):
+_type_to_name_mapping = {
+	None: 'none',
+	str: 'str', unicode: 'str',
+	int: 'int', long: 'int',
+	float: 'float',
+	bool: 'bool',
+	list: 'list',
+	tuple: 'tuple',
+}
+
+_name_to_type_mapping = {
+	'none': None,
+	'str': str,
+	'int': int,
+	'float': float,
+	'bool': bool,
+	'list': list,
+	'tuple': tuple,
+}
+
+def check_valid_type(type):
+	if (_type_to_name_mapping.has_key(type)):
+		return
+	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
+		return
+	raise ArgDefError('unrecognized type: ' + str(type))
+
+def type_to_node(type):
+	if (_type_to_name_mapping.has_key(type)):
+		name = _type_to_name_mapping[type]
+		return sparse.ID(name)
+	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
+		return type.to_node()
+	raise ArgDefError('unrecognized type: ' + str(type))
+
+def node_to_type(nod):
+	if (isinstance(nod, sparse.ID)):
+		id = nod.as_string()
+		if (_name_to_type_mapping.has_key(id)):
+			return _name_to_type_mapping[id]
+		raise ArgDefError('unrecognized type: ' + id)
+
+	# the node is a List
+
+	if (len(nod) < 1 or (not isinstance(nod[0], sparse.ID))):
+		raise ArgDefError('type list must begin with an ID')
+	id = nod[0].as_string()
+	
+	if (id in [ListOf.classname, TupleOf.classname]):
+		if (len(nod) != 2 or (not isinstance(nod[1], sparse.List))):
+			raise ArgDefError(id + ' list must be followed by one list')
+		if (id == ListOf.classname):
+			cla = ListOf
+		else:
+			cla = TupleOf
+		ls = [ node_to_type(val) for val in nod[1] ]
+		dic = {}
+		val = nod.get_attr('min')
+		if (val):
+			dic['min'] = val.as_integer()
+		val = nod.get_attr('max')
+		if (val):
+			dic['max'] = val.as_integer()
+		val = nod.get_attr('repeat')
+		if (val):
+			dic['repeat'] = val.as_integer()
+		return cla(*ls, **dic)
+			
+	raise ArgDefError('unrecognized type: ' + id)
+
+def value_to_node(type, val):
+	if (type in [str, unicode]):
+		if (_typeof(val) in [str, unicode]):
+			return sparse.ID(val)
+		else:
+			return sparse.ID(str(val))
+	if (type in [int, long, float]):
+		return sparse.ID(str(val))
+	if (type == bool):
+		val = str(bool(val)).lower()
+		return sparse.ID(val)
+	if (type in [list, tuple]
+		or isinstance(type, ListOf)
+		or isinstance(type, TupleOf)):
+		return seq_value_to_node(type, val)
+	### None
+	raise ArgDefError('unrecognized type: ' + str(type))
+
+def seq_value_to_node(type, vallist):
+	if (type == list):
+		type = ListOf()
+	elif (type == tuple):
+		type = TupleOf()
+		
+	typelist = type.types
+	ls = sparse.List()
+	pos = 0
+	for val in vallist:
+		nod = value_to_node(typelist[pos], val)
+		ls.append(nod)
+		pos += 1
+		if (pos >= len(typelist)):
+			pos = len(typelist) - type.repeat
+
+	return ls
+
+def node_to_value(type, node):
 	if (type is None):
 		if (isinstance(node, sparse.ID)):
 			type = str
@@ -561,10 +582,10 @@ def parse_argument(type, node):
 			raise ValueError('argument must be a list')
 		if (node.attrs):
 			raise ValueError('list argument may not have attributes')
-		return parse_seq_argument(type, node.list)
+		return node_to_seq_value(type, node.list)
 	raise ValueError('cannot handle type: ' + str(type))
 
-def parse_seq_argument(type, nodelist):
+def node_to_seq_value(type, nodelist):
 	if (type == list):
 		type = ListOf()
 	elif (type == tuple):
@@ -590,7 +611,7 @@ def parse_seq_argument(type, nodelist):
 	ls = []
 	pos = 0
 	for valnod in nodelist:
-		val = parse_argument(typelist[pos], valnod)
+		val = node_to_value(typelist[pos], valnod)
 		ls.append(val)
 		pos += 1
 		if (pos >= len(typelist)):
