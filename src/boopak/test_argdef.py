@@ -335,11 +335,11 @@ class TestArgDef(unittest.TestCase):
             (None, 'foo', 'foo'),
             (None, '()', []),
             (None, '(foo (1) ())', ['foo', ['1'], []]),
-            (int, '(none=none)', None),
-            (str, '(none=none)', None),
-            (list, '(none=none)', None),
-            (ListOf(), '(none=none)', None),
-            (None, '(none=none)', None),
+            (int, '(no=value)', None),
+            (str, '(no=value)', None),
+            (list, '(no=value)', None),
+            (ListOf(), '(no=value)', None),
+            (None, '(no=value)', None),
         ]
         
         badls = [
@@ -497,11 +497,11 @@ class TestArgDef(unittest.TestCase):
             (None, [], '()'),
             (None, (), '()'),
             (None, ['foo', 'bar', ['x']], '(foo bar (x))'),
-            (int, None, '(none=none)'),
-            (str, None, '(none=none)'),
-            (list, None, '(none=none)'),
-            (ListOf(), None, '(none=none)'),
-            (None, None, '(none=none)'),
+            (int, None, '(no=value)'),
+            (str, None, '(no=value)'),
+            (list, None, '(no=value)'),
+            (ListOf(), None, '(no=value)'),
+            (None, None, '(no=value)'),
         ]
 
         for (typ, val, res) in ls:

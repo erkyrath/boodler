@@ -526,7 +526,7 @@ def node_to_type(nod):
 
 def value_to_node(type, val):
 	if (val is None):
-		return sparse.List(none=sparse.ID('none'))
+		return sparse.List(no=sparse.ID('value'))
 	
 	if (type is None):
 		if (_typeof(val) in [list, tuple]):
@@ -571,9 +571,9 @@ def seq_value_to_node(type, vallist):
 
 def node_to_value(type, node):
 	if (isinstance(node, sparse.List) and len(node) == 0):
-		subnod = node.get_attr('none')
+		subnod = node.get_attr('no')
 		if (subnod and isinstance(subnod, sparse.ID)
-			and subnod.as_string() == 'none'):
+			and subnod.as_string() == 'value'):
 			return None
 	
 	if (type is None):
