@@ -338,11 +338,13 @@ try:
 			rootlogger.warning('invalid name for property: ' + key)
 
 	try:
-		clas = agent.load_class_by_name(loader, args[0])
+		###clas = agent.load_class_by_name(loader, args[0])
+		###ag = clas(*args[1:])
+		### what about '' ?
+		ag = agent.load_described(loader, args)
 	except Exception, ex:
 		rootlogger.error(str(ex))
 		raise boodle.StopGeneration()
-	ag = clas(*args[1:])
 	if (not ag.inited):
 		raise generator.ScheduleError('agent is uninitialized')
 	gen.addagent(ag, gen.rootchannel, 0, ag.run)

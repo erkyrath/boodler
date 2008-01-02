@@ -49,6 +49,10 @@ class ArgList:
 			if (len(ls) > 1):
 				raise ArgDefError('more than one argument with name ' + str(arg.name))
 
+	def __repr__(self):
+		ls = [ (arg.name or '...') for arg in self.args ]
+		return '<ArgList (' + (', '.join(ls)) + ')>'
+
 	def __len__(self):
 		return len(self.args)
 
@@ -161,12 +165,6 @@ class ArgList:
 		return arglist
 	merge = staticmethod(merge)
 	
-	def invoke(self, func, node):
-		### right API?
-		ls = [] ###
-		dic = {} ###
-		return func(*ls, **dic)
-
 	def resolve(self, node):
 		### ignores first element of node
 		if (not isinstance(node, sparse.List)):

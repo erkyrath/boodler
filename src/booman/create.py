@@ -445,6 +445,8 @@ def examine_directory(loader, dirname, destname=None):
 		if (not (arglist is None)):
 			print '### ...',
 			arglist.dump()
+			nod = arglist.to_node()
+			res.add('boodler.arguments', nod.serialize())
 
 	try:
 		resources.build_tree()

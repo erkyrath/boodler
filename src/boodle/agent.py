@@ -62,6 +62,9 @@ class Agent:
 	# environment. If we really cared, we'd use weak key refs.)
 	cached_class_names = {}
 
+	# Maps Agent subclasses to ArgLists; see get_argument_list().
+	cached_argument_lists = {}
+	
 	###
 	_args = None
 	
@@ -549,6 +552,35 @@ class Agent:
 			
 	get_class_name = classmethod(get_class_name)
 	
+	def get_argument_list(cla):
+		"""get_argument_list() -> ArgList
+
+		Return the argument list specification for the class.
+		"""
+		
+		res = Agent.cached_argument_lists.get(cla)
+		if (not (res is None)):
+			return res
+
+		# Default value
+		res = None
+		
+		loader = pload.PackageLoader.global_loader
+		if (loader):
+			try:
+				(pkg, resource) = loader.find_item_resources(cla)
+				nodestr = resource.get_one('boodler.arguments')
+				if (nodestr):
+					node = sparse.parse(nodestr)
+					res = argdef.ArgList.from_node(node)
+			except:
+				pass
+			
+		Agent.cached_argument_lists[cla] = res
+		return res
+			
+	get_argument_list = classmethod(get_argument_list)
+	
 	def get_title(cla):
 		"""get_title() -> string
 
@@ -802,7 +834,7 @@ def load_described(loader, args):
 	if (not isinstance(classarg, sparse.ID)):
 		raise ValueError('arguments must begin with a class name')
 
-	clas = loader.load_item_by_name(classarg)
+	clas = loader.load_item_by_name(classarg.as_string())
 	
 	if (type(clas) != type(Agent)):
 		raise TypeError(name + ' is not a class')
@@ -810,8 +842,8 @@ def load_described(loader, args):
 		raise TypeError(name + ' is not an Agent class')
 
 	arglist = clas.get_argument_list()
-
-	ag = arglist.invoke(clas, args) ### possibly elsewhere
+	(valls, valdic) = arglist.resolve(args)
+	ag = clas(*valls, **valdic)
 	return ag
 	
 # Late imports.
@@ -822,4 +854,4 @@ from boodle import generator, sample, stereo
 cboodle = boodle.cboodle
 from boodle.generator import FrameCount
 
-from boopak import version, pload, sparse
+from boopak import version, pload, sparse, argdef
