@@ -136,7 +136,7 @@ def handle(args=None):
 	except Exception, ex:
 		# Unexpected exception: print it, and save a backtrace.
 		note_backtrace()
-		print 'Python exception:', str(ex.__class__)+':', str(ex)
+		print 'Python exception:', ex.__class__.__name__+':', str(ex)
 
 def cleanup():
 	"""cleanup() -> None
