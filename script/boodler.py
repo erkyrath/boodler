@@ -344,6 +344,8 @@ try:
 		ag = agent.load_described(loader, args)
 	except Exception, ex:
 		rootlogger.error(str(ex))
+		if (opts.verboseerrors):
+			raise
 		raise boodle.StopGeneration()
 	if (not ag.inited):
 		raise generator.ScheduleError('agent is uninitialized')
