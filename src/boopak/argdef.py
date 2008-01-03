@@ -298,11 +298,18 @@ class Arg:
 	def __init__(self, name=None, index=None,
 		type=None, default=_DummyDefault, optional=None,
 		description=None):
-		
-		self.name = name
+
+		if (name is None):
+			self.name = None
+		else:
+			if (not (_typeof(name) in [str, unicode])):
+				raise ArgDefError('name must be a string; was ' + repr(name))
+			self.name = name
+			
 		if (not (index is None) and index <= 0):
-			raise ArgDefError('index must be positive')
+			raise ArgDefError('index must be positive; was ' + str(index))
 		self.index = index
+		
 		self.type = type
 		self.optional = optional
 		if (default is _DummyDefault):
@@ -615,6 +622,8 @@ def seq_value_to_node(type, vallist):
 	return ls
 
 def node_to_value(type, node):
+	### would be nice if this took an argument-label argument
+	
 	if (isinstance(node, sparse.List) and len(node) == 0):
 		subnod = node.get_attr('no')
 		if (subnod and isinstance(subnod, sparse.ID)

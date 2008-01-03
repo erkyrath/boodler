@@ -788,6 +788,7 @@ class FadeInOutAgent(Agent):
 ### And how do we pull agents off sys.path?
 
 def load_class_by_name(loader, name):
+	### this can go away now
 	"""load_class_by_name(str) -> class
 
 	###
@@ -843,7 +844,8 @@ def load_described(loader, args):
 
 	arglist = clas.get_argument_list()
 	(valls, valdic) = arglist.resolve(args)
-	ag = clas(*valls, **valdic)
+	wrapper = argdef.ArgClassWrapper(clas, valls, valdic)
+	ag = argdef.instantiate(wrapper)
 	return ag
 	
 # Late imports.
