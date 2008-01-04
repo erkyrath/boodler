@@ -658,7 +658,10 @@ def node_to_value(type, node):
 		return node_to_seq_value(type, node.list)
 	
 	if (type == sample.Sample):
-		print '#### type is Sample'
+		loader = pload.PackageLoader.global_loader
+		if (not loader):
+			raise ArgDefError('cannot load Sample, because there is no loader')
+		return loader.load_item_by_name(node.as_string())
 	
 	raise ValueError('cannot handle type: ' + str(type))
 
