@@ -325,131 +325,29 @@ def examine_directory(loader, dirname, destname=None):
 		context = WalkContext(pkg)
 		walk_module(context, mod)
 
+		resolve_dependency_metadata(dirname, pkgname, pkgvers,
+			resources, metadata, import_record, context)
+		
+		for key in context.agents:
+			(ag, origloc) = context.agents[key]
+			res = resources.get(key)
+			if (not res):
+				continue
+				
+			# Inspect the agent to discover its argument metadata.
+			### Skip if argument metadata is already declared
+	
+			arglist = resolve_argument_list(dirname, key, ag)
+				
+			if (not (arglist is None)):
+				try:
+					nod = arglist.to_node()
+					res.add('boodler.arguments', nod.serialize())
+				except Exception, ex:
+					warning(dirname, key + ' argument list error: ' + str(ex))
+
 	finally:
 		loader.remove_external_package(dirname)
-
-	# Add the dependencies to the metadata.
-	ls = import_record.get( (pkgname, pkgvers) )
-	if (ls):
-		for (reqname, reqspec) in ls:
-			if (reqspec is None):
-				metadata.add('boodler.requires', reqname)
-			elif (isinstance(reqspec, version.VersionSpec)):
-				metadata.add('boodler.requires', reqname+' '+str(reqspec))
-			elif (isinstance(reqspec, version.VersionNumber)):
-				metadata.add('boodler.requires_exact', reqname+' '+str(reqspec))
-
-	revmap = {}
-		
-	for key in context.agents:
-		res = resources.get(key)
-		if (res):
-			(ag, origloc) = context.agents[key]
-
-			realname = ag.__module__+'.'+ag.__name__
-			if (revmap.has_key(realname)):
-				warning(dirname, 'Agent appears as two different resources: ' +
-					key + ', ' + revmap[realname])
-			else:
-				revmap[realname] = key
-
-			use = res.get_one('boodler.use')
-			if (not use):
-				res.add('boodler.use', 'agent')
-			else:
-				if (use != 'agent'):
-					warning(dirname, 'Agent resource conflicts with use: ' +
-						key)
-				
-	for key in context.agents:
-		(ag, origloc) = context.agents[key]
-		if (not origloc):
-			continue
-
-		realname = ag.__module__+'.'+ag.__name__
-		if (revmap.has_key(realname)):
-			continue
-
-		try:
-			res = resources.create(key)
-		except ValueError, ex:
-			warning(dirname, key + ' looks like an Agent, but: ' + str(ex))
-			continue
-			
-		revmap[realname] = key
-		
-		res.add('boodler.use', 'agent')
-		
-	for key in context.agents:
-		(ag, origloc) = context.agents[key]
-		res = resources.get(key)
-		if (not res):
-			continue
-			
-		# Inspect the agent to discover its argument metadata.
-		### Skip if argument metadata is already declared
-		
-		argspec = inspect.getargspec(ag.init)
-		# argspec = (args, varargs, varkw, defaults)
-		print '###', key, '. init(...):', argspec
-		arglist = None
-		maxinitargs = None
-		mininitargs = None
-		
-		try:
-			arglist = argdef.ArgList.from_argspec(*argspec)
-			maxinitargs = arglist.max_accepted()
-			mininitargs = arglist.min_accepted()
-		except argdef.ArgDefError, ex:
-			warning(dirname, key + '.init() could not be inspected: ' + str(ex))
-
-		if (not (ag._args is None)):
-			try:
-				arglist = argdef.ArgList.merge(ag._args, arglist)
-			except argdef.ArgDefError, ex:
-				warning(dirname, key + '.init() does not match _args: ' + str(ex))
-				arglist = ag._args
-
-		if (not (arglist is None)):
-			ls = [ arg for arg in arglist.args if (arg.index is None) ]
-			unindexed = len(ls)
-			indexed = len(arglist.args) - unindexed
-			ls = [ arg.index for arg in arglist.args ]
-			if (ls[ : indexed] != range(1,1+indexed)):
-				ls1 = [ str(val) for val in ls[ : indexed] ]
-				ls2 = [ str(val) for val in range(1,1+indexed) ]
-				warning(dirname, 'found arguments ' + (', '.join(ls1))
-					+ '; should have been ' + (', '.join(ls2)))
-			else:
-				if (ls[ indexed : ] != [ None ] * unindexed):
-					warning(dirname, 'the ' + str(unindexed) + ' unindexed arguments must be last')
-
-			ls = [ arg for arg in arglist.args if (not arg.optional) ]
-			mandatory = len(ls)
-			ls = [ arg.optional for arg in arglist.args ]
-			if (True in ls[ : mandatory] or False in ls[mandatory : ]):
-				warning(dirname, 'the ' + str(mandatory) + ' mandatory arguments must be first')
-
-			val = arglist.max_accepted()
-			if ((val is None) and (not (maxinitargs is None))):
-				warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but _args describes extra arguments')
-			if ((not (val is None)) and (not (maxinitargs is None))):
-				if (val > maxinitargs):
-					warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but including _args describes ' + str(val))
-			
-			val = arglist.min_accepted()
-			if ((not (val is None)) and (not (mininitargs is None))):
-				if (val < mininitargs):
-					warning(dirname, key + '.init() takes at least ' + str(mininitargs) + ' arguments, but including _args describes ' + str(val))
-			
-		if (not (arglist is None)):
-			try:
-				print '### ...',
-				arglist.dump() ###
-				nod = arglist.to_node()
-				res.add('boodler.arguments', nod.serialize())
-			except Exception, ex:
-				warning(dirname, key + ' argument list error: ' + str(ex))
 
 	try:
 		resources.build_tree()
@@ -531,6 +429,118 @@ class WalkContext:
 		# the agent is in its defined location. An Agent copied out of its
 		# defined location will show up more than once.
 		self.agents = {}
+
+
+def resolve_dependency_metadata(dirname, pkgname, pkgvers,
+	resources, metadata, import_record, context):
+
+	# Add the dependencies to the metadata.
+	ls = import_record.get( (pkgname, pkgvers) )
+	if (ls):
+		for (reqname, reqspec) in ls:
+			if (reqspec is None):
+				metadata.add('boodler.requires', reqname)
+			elif (isinstance(reqspec, version.VersionSpec)):
+				metadata.add('boodler.requires', reqname+' '+str(reqspec))
+			elif (isinstance(reqspec, version.VersionNumber)):
+				metadata.add('boodler.requires_exact', reqname+' '+str(reqspec))
+
+	revmap = {}
+		
+	for key in context.agents:
+		res = resources.get(key)
+		if (res):
+			(ag, origloc) = context.agents[key]
+
+			realname = ag.__module__+'.'+ag.__name__
+			if (revmap.has_key(realname)):
+				warning(dirname, 'Agent appears as two different resources: ' +
+					key + ', ' + revmap[realname])
+			else:
+				revmap[realname] = key
+
+			use = res.get_one('boodler.use')
+			if (not use):
+				res.add('boodler.use', 'agent')
+			else:
+				if (use != 'agent'):
+					warning(dirname, 'Agent resource conflicts with use: ' +
+						key)
+				
+	for key in context.agents:
+		(ag, origloc) = context.agents[key]
+		if (not origloc):
+			continue
+
+		realname = ag.__module__+'.'+ag.__name__
+		if (revmap.has_key(realname)):
+			continue
+
+		try:
+			res = resources.create(key)
+		except ValueError, ex:
+			warning(dirname, key + ' looks like an Agent, but: ' + str(ex))
+			continue
+			
+		revmap[realname] = key
+		
+		res.add('boodler.use', 'agent')
+
+def resolve_argument_list(dirname, key, ag):
+	arglist = None
+	
+	argspec = inspect.getargspec(ag.init)
+	# argspec is (args, varargs, varkw, defaults)
+	maxinitargs = None
+	mininitargs = None
+	
+	try:
+		arglist = argdef.ArgList.from_argspec(*argspec)
+		maxinitargs = arglist.max_accepted()
+		mininitargs = arglist.min_accepted()
+	except argdef.ArgDefError, ex:
+		warning(dirname, key + '.init() could not be inspected: ' + str(ex))
+
+	if (not (ag._args is None)):
+		try:
+			arglist = argdef.ArgList.merge(ag._args, arglist)
+		except argdef.ArgDefError, ex:
+			warning(dirname, key + '.init() does not match _args: ' + str(ex))
+			arglist = ag._args
+
+	if (not (arglist is None)):
+		ls = [ arg for arg in arglist.args if (arg.index is None) ]
+		unindexed = len(ls)
+		indexed = len(arglist.args) - unindexed
+		ls = [ arg.index for arg in arglist.args ]
+		if (ls[ : indexed] != range(1,1+indexed)):
+			ls1 = [ str(val) for val in ls[ : indexed] ]
+			ls2 = [ str(val) for val in range(1,1+indexed) ]
+			warning(dirname, 'found arguments ' + (', '.join(ls1))
+				+ '; should have been ' + (', '.join(ls2)))
+		else:
+			if (ls[ indexed : ] != [ None ] * unindexed):
+				warning(dirname, 'the ' + str(unindexed) + ' unindexed arguments must be last')
+
+		ls = [ arg for arg in arglist.args if (not arg.optional) ]
+		mandatory = len(ls)
+		ls = [ arg.optional for arg in arglist.args ]
+		if (True in ls[ : mandatory] or False in ls[mandatory : ]):
+			warning(dirname, 'the ' + str(mandatory) + ' mandatory arguments must be first')
+
+		val = arglist.max_accepted()
+		if ((val is None) and (not (maxinitargs is None))):
+			warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but _args describes extra arguments')
+		if ((not (val is None)) and (not (maxinitargs is None))):
+			if (val > maxinitargs):
+				warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but including _args describes ' + str(val))
+		
+		val = arglist.min_accepted()
+		if ((not (val is None)) and (not (mininitargs is None))):
+			if (val < mininitargs):
+				warning(dirname, key + '.init() takes at least ' + str(mininitargs) + ' arguments, but including _args describes ' + str(val))
+
+	return arglist
 		
 def construct_zipfile(fl, tup, dirname, contents,
 	metadatafile, resourcesfile=None):

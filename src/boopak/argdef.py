@@ -599,8 +599,6 @@ def value_to_node(type, val):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot locate Sample, because there is no loader')
-		print '####', val, getattr(val, '__module__', 'NONE')
-		print '####', loader.package_names
 		(pkg, resource) = loader.find_item_resources(val)
 		### it might be necessary to figure out what versionspec the
 		### module used to load this object's package, and include
