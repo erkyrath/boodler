@@ -564,17 +564,19 @@ class Agent:
 
 		# Default value
 		res = None
+		nodestr = None
 		
 		loader = pload.PackageLoader.global_loader
 		if (loader):
 			try:
 				(pkg, resource) = loader.find_item_resources(cla)
 				nodestr = resource.get_one('boodler.arguments')
-				if (nodestr):
-					node = sparse.parse(nodestr)
-					res = argdef.ArgList.from_node(node)
 			except:
 				pass
+
+		if (nodestr):
+			node = sparse.parse(nodestr)
+			res = argdef.ArgList.from_node(node)
 			
 		Agent.cached_argument_lists[cla] = res
 		return res

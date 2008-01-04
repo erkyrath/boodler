@@ -657,7 +657,8 @@ def node_to_value(type, node):
 			raise ValueError('list argument may not have attributes')
 		return node_to_seq_value(type, node.list)
 	
-	### if (type == sample.Sample):
+	if (type == sample.Sample):
+		print '#### type is Sample'
 	
 	raise ValueError('cannot handle type: ' + str(type))
 
@@ -711,8 +712,10 @@ class ArgClassWrapper(ArgWrapper):
 	def unwrap(self):
 		ls = [ instantiate(val) for val in self.argls ]
 		if (not self.argdic):
+			print '### ArgClassWrapper:', self.cla, 'with', ls
 			return self.cla(*ls)
 		dic = dict([ (key,instantiate(val)) for (key,val) in self.argdic.items() ])
+		print '### ArgClassWrapper:', self.cla, 'with', ls, dic
 		return self.cla(*ls, **dic)
 
 class ArgListWrapper(ArgWrapper):
