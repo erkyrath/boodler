@@ -843,6 +843,8 @@ def load_described(loader, args):
 		raise TypeError(name + ' is not an Agent class')
 
 	arglist = clas.get_argument_list()
+	if (arglist is None):
+		arglist = argdef.ArgList()
 	(valls, valdic) = arglist.resolve(args)
 	wrapper = argdef.ArgClassWrapper(clas, valls, valdic)
 	ag = argdef.instantiate(wrapper)

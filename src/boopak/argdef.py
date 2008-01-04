@@ -1,4 +1,5 @@
 import sys
+import types
 
 # We use "type" as an argument and local variable sometimes, but we need
 # to keep track of the standard type() function.
@@ -134,7 +135,7 @@ class ArgList:
 				val = defaults[pos-defstart]
 				dic['default'] = val
 				if (not (val is None)):
-					dic['type'] = _typeof(val)
+					dic['type'] = infer_type(val)
 			arg = Arg(name=key, index=pos, **dic)
 			pos += 1
 			arglist.args.append(arg)
@@ -319,7 +320,7 @@ class Arg:
 			self.hasdefault = True
 			self.default = default
 			if ((self.type is None) and not (default is None)):
-				self.type = _typeof(default)
+				self.type = infer_type(default)
 		check_valid_type(self.type)
 		if (self.optional is None):
 			self.optional = self.hasdefault
@@ -506,30 +507,23 @@ class TupleOf(SequenceOf):
 			self.max = len(self.types)
 		self.repeat = len(self.types)
 
-_type_to_name_mapping = {
-	None: 'none',
-	str: 'str', unicode: 'str',
-	int: 'int', long: 'int',
-	float: 'float',
-	bool: 'bool',
-	list: 'list',
-	tuple: 'tuple',
-}
+def infer_type(val):
+	type = _typeof(val)
+	if (type == types.InstanceType):
+		if (isinstance(val, pinfo.File)):
+			return sample.Sample
+		if (isinstance(val, sample.Sample)):
+			return sample.Sample
+		return val.__class__
 
-_name_to_type_mapping = {
-	'none': None,
-	'str': str,
-	'int': int,
-	'float': float,
-	'bool': bool,
-	'list': list,
-	'tuple': tuple,
-}
+	return type
 
 def check_valid_type(type):
 	if (_type_to_name_mapping.has_key(type)):
 		return
 	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
+		return
+	if (type == sample.Sample):
 		return
 	raise ArgDefError('unrecognized type: ' + str(type))
 
@@ -600,6 +594,18 @@ def value_to_node(type, val):
 		or isinstance(type, ListOf)
 		or isinstance(type, TupleOf)):
 		return seq_value_to_node(type, val)
+	
+	if (type == sample.Sample):
+		loader = pload.PackageLoader.global_loader
+		if (not loader):
+			raise ArgDefError('cannot locate Sample, because there is no loader')
+		print '####', val, getattr(val, '__module__', 'NONE')
+		print '####', loader.package_names
+		(pkg, resource) = loader.find_item_resources(val)
+		### it might be necessary to figure out what versionspec the
+		### module used to load this object's package, and include
+		### it along with pkg.name!
+		return sparse.ID(pkg.name + '/' + resource.key)
 
 	raise ArgDefError('unrecognized type: ' + str(type))
 
@@ -652,6 +658,9 @@ def node_to_value(type, node):
 		if (node.attrs):
 			raise ValueError('list argument may not have attributes')
 		return node_to_seq_value(type, node.list)
+	
+	### if (type == sample.Sample):
+	
 	raise ValueError('cannot handle type: ' + str(type))
 
 def node_to_seq_value(type, nodelist):
@@ -742,4 +751,29 @@ def instantiate(val):
 
 # Late imports.
 
-from boopak import sparse
+from boodle import sample
+from boopak import sparse, pinfo, pload
+
+# These mappings are defined late, because they use the sample module.
+
+_type_to_name_mapping = {
+	None: 'none',
+	str: 'str', unicode: 'str',
+	int: 'int', long: 'int',
+	float: 'float',
+	bool: 'bool',
+	list: 'list',
+	tuple: 'tuple',
+	sample.Sample: 'Sample',
+}
+
+_name_to_type_mapping = {
+	'none': None,
+	'str': str,
+	'int': int,
+	'float': float,
+	'bool': bool,
+	'list': list,
+	'tuple': tuple,
+	'Sample': sample.Sample,
+}

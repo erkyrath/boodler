@@ -443,10 +443,13 @@ def examine_directory(loader, dirname, destname=None):
 					warning(dirname, key + '.init() takes at least ' + str(mininitargs) + ' arguments, but including _args describes ' + str(val))
 			
 		if (not (arglist is None)):
-			print '### ...',
-			arglist.dump()
-			nod = arglist.to_node()
-			res.add('boodler.arguments', nod.serialize())
+			try:
+				print '### ...',
+				arglist.dump() ###
+				nod = arglist.to_node()
+				res.add('boodler.arguments', nod.serialize())
+			except Exception, ex:
+				warning(dirname, key + ' argument list error: ' + str(ex))
 
 	try:
 		resources.build_tree()
