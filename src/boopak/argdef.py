@@ -226,9 +226,6 @@ class ArgList:
 					raise ArgDefError(str(self.min_accepted()) + ' arguments required')
 			pos += 1
 
-		#print '### got', values
-		#print '### extra', extraindexed, extranamed
-
 		if (extranamed):
 			raise ArgDefError('unknown named argument: ' + (', '.join(extranamed.keys())))
 
@@ -417,6 +414,9 @@ class Arg:
 			wrap = node_to_value(dic.get('type'), node.get_attr('default'))
 			dic['default'] = instantiate(wrap)
 			### What if this is an AgentClass?
+			### should this *always* be a wrapped value? For the cases where
+			### the default is an Agent instance that we don't know how to
+			### construct. (That would break unserialization, I guess.)
 		return Arg(**dic)
 	from_node = staticmethod(from_node)
 	
@@ -518,13 +518,36 @@ def infer_type(val):
 
 	return type
 
+_type_to_name_mapping = {
+	None: 'none',
+	str: 'str', unicode: 'str',
+	int: 'int', long: 'int',
+	float: 'float',
+	bool: 'bool',
+	list: 'list',
+	tuple: 'tuple',
+}
+
+_name_to_type_mapping = {
+	'none': None,
+	'str': str,
+	'int': int,
+	'float': float,
+	'bool': bool,
+	'list': list,
+	'tuple': tuple,
+}
+
 def check_valid_type(type):
 	if (_type_to_name_mapping.has_key(type)):
 		return
 	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
 		return
-	if (issubclass(type, boodle.agent.Agent)):
-		return
+	if (_typeof(type) == types.ClassType):
+		if (issubclass(type, sample.Sample)):
+			return
+		if (issubclass(type, boodle.agent.Agent)):
+			return
 	raise ArgDefError('unrecognized type: ' + str(type))
 
 def type_to_node(type):
@@ -533,8 +556,11 @@ def type_to_node(type):
 		return sparse.ID(name)
 	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
 		return type.to_node()
-	if (issubclass(type, boodle.agent.Agent)):
-		return sparse.ID('Agent')
+	if (_typeof(type) == types.ClassType):
+		if (issubclass(type, sample.Sample)):
+			return sparse.ID('Sample')
+		if (issubclass(type, boodle.agent.Agent)):
+			return sparse.ID('Agent')
 	raise ArgDefError('unrecognized type: ' + str(type))
 
 def node_to_type(nod):
@@ -544,6 +570,8 @@ def node_to_type(nod):
 			return _name_to_type_mapping[id]
 		if (id == 'Agent'):
 			return boodle.agent.Agent
+		if (id == 'Sample'):
+			return sample.Sample
 		raise ArgDefError('unrecognized type: ' + id)
 
 	# the node is a List
@@ -599,7 +627,7 @@ def value_to_node(type, val):
 		or isinstance(type, TupleOf)):
 		return seq_value_to_node(type, val)
 	
-	if (issubclass(type, sample.Sample)):
+	if (_typeof(type) == types.ClassType and issubclass(type, sample.Sample)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot locate resource, because there is no loader')
@@ -609,7 +637,7 @@ def value_to_node(type, val):
 		### it along with pkg.name!
 		return sparse.ID(pkg.name + '/' + resource.key)
 
-	if (issubclass(type, boodle.agent.Agent)):
+	if (_typeof(type) == types.ClassType and issubclass(type, boodle.agent.Agent)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot locate resource, because there is no loader')
@@ -671,13 +699,13 @@ def node_to_value(type, node):
 			raise ValueError('list argument may not have attributes')
 		return node_to_seq_value(type, node.list)
 	
-	if (issubclass(type, sample.Sample)):
+	if (_typeof(type) == types.ClassType and issubclass(type, sample.Sample)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot load resource, because there is no loader')
 		return loader.load_item_by_name(node.as_string())
 	
-	if (issubclass(type, boodle.agent.Agent)):
+	if (_typeof(type) == types.ClassType and issubclass(type, boodle.agent.Agent)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot load resource, because there is no loader')
@@ -782,26 +810,3 @@ import boodle
 from boodle import sample
 from boopak import sparse, pinfo, pload
 
-# These mappings are defined late, because they use the sample module.
-
-_type_to_name_mapping = {
-	None: 'none',
-	str: 'str', unicode: 'str',
-	int: 'int', long: 'int',
-	float: 'float',
-	bool: 'bool',
-	list: 'list',
-	tuple: 'tuple',
-	sample.Sample: 'Sample',
-}
-
-_name_to_type_mapping = {
-	'none': None,
-	'str': str,
-	'int': int,
-	'float': float,
-	'bool': bool,
-	'list': list,
-	'tuple': tuple,
-	'Sample': sample.Sample,
-}

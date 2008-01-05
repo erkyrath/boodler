@@ -3,6 +3,7 @@ import inspect
 
 from boopak.argdef import *
 from boopak import sparse
+from boodle import sample, agent
 
 class TestArgDef(unittest.TestCase):
 
@@ -760,14 +761,22 @@ class TestArgDef(unittest.TestCase):
         self.one_test_resolve(arglist, goodls, badls)
 
     def test_basetype_serialize(self):
-        ls = [ int, str, bool, float, list, tuple ]
+        ls = [
+            int, str, bool, float, list, tuple,
+            sample.Sample, agent.Agent,
+        ]
         
         for typ in ls:
             val = type_to_node(typ)
             typ2 = node_to_type(val)
             self.assertEqual(typ, typ2)
 
-        ls = [ (long,int), (unicode,str) ]
+        ls = [
+            (long,int), (unicode,str),
+            (agent.NullAgent, agent.Agent),
+            (sample.MixinSample, sample.Sample),
+        ]
+        
         for (typ, restyp) in ls:
             val = type_to_node(typ)
             typ2 = node_to_type(val)
