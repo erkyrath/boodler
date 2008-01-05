@@ -829,6 +829,8 @@ def load_described(loader, args):
 	if (not isinstance(args, sparse.Node)):
 		args = sparse.parse(' '.join(args))
 
+	if (isinstance(args, sparse.ID)):
+		args = sparse.List(args)
 	if (not isinstance(args, sparse.List)):
 		raise ValueError('arguments must be a list')
 	if (len(args) == 0):

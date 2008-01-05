@@ -523,7 +523,7 @@ def check_valid_type(type):
 		return
 	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
 		return
-	if (type == sample.Sample):
+	if (issubclass(type, boodle.agent.Agent)):
 		return
 	raise ArgDefError('unrecognized type: ' + str(type))
 
@@ -533,6 +533,8 @@ def type_to_node(type):
 		return sparse.ID(name)
 	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
 		return type.to_node()
+	if (issubclass(type, boodle.agent.Agent)):
+		return sparse.ID('Agent')
 	raise ArgDefError('unrecognized type: ' + str(type))
 
 def node_to_type(nod):
@@ -540,6 +542,8 @@ def node_to_type(nod):
 		id = nod.as_string()
 		if (_name_to_type_mapping.has_key(id)):
 			return _name_to_type_mapping[id]
+		if (id == 'Agent'):
+			return boodle.agent.Agent
 		raise ArgDefError('unrecognized type: ' + id)
 
 	# the node is a List
@@ -595,11 +599,21 @@ def value_to_node(type, val):
 		or isinstance(type, TupleOf)):
 		return seq_value_to_node(type, val)
 	
-	if (type == sample.Sample):
+	if (issubclass(type, sample.Sample)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
-			raise ArgDefError('cannot locate Sample, because there is no loader')
+			raise ArgDefError('cannot locate resource, because there is no loader')
 		(pkg, resource) = loader.find_item_resources(val)
+		### it might be necessary to figure out what versionspec the
+		### module used to load this object's package, and include
+		### it along with pkg.name!
+		return sparse.ID(pkg.name + '/' + resource.key)
+
+	if (issubclass(type, boodle.agent.Agent)):
+		loader = pload.PackageLoader.global_loader
+		if (not loader):
+			raise ArgDefError('cannot locate resource, because there is no loader')
+		(pkg, resource) = loader.find_item_resources(val.__class__)
 		### it might be necessary to figure out what versionspec the
 		### module used to load this object's package, and include
 		### it along with pkg.name!
@@ -657,11 +671,20 @@ def node_to_value(type, node):
 			raise ValueError('list argument may not have attributes')
 		return node_to_seq_value(type, node.list)
 	
-	if (type == sample.Sample):
+	if (issubclass(type, sample.Sample)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
-			raise ArgDefError('cannot load Sample, because there is no loader')
+			raise ArgDefError('cannot load resource, because there is no loader')
 		return loader.load_item_by_name(node.as_string())
+	
+	if (issubclass(type, boodle.agent.Agent)):
+		loader = pload.PackageLoader.global_loader
+		if (not loader):
+			raise ArgDefError('cannot load resource, because there is no loader')
+		#cla = loader.load_item_by_name(node.as_string())
+		#return cla()
+		ag = boodle.agent.load_described(loader, node)
+		return ag
 	
 	raise ValueError('cannot handle type: ' + str(type))
 
@@ -755,6 +778,7 @@ def instantiate(val):
 
 # Late imports.
 
+import boodle
 from boodle import sample
 from boopak import sparse, pinfo, pload
 
