@@ -782,6 +782,20 @@ class TestArgDef(unittest.TestCase):
             typ2 = node_to_type(val)
             self.assertEqual(restyp, typ2)
         
+    def test_wrapped_serialize(self):
+        typ = Wrapped(int)
+        val = type_to_node(typ)
+        typ2 = node_to_type(val)
+        self.assert_(isinstance(typ2, Wrapped))
+        self.assertEqual(typ2.type, int)
+        
+        typ = Wrapped(ListOf(int, bool))
+        val = type_to_node(typ)
+        typ2 = node_to_type(val)
+        self.assert_(isinstance(typ2, Wrapped))
+        self.assert_(isinstance(typ2.type, ListOf))
+        self.assertEqual(typ2.type.types, (int, bool))
+        
     def test_seqtype_serialize(self):
         ls = [
             ListOf(),

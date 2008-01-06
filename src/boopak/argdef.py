@@ -255,6 +255,7 @@ class ArgList:
 			exls = node_to_seq_value(self.listtype, extraindexed)
 			if (isinstance(exls, ArgListWrapper)
 				or isinstance(exls, ArgTupleWrapper)):
+				# unwrap just the top list, so that we can iterate on it here
 				exls = exls.ls
 			for val in exls:
 				resultls.append(val)
@@ -417,6 +418,7 @@ class Arg:
 			### should this *always* be a wrapped value? For the cases where
 			### the default is an Agent instance that we don't know how to
 			### construct. (That would break unserialization, I guess.)
+			### (but maybe the default value is being instantiated already!)
 		return Arg(**dic)
 	from_node = staticmethod(from_node)
 	
@@ -507,6 +509,13 @@ class TupleOf(SequenceOf):
 			self.max = len(self.types)
 		self.repeat = len(self.types)
 
+class Wrapped:
+	def __init__(self, type):
+		check_valid_type(type)
+		if (isinstance(type, Wrapped)):
+			raise ArgDefError('cannot put Wrapped in a Wrapped')
+		self.type = type
+		
 def infer_type(val):
 	type = _typeof(val)
 	if (type == types.InstanceType):
@@ -548,6 +557,8 @@ def check_valid_type(type):
 			return
 		if (issubclass(type, boodle.agent.Agent)):
 			return
+	if (isinstance(type, Wrapped)):
+		return
 	raise ArgDefError('unrecognized type: ' + str(type))
 
 def type_to_node(type):
@@ -561,6 +572,9 @@ def type_to_node(type):
 			return sparse.ID('Sample')
 		if (issubclass(type, boodle.agent.Agent)):
 			return sparse.ID('Agent')
+	if (isinstance(type, Wrapped)):
+		nod = type_to_node(type.type)
+		return sparse.List(sparse.ID('Wrapped'), nod)
 	raise ArgDefError('unrecognized type: ' + str(type))
 
 def node_to_type(nod):
@@ -568,10 +582,10 @@ def node_to_type(nod):
 		id = nod.as_string()
 		if (_name_to_type_mapping.has_key(id)):
 			return _name_to_type_mapping[id]
-		if (id == 'Agent'):
-			return boodle.agent.Agent
 		if (id == 'Sample'):
 			return sample.Sample
+		if (id == 'Agent'):
+			return boodle.agent.Agent
 		raise ArgDefError('unrecognized type: ' + id)
 
 	# the node is a List
@@ -582,7 +596,7 @@ def node_to_type(nod):
 	
 	if (id in [ListOf.classname, TupleOf.classname]):
 		if (len(nod) != 2 or (not isinstance(nod[1], sparse.List))):
-			raise ArgDefError(id + ' list must be followed by one list')
+			raise ArgDefError(id + ' must be followed by one list')
 		if (id == ListOf.classname):
 			cla = ListOf
 		else:
@@ -599,7 +613,12 @@ def node_to_type(nod):
 		if (val):
 			dic['repeat'] = val.as_integer()
 		return cla(*ls, **dic)
-			
+
+	if (id == 'Wrapped'):
+		if (len(nod) != 2):
+			raise ArgDefError('Wrapped must be followed by one type')
+		return Wrapped(node_to_type(nod[1]))
+	
 	raise ArgDefError('unrecognized type: ' + id)
 
 def value_to_node(type, val):
@@ -809,4 +828,3 @@ def instantiate(val):
 import boodle
 from boodle import sample
 from boopak import sparse, pinfo, pload
-
