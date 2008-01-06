@@ -851,8 +851,9 @@ def load_described(loader, args):
 		arglist = argdef.ArgList()
 	(valls, valdic) = arglist.resolve(args)
 	wrapper = argdef.ArgClassWrapper(clas, valls, valdic)
-	ag = argdef.instantiate(wrapper)
-	return ag
+	return wrapper
+	#ag = argdef.instantiate(wrapper)
+	#return ag
 	
 # Late imports.
 
@@ -864,4 +865,5 @@ from boodle.generator import FrameCount
 
 from boopak import version, pload, sparse, argdef
 
-
+argdef.Agent = Agent
+argdef.load_described = load_described

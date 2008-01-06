@@ -341,7 +341,8 @@ try:
 		###clas = agent.load_class_by_name(loader, args[0])
 		###ag = clas(*args[1:])
 		### what about '' ?
-		ag = agent.load_described(loader, args)
+		wrap = agent.load_described(loader, args)
+		ag = wrap()
 	except Exception, ex:
 		rootlogger.error(str(ex))
 		if (opts.verboseerrors):

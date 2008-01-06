@@ -168,6 +168,7 @@ class ArgList:
 	
 	def resolve(self, node):
 		### ignores first element of node
+		### returns a list and dict of wrapped values
 		if (not isinstance(node, sparse.List)):
 			raise ArgDefError('arguments must be a list')
 		if (len(node) == 0):
@@ -518,13 +519,17 @@ class Wrapped:
 		
 def infer_type(val):
 	type = _typeof(val)
+	
 	if (type == types.InstanceType):
 		if (isinstance(val, pinfo.File)):
 			return sample.Sample
 		if (isinstance(val, sample.Sample)):
 			return sample.Sample
 		return val.__class__
-
+	
+	if (type == types.ClassType):
+		return Wrapped(val)
+	
 	return type
 
 _type_to_name_mapping = {
@@ -555,7 +560,7 @@ def check_valid_type(type):
 	if (_typeof(type) == types.ClassType):
 		if (issubclass(type, sample.Sample)):
 			return
-		if (issubclass(type, boodle.agent.Agent)):
+		if (issubclass(type, Agent)):
 			return
 	if (isinstance(type, Wrapped)):
 		return
@@ -570,12 +575,12 @@ def type_to_node(type):
 	if (_typeof(type) == types.ClassType):
 		if (issubclass(type, sample.Sample)):
 			return sparse.ID('Sample')
-		if (issubclass(type, boodle.agent.Agent)):
+		if (issubclass(type, Agent)):
 			return sparse.ID('Agent')
 	if (isinstance(type, Wrapped)):
 		nod = type_to_node(type.type)
 		return sparse.List(sparse.ID('Wrapped'), nod)
-	raise ArgDefError('unrecognized type: ' + str(type))
+	raise ArgDefError('type_to_node: unrecognized type: ' + str(type))
 
 def node_to_type(nod):
 	if (isinstance(nod, sparse.ID)):
@@ -585,8 +590,8 @@ def node_to_type(nod):
 		if (id == 'Sample'):
 			return sample.Sample
 		if (id == 'Agent'):
-			return boodle.agent.Agent
-		raise ArgDefError('unrecognized type: ' + id)
+			return Agent
+		raise ArgDefError('node_to_type: unrecognized type: ' + id)
 
 	# the node is a List
 
@@ -619,11 +624,14 @@ def node_to_type(nod):
 			raise ArgDefError('Wrapped must be followed by one type')
 		return Wrapped(node_to_type(nod[1]))
 	
-	raise ArgDefError('unrecognized type: ' + id)
+	raise ArgDefError('node_to_type: unrecognized type: ' + id)
 
 def value_to_node(type, val):
 	if (val is None):
 		return sparse.List(no=sparse.ID('value'))
+	
+	if (isinstance(type, Wrapped)):
+		return value_to_node(type.type, val)
 	
 	if (type is None):
 		if (_typeof(val) in [list, tuple]):
@@ -656,17 +664,20 @@ def value_to_node(type, val):
 		### it along with pkg.name!
 		return sparse.ID(pkg.name + '/' + resource.key)
 
-	if (_typeof(type) == types.ClassType and issubclass(type, boodle.agent.Agent)):
+	if (_typeof(type) == types.ClassType and issubclass(type, Agent)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot locate resource, because there is no loader')
-		(pkg, resource) = loader.find_item_resources(val.__class__)
+		cla = val
+		if (_typeof(cla) == types.InstanceType):
+			cla = cla.__class__
+		(pkg, resource) = loader.find_item_resources(cla)
 		### it might be necessary to figure out what versionspec the
 		### module used to load this object's package, and include
 		### it along with pkg.name!
 		return sparse.ID(pkg.name + '/' + resource.key)
 
-	raise ArgDefError('unrecognized type: ' + str(type))
+	raise ArgDefError('value_to_node: unrecognized type: ' + str(type))
 
 def seq_value_to_node(type, vallist):
 	if (type == list):
@@ -694,6 +705,12 @@ def node_to_value(type, node):
 		if (subnod and isinstance(subnod, sparse.ID)
 			and subnod.as_string() == 'value'):
 			return None
+	
+	if (isinstance(type, Wrapped)):
+		val = node_to_value(type.type, node)
+		if (isinstance(val, ArgWrapper)):
+			val.keep_wrapped = True
+		return val
 	
 	if (type is None):
 		if (isinstance(node, sparse.ID)):
@@ -724,15 +741,15 @@ def node_to_value(type, node):
 			raise ArgDefError('cannot load resource, because there is no loader')
 		return loader.load_item_by_name(node.as_string())
 	
-	if (_typeof(type) == types.ClassType and issubclass(type, boodle.agent.Agent)):
+	if (_typeof(type) == types.ClassType and issubclass(type, Agent)):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot load resource, because there is no loader')
 		#cla = loader.load_item_by_name(node.as_string())
 		#return cla()
-		ag = boodle.agent.load_described(loader, node)
-		return ag
-	
+		wrap = load_described(loader, node)
+		return wrap
+
 	raise ValueError('cannot handle type: ' + str(type))
 
 def node_to_seq_value(type, nodelist):
@@ -770,7 +787,9 @@ def node_to_seq_value(type, nodelist):
 	return wrapper.create(ls)
 
 class ArgWrapper:
-	pass
+	keep_wrapped = False
+	def unwrap(self):
+		raise Exception('unwrap() is not implemented for ' + repr(self))
 
 class ArgClassWrapper(ArgWrapper):
 	def create(cla, ls, dic=None):
@@ -782,6 +801,8 @@ class ArgClassWrapper(ArgWrapper):
 		self.cla = cla
 		self.argls = ls
 		self.argdic = dic
+	def __call__(self):
+		return self.unwrap()
 	def unwrap(self):
 		ls = [ instantiate(val) for val in self.argls ]
 		if (not self.argdic):
@@ -819,12 +840,19 @@ class ArgTupleWrapper(ArgWrapper):
 
 	
 def instantiate(val):
-	if (not isinstance(val, ArgWrapper)):
-		return val
-	return val.unwrap()
+	if (isinstance(val, ArgWrapper)):
+		if (not val.keep_wrapped):
+			return val.unwrap()
+	return val
 
 # Late imports.
 
-import boodle
 from boodle import sample
 from boopak import sparse, pinfo, pload
+
+# from boodle.agent import Agent, load_described
+#
+# These definitions are actually done by the boodle.agent module, when it
+# imports this one. If you import this module alone, it will suffer from
+# "... is not defined" errors. Hopefully this won't be a problem in
+# practice.
