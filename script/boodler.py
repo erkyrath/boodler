@@ -338,9 +338,6 @@ try:
 			rootlogger.warning('invalid name for property: ' + key)
 
 	try:
-		###clas = agent.load_class_by_name(loader, args[0])
-		###ag = clas(*args[1:])
-		### what about '' ?
 		wrap = agent.load_described(loader, args)
 		ag = wrap()
 	except Exception, ex:

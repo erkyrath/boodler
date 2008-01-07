@@ -678,6 +678,7 @@ class Handler:
 # And now, a bunch of agents which everybody will want to use.
 ### Push into a different module? and import?
 ### Add UnlistenAgent? SendEventAgent?
+### Give these get_argument_list() methods?
 
 class NullAgent(Agent):
 	"""NullAgent:
@@ -816,13 +817,17 @@ def load_class_by_name(loader, name):
 def load_described(loader, args):
 	### Node, str, or list of str -> class
 	if (type(args) in [str, unicode]):
+		argstr = args
 		args = [ '(', args, ')' ]
 	elif (type(args) == list):
+		argstr = ' '.join(args)
 		args = [ '(' ] + args + [ ')' ]
 	elif (type(args) == tuple):
+		argstr = ' '.join(args)
 		args = [ '(' ] + list(args) + [ ')' ]
 	elif (isinstance(args, sparse.Node)):
-		pass
+		argstr = args.serialize()
+		# args is fine
 	else:
 		raise TypeError('args must be a str, list of str, or Node')
 
@@ -834,7 +839,9 @@ def load_described(loader, args):
 	if (not isinstance(args, sparse.List)):
 		raise ValueError('arguments must be a list')
 	if (len(args) == 0):
-		raise ValueError('arguments must contain a class name') ###?
+		# default to the null agent, if none was given
+		args = sparse.List(sparse.ID('/boodle.agent.NullAgent'))
+	
 	classarg = args[0]
 	if (not isinstance(classarg, sparse.ID)):
 		raise ValueError('arguments must begin with a class name')
@@ -842,9 +849,9 @@ def load_described(loader, args):
 	clas = loader.load_item_by_name(classarg.as_string())
 	
 	if (type(clas) != type(Agent)):
-		raise TypeError(name + ' is not a class')
+		raise TypeError(argstr + ' is not a class')
 	if (not issubclass(clas, Agent)):
-		raise TypeError(name + ' is not an Agent class')
+		raise TypeError(argstr + ' is not an Agent class')
 
 	arglist = clas.get_argument_list()
 	if (arglist is None):

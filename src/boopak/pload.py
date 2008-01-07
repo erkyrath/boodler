@@ -1,3 +1,4 @@
+import sys
 import os.path
 import imp
 import types
@@ -737,6 +738,11 @@ class PackageLoader:
 		'com.eblong.example/reptile.Hiss' -- import the module and
 		return the resource object.
 
+		If the string begins with a slash ('/boodle.agent.NullAgent')
+		then the regular Python modules are searched. No importing
+		is done in this case; it is really intended only for the
+		contents of boodle.agent.
+
 		If the package argument is supplied (a PackageInfo object), it
 		becomes the package to look in for unqualified resource names
 		('reptile.Hiss'). If no package argument is supplied, then
@@ -747,6 +753,17 @@ class PackageLoader:
 		if (pos < 0):
 			if (package is None):
 				raise ValueError('argument must be of the form package/Resource')
+			mod = package.get_content()
+		elif (pos == 0):
+			# consult Python's module map
+			name = name[ 1 : ]
+			headtail = name.split('.', 1)
+			if (len(headtail) != 2):
+				raise ValueError('argument must be of the form package/Resource')
+			(modname, name) = headtail
+			mod = sys.modules.get(modname)
+			if (mod is None):
+				raise ValueError('not found in Python modules: ' + modname)
 		else:
 			pkgname = name[ : pos ]
 			name = name[ pos+1 : ]
@@ -763,8 +780,7 @@ class PackageLoader:
 					pkgspec = version.VersionSpec(val)
 
 			package = self.load(pkgname, pkgspec)
-
-		mod = package.get_content()
+			mod = package.get_content()
 
 		namels = name.split('.')
 		try:
