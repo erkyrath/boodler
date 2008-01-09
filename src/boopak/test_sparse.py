@@ -229,6 +229,7 @@ class TestSParse(unittest.TestCase):
     def test_parse_bad(self):
         ls = [
             '', '   ', '    \n',
+            '\\', 'x\\y', '=',
             '"\\n"',
             '(', ')', '((1)', '(1))', '"', "'", '"waooo ',
             '1 2', '() 1',
