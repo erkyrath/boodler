@@ -38,8 +38,8 @@ However, the following are not identical:
 The former is a list containing one string; the latter is a string.
 
 This module lets you convert the textual representation of an expression
-into a structured representation -- a tree of Node objects. (The subclasses
-of Node are List and ID, representing lists and strings.)
+into a structured representation -- a tree of Tree objects. (The subclasses
+of Tree are List and ID, representing lists and strings.)
 """
 
 import StringIO
@@ -48,12 +48,12 @@ import codecs
 escaper = codecs.getencoder('unicode_escape')
 
 class ParseError(Exception):
-	"""ParseError: represents an error parsing string data into Nodes.
+	"""ParseError: represents an error parsing string data into Trees.
 	"""
 	pass
 
-class Node:
-	"""Node: represents an S-expression.
+class Tree:
+	"""Tree: represents an S-expression.
 
 	This is a virtual base class. Do not instantiate it; instead use
 	the List or ID class.
@@ -62,10 +62,10 @@ class Node:
 	def serialize(self):
 		"""serialize() -> str or unicode
 
-		Convert this node into its textual representation. Strings will
+		Convert this tree into its textual representation. Strings will
 		be quoted and escaped if necessary.
 		"""
-		return '<Node: unimplemented>'
+		return '<Tree: unimplemented>'
 	
 	def __repr__(self):
 		val = self.serialize()
@@ -76,7 +76,7 @@ class Node:
 	def as_string(self):
 		"""as_string() -> str or unicode
 
-		Get the string which this node represents. (The result is not
+		Get the string which this tree represents. (The result is not
 		quoted or escaped; it is the underlying string value.)
 
 		Raises ValueError if called on a List.
@@ -86,7 +86,7 @@ class Node:
 	def as_integer(self):
 		"""as_integer() -> int or long
 
-		Get the integer value which this node represents.
+		Get the integer value which this tree represents.
 
 		Raises ValueError if called on a List, or on a string which
 		is not interpretable as an integer.
@@ -96,7 +96,7 @@ class Node:
 	def as_float(self):
 		"""as_float() -> float
 
-		Get the float value which this node represents.
+		Get the float value which this tree represents.
 
 		Raises ValueError if called on a List, or on a string which
 		is not interpretable as a float.
@@ -106,7 +106,7 @@ class Node:
 	def as_boolean(self):
 		"""as_boolean() -> bool
 
-		Get the boolean value which this node represents. The empty
+		Get the boolean value which this tree represents. The empty
 		string is considered false, as are '0', 'no', or 'false'. Or
 		really any string beginning with '0', 'n', 'N', 'f', or 'F'.
 		Anything else is true.
@@ -115,7 +115,7 @@ class Node:
 		"""
 		raise ValueError('a list cannot be understood as a boolean')
 
-class List(Node):
+class List(Tree):
 	"""List: represents a list expression.
 
 	A list can contain positional entries and named values; it therefore
@@ -126,13 +126,13 @@ class List(Node):
 		len(l)
 		l[int]
 		l[int:int]
-		l.append(node)
+		l.append(tree)
 
 	Dict-style operations:
 
 		l.has_attr(key)
 		l.get_attr(key)
-		l.set_attr(key, node)
+		l.set_attr(key, tree)
 
 	(The keys in these operations must be strings.)
 
@@ -144,7 +144,7 @@ class List(Node):
 		List(val, val, ... key=val, key=val) -- constructor
 
 	Construct a List with the given named and/or positional values. All
-	values must be Nodes. You can also construct a List from a Python
+	values must be Trees. You can also construct a List from a Python
 	list or dict, using the forms List(*list) or List(**dict).
 	"""
 	
@@ -152,32 +152,36 @@ class List(Node):
 		self.list = list(args)
 		self.attrs = dict(attrs)
 		for val in self.list:
-			if (not isinstance(val, Node)):
+			if (not isinstance(val, Tree)):
 				raise ValueError('List may only contain Lists and IDs')
 		for val in self.attrs.values():
-			if (not isinstance(val, Node)):
+			if (not isinstance(val, Tree)):
 				raise ValueError('List attribute must be List or ID')
 
 	def append(self, val):
 		"""append(val) -> None
 
-		Add the Node as the last positional entry.
+		Add the Tree as the last positional entry.
 		"""
+		if (not isinstance(val, Tree)):
+			raise ValueError('List may only contain Lists and IDs')
 		self.list.append(val)
 
 	def set_attr(self, key, val):
 		"""set_attr(key, val) -> None
 
-		Add the Node val as a named entry, with the given key.
+		Add the Tree val as a named entry, with the given key.
 		"""
-		if (not isinstance(val, Node)):
+		if (not isinstance(val, Tree)):
 			raise ValueError('List attribute must be List or ID')
+		if (not (type(key) in [str, unicode])):
+			raise ValueError('List attribute key must be a string')
 		self.attrs[key] = val
 
 	def get_attr(self, key):
-		"""get_attr(key) -> Node
+		"""get_attr(key) -> Tree
 
-		Retrieve the named Node which has the given key. If there is
+		Retrieve the named Tree which has the given key. If there is
 		no entry with that key, returns None.
 		"""
 		return self.attrs.get(key)
@@ -208,7 +212,7 @@ class List(Node):
 		return self.list.__iter__()
 		
 
-class ID(Node):
+class ID(Tree):
 	"""ID: represents a string expression.
 
 		ID(val) -- constructor
@@ -295,7 +299,7 @@ class AttrToken:
 		self.key = key
 
 def parse(val):
-	"""parse(val) -> Node
+	"""parse(val) -> Tree
 
 	Parse a str or unicode value which contains *exactly one* S-expression.
 	The value must contain one string (possibly quoted), or one parenthesized
@@ -312,7 +316,7 @@ def parse(val):
 	fl = StringIO.StringIO(val)
 	context = ParseContext(fl)
 	try:
-		res = context.parsenode()
+		res = context.parsetree()
 		if (res is EndOfList):
 			raise ParseError('unexpected end of list)')
 		if (isinstance(res, AttrToken)):
@@ -372,10 +376,10 @@ class ParseContext:
 		if (ch):
 			raise ParseError('extra stuff after value')
 
-	def parsenode(self):
-		"""parsenode() -> Node or EndOfList or AttrToken
+	def parsetree(self):
+		"""parsetree() -> Tree or EndOfList or AttrToken
 
-		Parse one expression from the stream, and return the Node that
+		Parse one expression from the stream, and return the Tree that
 		represents it. Leading whitespace is ignored.
 
 		EndOfList indicates that a closing parenthesis has been
@@ -483,7 +487,7 @@ class ParseContext:
 		
 		nod = List()
 		while True:
-			val = self.parsenode()
+			val = self.parsetree()
 			if (val is EndOfList):
 				break
 			if (isinstance(val, AttrToken)):
@@ -503,13 +507,13 @@ class ParseContext:
 		return nod
 
 	def parseattr(self):
-		"""parseattr() -> Node
+		"""parseattr() -> Tree
 
 		Parse the value part of a named value. The stream must be after
 		the equals sign.
 		"""
 		
-		val = self.parsenode()
+		val = self.parsetree()
 		if (val is EndOfList):
 			raise ParseError('attribute must have a value')
 		if (isinstance(val, AttrToken)):

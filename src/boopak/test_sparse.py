@@ -88,6 +88,15 @@ class TestSParse(unittest.TestCase):
         self.assertEqual(str(nod), "(1 hello (2))")
         self.assertEqual(repr(nod), "(1 hello (2))")
 
+    def test_list_bad(self):
+        self.assertRaises(ValueError, List, 'x')
+        self.assertRaises(ValueError, List, key='x')
+        nod = List()
+        self.assertRaises(ValueError, nod.append, 'x')
+        self.assertRaises(ValueError, nod.set_attr, 'key', 'x')
+        self.assertRaises(ValueError, nod.set_attr, 1, ID('x'))
+        self.assertRaises(ValueError, nod.set_attr, ID('key'), ID('x'))
+
     def test_node_attr(self):
         nod = List()
         nod.set_attr('xyz', ID('1'))

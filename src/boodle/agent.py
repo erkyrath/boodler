@@ -815,7 +815,7 @@ def load_class_by_name(loader, name):
 	return clas
 
 def load_described(loader, args):
-	### Node, str, or list of str -> class
+	### Tree, str, or list of str -> class
 	if (type(args) in [str, unicode]):
 		argstr = args
 		args = [ '(', args, ')' ]
@@ -825,13 +825,13 @@ def load_described(loader, args):
 	elif (type(args) == tuple):
 		argstr = ' '.join(args)
 		args = [ '(' ] + list(args) + [ ')' ]
-	elif (isinstance(args, sparse.Node)):
+	elif (isinstance(args, sparse.Tree)):
 		argstr = args.serialize()
 		# args is fine
 	else:
-		raise TypeError('args must be a str, list of str, or Node')
+		raise TypeError('args must be a str, list of str, or Tree')
 
-	if (not isinstance(args, sparse.Node)):
+	if (not isinstance(args, sparse.Tree)):
 		args = sparse.parse(' '.join(args))
 
 	if (isinstance(args, sparse.ID)):
