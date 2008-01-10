@@ -6,6 +6,58 @@ import types
 _typeof = type
 
 class ArgList:
+	"""ArgList: represents the argument structure of a function. This
+	includes the number of arguments, their names, and their types.
+
+	Actually, arguments can be specified by position *or* by name,
+	although both is more common. The ArgList can also specify
+	extra positional arguments -- describing the f(*ls) Python
+	syntax. (It cannot currently describe the f(**dic) syntax.)
+
+	Constructor:
+	
+		ArgList(...) -- constructor
+
+	You can construct the ArgList with positional arguments:
+
+		ArgList(Arg(...), Arg(...), ...)
+
+	...or with named arguments:
+
+		ArgList(x=Arg(...), y=Arg(...), ...)
+
+	The former is equivalent to specifying the index= value in the Arg
+	constructor; the latter, the name= value.
+
+	You can also include an ArgExtra object in the arguments:
+
+		ArgList(ArgExtra(...))
+
+	This defines the type of extra positional arguments. Note that the
+	ArgExtra must be included before any named arguments.
+
+	Static methods:
+
+	from_argspec() -- construct an ArgList from a Python function
+	merge() -- construct an ArgList by merging two ArgLists
+	from_node() -- construct an ArgList from an S-expression
+
+	Internal methods:
+
+	sort_args() -- finish constructing the ArgList
+	
+	Public methods:
+
+	get_index() -- return the Arg with the given index number
+	get_name() -- return the Arg with the given name
+	clone() -- construct an ArgList identical to this one
+	to_node() -- construct an S-expression from this ArgList
+	dump() -- print out the ArgList
+	max_accepted() -- return the maximum number of positional arguments
+	min_accepted() -- return the minimum number of positional arguments
+	resolve() -- match a Tree of argument values against the ArgList
+	"""
+	
 	def __init__(self, *ls, **dic):
 		self.args = []
 		self.listtype = None
@@ -36,6 +88,16 @@ class ArgList:
 		self.sort_args()
 
 	def sort_args(self):
+		"""sort_args() -> None
+
+		Finish constructing the ArgList. This puts the arguments in a
+		consistent order. It raises ArgDefError if there are any
+		inconsistencies (like two arguments with the same name).
+
+		This is an internal method. It should only be called by methods
+		that construct ArgLists.
+		"""
+		
 		self.args.sort(_argument_sort_func)
 		for arg in self.args:
 			if (arg.index is None):
@@ -61,18 +123,35 @@ class ArgList:
 		return True
 
 	def get_index(self, val):
+		"""get_index(val) -> Arg
+
+		Return the Arg with the given index number. If there isn't one,
+		returns None.
+		"""
+		
 		for arg in self.args:
 			if ((not (arg.index is None)) and (arg.index == val)):
 				return arg
 		return None
 
 	def get_name(self, val):
+		"""get_index(val) -> Arg
+
+		Return the Arg with the given name. If there isn't one,
+		returns None.
+		"""
+		
 		for arg in self.args:
 			if ((not (arg.name is None)) and (arg.name == val)):
 				return arg
 		return None
 
 	def clone(self):
+		"""clone() -> ArgList
+
+		Construct an ArgList identical to this one.
+		"""
+		
 		arglist = ArgList()
 		arglist.listtype = self.listtype
 		for arg in self.args:
@@ -81,6 +160,11 @@ class ArgList:
 		return arglist
 
 	def to_node(self):
+		"""to_node() -> Tree
+
+		Construct an S-expression from this ArgList.
+		"""
+		
 		nod = sparse.List(sparse.ID('arglist'))
 		ls = [ arg.to_node() for arg in self.args ]
 		nod.append(sparse.List(*ls))
@@ -89,6 +173,12 @@ class ArgList:
 		return nod
 
 	def dump(self, fl=sys.stdout):
+		"""dump(fl=sys.stdout) -> None
+
+		Print out the ArgList to stdout, or another stream. This method
+		prints in a human-readable form; it is intended for debugging.
+		"""
+		
 		fl.write('ArgList:\n')
 		for arg in self.args:
 			fl.write('  Arg:\n')
@@ -107,15 +197,45 @@ class ArgList:
 			fl.write('  *Args: ' + repr(self.listtype) + '\n')
 
 	def max_accepted(self):
+		"""max_accepted() -> int
+
+		Return the maximum number of positional arguments accepted by
+		the ArgList. If it accepts extra positional arguments, this
+		returns None.
+		"""
+		
 		if (self.listtype):
 			return None
 		return len(self.args)
 		
 	def min_accepted(self):
+		"""min_accepted() -> int
+
+		Return the minimum number of positional arguments accepted by
+		the ArgList.
+		"""
+		
 		ls = [ arg for arg in self.args if (not arg.optional) ]
 		return len(ls)
 
 	def from_argspec(args, varargs, varkw, defaults):
+		"""from_argspec(args, varargs, varkw, defaults) -> ArgList
+
+		Construct an ArgList from a Python function. The four arguments
+		are those returned by inspect.getargspec() -- see the inspect module
+		in the Python standard library.
+
+		This uses the names and positions of the function arguments
+		to define an ArgList. If an argument has a default value, its
+		value and type are used as well.
+
+		If the function has extra positional arguments -- f(*ls) --
+		they are taken to be an arbitrary number of untyped arguments.
+		
+		If the function has extra named arguments -- f(**dic) --
+		then ArgDefError is raised.
+		"""
+		
 		if (varkw):
 			raise ArgDefError('cannot understand **' + varkw)
 		arglist = ArgList()
@@ -145,6 +265,26 @@ class ArgList:
 	from_argspec = staticmethod(from_argspec)
 
 	def merge(arglist1, arglist2=None):
+		"""merge(arglist1, arglist2=None) -> ArgList
+
+		Construct an ArgList by merging two ArgLists. This does not
+		modify the arguments; it creates a new ArgList.
+
+		The merge algorithm is somewhat ad-hoc. It is intended for a
+		particular purpose: merging the _args ArgList of an Agent
+		class with the from_argspec() ArgList.
+
+		If the second list is None, this returns (a clone of) the first list.
+
+		Otherwise, each argument in the second list is considered. If it
+		exists in the first list (same index or name), their characteristics
+		are merged. If not, the argument is appended to the first list.
+
+		When arguments are merged, the characteristics in the first list
+		take precedence -- except for the optional flag, which is always
+		taken from the second list. (It makes sense, honest.)
+		"""
+		
 		arglist = arglist1.clone()
 		if (arglist2 is None):
 			return arglist
@@ -167,8 +307,31 @@ class ArgList:
 	merge = staticmethod(merge)
 	
 	def resolve(self, node):
-		### ignores first element of node
-		### returns a list and dict of wrapped values
+		"""resolve(node) -> (list, dict)
+
+		Match a Tree of argument values against the ArgList. Convert each
+		value to the appropriate type, fill in any necessary default
+		values, and return the values needed to call the function that
+		the ArgList represents.
+
+		The Tree must be a List with at least one (positional) value.
+		This first value is ignored -- it is assumed to be the name
+		of the function that this ArgList came from.
+
+		Raises ArgDefError if the arguments fail to match in any way.
+		(Too few, too many, can't be converted to the right type...)
+		
+		The return values are a list and dict, such as you might expect
+		to use in the form f(*ls, **dic). However, you wouldn't actually
+		do that, because the contents of the list and dict are wrapped
+		values. (See the ArgWrapper class.) You could use the resolve()
+		function this way:
+
+			(ls, dic) = arglist.resolve(tree)
+			wrap = ArgClassWrapper(f, ls, dic)
+			wrap()
+		"""
+		
 		if (not isinstance(node, sparse.List)):
 			raise ArgDefError('arguments must be a list')
 		if (len(node) == 0):
@@ -266,6 +429,12 @@ class ArgList:
 		return (resultls, resultdic)
 		
 	def from_node(node):
+		"""from_node(node) -> ArgList
+
+		Construct an ArgList from an S-expression. The Tree passed in should
+		be one generated by the to_node() method.
+		"""
+		
 		if (not isinstance(node, sparse.List) or len(node) < 1
 			or not isinstance(node[0], sparse.ID)
 			or node[0].as_string() != 'arglist'):
@@ -282,6 +451,13 @@ class ArgList:
 	from_node = staticmethod(from_node)
 	
 def _argument_sort_func(arg1, arg2):
+	"""_argument_sort_func(arg1, arg2) -> int
+
+	Sort comparison function, used by ArgList.sort_args(). This sorts
+	arguments by their index value. Arguments with no index are sorted
+	last.
+	"""
+	
 	ix1 = arg1.index
 	ix2 = arg2.index
 	if (ix1 is None and ix2 is None):
@@ -295,6 +471,8 @@ def _argument_sort_func(arg1, arg2):
 _DummyDefault = object()
 	
 class Arg:
+	###
+		
 	def __init__(self, name=None, index=None,
 		type=None, default=_DummyDefault, optional=None,
 		description=None):
@@ -432,6 +610,8 @@ class ArgExtra:
 		self.type = type
 		
 class ArgDefError(ValueError):
+	"""ArgDefError: represents an error constructing an ArgList.
+	"""
 	pass
 
 class SequenceOf:
