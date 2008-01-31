@@ -55,9 +55,9 @@ class PackageLoader:
 
 	Publicly readable fields:
 
+	collecdir -- the directory containing the package collection
 	currently_importing -- during an import operation, the package which is
 		being imported (at the moment)
-	collecdir -- the directory containing the package collection
 
 	Public methods:
 
@@ -168,7 +168,12 @@ class PackageLoader:
 		if (not vers):
 			raise PackageNotFoundError(pkgname,
 				'no version matching \'' + str(versionspec) + '\'')
-		return self.load_specific(pkgname, vers)
+		
+		pkg = self.load_specific(pkgname, vers)
+		if (self.currently_importing):
+			# Record what package imported this one, and with what spec
+			self.currently_importing.imported_pkg_specs[pkgname] = versionspec
+		return pkg
 
 	def load_group(self, pkgname):
 		"""load_group(self, pkgname) -> PackageGroup

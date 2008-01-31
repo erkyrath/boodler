@@ -52,6 +52,7 @@ class PackageInfo:
 		self.resource_tree = None
 		self.external = external
 		self.dependencies = sets.Set()
+		self.imported_pkg_specs = {}
 
 	def __repr__(self):
 		return '<PackageInfo \'' + self.name + ' ' + str(self.version) + '\'>'

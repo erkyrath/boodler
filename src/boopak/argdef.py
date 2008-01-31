@@ -994,10 +994,7 @@ def value_to_node(type, val):
 		if (not loader):
 			raise ArgDefError('cannot locate resource, because there is no loader')
 		(pkg, resource) = loader.find_item_resources(val)
-		### it might be necessary to figure out what versionspec the
-		### module used to load this object's package, and include
-		### it along with pkg.name!
-		return sparse.ID(pkg.name + '/' + resource.key)
+		return sparse.ID(find_resource_ref(loader, pkg, resource.key))
 
 	if (_typeof(type) == types.ClassType and issubclass(type, Agent)):
 		loader = pload.PackageLoader.global_loader
@@ -1007,10 +1004,7 @@ def value_to_node(type, val):
 		if (_typeof(cla) == types.InstanceType):
 			cla = cla.__class__
 		(pkg, resource) = loader.find_item_resources(cla)
-		### it might be necessary to figure out what versionspec the
-		### module used to load this object's package, and include
-		### it along with pkg.name!
-		return sparse.ID(pkg.name + '/' + resource.key)
+		return sparse.ID(find_resource_ref(loader, pkg, resource.key))
 
 	raise ArgDefError('value_to_node: unrecognized type: ' + str(type))
 
@@ -1121,6 +1115,48 @@ def node_to_seq_value(type, nodelist):
 			
 	return wrapper.create(ls)
 
+def find_resource_ref(loader, pkg, resname):
+	"""find_resource_ref(loader, pkg, resname) -> str
+
+	Work out the representation of a resource in a particular package.
+	(This is used when serializing values.)
+
+	The simple case looks like 'package/resource'. However, if we're
+	in the middle of creating a package, and that package imported
+	pkg, then we want to give the same import spec used in the original
+	import. ('package:spec/resource' for a version spec, or
+	'package::version/resource' for an exact version.) That way, we
+	know that any user of the resource value will get the same version
+	as the original importer got.
+
+	If the resource package is the one currently being created, then
+	we use an exact-version reference. (A package that refers to its
+	own resource will stick to its own version.)
+	"""
+	
+	if ((not loader) or (not loader.currently_creating)):
+		pkgref = pkg.name
+	elif (loader.currently_creating == pkg):
+		# The resource is in the package itself; use an exact-version
+		# reference.
+		pkgref = pkg.name + '::' + str(pkg.version)
+	else:
+		map = loader.currently_creating.imported_pkg_specs
+		if (not map.has_key(pkg.name)):
+			# We don't know how the package was loaded, so just use a
+			# generic (most-current) reference.
+			pkgref = pkg.name
+		else:
+			spec = map[pkg.name]
+			if (isinstance(spec, version.VersionNumber)):
+				pkgref = pkg.name + '::' + str(spec)
+			elif (isinstance(spec, version.VersionSpec)):
+				pkgref = pkg.name + ':' + str(spec)
+			else:
+				# A generic (most-current) reference.
+				pkgref = pkg.name
+	return (pkgref + '/' + resname)
+
 class ArgWrapper:
 	keep_wrapped = False
 	def unwrap(self):
@@ -1183,7 +1219,7 @@ def instantiate(val):
 # Late imports.
 
 from boodle import sample
-from boopak import sparse, pinfo, pload
+from boopak import sparse, pinfo, pload, version
 
 # from boodle.agent import Agent, load_described
 #

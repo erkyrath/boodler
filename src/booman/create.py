@@ -319,6 +319,8 @@ def examine_directory(loader, dirname, destname=None):
 		mod = pkg.get_content()
 		import_record = loader.stop_import_recording()
 
+		loader.currently_creating = pkg
+
 		if (mod.__name__ != pkg.encoded_name):
 			raise ConstructError(dirname, 'Module name does not match package: ' + mod.__name__)
 
@@ -348,6 +350,7 @@ def examine_directory(loader, dirname, destname=None):
 					warning(dirname, key + ' argument list error: ' + str(ex))
 
 	finally:
+		loader.currently_creating = None
 		loader.remove_external_package(dirname)
 
 	try:

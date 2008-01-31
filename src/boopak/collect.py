@@ -64,6 +64,8 @@ class PackageCollection(pload.PackageLoader):
 
 	collecdir -- the directory containing the package collection
 	downloaddir -- the directory containing temporary files and directories
+	currently_creating -- during a create operation, the package which is
+		being created (at the moment)
 
 	Public methods:
 
@@ -126,6 +128,7 @@ class PackageCollection(pload.PackageLoader):
 		self.download_count = 0
 		self.downloaded_files = {}
 		self.unpacked_files = {}
+		self.currently_creating = None
 
 	def find_source(self, srctype, loc):
 		"""find_source(srctype, loc) -> PackageInfo
