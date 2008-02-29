@@ -689,7 +689,7 @@ class NullAgent(Agent):
 	def run(self):
 		pass
 	def get_title(self):
-		return 'Null Agent'
+		return 'Null agent'
 
 class StopAgent(Agent):
 	"""StopAgent:
@@ -702,7 +702,7 @@ class StopAgent(Agent):
 	def run(self):
 		self.channel.stop()
 	def get_title(self):
-		return 'Stop Channel'
+		return 'Stop channel'
 
 class SetVolumeAgent(Agent):
 	"""SetVolumeAgent:
@@ -718,7 +718,7 @@ class SetVolumeAgent(Agent):
 	def run(self):
 		self.channel.set_volume(self.newvol, self.duration)
 	def get_title(self):
-		return 'Set Channel Volume'
+		return 'Set channel volume'
 		
 class SetPanAgent(Agent):
 	"""SetPanAgent:
@@ -734,7 +734,7 @@ class SetPanAgent(Agent):
 	def run(self):
 		self.channel.set_pan(self.newpan, self.duration)
 	def get_title(self):
-		return 'Set Channel Pan'
+		return 'Set channel pan'
 		
 class FadeOutAgent(Agent):
 	"""FadeOutAgent(interval):
@@ -750,7 +750,7 @@ class FadeOutAgent(Agent):
 		self.channel.set_volume(0, self.duration)
 		self.sched_agent(StopAgent(), self.duration)
 	def get_title(self):
-		return 'Fade Out and Stop Channel'
+		return 'Fade out and stop channel'
 
 class FadeInOutAgent(Agent):
 	"""FadeInOutAgent(agent, liveinterval, fadeinterval, fadeoutinterval=fadeinterval):
@@ -783,7 +783,7 @@ class FadeInOutAgent(Agent):
 		ag = FadeOutAgent(self.fadeoutinterval)
 		self.sched_agent(ag, self.liveinterval+self.fadeininterval, chan)
 	def get_title(self):
-		return 'Fade In, Fade Out, Stop Channel'
+		return 'Fade in, fade out, stop channel'
 
 
 ### What is this in the new system? Certainly moving elsewhere. Maybe

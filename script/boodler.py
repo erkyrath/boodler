@@ -36,7 +36,7 @@ configfiledriver = '' # CONFIGUREDDRIVER
 if (configfiledriver):
 	defaultdriver = configfiledriver.lower()
 
-usage = 'usage: %prog [ options ] module.AgentClass [ data ... ]'
+usage = 'usage: %prog [ options ] package/Agent [ data ... ]'
 
 loglevels = {
 	'debug': logging.DEBUG,
