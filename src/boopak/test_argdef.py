@@ -75,7 +75,10 @@ class TestArgDef(unittest.TestCase):
     def test_arg_unicode(self):
         arg = Arg(name='foo')
         arg = Arg(name=u'foo')
-        arg = Arg(name=u'f\x61o')
+        arg = Arg(name=u'f\x6fo')
+        self.assertEqual(arg.name, 'foo')
+        self.assertEqual(type(arg.name), str)
+        
         self.assertRaises(ArgDefError, Arg, name=u'f\xa1o')
         
     def test_arg_absorb(self):
