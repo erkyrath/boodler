@@ -72,6 +72,12 @@ class TestArgDef(unittest.TestCase):
         self.assertFalse(arg is origarg)
         self.assert_args_identical(arg, origarg)
 
+    def test_arg_unicode(self):
+        arg = Arg(name='foo')
+        arg = Arg(name=u'foo')
+        arg = Arg(name=u'f\x61o')
+        self.assertRaises(ArgDefError, Arg, name=u'f\xa1o')
+        
     def test_arg_absorb(self):
         arg = Arg()
         arg.absorb(Arg(index=2))

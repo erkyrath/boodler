@@ -515,7 +515,12 @@ class Arg:
 		if (name is None):
 			self.name = None
 		else:
-			if (not (_typeof(name) in [str, unicode])):
+			if (_typeof(name) == unicode):
+				try:
+					name = str(name)
+				except UnicodeEncodeError:
+					raise ArgDefError('name must be an ASCII string; was ' + repr(name))
+			if (_typeof(name) != str):
 				raise ArgDefError('name must be a string; was ' + repr(name))
 			self.name = name
 			
@@ -1171,6 +1176,8 @@ class ArgClassWrapper(ArgWrapper):
 	def __init__(self, cla, ls, dic=None):
 		self.cla = cla
 		self.argls = ls
+		if (dic):
+			dic = dict([str(key),val] for (key,val) in dic.items())
 		self.argdic = dic
 	def __call__(self):
 		return self.unwrap()
