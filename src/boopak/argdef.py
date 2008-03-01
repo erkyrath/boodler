@@ -382,7 +382,7 @@ class ArgList:
 
 		pos = 0
 		for arg in self.args:
-			if (not filled[pos] and not arg.optional):
+			if (not filled[pos] and not (arg.optional and arg.index is None)):
 				if (arg.hasdefault):
 					filled[pos] = True
 					values[pos] = arg.default
@@ -390,26 +390,29 @@ class ArgList:
 					raise ArgDefError(str(self.min_accepted()) + ' arguments required')
 			pos += 1
 
+		# At this point, the filled and values arrays contain the argument
+		# data that has been supplied for each argument. (They are indexed
+		# in the same order as self.args.) In extraindexed and extranamed
+		# are the data that didn't fit any specific argument.
+
 		if (extranamed):
 			raise ArgDefError('unknown named argument: ' + (', '.join(extranamed.keys())))
 
 		resultls = []
 		resultdic = {}
 
-		indexonly = 0
 		pos = 0
 		for arg in self.args:
-			if (arg.name is None and filled[pos]):
-				indexonly = pos+1
-			pos += 1
-
-		pos = 0
-		for arg in self.args:
-			if (filled[pos]):
-				if (pos < indexonly):
+			if (not (arg.index is None)):
+				if (filled[pos]):
 					resultls.append(values[pos])
 				else:
+					raise ArgDefError('cannot fill in argument value at position ' + str(pos))
+			elif (not (arg.name is None)):
+				if (filled[pos]):
 					resultdic[arg.name] = values[pos]
+			else:
+				raise ArgDefError('argument has neither index nor name at position ' + str(pos))
 			pos += 1
 
 		if (not self.listtype):

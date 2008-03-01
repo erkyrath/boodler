@@ -526,12 +526,6 @@ def resolve_argument_list(dirname, key, ag):
 			if (ls[ indexed : ] != [ None ] * unindexed):
 				warning(dirname, 'the ' + str(unindexed) + ' unindexed arguments must be last')
 
-		ls = [ arg for arg in arglist.args if (not arg.optional) ]
-		mandatory = len(ls)
-		ls = [ arg.optional for arg in arglist.args ]
-		if (True in ls[ : mandatory] or False in ls[mandatory : ]):
-			warning(dirname, 'the ' + str(mandatory) + ' mandatory arguments must be first')
-
 		val = arglist.max_accepted()
 		if ((val is None) and (not (maxinitargs is None))):
 			warning(dirname, key + '.init() takes at most ' + str(maxinitargs) + ' arguments, but _args describes extra arguments')

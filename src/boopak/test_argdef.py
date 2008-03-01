@@ -588,9 +588,9 @@ class TestArgDef(unittest.TestCase):
     def test_resolve(self):
         arglist = ArgList(Arg('x'), Arg('y'))
         goodls = [
-            ('(A xx yy)', [], {'x':'xx', 'y':'yy'}),
-            ('(A xx ())', [], {'x':'xx', 'y':[]}),
-            ('(A ((xx)) (yy))', [], {'x':[['xx']], 'y':['yy']}),
+            ('(A xx yy)', ['xx', 'yy'], {}),
+            ('(A xx ())', ['xx', []], {}),
+            ('(A ((xx)) (yy))', [[['xx']], ['yy']], {}),
         ]
         badls = [
             'A',
@@ -605,10 +605,10 @@ class TestArgDef(unittest.TestCase):
 
         arglist = ArgList(Arg(name='x', type=int), Arg(name='y', type=str))
         goodls = [
-            ('(A 1 yy)', [], {'x':1, 'y':'yy'}),
-            ('(A -5 "1 2 3")', [], {'x':-5, 'y':'1 2 3'}),
-            ('(A y=yy x=1)', [], {'x':1, 'y':'yy'}),
-            ('(A 1 y=yy)', [], {'x':1, 'y':'yy'}),
+            ('(A 1 yy)', [1, 'yy'], {}),
+            ('(A -5 "1 2 3")', [-5, '1 2 3'], {}),
+            ('(A y=yy x=1)', [1, 'yy'], {}),
+            ('(A 1 y=yy)', [1, 'yy'], {}),
         ]
         badls = [
             '(A)',
@@ -621,9 +621,9 @@ class TestArgDef(unittest.TestCase):
         
         arglist = ArgList(Arg(name='x', type=str), ArgExtra(ListOf(int)))
         goodls = [
-            ('(A xx)', [], {'x':'xx'}),
-            ('(A xx 1 2 3)', [1, 2, 3], {'x':'xx'}),
-            ('(A 0 1 2 3)', [1, 2, 3], {'x':'0'}),
+            ('(A xx)', ['xx'], {}),
+            ('(A xx 1 2 3)', ['xx', 1, 2, 3], {}),
+            ('(A 0 1 2 3)', ['0', 1, 2, 3], {}),
         ]
         badls = [
             '(A xx 1 2 z)', '(A xx z 2 3)',
@@ -634,7 +634,7 @@ class TestArgDef(unittest.TestCase):
 
         arglist = ArgList(Arg(name='x', type=str), ArgExtra(TupleOf(int, int)))
         goodls = [
-            ('(A xx 1 2)', [1, 2], {'x':'xx'}),
+            ('(A xx 1 2)', ['xx', 1, 2], {}),
         ]
         badls = [
             '(A xx)',
@@ -647,9 +647,9 @@ class TestArgDef(unittest.TestCase):
 
         arglist = ArgList(Arg(name='x', type=str), ArgExtra(ListOf(int, str, repeat=1, min=1, max=3)))
         goodls = [
-            ('(A xx 1)', [1], {'x':'xx'}),
-            ('(A xx 1 2)', [1, '2'], {'x':'xx'}),
-            ('(A xx 1 2 3)', [1, '2', '3'], {'x':'xx'}),
+            ('(A xx 1)', ['xx', 1], {}),
+            ('(A xx 1 2)', ['xx', 1, '2'], {}),
+            ('(A xx 1 2 3)', ['xx', 1, '2', '3'], {}),
         ]
         badls = [
             '(A xx)',
@@ -703,13 +703,13 @@ class TestArgDef(unittest.TestCase):
 
         arglist = ArgList(Arg('x', default='xd'), Arg('y', default='yd'))
         goodls = [
-            ('(A xx yy)', [], {'x':'xx', 'y':'yy'}),
-            ('(A xx y=yy)', [], {'x':'xx', 'y':'yy'}),
-            ('(A x=xx y=yy)', [], {'x':'xx', 'y':'yy'}),
-            ('(A xx)', [], {'x':'xx'}),
-            ('(A x=xx)', [], {'x':'xx'}),
-            ('(A y=yy)', [], {'y':'yy'}),
-            ('(A)', [], {}),
+            ('(A xx yy)', ['xx', 'yy'], {}),
+            ('(A xx y=yy)', ['xx', 'yy'], {}),
+            ('(A x=xx y=yy)', ['xx', 'yy'], {}),
+            ('(A xx)', ['xx', 'yd'], {}),
+            ('(A x=xx)', ['xx', 'yd'], {}),
+            ('(A y=yy)', ['xd', 'yy'], {}),
+            ('(A)', ['xd', 'yd'], {}),
         ]
         badls = [
             '(A xx yy z=1)',
@@ -737,13 +737,13 @@ class TestArgDef(unittest.TestCase):
 
         arglist = ArgList(Arg('x', default='xd', optional=False), Arg('y', default='yd'))
         goodls = [
-            ('(A xx yy)', [], {'x':'xx', 'y':'yy'}),
-            ('(A xx y=yy)', [], {'x':'xx', 'y':'yy'}),
-            ('(A x=xx y=yy)', [], {'x':'xx', 'y':'yy'}),
-            ('(A xx)', [], {'x':'xx'}),
-            ('(A x=xx)', [], {'x':'xx'}),
-            ('(A y=yy)', [], {'x':'xd', 'y':'yy'}),
-            ('(A)', [], {'x':'xd'}),
+            ('(A xx yy)', ['xx', 'yy'], {}),
+            ('(A xx y=yy)', ['xx', 'yy'], {}),
+            ('(A x=xx y=yy)', ['xx', 'yy'], {}),
+            ('(A xx)', ['xx', 'yd'], {}),
+            ('(A x=xx)', ['xx', 'yd'], {}),
+            ('(A y=yy)', ['xd', 'yy'], {}),
+            ('(A)', ['xd', 'yd'], {}),
         ]
         badls = [
             '(A xx yy z=1)',
