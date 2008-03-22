@@ -4,6 +4,7 @@ import os
 import os.path
 import re
 import inspect
+import keyword
 
 from booman import CommandError
 from boodle.agent import Agent
@@ -274,7 +275,10 @@ def examine_directory(loader, dirname, destname=None):
 				# We have to create the resource.
 				reskey = '.'.join(mods + [filebase])
 				try:
-					pinfo.parse_resource_name(reskey)
+					ls = pinfo.parse_resource_name(reskey)
+					for el in ls:
+						if (keyword.iskeyword(el)):
+							warning(dirname, resfilename + ' contains Python reserved word "' + el + '"')
 				except ValueError:
 					warning(dirname, resfilename + ' looks like a resource, but ' + reskey + ' is not a valid resource name.')
 					continue
