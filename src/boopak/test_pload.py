@@ -409,7 +409,6 @@ else two
         val = self.loader.load_item_by_name('/boopak.test_pload.TestPLoad')
         self.assertEqual(self.__class__, val)
 
-        
     def subtest_find_item_resources(self):
         pkg = self.loader.load('only.files')
         mod = pkg.get_content()
