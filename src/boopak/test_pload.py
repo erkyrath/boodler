@@ -1,4 +1,5 @@
 import os.path
+import types
 import unittest
 import tempfile
 import sets
@@ -394,6 +395,10 @@ else two
         file = self.loader.load_item_by_name('dir.two', package=pkg)
         self.assertResourceReadable(file, 'dir.two')
 
+        mod = self.loader.load_item_by_name('only.files/')
+        self.assertEqual(type(mod), types.ModuleType)
+        self.assertEqual(mod, pkg.get_content())
+        
         self.assertRaises(pload.PackageNotFoundError,
             self.loader.load_item_by_name, 'only.files:1.1/dir.two')
         self.assertRaises(ValueError,
@@ -404,6 +409,7 @@ else two
         val = self.loader.load_item_by_name('/boopak.test_pload.TestPLoad')
         self.assertEqual(self.__class__, val)
 
+        
     def subtest_find_item_resources(self):
         pkg = self.loader.load('only.files')
         mod = pkg.get_content()

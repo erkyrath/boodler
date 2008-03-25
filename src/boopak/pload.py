@@ -748,6 +748,9 @@ class PackageLoader:
 		is done in this case; it is really intended only for the
 		contents of boodle.agent.
 
+		If the string ends with a slash ('com.eblong.example/'), then
+		the module itself is returned.
+
 		If the package argument is supplied (a PackageInfo object), it
 		becomes the package to look in for unqualified resource names
 		('reptile.Hiss'). If no package argument is supplied, then
@@ -787,6 +790,10 @@ class PackageLoader:
 			package = self.load(pkgname, pkgspec)
 			mod = package.get_content()
 
+		if (not name):
+			# "module/" returns the module itself
+			return mod
+		
 		namels = name.split('.')
 		try:
 			res = mod

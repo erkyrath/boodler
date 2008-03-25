@@ -1082,8 +1082,6 @@ def node_to_value(type, node):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot load resource, because there is no loader')
-		#cla = loader.load_item_by_name(node.as_string())
-		#return cla()
 		wrap = load_described(loader, node)
 		return wrap
 

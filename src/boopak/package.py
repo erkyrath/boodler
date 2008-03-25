@@ -208,6 +208,9 @@ def bimport(pkgname, spec=None):
 	immediately. This ensures that dependency problems show up right
 	away. The dependency tracking system in Boodler's package creator
 	also relies on this pattern.)
+
+	(To load packages and agents at runtime, based on user input, use
+	Agent.load_described().)
 	"""
 
 	curpkg = info_being_imported()

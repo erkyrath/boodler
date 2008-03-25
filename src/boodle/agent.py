@@ -5,6 +5,7 @@
 # See the LGPL document, or the above URL, for details.
 
 import logging
+import types
 
 ### Doc comments are all out of date
 
@@ -41,6 +42,7 @@ class Agent:
 	has_prop() -- see whether the agent's channel has a given property
 	set_prop() -- set a property on the agent's channel
 	del_prop() -- delete a property from the agent's channel
+	load_described() -- load a named module or agent
 
 	Class methods:
 	
@@ -488,7 +490,38 @@ class Agent:
 		may still return a value after del_prop(key).
 		"""
 		return self.channel.del_prop(key)
-			
+
+	def load_described(self, val, wantmodule=False):
+		"""load_described(val, wantmodule=False) -> Agent or module
+
+		Load a named agent or module. The argument should be a string (or
+		list of strings, or sparse Tree) giving a fully qualified name:
+
+			package.name/AgentName
+			package.name:version.needed/AgentName
+			package.name::exact.version.number/AgentName
+
+		To load an agent with arguments, just append the arguments.
+
+			package.name/AgentName 0.5 2
+
+		Just as on the command line, arguments referring to more agents
+		go in parentheses:
+
+			package.name/AgentName (package.name/AnotherAgent 2)
+
+		To get an entire module, pass wantmodule=True. (And leave off the
+		"/AgentName" part, and don't use any arguments.)
+
+		This method is not intended for module creation time (loading one
+		module which another depends on). It bypasses Boodler's dependency
+		tracking. Use this method when your agent is using a user-specified
+		value to find an arbitrary Boodler entity.
+		"""
+
+		loader = self.generator.loader
+		return load_described(loader, val, wantmodule)
+	
 	def init(self):
 		"""init(...)
 
@@ -786,36 +819,33 @@ class FadeInOutAgent(Agent):
 		return 'Fade in, fade out, stop channel'
 
 
-### What is this in the new system? Certainly moving elsewhere. Maybe
-### loading a resource, rather than an agent class per se.
-### And how do we pull agents off sys.path?
+def load_described(loader, args, wantmodule=False):
+	"""load_described(val, wantmodule=False) -> module or Agent
 
-def load_class_by_name(loader, name):
-	### this can go away now
-	"""load_class_by_name(str) -> class
+	Load a named module or agent. The argument should be a string (or
+	list of strings, or sparse Tree) giving a fully qualified name:
 
-	###
-	Given a string that names a class in a module -- for example, 
-	'agent.StopAgent' -- import the module and return the class. The 
-	class must be a subclass of Agent. The module may be nested (for 
-	example, 'reptile.snake.PythonHiss'). This does not instantiate the 
-	class; the result is a class, not an agent instance.
+		package.name/AgentName
+		package.name:version.needed/AgentName
+		package.name::exact.version.number/AgentName
+
+	To load an agent with arguments, just append the arguments.
+
+		package.name/AgentName 0.5 2
+
+	Just as on the command line, arguments referring to more agents
+	go in parentheses:
+
+		package.name/AgentName (package.name/AnotherAgent 2)
+
+	To get an entire module, pass wantmodule=True. (And leave off the
+	"/AgentName" part, and don't use any arguments.)
+
+	This method is not intended for module creation time (loading one
+	module which another depends on). It bypasses Boodler's dependency
+	tracking.
 	"""
-
-	if (name == ''):
-		return NullAgent ###?
-
-	clas = loader.load_item_by_name(name)
-	
-	if (type(clas) != type(Agent)):
-		raise TypeError(name + ' is not a class')
-	if (not issubclass(clas, Agent)):
-		raise TypeError(name + ' is not an Agent class')
-
-	return clas
-
-def load_described(loader, args):
-	### Tree, str, or list of str -> class
+		
 	if (type(args) in [str, unicode]):
 		argstr = args
 		args = [ '(', args, ')' ]
@@ -846,8 +876,17 @@ def load_described(loader, args):
 	if (not isinstance(classarg, sparse.ID)):
 		raise ValueError('arguments must begin with a class name')
 
-	clas = loader.load_item_by_name(classarg.as_string())
+	if (wantmodule):
+		mod = loader.load_item_by_name(classarg.as_string()+'/')
+
+		if (type(mod) != types.ModuleType):
+			raise TypeError(argstr + ' is not a module')
+		if (len(args) > 1):
+			raise ValueError('modules cannot have arguments')
+		return mod
 	
+	clas = loader.load_item_by_name(classarg.as_string())
+
 	if (type(clas) != type(Agent)):
 		raise TypeError(argstr + ' is not a class')
 	if (not issubclass(clas, Agent)):
@@ -859,8 +898,6 @@ def load_described(loader, args):
 	(valls, valdic) = arglist.resolve(args)
 	wrapper = argdef.ArgClassWrapper(clas, valls, valdic)
 	return wrapper
-	#ag = argdef.instantiate(wrapper)
-	#return ag
 	
 # Late imports.
 
