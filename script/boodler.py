@@ -179,7 +179,8 @@ class LogFormatter(logging.Formatter):
 
 		moreinfo = None
 		limit = None
-		notboodle = (isinstance(tup[1], boodle.BoodlerError))
+		notboodle = (isinstance(tup[1], boodle.BoodlerError)
+			or isinstance(tup[1], boopak.pload.PackageLoadError))
 		if (notboodle):
 			# Iterate down the stack. Keep track of the last frame which
 			# is not in the boodle package. (But don't count the initial
