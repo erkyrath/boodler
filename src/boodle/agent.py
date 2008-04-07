@@ -877,6 +877,7 @@ def load_described(loader, args, wantmodule=False):
 		raise ValueError('arguments must begin with a class name')
 
 	if (wantmodule):
+		### clumsy!
 		mod = loader.load_item_by_name(classarg.as_string()+'/')
 
 		if (type(mod) != types.ModuleType):
