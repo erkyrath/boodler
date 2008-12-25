@@ -820,7 +820,7 @@ class FadeInOutAgent(Agent):
 
 
 def load_described(loader, args, wantmodule=False):
-	"""load_described(val, wantmodule=False) -> module or Agent
+	"""load_described(loader, val, wantmodule=False) -> module or Agent
 
 	Load a named module or agent. The argument should be a string (or
 	list of strings, or sparse Tree) giving a fully qualified name:

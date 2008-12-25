@@ -348,7 +348,7 @@ def examine_directory(loader, dirname, destname=None):
 			if (not (arglist is None)):
 				try:
 					nod = arglist.to_node()
-					print '###', key, ':', nod.serialize()
+					print '### created agent', key, ':', nod.serialize()
 					res.add('boodler.arguments', nod.serialize())
 				except Exception, ex:
 					warning(dirname, key + ' argument list error: ' + str(ex))

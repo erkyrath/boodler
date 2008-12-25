@@ -387,7 +387,7 @@ class ArgList:
 					filled[pos] = True
 					values[pos] = arg.default
 				else:
-					raise ArgDefError(str(self.min_accepted()) + ' arguments required')
+					raise ArgDefError(str(self.min_accepted()) + ' arguments required') ### "argument(s)"
 			pos += 1
 
 		# At this point, the filled and values arrays contain the argument
@@ -417,7 +417,7 @@ class ArgList:
 
 		if (not self.listtype):
 			if (extraindexed):
-				raise ArgDefError('at most ' + str(self.max_accepted()) + ' arguments accepted')
+				raise ArgDefError('at most ' + str(self.max_accepted()) + ' arguments accepted') ### "argument(s)"
 		else:
 			exls = node_to_seq_value(self.listtype, extraindexed)
 			if (isinstance(exls, ArgListWrapper)
@@ -1102,6 +1102,7 @@ def node_to_seq_value(type, nodelist):
 
 	typelist = type.types
 
+	### "element(s)"
 	if (type.min == type.max and len(nodelist) != type.min):
 		raise ValueError('exactly ' + str(type.min) + ' elements required: ' + str(len(nodelist)) + ' found')
 	if (len(nodelist) < type.min):
