@@ -842,9 +842,13 @@ class TestSoundAgent(Agent):
 		for ix in range(nframes):
 			amp = 0.5 * (math.sin(ix * 0.10) + math.sin(ix * 0.166666))
 			amp *= math.cos(ix * ratio)
+			if (ix < 10):
+				amp *= (ix * 0.1)
 			amp = int(amp * 0x4000)
 			dat = chr((amp >> 8) & 0xFF) + chr(amp & 0xFF)
-			afl.writeframes(dat+dat)
+			amp = amp // 4
+			dat += chr((amp >> 8) & 0xFF) + chr(amp & 0xFF)
+			afl.writeframes(dat)
 		afl.close()
 	makesound = staticmethod(makesound)
 	
@@ -881,13 +885,16 @@ class TestSoundAgent(Agent):
 			(-6, -1), -3, -5, (0, 3), (-2, 1) ]
 		snd = TestSoundAgent.getsound()
 		pos = 0.0
+		center = stereo.scale(0)
+		leftright = 1
 		for val in pitches:
 			if (type(val) == tuple):
 				for pitch in val:
-					self.sched_note(snd, pitch=music.get_pitch(pitch), delay=pos)
+					self.sched_note_pan(snd, pitch=music.get_pitch(pitch), pan=center, delay=pos)
 			else:
-				self.sched_note(snd, pitch=music.get_pitch(val), delay=pos)
-			pos += 0.125
+				self.sched_note_pan(snd, pitch=music.get_pitch(val), pan=stereo.scale(leftright), delay=pos)
+				leftright = -leftright
+			pos += 0.13
 	def get_title(self):
 		return 'Boodler test sound'
 
