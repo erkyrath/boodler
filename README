@@ -38,6 +38,7 @@ which is defined by a driver module:
     macosx: MacOSX CoreAudio
     vorbis: write Ogg Vorbis file
     shout:  Shoutcast or Icecast source
+    lame:   write MP3 file
 
 Boodler does not come with any warranty of any sort whatsoever.
 
