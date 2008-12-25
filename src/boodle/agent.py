@@ -818,6 +818,79 @@ class FadeInOutAgent(Agent):
 	def get_title(self):
 		return 'Fade in, fade out, stop channel'
 
+class TestSoundAgent(Agent):
+	"""TestSoundAgent:
+
+	Play a little test melody. This does some under-the-cover contortions
+	to create a sound sample without loading any Boodler modules from
+	the external module collection.
+	"""
+	sound = None
+	
+	def makesound(fl):
+		"""makesound(fl) -> None
+		Generate AIFF sound data for a short musical note, and write the
+		AIFF to the given file.
+		"""
+		import aifc, math
+		afl = aifc.open(fl, 'wb')
+		afl.setnchannels(2)
+		afl.setsampwidth(2)
+		afl.setframerate(22050)
+		nframes = 5000
+		ratio = (0.5 * math.pi / nframes)
+		for ix in range(nframes):
+			amp = 0.5 * (math.sin(ix * 0.10) + math.sin(ix * 0.166666))
+			amp *= math.cos(ix * ratio)
+			amp = int(amp * 0x4000)
+			dat = chr((amp >> 8) & 0xFF) + chr(amp & 0xFF)
+			afl.writeframes(dat+dat)
+		afl.close()
+	makesound = staticmethod(makesound)
+	
+	def getsound():
+		"""getsound() -> File
+		Create a sound sample object for a short musical note. The AIFF
+		sound data is kept in memory, not stored in an actual file anywhere.
+		This caches the File object; if you call it more than once, you'll
+		get the same File.
+		"""
+		if (not TestSoundAgent.sound):
+			import cStringIO
+			fl = cStringIO.StringIO()
+			TestSoundAgent.makesound(fl)
+			dat = fl.getvalue()
+			fl.close()
+			class MemFile(pinfo.File):
+				def __init__(self, dat):
+					pinfo.File.__init__(self, None, '<StringIO>')
+					self.data = dat
+				def open(self, binary=False):
+					return cStringIO.StringIO(self.data)
+			mfile = MemFile(dat)
+			# For annoying technical reasons, we have to preload this into
+			# the sample cache.
+			sample.cache[mfile] = sample.aifc_loader.load(mfile, 'aiff')
+			TestSoundAgent.sound = mfile
+		return TestSoundAgent.sound
+	getsound = staticmethod(getsound)
+	
+	def run(self):
+		from boodle import music
+		pitches = [-5, -6, -3, -4, -1, -2, 1, 0,
+			(-6, -1), -3, -5, (0, 3), (-2, 1) ]
+		snd = TestSoundAgent.getsound()
+		pos = 0.0
+		for val in pitches:
+			if (type(val) == tuple):
+				for pitch in val:
+					self.sched_note(snd, pitch=music.get_pitch(pitch), delay=pos)
+			else:
+				self.sched_note(snd, pitch=music.get_pitch(val), delay=pos)
+			pos += 0.125
+	def get_title(self):
+		return 'Boodler test sound'
+
 
 def load_described(loader, args, wantmodule=False):
 	"""load_described(loader, val, wantmodule=False) -> module or Agent
@@ -908,7 +981,7 @@ from boodle import generator, sample, stereo
 cboodle = boodle.cboodle
 from boodle.generator import FrameCount
 
-from boopak import version, pload, sparse, argdef
+from boopak import version, pload, pinfo, sparse, argdef
 
 argdef.Agent = Agent
 argdef.load_described = load_described
