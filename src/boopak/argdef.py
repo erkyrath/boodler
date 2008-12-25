@@ -1,3 +1,114 @@
+"""argdef: A module which serializes and unserializes the arguments of an
+Agent.
+
+Boodler allows you to start up a complex arrangement of soundscapes
+directly from the command line. For example:
+
+  boodler.py " org.boodler.manager/Simultaneous
+    (com.eblong.zarf.heartbeat/OneBeat 1.5)
+    (com.eblong.zarf.heartbeat/OneBeat 0.9) "
+
+This nested argument string takes the form of an S-expression (or
+rather, an extended S-expression, as defined in the sparse module).
+Parsing it into a tree of nodes is easily done. However, interpreting
+that tree into Python values is trickier. How do we know whether to
+interpret the substring "(com.eblong.zarf.heartbeat/OneBeat 1.5)" as a
+list of strings, a tuple of (string, float), or -- the intended
+outcome -- a Boodler agent? We need to know what kind of arguments the
+Simultaneous agent is expecting. That is the task of this module.
+
+-- Overview
+
+The work begins by creating an ArgList object. This contains all the
+information about the agent's arguments -- how many arguments, their
+names, their types, their default values. (Note that the ArgList type
+information can be quite detailed. An argument can be specified not
+just as "a list", but "a list of up to ten Agents", or "a list
+containing an Agent followed by at least three sound samples".)
+
+Normally, an agent's ArgList information is worked out when the
+agent's module is packaged for distribution. The ArgList class can
+infer most of this information itself (by inspecting the agent's
+init() method). The agent's author can provide additional details in
+the agent class's _args field. The ArgList is then serialized (as an
+S-expression) in the package metadata.
+
+When Boodler loads an agent from a module, it retrieves this ArgList
+from the metadata. It then uses it to interpret the command-line data
+that the user provided. This allows it to construct an Agent instance,
+using valid arguments, and then start the agent playing.
+
+(Note that in the above example, the ArgList of the Simultaneous
+agent says that it wants a list of Agents as arguments. But the
+ArgList of the OneBeat agent is also consulted; it says that it
+accepts a float argument. The argument-constructor is recursive
+for Agent arguments.)
+
+We have, therefore, two distinct unserialization operations. First,
+the ArgList itself is built from a metadata S-expression. (This is
+the ArgList.from_node() static method, which makes use of the
+node_to_type() helper function.) Then, this ArgList turns the user's
+command-line S-expression into a bunch of argument values. (This is
+the ArgList.resolve() method, which makes use of the node_to_value()
+helper function.)
+
+(It's actually a little more complex than that. The ArgList contains
+default values for arguments. So that first stage itself has to call
+node_to_value() to recreate those values.)
+
+The two converse serialization operations are also available.
+ArgList.to_node() turns an ArgList into an S-expression tree, using
+the type_to_node() and value_to_node() helper functions.
+
+-- The wrapping problem
+
+One more wrinkle needs to be managed. In the example:
+
+  boodler.py " org.boodler.manager/Simultaneous
+    (com.eblong.zarf.heartbeat/OneBeat 1.5)
+    (com.eblong.zarf.heartbeat/OneBeat 0.9) "
+
+...the Simultaneous agent can be constructed with two OneBeat agents
+as arguments. Its task is to start up each one, which is
+straightforward.
+
+However, consider the example:
+
+  boodler.py " org.boodler.manager/Sequential
+    30 60 2
+    (com.eblong.zarf.heartbeat/OneBeat 1.5)
+    (com.eblong.zarf.heartbeat/OneBeat 0.9) "
+
+The Sequential agent alternates between two (or more) agents. (The
+three numeric arguments define how frequently it alternates.) So it
+will start up the first agent, wait a while, start up the second
+agent, wait some more, and then... we have a problem. The first agent
+may still be in use! Even if it isn't, it will already have run, so
+restarting it may not do anything useful.
+
+(Restarting a heartbeat sound is trivial, since heartbeats are so
+repetitive. But in general, you can't restart a soundscape and expect
+it to behave the way it did the first time.)
+
+To solve this, the Sequential agent's ArgList says that its arguments
+are, not Agents, but *wrapped* Agents. When the command-line data is
+parsed, the "(com.eblong.zarf.heartbeat/OneBeat 1.5)" and
+"(com.eblong.zarf.heartbeat/OneBeat 0.9)" parts are not fully
+constructed as Agent instances. Instead, they are kept in a
+partially-constructed state (as ArgWrapper objects). The Sequential
+agent receives these two objects. It invokes the first one to get a
+OneBeat instance -- correctly instantiated with its 1.5 argument. Then
+it invokes the second one to get another OneBeat instance (with 0.9).
+Then it invokes the first one again, getting a *new* OneBeat(1.5). And
+so on. Each wrapped object can be invoked as often as desired, each
+time instantiating a new, fresh Agent instance.
+
+(Other mutable types, such as lists, can also be wrapped in this way.
+There is no point in wrapping an immutable type such as int or str,
+because it doesn't matter whether you get the same instance twice or
+two identical instances.)
+"""
+
 import sys
 import types
 
@@ -133,7 +244,7 @@ class ArgList:
 		return None
 
 	def get_name(self, val):
-		"""get_index(val) -> Arg
+		"""get_name(val) -> Arg
 
 		Return the Arg with the given name. If there isn't one,
 		returns None.
@@ -669,7 +780,7 @@ class Arg:
 			dic['type'] = node_to_type(node.get_attr('type'))
 		if (node.has_attr('default')):
 			wrap = node_to_value(dic.get('type'), node.get_attr('default'))
-			dic['default'] = instantiate(wrap)
+			dic['default'] = resolve_value(wrap)
 			### What if this is an AgentClass?
 			### should this *always* be a wrapped value? For the cases where
 			### the default is an Agent instance that we don't know how to
@@ -850,7 +961,44 @@ class TupleOf(SequenceOf):
 		self.repeat = len(self.types)
 
 class Wrapped:
-	###
+	"""Wrapped: represents a type which needs to be instantiated lazily.
+	Whenever you are creating an ArgList, you can use Wrapped(type)
+	instead of type.
+
+	The difference is that when the ArgList is resolved, values that
+	correspond with a type are instantiated immediately. Values that
+	correspond with a Wrapped type are left as placeholders, and can
+	be instantiated later -- as many times as desired.
+
+	Let me explain further. The usual pattern for resolving an ArgList
+	looks like:
+
+		(ls, dic) = arglist.resolve(tree)
+		wrap = ArgClassWrapper(f, ls, dic)
+		wrap()
+
+	Plain types are instantiated in the resolve() method. Wrapped types
+	are instantiated in the wrap() invocation. If wrap() is invoked
+	a second time, the wrapped types get a second instantiation,
+	independent of the first.
+
+	For immutable types (int, float, str, tuple) this makes no difference.
+	You never need to wrap those types. But for mutable types, the
+	difference is important. If the ArgList contains an Agent type,
+	an Agent instance will be created at resolve() time, and *shared*
+	between all wrap() calls. If it instead contains a Wrapped(Agent)
+	type, each wrap() call will get a *new* Agent instance.
+
+	Wrapped(type) -- constructor
+
+	The type must be a plain type (int, float, str, bool), or one of
+	Boodler's core classes (Agent or Sample), or a sequence placeholder
+	(a ListOf or TupleOf instance). Using long or unicode is equivalent
+	to int or str, respectively. Using list is equivalent to ListOf();
+	tuple is equivalent to TupleOf(). None indicates an unconstrained
+	value or list of values. Any other type argument will raise
+	ArgDefError.
+	"""
 	def __init__(self, type):
 		check_valid_type(type)
 		if (isinstance(type, Wrapped)):
@@ -858,6 +1006,19 @@ class Wrapped:
 		self.type = type
 		
 def infer_type(val):
+	"""infer_type(val) -> type
+
+	Given a data value, return an object representing its type. This
+	is run on the default values of ArgList entries, to try to guess
+	their types.
+
+	This will return bool, int, float, or str for simple values of those
+	types. Longs and unicode values will be represented as int and str
+	respectively. File and Sample instances will be represented as the
+	Sample class. Classes (as opposed to instances) will be represented
+	as Wrapped classes.	
+	"""
+	
 	type = _typeof(val)
 	
 	if (type == types.InstanceType):
@@ -896,6 +1057,16 @@ _name_to_type_mapping = {
 }
 
 def check_valid_type(type):
+	"""check_valid_type(type) -> None
+
+	Make sure that type is a valid type for an ArgList entry. If it is not,
+	raise ArgDefError.
+
+	This accepts: None, bool, int, float, str, unicode, long, list, tuple;
+	ListOf and TupleOf instances; Sample and Agent classes; and valid
+	Wrapped types.
+	"""
+	
 	if (_type_to_name_mapping.has_key(type)):
 		return
 	if (isinstance(type, ListOf) or isinstance(type, TupleOf)):
@@ -910,6 +1081,12 @@ def check_valid_type(type):
 	raise ArgDefError('unrecognized type: ' + str(type))
 
 def type_to_node(type):
+	"""type_to_node(type) -> Tree
+
+	Construct an S-expression from a type. If the type is not valid
+	(as per check_valid_type), this raises ArgDefError.
+	"""
+	
 	if (_type_to_name_mapping.has_key(type)):
 		name = _type_to_name_mapping[type]
 		return sparse.ID(name)
@@ -926,6 +1103,11 @@ def type_to_node(type):
 	raise ArgDefError('type_to_node: unrecognized type: ' + str(type))
 
 def node_to_type(nod):
+	"""node_to_type(nod) -> type
+
+	Construct a type from an S-expression.
+	"""
+	
 	if (isinstance(nod, sparse.ID)):
 		id = nod.as_string()
 		if (_name_to_type_mapping.has_key(id)):
@@ -970,6 +1152,14 @@ def node_to_type(nod):
 	raise ArgDefError('node_to_type: unrecognized type: ' + id)
 
 def value_to_node(type, val):
+	"""value_to_node(type, val) -> Tree
+
+	Construct an S-expression from a value, using a type as guidance.
+	The value will be converted to the type if necessary (and possible).
+	For list types, the value must be a sequence; its entries will
+	be constructed recursively based on the list type's types.
+	"""
+	
 	if (val is None):
 		return sparse.List(no=sparse.ID('value'))
 	
@@ -1017,6 +1207,13 @@ def value_to_node(type, val):
 	raise ArgDefError('value_to_node: unrecognized type: ' + str(type))
 
 def seq_value_to_node(type, vallist):
+	"""seq_value_to_node(type, vallist) -> Tree
+
+	Construct an S-expression from a value, using a type as guidance.
+	This is the list/tuple case of value_to_node(), broken out into a
+	separate function, for readability.
+	"""
+
 	if (type == list):
 		type = ListOf()
 	elif (type == tuple):
@@ -1035,7 +1232,15 @@ def seq_value_to_node(type, vallist):
 	return ls
 
 def node_to_value(type, node):
-	### would be nice if this took an argument-label argument
+	"""node_to_value(type, node) -> value
+
+	Construct a value from an S-expression, using a type as guidance.
+
+	The values returned by this function may be wrapped. (See the
+	ArgWrapper class.)
+	"""
+	### would be nice if this took an argument-label argument, for
+	### clearer errors.
 	
 	if (isinstance(node, sparse.List) and len(node) == 0):
 		subnod = node.get_attr('no')
@@ -1088,6 +1293,13 @@ def node_to_value(type, node):
 	raise ValueError('cannot handle type: ' + str(type))
 
 def node_to_seq_value(type, nodelist):
+	"""node_to_seq_value(type, nodelist) -> value
+
+	Construct a value from an S-expression, using a type as guidance.
+	This is the list/tuple case of node_to_value(), broken out into a
+	separate function, for readability.
+	"""
+
 	if (type == list):
 		type = ListOf()
 	elif (type == tuple):
@@ -1165,11 +1377,43 @@ def find_resource_ref(loader, pkg, resname):
 	return (pkgref + '/' + resname)
 
 class ArgWrapper:
+	"""ArgWrapper: base class for ArgClassWrapper, ArgListWrapper,
+	ArgTupleWrapper. Represents a wrapped value (or sequence of values) --
+	that is, a value that can be instantiated more than once.
+
+	Static method (for each subclass):
+
+	create() -- build an ArgWrapper
+
+	This is a static method, rather than a simple constructor, because
+	a tuple doesn't always have to be wrapped. So ArgTupleWrapper.create()
+	is allowed to return a native tuple rather than an ArgTupleWrapper.
+	
+	Public method:
+
+	unwrap() -- instantiate the value
+	"""
 	keep_wrapped = False
 	def unwrap(self):
 		raise Exception('unwrap() is not implemented for ' + repr(self))
 
 class ArgClassWrapper(ArgWrapper):
+	"""ArgClassWrapper: represents a wrapped class instance; it can be
+	instantiated more than once. In other words, this contains a class
+	reference together with the (wrapped) values needed to instantiate
+	it.
+
+	ArgClassWrapper(cla, ls, dic=None) -- internal constructor
+
+	Static method:
+
+	create() -- build an ArgClassWrapper
+	
+	Public method:
+
+	unwrap() -- instantiate the value
+	"""
+	
 	def create(cla, ls, dic=None):
 		ls = list(ls)
 		return ArgClassWrapper(ls, dic)
@@ -1184,15 +1428,31 @@ class ArgClassWrapper(ArgWrapper):
 	def __call__(self):
 		return self.unwrap()
 	def unwrap(self):
-		ls = [ instantiate(val) for val in self.argls ]
+		ls = [ resolve_value(val) for val in self.argls ]
 		if (not self.argdic):
 			print '### ArgClassWrapper:', self.cla, 'with', ls
 			return self.cla(*ls)
-		dic = dict([ (key,instantiate(val)) for (key,val) in self.argdic.items() ])
+		dic = dict([ (key,resolve_value(val)) for (key,val) in self.argdic.items() ])
 		print '### ArgClassWrapper:', self.cla, 'with', ls, dic
 		return self.cla(*ls, **dic)
 
 class ArgListWrapper(ArgWrapper):
+	"""ArgListWrapper: represents a wrapped list; it can be instantiated
+	more than once. This contains a sequence of wrapped values. When
+	unwrapped, this unwraps them in turn, and then creates a new list
+	of the results.
+
+	ArgListWrapper(ls) -- internal constructor
+
+	Static method:
+
+	create() -- build an ArgListWrapper
+	
+	Public method:
+
+	unwrap() -- instantiate the value
+	"""
+	
 	def create(ls):
 		ls = list(ls)
 		return ArgListWrapper(ls)
@@ -1201,9 +1461,31 @@ class ArgListWrapper(ArgWrapper):
 	def __init__(self, ls):
 		self.ls = ls
 	def unwrap(self):
-		return [ instantiate(val) for val in self.ls ]
+		return [ resolve_value(val) for val in self.ls ]
 
 class ArgTupleWrapper(ArgWrapper):
+	"""ArgTupleWrapper: represents a wrapped tuple; it can be instantiated
+	more than once. This contains a sequence of wrapped values. When
+	unwrapped, this unwraps them in turn, and then creates a new tuple
+	of the results.
+
+	ArgTupleWrapper(ls) -- internal constructor
+
+	Static method:
+
+	create() -- build an ArgTupleWrapper
+	
+	This is a static method, rather than a simple constructor, because
+	a tuple doesn't always have to be wrapped. A tuple of immutable values
+	is completely immutable -- there's no point in wrapping it. So if none
+	of the contents are wrapped values, ArgTupleWrapper.create()
+	is allowed to return a native tuple rather than an ArgTupleWrapper.
+	
+	Public method:
+
+	unwrap() -- instantiate the value
+	"""
+	
 	def create(tup):
 		tup = tuple(tup)
 		muts = [ val for val in tup if isinstance(val, ArgWrapper) ]
@@ -1215,11 +1497,18 @@ class ArgTupleWrapper(ArgWrapper):
 	def __init__(self, tup):
 		self.tup = tup
 	def unwrap(self):
-		ls = [ instantiate(val) for val in self.tup ]
+		ls = [ resolve_value(val) for val in self.tup ]
 		return tuple(ls)
 
 	
-def instantiate(val):
+def resolve_value(val):
+	"""resolve_value(val) -> value
+
+	Resolve a value or wrapped value -- something created by
+	node_to_value(). This is called at resolve() time, not at
+	instantiate time, so deliberately wrapped types (such as
+	Wrapped(Agent)) are not unwrapped here.
+	"""
 	if (isinstance(val, ArgWrapper)):
 		if (not val.keep_wrapped):
 			return val.unwrap()

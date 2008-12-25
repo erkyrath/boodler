@@ -1,3 +1,7 @@
+"""version: A module which manages version numbers and version number
+requirements.
+"""
+
 import re
 
 class VersionFormatError(ValueError):

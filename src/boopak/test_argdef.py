@@ -431,7 +431,7 @@ class TestArgDef(unittest.TestCase):
         for (typ, st, res) in goodls:
             nod = sparse.parse(st)
             val = node_to_value(typ, nod)
-            val = instantiate(val)
+            val = resolve_value(val)
             self.assertEqual(val, res)
             self.assertEqual(type(val), type(res))
             if (type(val) == list):
@@ -504,7 +504,7 @@ class TestArgDef(unittest.TestCase):
         for (typ, st, res) in goodls:
             nod = sparse.parse(st)
             val = node_to_value(typ, nod)
-            val = instantiate(val)
+            val = resolve_value(val)
             self.assertEqual(val, res)
             self.assertEqual(type(val), type(res))
             if (type(val) == list):
@@ -576,8 +576,8 @@ class TestArgDef(unittest.TestCase):
             for (src, wantls, wantdic) in goodls:
                 nod = sparse.parse(src)
                 (ls, dic) = arglist.resolve(nod)
-                ils = [ instantiate(val) for val in ls ]
-                idic = dict([ (key, instantiate(val)) for (key,val) in dic.items() ])
+                ils = [ resolve_value(val) for val in ls ]
+                idic = dict([ (key, resolve_value(val)) for (key,val) in dic.items() ])
                 self.assertEqual(ils, wantls)
                 self.assertEqual(idic, wantdic)
         if (badls):

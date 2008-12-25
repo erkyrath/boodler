@@ -1,4 +1,5 @@
 # python -c 'from boopak import testing; testing.run()'
+# python -c 'from boopak import testing; testing.run("pinfo pload")'
 
 import sys
 import unittest
