@@ -24,8 +24,8 @@ many example soundscapes. You can use these, modify them, combine them
 to arbitrary levels of complexity, or write your own.
 
 Boodler is written in Python, with the driver modules (cboodle_*)
-written in C. It was developed under Python 2.3.5; more recent Python
-2.x versions should work as well.
+written in C. It was developed under Python 2.3.5 and Python 2.5.1; 
+more recent Python 2.x versions should work as well.
 
 Boodler can generate audio output to several destinations, each of
 which is defined by a driver module:
@@ -38,6 +38,7 @@ which is defined by a driver module:
     macosx: MacOSX CoreAudio
     vorbis: write Ogg Vorbis file
     shout:  Shoutcast or Icecast source
+    lame:   write MP3 file
 
 Boodler does not come with any warranty of any sort whatsoever.
 
