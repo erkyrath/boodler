@@ -106,6 +106,9 @@ popt.add_option('--list-drivers',
 popt.add_option('--list-devices',
 	action='store_true', dest='listdevices',
 	help='list all available device names')
+popt.add_option('--testsound',
+	action='store_true', dest='playtestsound',
+	help='play a test tune')
 
 popt.set_defaults(
 	driver=defaultdriver,
@@ -252,9 +255,10 @@ if (level):
 import boodle
 import boopak.pload
 
+if (not os.path.isdir(coldir)):
+	rootlogger.error('collection directory does not exist: ' + coldir)
+	# But we keep going, because --testsound should still work.
 loader = boopak.pload.PackageLoader(coldir, importing_ok=True)
-### Catch error if no collection directory exists? Or check first.
-### Print appropriate error.
 
 if (opts.externaldirs):
 	import booman.command
@@ -280,24 +284,22 @@ if (opts.driver):
 	cboodle = boodle.set_driver(opts.driver)
 
 
+if (opts.playtestsound):
+	if (len(args) != 0):
+		rootlogger.warning('ignoring arguments, playing --testsound instead')
+	args = [ '/boodle.agent.TestSoundAgent' ]
+
 if (opts.verbosehardware or opts.listdevices):
 	# For these options, we need to start up the driver even if
 	# no agent was specified. So specify a no-op agent.
 	if (len(args) == 0):
-		args = ['']
+		args = [ '/boodle.agent.NullAgent' ]
 
 if (len(args) == 0):
 	if (opts.listdrivers):
 		sys.exit()
 	print usage.replace('%prog', sys.argv[0])
 	sys.exit()
-
-effects_dir = os.environ.get('BOODLER_EFFECTS_PATH')
-if (effects_dir):
-	effects_dir = effects_dir.split(':')
-	for dir in effects_dir:
-		if (len(dir) > 0):
-			sys.path.append(dir)
 
 rootprops = []
 val = os.environ.get('BOODLER_PROPERTIES')
