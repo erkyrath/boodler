@@ -105,9 +105,12 @@ class PackageLoader:
 		if (collecdir is None):
 			raise ValueError('PackageLoader requires a collection directory')
 
-		if (not os.path.isdir(collecdir)):
-			raise ValueError('PackageLoader collection directory is not readable: '
-				+ collecdir)
+		# We allow the loader to run even without a collection directory,
+		# so that TestSoundAgent will work.
+		#if (not os.path.isdir(collecdir)):
+		#	raise ValueError('PackageLoader collection directory is not readable: '
+		#		+ collecdir)
+		
 		self.collecdir = collecdir
 
 		self.importing_ok = False
