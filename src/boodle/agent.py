@@ -846,7 +846,7 @@ class TestSoundAgent(Agent):
 				amp *= (ix * 0.1)
 			amp = int(amp * 0x4000)
 			dat = chr((amp >> 8) & 0xFF) + chr(amp & 0xFF)
-			amp = amp // 4
+			amp = amp // 10
 			dat += chr((amp >> 8) & 0xFF) + chr(amp & 0xFF)
 			afl.writeframes(dat)
 		afl.close()
@@ -894,7 +894,7 @@ class TestSoundAgent(Agent):
 			else:
 				self.sched_note_pan(snd, pitch=music.get_pitch(val), pan=stereo.scale(leftright), delay=pos)
 				leftright = -leftright
-			pos += 0.13
+			pos += 0.14
 	def get_title(self):
 		return 'Boodler test sound'
 
