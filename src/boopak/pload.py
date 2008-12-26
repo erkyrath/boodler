@@ -746,7 +746,7 @@ class PackageLoader:
 		'com.eblong.example/reptile.Hiss' -- import the module and
 		return the resource object.
 
-		If the string begins with a slash ('/boodle.agent.NullAgent')
+		If the string begins with a slash ('/boodle.builtin.NullAgent')
 		then the regular Python modules are searched. No importing
 		is done in this case; it is really intended only for the
 		contents of boodle.agent.

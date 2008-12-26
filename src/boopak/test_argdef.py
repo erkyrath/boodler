@@ -3,7 +3,7 @@ import inspect
 
 from boopak.argdef import *
 from boopak import sparse
-from boodle import sample, agent
+from boodle import sample, agent, builtin
 
 class TestArgDef(unittest.TestCase):
 
@@ -782,7 +782,7 @@ class TestArgDef(unittest.TestCase):
 
         ls = [
             (long,int), (unicode,str),
-            (agent.NullAgent, agent.Agent),
+            (builtin.NullAgent, agent.Agent),
             (sample.MixinSample, sample.Sample),
         ]
         

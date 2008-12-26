@@ -270,7 +270,7 @@ if (opts.externaldirs):
 		rootlogger.warning('located external package: %s %s',
 			pkgname, pkgvers)
 
-from boodle import agent, generator
+from boodle import agent, generator, builtin
 cboodle = boodle.cboodle
 
 if (opts.listdrivers):
@@ -287,13 +287,13 @@ if (opts.driver):
 if (opts.playtestsound):
 	if (len(args) != 0):
 		rootlogger.warning('ignoring arguments, playing --testsound instead')
-	args = [ '/boodle.agent.TestSoundAgent' ]
+	args = [ '/boodle.builtin.TestSoundAgent' ]
 
 if (opts.verbosehardware or opts.listdevices):
 	# For these options, we need to start up the driver even if
 	# no agent was specified. So specify a no-op agent.
 	if (len(args) == 0):
-		args = [ '/boodle.agent.NullAgent' ]
+		args = [ '/boodle.builtin.NullAgent' ]
 
 if (len(args) == 0):
 	if (opts.listdrivers):
