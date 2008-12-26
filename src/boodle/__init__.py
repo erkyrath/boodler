@@ -4,7 +4,7 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-__all__ = ['agent', 'generator', 'listen', 'sample', 'stereo', 'music']
+__all__ = ['agent', 'builtin', 'generator', 'listen', 'sample', 'stereo', 'music']
 
 driver_list = [
 	'file', 'stdout', 'oss', 'esd', 'alsa', 'macosx',

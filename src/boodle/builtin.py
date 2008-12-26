@@ -1,6 +1,16 @@
 from boodle import agent
 
 # A bunch of agents which everybody will want to use.
+
+# Declare the imports list, so that "from boodle.builtin import *"
+# is practical.
+__all__ = [
+	'NullAgent', 'StopAgent',
+	'SetVolumeAgent', 'SetPanAgent', 
+	'FadeOutAgent', 'FadeInOutAgent',
+	'TestSoundAgent'
+]
+
 ### Add UnlistenAgent? SendEventAgent?
 ### Give these get_argument_list() methods? (Would allow command-line use...)
 
