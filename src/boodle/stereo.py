@@ -4,7 +4,7 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-"""Utility functions for stereo panning.
+"""stereo: Utility functions for stereo panning.
 
 These functions return a stereo object -- an object which represents a 
 range of stereo positions for a soundscale. Stereo objects can be passed
@@ -12,8 +12,13 @@ to new_channel_pan() or sched_note_pan().
 
 default() -- return the default stereo position
 shift() -- return a simple stereo shift
+shiftxy() -- return a two-dimensional stereo shift
 scale() -- return a stretched or compressed stereo effect
+scalexy() -- return a two-dimensional stereo scaling
 fixed() -- return a stereo effect which is compressed to a point
+fixedx() -- an alias for fixed
+fixedy() -- return a stereo effect which is compressed to a point on the Y axis
+fixedxy() -- return a stereo effect compressed to a point on the XY plane
 compose() -- apply one stereo effect on top of another
 cast() -- convert an object to a stereo effect
 """

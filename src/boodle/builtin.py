@@ -1,6 +1,18 @@
-from boodle import agent
+"""builtin: A module containing useful utility Agent classes.
 
-# A bunch of agents which everybody will want to use.
+These Agents are too important to be distributed in an optional package;
+they need to be available always.
+
+NullAgent -- does nothing
+StopAgent -- causes a channel to stop playing
+SetVolumeAgent -- causes a channel to change to a given volume
+SetPanAgent -- causes a channel to change to a given pan position
+FadeOutAgent -- causes a channel to fade down to zero volume over an interval
+FadeInOutAgent -- creates a channel that fades up, holds, and fades out
+TestSoundAgent -- plays a little test melody
+"""
+
+from boodle import agent
 
 # Declare the imports list, so that "from boodle.builtin import *"
 # is practical.
@@ -122,7 +134,7 @@ class FadeInOutAgent(agent.Agent):
 class TestSoundAgent(agent.Agent):
 	"""TestSoundAgent:
 
-	Play a little test melody. This does some under-the-cover contortions
+	Plays a little test melody. This does some under-the-cover contortions
 	to create a sound sample without loading any Boodler modules from
 	the external module collection.
 	"""

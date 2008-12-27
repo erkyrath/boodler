@@ -4,6 +4,16 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+"""sample: A module containing the Sample class; also the SampleLoader
+classes, which know how to load data from various sound files (AIFF,
+WAV, etc).
+
+Public functions:
+
+get() -- load a sample object, given a filename or File object
+get_info() -- measure the expected running time and looping params of a sound
+"""
+
 import fileinput
 import os
 import os.path
@@ -16,6 +26,8 @@ import bisect
 # Maps File objects, and also str/unicode pathnames, to Samples.
 cache = {}
 
+# We still support $BOODLER_SOUND_PATH, for old times' sake.
+# But packaged modules should not rely on it.
 sound_dirs = os.environ.get('BOODLER_SOUND_PATH', os.curdir)
 sound_dirs = sound_dirs.split(':')
 
@@ -25,6 +37,13 @@ else:
 	big_endian = 0
 
 class Sample:
+	"""Sample: represents a sound file, held in memory.
+
+	This is really just a container for a native object (csamp), which
+	is used by the cboodle native module. Samples may only be created
+	by the SampleLoader classes in this module.
+	"""
+	
 	reloader = None
 
 	def __init__(self, filename, csamp):
@@ -215,7 +234,7 @@ def get(sname):
 	return samp
 
 def get_info(samp, pitch=1):
-	"""get_info(sample,pitch=1) -> tuple
+	"""get_info(sample, pitch=1) -> tuple
 
 	Measure the expected running time and looping parameters of a sound.
 	The argument can be either a filename, or a sample object (as 

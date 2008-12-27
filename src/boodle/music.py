@@ -4,6 +4,12 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+"""music: Utility functions for musical computation.
+
+get_pitch() -- the pitch factor that corresponds to a given number of semitones
+decibel() -- the volume factor that corresponds to a given number of decibels
+"""
+
 import math
 
 # The piano keyboard, expressed in semitones:

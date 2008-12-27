@@ -1,13 +1,15 @@
 # Boodler: a programmable soundscape tool
-# Copyright 2002-7 by Andrew Plotkin <erkyrath@eblong.com>
-# <http://eblong.com/zarf/boodler/>
+# Copyright 2002-9 by Andrew Plotkin <erkyrath@eblong.com>
+#   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+"""agent: A module which contains the Agent class, the fundamental work
+unit of Boodler.
+"""
+
 import logging
 import types
-
-### Doc comments are all out of date
 
 class Agent:
 	"""Agent: base class for Boodler agents.
@@ -28,6 +30,7 @@ class Agent:
 	sched_note() -- schedule a note to be played
 	sched_note_duration() -- schedule a note to be played for an extended time
 	sched_note_pan() -- schedule a note to be played at a stereo position
+	sched_note_duration_pan() -- schedule a note, extended and stereo
 	sched_note_params() -- schedule a note, allowing all parameters
 	sched_agent() -- schedule another agent to run
 	resched() -- schedule self to run again
@@ -47,6 +50,7 @@ class Agent:
 	Class methods:
 	
 	get_title() -- return a string which describes the agent
+	get_argument_list() -- return the argument specification for the agent
 	get_class_name() -- return the qualified names of the module and Agent
 	"""
 
@@ -56,6 +60,11 @@ class Agent:
 	inited = False
 	# Another default value; subclasses can override this.
 	selected_event = None
+	
+	# Another default value. A subclass can override this to specify
+	# extra information about its argument types (more information than
+	# can be inferred by inspecting the init() method).
+	_args = None
 
 	# Maps Agent subclasses to (pkgname, resname, bool) pairs;
 	# see get_class_name().
@@ -66,9 +75,6 @@ class Agent:
 
 	# Maps Agent subclasses to ArgLists; see get_argument_list().
 	cached_argument_lists = {}
-	
-	###
-	_args = None
 	
 	def __init__(self, *args, **kwargs):
 		self.inited = True
@@ -95,8 +101,8 @@ class Agent:
 		"""sched_note(sample, pitch=1, volume=1, delay=0, chan=self.channel)
 			-> duration
 
-		Schedule a note to play. The sound is loaded from the file sample
-		(which is relative to $BOODLER_SOUND_PATH). The pitch is given as a
+		Schedule a note to play. The sound is loaded from samp (which can
+		be a filename, File, or Sample object). The pitch is given as a
 		multiple of the sound's original frequency; the volume is given
 		as a fraction of the sound's original volume. The delay is a time
 		(in seconds) to delay before the note is played. The channel,
@@ -118,8 +124,8 @@ class Agent:
 		-1 means directly to the left; 1 means directly to the right. The
 		value may also be an object created by the stereo module.
 
-		The sound is loaded from the file sample (which is relative to 
-		$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
+		The sound is loaded from samp (which can be a filename, File,
+		or Sample object). The pitch is given as a multiple of the
 		sound's original frequency; the volume is given as a fraction
 		of the sound's original volume. The delay is a time (in seconds)
 		to delay before the note is played. The channel, if None or not
@@ -150,8 +156,8 @@ class Agent:
 		Schedule a note to play, extending the original sound sample to a
 		longer period of time. The duration is given in seconds. 
 
-		The sound is loaded from the file sample (which is relative to 
-		$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
+		The sound is loaded from samp (which can be a filename, 
+		File, or Sample object). The pitch is given as a multiple of the
 		sound's original frequency; the volume is given as a fraction
 		of the sound's original volume. The delay is a time (in seconds)
 		to delay before the note is played. The channel, if None or not
@@ -173,8 +179,8 @@ class Agent:
 		-1 means directly to the left; 1 means directly to the right. The
 		value may also be an object created by the stereo module.
 
-		The sound is loaded from the file sample (which is relative to 
-		$BOODLER_SOUND_PATH). The pitch is given as a multiple of the
+		The sound is loaded from samp (which can be a filename, File,
+		or Sample object). The pitch is given as a multiple of the
 		sound's original frequency; the volume is given as a fraction
 		of the sound's original volume. The delay is a time (in seconds)
 		to delay before the note is played. The channel, if None or not
@@ -366,7 +372,7 @@ class Agent:
 		before the agent runs. The channel, if None or not supplied,
 		defaults to the same channel that self is running in. The agent's
 		run() method will be called, unless you specify a different
-		function.
+		handle function.
 		"""
 
 		if (not isinstance(ag, Agent)):
@@ -400,7 +406,7 @@ class Agent:
 		you will probably cause an infinite loop.
 
 		The agent's run() method will be called, unless you specify a 
-		different function.
+		handle different function.
 		"""
 
 		if (delay is None):
@@ -541,14 +547,14 @@ class Agent:
 		raise NotImplementedError('agent has no run() method')
 
 	def receive(self, event):
-		"""receive()
+		"""receive(event)
 
 		Perform the agent's action when an appropriate event arrives. 
 		Each subclass of Agent which listens for events must override this
 		method (or provide an alternative handler).
 		
 		The event is a tuple, starting with a string, followed (possibly)
-		by more values
+		by more values.
 		"""
 		raise NotImplementedError('agent has no receive() method')
 
