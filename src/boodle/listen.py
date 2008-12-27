@@ -4,6 +4,16 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+"""listen: A module containing ways for Boodler to listen to external
+events.
+
+SocketListener -- listen for events on an Internet or Unix domain socket
+StdinListener -- listen for events on stdin
+
+(Logically these are subclasses of a base Listener class, but I didn't
+implement it that way.)
+"""
+
 import sys
 import socket
 import select
@@ -11,9 +21,28 @@ import os
 import fcntl
 import errno
 
-### comments
-
 class SocketListener:
+	"""SocketListener: Listen for events on an Internet or Unix domain socket.
+
+	This opens a socket; external processes can connect and send Boodler
+	events to it. You can open either Internet sockets (with a numeric
+	port number), or Unix domain sockets. (Unix sockets exist as a "file"
+	on disk; only processes on the same machine can connect to a Unix
+	socket.)
+
+	SocketListener(handler, listenport=31863) -- constructor
+
+	The socket is opened as soon as the SocketListener is constructed.
+	If listenport is an integer, this will be an Internet socket. If
+	listenport is a string, it will be a Unix domain socket.
+
+	Events will be sent to the handler function.
+
+	Public methods:
+
+	poll() -- read as many events as are available
+	close() -- close the socket
+	"""
 
 	unlinkport = None
 
@@ -69,7 +98,22 @@ class SocketListener:
 						self.datas[sock] = dat
 
 class StdinListener:
+	"""StdinListener: Listen for events arriving on standard input.
 
+	This is intended for when Boodler is running as a subordinate process
+	in some other program. The hosting program can write event data in
+	to Boodler.
+
+	StdinListener(handler) -- constructor
+
+	Events will be sent to the handler function.
+
+	Public methods:
+
+	poll() -- read as many events as are available
+	close() -- close the socket
+	"""
+	
 	def __init__(self, handler):
 		self.handler = handler
 		

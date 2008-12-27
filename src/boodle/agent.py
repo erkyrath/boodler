@@ -20,7 +20,7 @@ class Agent:
 	run() -- perform the agent's action
 	receive() -- perform the agent's action
 
-	Publically readable fields:
+	Publicly readable fields:
 
 	channel -- the channel in which this agent is running
 	firsttime -- True the first time the run() method is called
