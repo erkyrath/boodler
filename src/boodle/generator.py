@@ -4,6 +4,16 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+"""generator: A module containing various workhorse classes, used deep
+in the heart of Boodler.
+
+Generator -- stores the internal state of Boodler sound generation
+Channel -- for creating hierarchical trees of sounds and agents
+FrameCount -- represents a time (or duration) measured in sound frames
+
+run_agents() -- the big function that does everything
+"""
+
 import sys
 import logging
 import traceback
@@ -11,10 +21,10 @@ import bisect
 import StringIO
 
 class Generator:
-	"""Generator: A class that stores the internal state of boodler
+	"""Generator: A class that stores the internal state of Boodler
 	sound generation.
 
-	Everything in this class is private to boodler.
+	Everything in this class is private to Boodler.
 
 	Interesting fields:
 
@@ -741,17 +751,17 @@ class FrameCount:
 	def __init__(self, frames):
 		self.frames = long(frames)
 
-		
-TRIMTIME   = 317520000   # two hours
-TRIMOFFSET = 158760000   # one hour
-UNLOADTIME =  13230000   # five minutes
-UNLOADAGE  = 100000000   # 40-ish minutes
 
-####
-TRIMTIME   =  80000
-TRIMOFFSET =  50000
-UNLOADTIME =  50000
-UNLOADAGE  = 110000
+TRIMTIME   = 26460000   # ten minutes
+TRIMOFFSET = 13230000   # five minutes
+UNLOADTIME =  1323000   # 30 seconds
+UNLOADAGE  = 10000000   # 4-ish minutes
+
+# Small values, for debugging
+# TRIMTIME   =  80000
+# TRIMOFFSET =  50000
+# UNLOADTIME =  50000
+# UNLOADAGE  = 110000
 
 def run_agents(starttime, gen):
 	"""run_agents(starttime, gen) -> None
