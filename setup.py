@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Distutils setup script for Boodler.
+#
+# This has clever logic to build only the driver modules for which
+# native libraries are available. (That is, it only builds the LAME
+# driver if libmp3lame is installed, and so on.)
+
 import sys
 import os.path
 import re

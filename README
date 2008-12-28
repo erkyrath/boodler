@@ -1,8 +1,8 @@
 Boodler: a programmable soundscape tool
-   Version 2.0.####
+   Version 2.0.0 ###
 
 Designed by Andrew Plotkin <erkyrath@eblong.com>
-   <http://eblong.com/zarf/boodler/>
+   <http://boodler.org/>
 
 Copyright 2002-9 by Andrew Plotkin
    This program is distributed under the LGPL.
@@ -103,7 +103,7 @@ wish.
 * LICENSING FOR SOUNDSCAPE DESIGNERS
   (Extending the effects)
 
-The Python scripts included in the ./effects directory are in the
+### The Python scripts included in the ./effects directory are in the
 public domain. They are intended to be used as code samples as well as
 soundscapes. You may modify, extend, combine, and pervert them as you
 wish.
