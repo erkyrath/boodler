@@ -15,6 +15,21 @@ import operation. That is, when the package's module code is being
 evaluated. You can call these functions at the module's top level, but
 not later on. Do not try to call them from inside your module's functions 
 or methods.
+
+Public functions:
+
+now_building() -- locate the module which is currently being imported
+get_info() -- get the PackageInfo which describes a Boodler module
+get_metadata() -- get the metadata which describes a Boodler module
+open_file() -- open a file by name, in a Boodler module
+get_file() -- get a File by name, in a Boodler module
+subimport() -- import a submodule from a Boodler module
+bimport() -- import and return a Boodler sound module
+bexport() -- make a module's file resources available in the module's namespace
+
+Internal functions:
+
+info_being_imported() -- locate the PackageInfo which is being imported
 """
 
 __all__ = [ 

@@ -129,12 +129,12 @@ Wrapped -- represents a type which needs to be instantiated lazily
 
 Utility functions:
 
-infer_type -- given a data value, return an object representing its type
-check_valid_type -- make sure that type is a valid type for an ArgList entry
-type_to_node -- construct an S-expression from a type
-node_to_type -- construct a type from an S-expression
-value_to_node -- construct an S-expression from a value, matching a type
-node_to_value -- construct a value from an S-expression, matching a type
+infer_type() -- given a data value, return an object representing its type
+check_valid_type() -- make sure that type is a valid type for an ArgList entry
+type_to_node() -- construct an S-expression from a type
+node_to_type() -- construct a type from an S-expression
+value_to_node() -- construct an S-expression from a value, matching a type
+node_to_value() -- construct a value from an S-expression, matching a type
 
 Internal classes:
 
@@ -145,10 +145,10 @@ ArgTupleWrapper -- represents a wrapped tuple
 
 Internal functions:
 
-seq_value_to_node -- construct an S-expression from a sequence value
-node_to_seq_value -- construct a sequence value from an S-expression
-find_resource_ref -- work out the representation of a resource
-resolve_value -- resolve a value or wrapped value
+seq_value_to_node() -- construct an S-expression from a sequence value
+node_to_seq_value() -- construct a sequence value from an S-expression
+find_resource_ref() -- work out the representation of a resource
+resolve_value() -- resolve a value or wrapped value
 """
 
 import sys
