@@ -46,7 +46,18 @@ class Generator:
 
 	loader -- the package loader
 
-	Internal methods: ###
+	Internal methods:
+
+	close() -- shut down the generator object
+	select_time() -- determine the schedule time represented by a value
+	select_duration() -- determine the duration represented by a value
+	set_stats_interval() -- set the interval at which stats are dumped
+	addagent() -- put an agent on the schedule queue
+	remagent() -- remove an agent from the schedule queue
+	addhandler() -- add a Handler object to the system
+	remhandlers() -- remove a list of Handler objects from the system
+	sendevent() -- process an event on the given channel
+	dump_stats() -- write statistical information to the given file
 	"""
 
 	def __init__(self, basevolume=0.5, stdinlisten=False,
@@ -376,11 +387,19 @@ class Channel:
 	parent -- the parent of the channel (None if root)
 	get_root_channel() -- return the root channel of the tree
 	set_volume() -- change the volume of the channel
+	set_pan() -- change the channel to a new pan position
 	stop() -- stop the channel immediately
 	get_prop() -- get a property from this channel
 	has_prop() -- see whether this channel has a given property
 	set_prop() -- set a property on this channel
 	del_prop() -- delete a property from this channel
+
+	Internal methods:
+
+	realstop() -- do the work of stopping the channel
+	close() -- shut down the channel
+	addnote() -- note that a note has been added to the channel
+	remnote() -- note that a note has been removed from the channel
 
 	Class method:
 

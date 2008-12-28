@@ -4,7 +4,11 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-"""###
+"""collect: The PackageCollection class.
+
+This module contains PackageCollection, which is responsible for installing
+and updating the Boodler packages in your collection. It is a subclass
+of PackageLoader.
 """
 
 import os
