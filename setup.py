@@ -338,7 +338,7 @@ class local_generate_source(Command):
 			distutils.log.info("building '%s' extension at '%s'", key, destfile)
 
 			infl = open(srcfile, 'rU')
-			outfl = open(destfile, 'wU')
+			outfl = open(destfile, 'w')
 			while True:
 				ln = infl.readline()
 				if (not ln):
