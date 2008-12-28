@@ -2,12 +2,12 @@
 
 # Boodler: a programmable soundscape tool
 # Designed by Andrew Plotkin <erkyrath@eblong.com>
-# For more information, see <http://eblong.com/zarf/boodler/>
+# For more information, see <http://boodler.org/>
 #
-# This Python script, "boodler.py", is in the public domain. 
-# The Python modules that it uses are licensed under the GNU Library
-# General Public License (LGPL). The cboodle extensions are licensed
-# under either the LGPL or the GPL.
+# This Python script ("boodler.py") is in the public domain. 
+# The Python modules that it uses (boodle, boopak, and booman) are 
+# licensed under the GNU Library General Public License (LGPL). The 
+# cboodle extensions are licensed under either the LGPL or the GPL.
 #
 # You should have received a copy of the GNU Library General Public License
 # along with this program. (It should be a document entitled "LGPL".) 

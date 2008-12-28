@@ -1,18 +1,21 @@
 #!/usr/bin/env python
 
-'''
-boomsg.py: send events to Boodler
+# Boodler: a programmable soundscape tool
+# Designed by Andrew Plotkin <erkyrath@eblong.com>
+# For more information, see <http://boodler.org/>
+#
+# This Python script ("boomsg.py") is in the public domain. 
+
+"""boomsg.py: send events to Boodler
 usage: boomsg.py [--hostname host] [--port port] msgname [ msgdata ... ]
 
 The hostname defaults to "localhost". The port defaults to the Boodler
 port of 31863. If port is given as an absolute pathname (beginning
 with "/"), boomsg uses a Unix domain socket instead of a network socket.
-
-'''
+"""
 
 import sys
 import getopt
-import string
 import socket
 
 try:
@@ -38,7 +41,7 @@ if (len(args) == 0):
 	print 'usage:', sys.argv[0], '[--hostname host] [--port port]', 'msgname [ msgdata ... ]'
 	sys.exit()
 
-dat = string.join(args) + '\n'
+dat = ' '.join(args) + '\n'
 
 if (type(port) == type(1)):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

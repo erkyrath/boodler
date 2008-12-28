@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 # Boodler: a programmable soundscape tool
-# Designed by Andrew Plotkin <erkyrath@eblong.com>
-# For more information, see <http://eblong.com/zarf/boodler/>
+# Copyright 2007-9 by Andrew Plotkin <erkyrath@eblong.com>
+# For more information, see <http://boodler.org/>
 #
 # This Python script ("boodle-mgr.py") and the Python modules that it
-# uses (boodle.boopak and boodle.booman) are licensed under the GNU
+# uses (boodle, boopak, and booman) are licensed under the GNU
 # Library General Public License (LGPL).
 #
 # You should have received a copy of the GNU Library General Public License
@@ -13,8 +13,7 @@
 # If not, see the web URL above, or write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""
-###
+"""###
 
 install (file|url)       # install this
 install (pkgv)           # find on web site, install
