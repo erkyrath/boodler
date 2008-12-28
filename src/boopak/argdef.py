@@ -113,6 +113,42 @@ time instantiating a new, fresh Agent instance.
 There is no point in wrapping an immutable type such as int or str,
 because it doesn't matter whether you get the same instance twice or
 two identical instances.)
+
+-- Contents
+
+Classes:
+
+ArgList -- represents the argument structure of a function
+Arg -- represents one argument in an ArgList
+ArgExtra -- represents extra positional arguments in an ArgList
+ArgDefError -- represents an error constructing an ArgList
+SequenceOf -- base class for ListOf and TupleOf
+ListOf -- represents a list type
+TupleOf -- represents a tuple type
+Wrapped -- represents a type which needs to be instantiated lazily
+
+Utility functions:
+
+infer_type -- given a data value, return an object representing its type
+check_valid_type -- make sure that type is a valid type for an ArgList entry
+type_to_node -- construct an S-expression from a type
+node_to_type -- construct a type from an S-expression
+value_to_node -- construct an S-expression from a value, matching a type
+node_to_value -- construct a value from an S-expression, matching a type
+
+Internal classes:
+
+ArgWrapper -- base class for wrapped value classes
+ArgClassWrapper -- represents a wrapped class instance
+ArgListWrapper -- represents a wrapped list
+ArgTupleWrapper -- represents a wrapped tuple
+
+Internal functions:
+
+seq_value_to_node -- construct an S-expression from a sequence value
+node_to_seq_value -- construct a sequence value from an S-expression
+find_resource_ref -- work out the representation of a resource
+resolve_value -- resolve a value or wrapped value
 """
 
 import sys
@@ -921,8 +957,8 @@ class ListOf(SequenceOf):
 		self.repeat = len(self.types)
 
 class TupleOf(SequenceOf):
-	"""TupleOf: represents a list type, with additional information about
-	the types of the list elements.
+	"""TupleOf: represents a tuple type, with additional information about
+	the types of the tuple elements.
 
 	You can use a TupleOf instance (not the class!) as a type value in
 	an Arg.
@@ -1436,10 +1472,10 @@ class ArgClassWrapper(ArgWrapper):
 	def unwrap(self):
 		ls = [ resolve_value(val) for val in self.argls ]
 		if (not self.argdic):
-			print '### ArgClassWrapper:', self.cla, 'with', ls
+			#print '### ArgClassWrapper:', self.cla, 'with', ls
 			return self.cla(*ls)
 		dic = dict([ (key,resolve_value(val)) for (key,val) in self.argdic.items() ])
-		print '### ArgClassWrapper:', self.cla, 'with', ls, dic
+		#print '### ArgClassWrapper:', self.cla, 'with', ls, dic
 		return self.cla(*ls, **dic)
 
 class ArgListWrapper(ArgWrapper):
