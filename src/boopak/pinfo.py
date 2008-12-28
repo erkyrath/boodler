@@ -4,7 +4,26 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-"""###
+"""pinfo: Classes which describe a Boodler module and its contents.
+
+Classes:
+
+PackageInfo -- represents a single package
+PackageGroup -- represents all the versions of a particular package
+Metadata -- represents the contents of a Metadata file
+Resources -- represents the contents of a Resources file
+Resource -- represents one section in a Resources file
+File -- represents a file in a package
+
+Utility functions:
+
+parse_package_name() -- parse a package name into a list of elements
+encode_package_name() -- convert a package name and version number into an ID
+parse_resource_name() -- parse a resource name into a list of elements
+build_safe_pathname() -- turn a relative pathname into an absolute one, safely
+dict_accumulate() -- build a dict which maps keys to arrays
+dict_all_values() -- get list of all the values in a dict, recursively
+deunicode() -- decode a UTF-8 string into a unicode object
 """
 
 import sys
@@ -15,8 +34,6 @@ import sets
 import codecs
 
 from boopak import version
-
-### add field/method lines to header comments!
 
 class PackageInfo:
 	"""PackageInfo: represents a single package.
@@ -39,11 +56,14 @@ class PackageInfo:
 
 	Public methods:
 
-	validate_metadata() -- check the metadata, and load information from it
 	load_dependencies() -- attempt to load everything this package depends on
 	get_content() -- return the module which is the content of this package
 	get_file() -- get a File object contained within this package
 	open_file() -- open a File object contained within this package
+
+	Internal methods:
+
+	validate_metadata() -- check the metadata, and load information from it
 	"""
 
 	def __init__(self, loader, name, vers, dir, metadata, resources, external):
@@ -76,6 +96,9 @@ class PackageInfo:
 		Also checks that the resource tree has a valid shape.
 
 		If anything is discovered to be wrong, this raises PackageLoadError.
+
+		This is called by the package loader (and nothing else should
+		call it).
 		"""
 
 		pkgname = self.name
@@ -811,8 +834,28 @@ class Resource:
 
 
 class File:
-	### can be ad-hoc
-	### pathname is absolute
+	"""File: represents a file in a package.
+
+	File(pkg, pathname, univname=None) -- constructor
+
+	Creates a file in the given package. (The package may be None if you
+	are creating a File object ad-hoc. Unless it's for a "mix-in" sound
+	file -- those need to know where they live.)
+
+	The pathname should be a valid, non-relative pathname in native
+	form. You can also supply the universal, relative-to-the-package
+	pathname as univname; this is used only when printing the filename
+	for human eyes.
+
+	The file need not exist. But since this class only handles reading
+	files, a File that refers to a nonexistent path can only generate
+	IOError when opened.
+
+	Public method:
+
+	open() -- open the file for reading
+	"""
+	
 	def __init__(self, pkg, pathname, univname=None):
 		self.package = pkg
 		self.pathname = pathname
@@ -826,7 +869,12 @@ class File:
 		else:
 			return '<File \'' + self.pathname + '\'>'
 	def open(self, binary=False):
-		###
+		"""open(binary=False) -> file
+
+		Open the file for reading. Returns a Python file object.
+		If binary is False, the file is opened with newline translation
+		('rU'); otherwise, in binary mode ('rb').
+		"""
 		if (binary):
 			mode = 'rb'
 		else:

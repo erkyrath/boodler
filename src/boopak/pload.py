@@ -4,7 +4,13 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
-"""###
+"""pload: The PackageLoader class.
+
+This module contains PackageLoader, which is responsible for loading and
+tracking the Boodler packages in your collection.
+
+(This does not install or modify packages in your collection. The collect
+module handles those tasks.)
 """
 
 import sys
