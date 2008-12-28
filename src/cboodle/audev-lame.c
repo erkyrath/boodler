@@ -1,6 +1,6 @@
 /* Boodler: a programmable soundscape tool
-   Copyright 2002-7 by Andrew Plotkin <erkyrath@eblong.com>
-   <http://eblong.com/zarf/boodler/>
+   Copyright 2002-9 by Andrew Plotkin <erkyrath@eblong.com>
+   Boodler web site: <http://boodler.org/>
    The cboodle_lame extension is distributed under the GPL.
    See the GPL document, or the above URL, for details.
 */

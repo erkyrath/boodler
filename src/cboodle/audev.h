@@ -1,6 +1,6 @@
 /* Boodler: a programmable soundscape tool
-   Copyright 2002-7 by Andrew Plotkin <erkyrath@eblong.com>
-   <http://eblong.com/zarf/boodler/>
+   Copyright 2002-9 by Andrew Plotkin <erkyrath@eblong.com>
+   Boodler web site: <http://boodler.org/>
    The cboodle extensions are distributed under the LGPL and the
    GPL; you may use cboodle under the terms of either license.
    See the LGPL or GPL documents, or the above URL, for details.

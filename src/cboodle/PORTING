@@ -1,7 +1,7 @@
 Boodler: a programmable soundscape tool
+   <http://boodler.org/>
 
 Designed by Andrew Plotkin <erkyrath@eblong.com>
-   <http://eblong.com/zarf/boodler/>
 
 It is not terribly difficult to port the cboodle module to use a
 different sound driver or library. You need to write a new version of
