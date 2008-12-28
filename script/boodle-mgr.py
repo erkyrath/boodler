@@ -13,23 +13,6 @@
 # If not, see the web URL above, or write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""###
-
-install (file|url)       # install this
-install (pkgv)           # find on web site, install
-installdep (pkgv|file|url) # install, then install dependencies from web site
-verify (pkgv|file|url)   # ensure it loads, display key and name
-describe (pkgv|file|url) # display all metadata
-contents (pkgv|file|url) # display all contents
-versions (pkg)           # show all versions of this package
-current                  # show current version of all packages
-obsolete                 # list packages on which no current one depends
-checkdep (pkgv|file|url) # ensure that all dependencies (trans) are avail
-dependson (pkgv)         # what depends on this
-remove (pkgv)            # delete this
-removeall                # blow collection away
-"""
-
 import sys
 import os
 from optparse import OptionParser
@@ -42,7 +25,8 @@ if ('darwin' in sys.platform.lower()):
 else:
 	Default_Relative_Data_Dir = '.boodler'
 
-parser = OptionParser()
+parser = OptionParser(usage='usage: %prog [ options ] [ command... ]',
+	description='Type "%prog help" for a list of commands, or "%prog" by itself for interactive mode.')
 
 parser.add_option('-d', '--data', action='store', dest='basedir',
 	metavar='DIR', help='directory to store Boodler sound information (default: HOME/'+Default_Relative_Data_Dir+')')

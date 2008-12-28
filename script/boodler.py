@@ -46,8 +46,7 @@ loglevels = {
 	'critical': logging.CRITICAL
 }
 
-popt = optparse.OptionParser(prog=sys.argv[0],
-	usage=usage,
+popt = optparse.OptionParser(usage=usage,
 	formatter=optparse.IndentedHelpFormatter(short_first=False))
 
 popt.add_option('-o', '--output',
@@ -298,7 +297,7 @@ if (opts.verbosehardware or opts.listdevices):
 if (len(args) == 0):
 	if (opts.listdrivers):
 		sys.exit()
-	print usage.replace('%prog', sys.argv[0])
+	print usage.replace('%prog', os.path.basename(sys.argv[0]))
 	sys.exit()
 
 rootprops = []
