@@ -1,5 +1,20 @@
-# python -c 'from boopak import testing; testing.run()'
-# python -c 'from boopak import testing; testing.run("pinfo pload")'
+# Boodler: a programmable soundscape tool
+# Copyright 2002-9 by Andrew Plotkin <erkyrath@eblong.com>
+#   <http://boodler.org/>
+# This program is distributed under the LGPL.
+# See the LGPL document, or the above URL, for details.
+
+"""testing: Unit tests for Boodler.
+
+To run all tests:
+
+    python -c 'from boopak import testing; testing.run()'
+
+You can limit the test to a single module, or a space-separated list of
+modules:
+
+    python -c 'from boopak import testing; testing.run("pinfo pload")'
+"""
 
 import sys
 import unittest

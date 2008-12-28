@@ -1,3 +1,9 @@
+# Boodler: a programmable soundscape tool
+# Copyright 2002-9 by Andrew Plotkin <erkyrath@eblong.com>
+#   <http://boodler.org/>
+# This program is distributed under the LGPL.
+# See the LGPL document, or the above URL, for details.
+
 # readline is not available on all platforms, but we import it if possible.
 try:
 	import readline

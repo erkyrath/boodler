@@ -1,3 +1,9 @@
+# Boodler: a programmable soundscape tool
+# Copyright 2002-9 by Andrew Plotkin <erkyrath@eblong.com>
+#   <http://boodler.org/>
+# This program is distributed under the LGPL.
+# See the LGPL document, or the above URL, for details.
+
 """builtin: A module containing useful utility Agent classes.
 
 These Agents are too important to be distributed in an optional package;
