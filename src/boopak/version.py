@@ -6,6 +6,16 @@
 
 """version: A module which manages version numbers and version number
 requirements.
+
+Classes:
+
+VersionNumber -- represents a structured version number
+VersionSpec -- represents a requirement for certain version numbers
+VersionFormatError -- ValueError representing a bad VersionNumber/Spec
+
+Internal class:
+
+VersionPattern -- represents one PATTERN element of a VersionSpec
 """
 
 import re

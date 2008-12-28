@@ -46,6 +46,21 @@ The former is a list containing one string; the latter is a string.
 This module lets you convert the textual representation of an expression
 into a structured representation -- a tree of Tree objects. (The subclasses
 of Tree are List and ID, representing lists and strings.)
+
+Classes:
+
+Tree -- represents an S-expression
+List -- subclass which represents a list expression
+ID -- subclass which represents a string expression
+
+Public functions:
+
+parse() -- parse a string which contains exactly one S-expression
+
+Internal classes:
+
+AttrToken -- represents a named value encountered during parsing
+ParseContext -- represents the state of an ongoing parse() operation
 """
 
 import StringIO
