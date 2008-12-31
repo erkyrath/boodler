@@ -189,8 +189,10 @@ class InstallCmd(Command):
 			if (vers is None):
 				### really this should query boodler.org for the latest version
 				raise CommandError('You must supply a version number')
-			
-			raise CommandError('### Not yet able to search boodler.org')
+			destfile = create.build_package_filename(pkgname, vers)
+			srctype = collect.Source_URL
+			loc = collect.REPOSITORY_URL + destfile
+			print 'Downloading package from:', loc
 
 		ensure_fetched(srctype, loc)
 		try:

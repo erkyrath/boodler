@@ -29,6 +29,9 @@ Source_PACKAGE = 1
 Source_FILE    = 2
 Source_URL     = 3
 
+# The Boodler repository URL. (With closing slash, please.)
+REPOSITORY_URL = 'http://boodler.org/lib/'
+
 ### between commands, this maintains a state of no external packages.
 
 class PackageCollection(pload.PackageLoader):
