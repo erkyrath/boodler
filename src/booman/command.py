@@ -185,6 +185,11 @@ class InstallCmd(Command):
 		self.assert_done(source)
 
 		if (srctype == collect.Source_PACKAGE):
+			(pkgname, vers) = loc
+			if (vers is None):
+				### really this should query boodler.org for the latest version
+				raise CommandError('You must supply a version number')
+			
 			raise CommandError('### Not yet able to search boodler.org')
 
 		ensure_fetched(srctype, loc)

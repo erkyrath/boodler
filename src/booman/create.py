@@ -588,11 +588,23 @@ def build_package_filename(pkgname, pkgvers):
 	"""build_package_filename(pkgname, pkgvers) -> str
 
 	Given a package name and version, return the canonical name of
-	the file containing it.
+	the file containing it. (This is also used for constructing
+	package URLs; the filename of a package on a server is the same
+	as on disk.)
 
 	This will look like "PACKAGE.VERSION.boop".
+
+	This is guaranteed to create a distinct pathname for every
+	(pkgname, vers) pair. This is true even on case-insensitive
+	filesystems, which is a wrinkle, since version strings are
+	case-sensitive. We work around this by putting a "^" character
+	before each capital letter.
 	"""
-	return (pkgname+'.'+str(pkgvers)+collect.Suffix_PackageArchive)
+	# This would more naturally live in command.py.
+	val = str(pkgvers)
+	val = pinfo.capital_letter_regexp.sub('^\\1', val)
+	res = pkgname+'.'+val+collect.Suffix_PackageArchive
+	return res
 
 version_start_regexp = re.compile('\\.[0-9]')
 		
@@ -607,6 +619,13 @@ def parse_package_filename(val, assume_1=True):
 	In the latter case, the version returned depends on the assume_1
 	argument. To get version 1.0, pass True; to get None, pass False.
 	"""
+
+	# We can't trust the case of filenames on Windows.
+	val = val.lower()
+	if ('^' in val):
+		def reconstruct_caps(match):
+			return match.group(1).upper()
+		val = pinfo.caret_letter_regexp.sub(reconstruct_caps, val)
 
 	suffix = collect.Suffix_PackageArchive
 	if (not val.endswith(suffix)):
@@ -652,6 +671,7 @@ class TestCreate(unittest.TestCase):
 		ls = [
 			('foo.bar', '1.0', 'foo.bar.1.0.boop'),
 			('foo.bar', '2.30.xyzzy.1', 'foo.bar.2.30.xyzzy.1.boop'),
+			('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.bar.baz.9.8.^A.b.^Cd.^E^F.boop'),
 		]
 		for (pkgname, pkgvers, result) in ls:
 			pkgvers = version.VersionNumber(pkgvers)
@@ -661,11 +681,15 @@ class TestCreate(unittest.TestCase):
 	def test_parse_package_filename(self):
 		ls = [
 			('foo.bar', '1.0', 'foo.bar.1.0.boop'),
+			('foo.bar', '1.0', 'FOO.BAR.1.0.BOOP'),
 			('foo.bar', '2.30.xyzzy.1', 'foo.bar.2.30.xyzzy.1.boop'),
 			('foo', '1.2..3', 'foo.1.2..3.boop'),
-			('hello.a.string', '12.95.a._.X', 'hello.a.string.12.95.a._.X.boop'),
+			('hello.a.string', '12.95.a._.X', 'hello.a.string.12.95.a._.^x.boop'),
 			('foo.bar', '1.0', 'foo.bar.boop'),
 			('foo.bar', '2.0', 'foo.bar.2.boop'),
+			('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.bar.baz.9.8.^A.b.^Cd.^E^F.boop'),
+			('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.bar.baz.9.8.^a.b.^cd.^e^f.boop'),
+			('foo.bar.baz', '9.8.A.b.Cd.EF', 'foo.BAR.baz.9.8.^a.B.^CD.^e^F.Boop'),
 		]
 
 		for (pkgname, pkgvers, result) in ls:
@@ -693,8 +717,10 @@ class TestCreate(unittest.TestCase):
 		ls = [
 			'', 'fooboop', '.boop', '!.boop', 'hel lo.boop', 'foo. boop',
 			'1.2.3.boop', '1.2.$.boop', 'foo.1.$.boop', 'foo.$.boop',
-			'Cap.boop', 'zero.0.1.boop', 'foo.1._.boop',
+			'zero.0.1.boop', 'foo.1._.boop',
 			'foo..boop', 'foo..1.boop', 'foo.1..2.boop',
+			'front^caret.boop', 'mis.1.0.caret^.boop',
+			'mis.1.0.^1.boop', 'mis.1.0.^^x.boop', 'mis.1.0.bo^op', 
 		]
 
 		for val in ls:

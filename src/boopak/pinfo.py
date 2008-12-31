@@ -898,6 +898,9 @@ resource_name_regexp = re.compile('\\A[a-zA-Z_][a-zA-Z_0-9]*(\.([a-zA-Z_][a-zA-Z
 # Regexp which matches one capital letter (as a group)
 capital_letter_regexp = re.compile('([A-Z])')
 
+# Regexp which matches a caret followed by one letter (as a group)
+caret_letter_regexp = re.compile('\\^([A-Za-z])')
+
 def parse_package_name(pkgname):
 	"""parse_package_name(pkgname) -> list of str
 
