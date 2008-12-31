@@ -4,6 +4,7 @@
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
 
+import sys
 import sets
 import os.path
 import zipfile
@@ -566,10 +567,11 @@ def ensure_fetched(srctype, loc):
 	fetcher = frame.loader.fetch_source(srctype, loc)
 	if (fetcher is None):
 		return
-	print 'Loading',
+	print 'Loading...',
 	while (not fetcher.is_done()):
 		fetcher.work()
-		print '.',
+		sys.stdout.write('.')
+		sys.stdout.flush()
 	print '.'
 
 # Late imports
