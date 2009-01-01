@@ -156,14 +156,37 @@ class LogFormatter(logging.Formatter):
 	"""LogFormatter: A logging formatter class, customized for Boodler.
 
 	This has format strings built in. It also obeys the --verbose option
-	(or lack of it) when showing backtraces.
+	(or lack of it) when showing backtraces, and when showing the logger
+	name on each line.
 	"""
 	
 	def __init__(self, verbose):
+		if (verbose):
+			dateformat = '%b-%d %H:%M:%S'
+		else:
+			dateformat = '%H:%M:%S'
 		logging.Formatter.__init__(self,
-			'%(asctime)s: (%(name)s) %(message)s',
-			'%b-%d %H:%M:%S')
+			'%(asctime)s (%(name)s) %(message)s', dateformat)
+		if (not verbose):
+			self.format = self.shortFormat
 		self.verboseerrors = verbose
+	def shortFormat(self, rec):
+		"""shortFormat(rec) -> str
+
+		Custom formatting for non-verbose mode. This abbreviates the
+		full logger name to just its last element. This method replaces
+		the normal format() method when -v is not used.
+
+		(Conceivably this could mess up the log message by abbreviating
+		the name in the content section, as well as the header. I don't
+		care.)
+		"""
+		res = logging.Formatter.format(self, rec)
+		if ('.' in rec.name):
+			val = rec.name+')'
+			shortname = val.split('.')[-1]
+			res = res.replace(val, shortname)
+		return res
 	def formatException(self, tup):
 		"""formatException(tup) -> str
 
