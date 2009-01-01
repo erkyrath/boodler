@@ -568,10 +568,13 @@ def ensure_fetched(srctype, loc):
 	if (fetcher is None):
 		return
 	print 'Loading...',
+	count = 0
 	while (not fetcher.is_done()):
 		fetcher.work()
-		sys.stdout.write('.')
-		sys.stdout.flush()
+		count += 1
+		if (count % 2 == 0):
+			sys.stdout.write('.')
+			sys.stdout.flush()
 	print '.'
 
 # Late imports
