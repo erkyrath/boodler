@@ -1,149 +1,134 @@
-<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
 <title>Boodler: Installation</title>
 </head>
 <body>
 
 <h2>Boodler: Installation</h2>
 
+<p>
 Boodler uses the standard Python distutils system for building and
 installation.
-<p>
+</p>
 
 <h3>Prerequisites</h3>
 
+<p>
+First, download and unpack the source code from the
+<a href="http://boodler.org/">Boodler web site</a>. 
+</p>
+
+<p>
 Boodler is written in Python; you must have a Python interpreter installed
 on your system in order to run it. (Python version 2.3.5 or later is 
-recommended. No, it doesn't work in Python3K.)
-<p>
+recommended. No, it doesn't work in Python 3.)
+</p>
 
-Boodler can generate audio output to several destinations, each of
-which is defined by a driver module:
 <p>
+Boodler can generate audio output in any of several forms, each of
+which is defined by a driver module:
+</p>
 
 <ul>
-<li><code>file</code> --   write file containing raw sample output
-<li><code>stdout</code> -- write raw sample output to stdout
-<li><code>oss</code> --    Open Sound System
-<li><code>esd</code> --    Enlightened Sound Daemon
-<li><code>alsa</code> --   Advanced Linux Sound Architecture
-<li><code>macosx</code> -- MacOSX CoreAudio
-<li><code>vorbis</code> -- write Ogg Vorbis file
-<li><code>shout</code> --  Shoutcast or Icecast source
-<li><code>lame</code> --   write MP3 file with LAME encoder
+<li><code>file</code> --   write file containing raw sample output</li>
+<li><code>stdout</code> -- write raw sample output to stdout</li>
+<li><code>oss</code> --    Open Sound System</li>
+<li><code>esd</code> --    Enlightened Sound Daemon</li>
+<li><code>alsa</code> --   Advanced Linux Sound Architecture</li>
+<li><code>macosx</code> -- MacOSX CoreAudio</li>
+<li><code>vorbis</code> -- write Ogg Vorbis file</li>
+<li><code>shout</code> --  Shoutcast or Icecast source</li>
+<li><code>lame</code> --   write MP3 file with LAME encoder</li>
 </ul>
+
+<p>
+Boodler will compile all of these drivers that it can find libraries for.
+If you have a Mac, CoreAudio is available if you have the Mac Developer
+Tools installed. On Linux, one of OSS, ESD, or ALSA is likely to be
+available.
+</p>
 
 <h3>The contents of the archive</h3>
 
+<p>
 If you list the source directory, you will see the following arrangement:
+</p>
 
 <dl>
-<dt>./setup.py
-<dd>A script which compiles and installs Boodler on your machine.
-<dt>./script/boodler.py
+<dt>./setup.py</dt>
+<dd>A script which compiles and installs Boodler on your machine.</dd>
+<dt>./setup.cfg</dt>
+<dd>If you want to modify the installation process, you can put changes
+here.</dd>
+<dt>./script/boodler.py</dt>
 <dd>The Boodler program itself. This Python script starts up the Boodler
-engine.
-<dt>./script/boomsg.py
-<dd>A simple script for sending network events to Boodler.
-<dt>./src/boodle/*.py
-<dd>The <code>boodle</code> Python package. This contains several Python
-modules which are used by Boodler.
-<dt>./src/cboodle/*.c
-<dd>The C source for the <code>boodle.cboodle</code> module. This
-module performs the resampling, linear interpolation, and mixing operations
-which are at the heart of Boodler. It is written in C for efficiency.
-<dt>./effects/*.py
-<dd>The sound effects. Each Python module in this directory contains one
-or more <code>Agent</code> classes; each <code>Agent</code> class creates
-and controls an individual soundscape. When you start up Boodler, you select
-an <code>Agent</code> to run. 
-(Note that this is a directory full of Python modules,
-but it is not a true Python package -- it lacks an <code>__init__.py</code>
-module.)
-<dt>./doc/*.html
-<dd>This documentation.
+engine.</dd>
+<dt>./script/boodle-mgr.py</dt>
+<dd>A script for installing and managing Boodler soundscape components.</dd>
+<dt>./script/boomsg.py</dt>
+<dd>A simple script for sending network events to Boodler.</dd>
+<dt>./src/...</dt>
+<dd>The source code for Boodler. This includes Python code, and also
+some native C code which is needed to resample sound data efficiently.</dd>
+<dt>./etc/...</dt>
+<dd>A few optional configuration files.</dd>
+<dt>./doc/*.html</dt>
+<dd>This documentation.</dd>
 </dl>
-
-You will also need the Boodler sound library, which is available as a
-separate download (boodler-snd.tar.gz).
-<p>
-
-<h3>Setting up your environment</h3>
-
-Download and uncompress the source archive and the sound library.
-(For example's sake, let us say that these are in
-<code>/home/zarf/src/boodler</code>
-and
-<code>/home/zarf/lib/boodler-snd</code>
-respectively.)
-<p>
-
-Boodler requires two environment variables to be set:
-
-<dl>
-
-<dt><code>BOODLER_SOUND_PATH</code>
-<dd>The directory containing the Boodler sound library.
-(<code>/home/zarf/lib/boodler-snd</code>, for example.)
-
-<dt><code>BOODLER_EFFECTS_PATH</code>
-<dd>The directory containing the Boodler sound effect modules.
-(<code>/home/zarf/src/boodler/effects</code>, for example.)
-</dl>
-
-Either of these variables can also be given as a colon-separated list
-of directories, if you want to search in several places for either
-sounds or sound effects.
-<p>
-
-You may also want to make sure that Python's script directory is in
-your <code>PATH</code>. On most Unix systems, this will be
-<code>/usr/local/bin</code>. However, on MacOSX, it is the (somewhat
-unwieldy) 
-<code>/System/Library/Frameworks/Python.framework/Versions/Current/bin</code>.
-<p>
 
 <h3>Building Boodler</h3>
 
 <ol>
 <li>
-Type <em>python setup.py build</em>.
 <p>
+Type <em>python setup.py build</em>.
+</p>
 
+<p>
 This tries to figure out the configuration of your system, and compiles
 the Boodler modules which can be compiled.
-<p>
+</p>
+</li>
 
 <li>
-Type <em>sudo python setup.py install</em>.
 <p>
+Type <em>sudo python setup.py install</em>.
+</p>
 
+<p>
 This installs Boodler in the system's Python directory. The 
 <code>sudo</code> command will ask you for your password, which the 
 setup script needs to write to a system directory. If you want to
 install to a different directory, you could instead type:
-<p>
+</p>
 
+<p>
 <em>python setup.py install --prefix <code>directory</code></em>
+</p>
+</li>
 
 </ol>
 
 <h3>Testing Boodler out</h3>
 
-Try this command:
 <p>
+Try this command:
+</p>
 
 <pre>
-boodler.py play.OneSound pure/stereotest.aiff
+boodler.py --testsound
 </pre>
-<p>
 
-You should hear a seven-note series of test tones -- first alternating
+<p>
+You should hear a quick melody of test tones -- first alternating
 between left and right channels, and then playing in both.
-<p>
+</p>
 
-You can now begin <a href="use.html">using Boodler</a>.
 <p>
+You can now begin <a href="use.html">using Boodler</a>.
+</p>
 
 <h3>If it doesn't work</h3>
 
@@ -156,12 +141,13 @@ file or directory".
 <ul>
 <li>Probably you don't have the Python development package installed on
 your machine. This is the set of include files needed to compile C
-modules for Python. 
+modules for Python.</li>
 <li>If your OS uses RPM packages (Red Hat format),
 find the "python-devel" RPM package; if you use some other installation
 system, the name will be something similar. Make sure you get the headers
-that match your version of Python.
+that match your version of Python.</li>
 </ul>
+</li>
 
 <li>
 You install successfully, but you get the error
@@ -172,11 +158,12 @@ You install successfully, but you get the error
 You probably don't have the Python script directory in your 
 <code>PATH</code>. Try <code>/usr/local/bin/boodler.py</code>, or
 (on the Mac)
-<code>/System/Library/Frameworks/Python.framework/Versions/Current/bin/boodler.py</code>.
+<code>/System/Library/Frameworks/Python.framework/Versions/Current/bin/boodler.py</code>.</li>
 <li>
 If you think you added one of those directories to your <code>PATH</code>,
-type <code>rehash</code>.
+type <code>rehash</code>.</li>
 </ul>
+</li>
 
 <li>
 The script aborts with the exception 
@@ -189,7 +176,9 @@ The default output driver could not be built on your system. Type
 <code>boodler.py --list-drivers</code> to see a list, and then
 try adding <code>-o <em>driver</em></code> to your Boodler command
 line.
+</li>
 </ul>
+</li>
 
 <li>
 The script aborts with the exception
@@ -200,7 +189,9 @@ The script aborts with the exception
 The <code>boodle.cboodle</code> module was unable to open the sound
 device. The first line of the error message will have a more specific
 explanation.
+</li>
 </ul>
+</li>
 
 <li>
 Boodler cannot initialize the audio device because 
@@ -213,16 +204,18 @@ in a different location. You can use the <code>--device</code> argument
 to indicate the correct location:
 
 <pre>
-boodler.py --device /dev/whatever play.OneSound pure/stereotest.aiff
+boodler.py --device /dev/whatever --testsound
 </pre>
+</li>
 </ul>
+</li>
 
 <li>
 Boodler appears to hang forever, never producing any sound.
 
 <ul>
 <li>Some other
-program may be using the sound device. 
+program may be using the sound device.</li>
 <li>
 When Boodler is built using the OSS or ALSA interfaces, it is a greedy beast
 and insists on monopolizing the sound device itself, the entire time
@@ -230,58 +223,68 @@ it is running.
 When Boodler is built using ESD, it is willing to share with other
 ESD programs, but it is still possible for some other program to 
 hog the device and prevent ESD from starting up.
+</li>
 </ul>
+</li>
 
 <li>
 Boodler runs for a few seconds and then stops,
 but you hear no sound.
-(The stereotest sound is 2.8 seconds long.)
 
 <ul>
 <li>
 You need to mess around with your speakers,
 headphones, cables, or some other irritating piece of the real world.
+</li>
 </ul>
+</li>
 
 <li>
 Most soundscapes skip or sound choppy.
 
 <ul>
 <li>Your computer is unable to keep up with Boodler's computation.
-<li>Run fewer applications at the same time as Boodler.
+(This is unlikely on a modern desktop machine, but it could happen
+on an older or low-power device.)</li>
+<li>Run fewer applications at the same time as Boodler.</li>
 <li>Try rebuilding Boodler using the 
 <code>python configure.py --integer</code> configuration option.
 This reduces the number of floating-point operations, at the cost
-of less accurate volume fading.
+of less accurate volume fading.</li>
 <li>If you are using MacOSX, increase the number of sound buffers,
 using the <code>--define buffercount=<em>count</em></code> option.
 The default is 6; increasing it to 12 or 16 should help:
 <pre>
-boodler.py --define buffercount=12 play.OneSound pure/stereotest.aiff
+boodler.py --define buffercount=12 --testsound
 </pre>
-<li>Get a beefier computer.
+</li>
+<li>Get a beefier computer.</li>
 </ul>
+</li>
 
 <li>
 You hear clipping noise (mild static) in some soundscapes.
 
 <ul>
 <li>You need to reduce the amplitude of Boodler's sound stream as it
-passes through your drivers. There are two ways of doing this:
+passes through your drivers. There are two ways of doing this:</li>
 <li>Use a mixer application (such as <code>xmixer</code>,
 <code>amixer</code>, or <code>alsamixer</code>) to reduce the 
 "PCM" component of your sound driver. You can compensate
-by turning up the "Master" component, or just turning up your speakers.
+by turning up the "Master" component, or just turning up your speakers.</li>
 <li>Or, use the <code>--master</code> argument to Boodler, giving it a
 master mixing volume <em>less</em> than the default of 0.5. 
 Again, you can compensate with a mixer application or by turning up
-your speakers.
+your speakers.</li>
+</ul>
+</li>
+
 </ul>
 
-</ul>
 
-
-<hr>
+<hr/>
+<p>
 <em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
 
 </body></html>

@@ -1,5 +1,7 @@
-<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
 <title>Boodler: Version History</title>
 </head>
 <body>
@@ -8,67 +10,89 @@
 
 <ul>
 
+<li>2.0.0 (####, 2009)
+<p>
+Complete redesign of the module system. Soundscapes are now downloaded
+and installed as packages (.boop files) from the Boodler web site.
+</p>
+</li>
+
 <li>1.6.1 (Sep 28, 2007)
 <p>
 Added LAME MP3 driver.
+</p>
 <p>
 Changed the license of the cboodle module (but not the rest of Boodler) 
 to be usable as either GPL or LGPL. (Satisfies the conditions of LAME,
 which is a GPL library.)
+</p>
 <p>
 Fixed setup script to compile OSS correctly on BSD.
+</p>
 <p>
 Updated the ALSA driver to work with the modern Linux API.
 (Thanks to Jason McBrayer for testing.)
-<p>
+</p>
+</li>
 
 <li>1.6.0 (Sep 16, 2007)
 <p>
 Lots of changes...
+</p>
 <p>
 Changed the configure/build system to use a standard Python distutils
 script.
+</p>
 <p>
 You can now build Boodler with multiple output drivers, and choose
 among them at runtime.
+</p>
 <p>
 Added Shoutcast and Ogg Vorbis drivers (contributed by Aaron Griffith).
 Also a stdout driver.
+</p>
 <p>
 MacOSX driver now allows you to choose a particular sound device, if you
 have more than one.
-<p>
+</p>
+</li>
 
 <li>1.5.3 (May 2, 2002)
 <p>
 Improved skip-resistance in MacOSX version, by using a multiple sound
 buffers. Added <code>--define buffercount=<em>count</em></code> option,
 to control this.
-<p>
+</p>
+</li>
 
 <li>1.5.2 (Apr 30, 2002)
 <p>
 Added MacOSX support. Tested with Python installed as an OSX framework;
 might also work with "Unix-style" Python configuration.
-<p>
+</p>
+</li>
 
 <li>1.5.0 (Feb 19, 2002)
 <p>
 Added the <code>stereo</code> module, and the ability to create a channel
 at a particular stereo position. (No, you still can't <em>change</em> a
 channel's stereo position as it plays. That's harder. Sorry.)
+</p>
 <p>
 Added many sounds to the library, and many soundscapes to the effects
 directory.
-<p>
+</p>
+</li>
 
 <li>1.4.0 (Dec 17, 2001)
 <p>
 Added the pwrain and owstorm modules, contributed by Peter and Owen Williams.
+</p>
 <p>
 Added support for Unix domain sockets, as an alternative to network
 sockets.
-<p>
+</p>
+</li>
 
 <li>1.3.0 (Dec 12, 2001)
 <p>
@@ -76,46 +100,59 @@ Added the <code>--integer</code> argument to <code>configure.py</code>.
 This uses integer computation in some places instead of floating-point
 computation. Possibly useful on very old machines, or very tiny ones
 (such as PDAs).
+</p>
 <p>
 Removed some obsolete code from the OSS driver, which was failing on
 the Zaurus.
-<p>
+</p>
+</li>
 
 <li>1.2.0 (Dec 3, 2001)
 <p>
 Added a command-line argument which is passed down to the sound interface
 unchanged. This allows interface-specific arguments.
+</p>
 <p>
 Added the FILE interface, which writes raw sound output to a disk file
 instead of to the computer's sound hardware.
+</p>
 <p>
 Added some agents to the listen module, which respond to standard 
 remote-control button events. (See the serialwatch.py script on the
 "Accessories" page of the
 <a href="http://eblong.com/zarf/boodler/">Boodler project 
 web site</a>.)
-<p>
+</p>
+</li>
 
 <li>1.1.0 (Nov 27, 2001)
 <p>
 Added configuration script.
 Added support for ALSA and ESD sound interfaces.
+</p>
 <p>
 Fixed bug in OSS interface which caused clicking on machines with only
 two kernel sound buffers.
+</p>
 <p>
 Rearranged the event-listening system. Agents must now be of a particular
 subclass (EventAgent) in order to be posted to listen for events. The
 event triggers an agent.receive(event) method, instead of agent.run().
-<p>
+</p>
+</li>
 
 <li>Initial release (Nov 22, 2001)
 <p>
 Initial release. Only supports OSS sound driver.
+</p>
+</li>
 
 </ul>
 
-<hr>
+
+<hr/>
+<p>
 <em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
 
 </body></html>

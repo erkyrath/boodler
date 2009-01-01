@@ -1,431 +1,419 @@
-<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head>
-<title>Boodler: Using It</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+<title>Boodler: Playing Soundscapes</title>
 </head>
 <body>
 
-<h2>Boodler: Using It</h2>
+<h2>Boodler: Playing Soundscapes</h2>
 
-First, make sure you have downloaded the Boodler source and 
-sound library packages; 
-compiled and installed Boodler; and set the necessary
-environment variables. 
-(See <a href="install.html">Installing Boodler</a>.)
 <p>
-
-The use of Boodler, in its simplest form, is, um, simple:
-<p>
-<pre>
-boodler.py module.ClassName
-</pre>
-<p>
-
-...where <code>module</code> is one of the files in
-<code>$BOODLER_EFFECTS_PATH</code> (without the <code>.py</code>
-suffix), and ClassName is one of the <code>Agent</code> classes
-in that file. For example:
-<p>
-<pre>
-boodler.py crows.ParliamentOfCrows
-</pre>
-<p>
-
-Most <code>Agent</code> classes produce an unending stream of sound,
-causing Boodler to run forever (or until you hit ctrl-C). Some 
-agents, however, come to a conclusion and shut themselves
-down. If you tell Boodler to run such an agent, Boodler will exit
-when the agent is finished.
-<p>
-
-<h3>Running agent classes with arguments</h3>
-
-Some <code>Agent</code> classes take additional options, which you can
-add to the command line after the class name. For example, 
-<p>
-<pre>
-boodler.py play.OneSound environ/droplet-bloink.aiff
-</pre>
-<p>
-
-<code>play.OneSound</code> is an agent which takes exactly one argument --
-the name of a sound -- and plays it once, and then exits. (The sound
-is searched for in <code>$BOODLER_SOUND_PATH</code>.)
-<p>
-
-<code>play.OneSound</code> requires one argument -- you will get an error
-if you try to pass none (or two or more). 
-Some <code>Agent</code> classes, however, have optional arguments --
-or both mandatory and optional arguments. If you try
-<p>
-<pre>
-boodler.py play.OneSoundOpts environ/droplet-bloink.aiff</pre>
-<p>
-...you will hear exactly the same "bloink" noise as in the previous
-example. However, <code>play.OneSoundOpts</code> takes up to three
-additional arguments: the pitch, the volume, and the stereo (left-right)
-shift. You may do
-<p>
-<pre>
-boodler.py play.OneSoundOpts environ/droplet-bloink.aiff 0.5 0.75 -1.0</pre>
-<p>
-...to hear this sound played an octave lower, at 75% volume, and shifted
-entirely to the left speaker channel.
-<p>
-
-Some <code>Agent</code> classes take arguments which are themselves the
-names of other <code>Agent</code> classes. Try this:
-<p>
-<pre>
-boodler.py manager.Simultaneous crows.ParliamentOfCrows wind.Windstorm
-</pre>
-<p>
-
-The <code>manager.Simultaneous</code> agent takes as arguments any number
-of <code>Agent</code> classes; it sets them all playing at the same
-time. In this case, you get a bunch of crows complaining about the blustery
-weather.
-<p>
-
-(There is currently no way to pass arguments to any agents which are
-themselves arguments. You cannot, for example, say
-<p>
-<pre>
-boodler.py manager.Simultaneous wind.Windstorm play.OneSound environ/droplet-bloink.aiff</pre>
-<p>
-...because <code>manager.Simultaneous</code> will just think that
-<code>environ/droplet-bloink.aiff</code> is supposed to be a third 
-agent. I may come up with a way around this in some future release.
-In the meantime, it is trivial to write your own agent which accomplishes
-this simultaneity. See <a href="design.html">Designing New Soundscapes</a>.)
-
-<h3><a name="events">Sending events to Boodler</a></h3>
-
-Some Agent classes can receive events, or messages, sent by other programs.
-Boodler listens on a network socket for these messages if you give the
-<code>--listen</code> argument. (If you do not, Boodler does <em>not</em>
-listen for events, and event-receiving agents will not run.
-This is the default behavior for reasons of security paranoia.)
-<p>
-
-To send an event, use
-the <code>boomsg.py</code> program:
-<p>
+First, make sure you have downloaded Boodler and installed it. (See <a href="install.html">Installing Boodler</a>.) This command should play a little test melody:
+</p>
 
 <pre>
-boomsg.py go
-</pre>
-<p>
-
-This sends a simple message <code>('go')</code> to a listening Boodler
-process -- by default, on the same machine. To send a message to a 
-different machine, you would say:
-<p>
-
-<pre>
-boomsg.py --hostname machine.addr.net go
-</pre>
-<p>
-
-You can also send a more complex message, with several words:
-<p>
-
-<pre>
-boomsg.py go 5.47 cheese
-</pre>
-<p>
-
-The effect of an event depends on what agent has been posted to receive it.
-For examples of Agent classes that receive events,
-see the <code>listen</code> module in the list of soundscapes.
-<p>
-
-<h3>What soundscapes are there?</h3>
-
-<a href="catalog.html">Here is the list of sound agents</a> which come
-with Boodler.
-<p>
-
-<h3>Choosing an output driver</h3>
-
-By default, Boodler uses an appropriate sound device for your computer.
-(The OSS library on Unixes; CoreAudio on MacOSX.) But there are
-many output drivers available. To see which ones were compiled
-in your Boodler installation:
-<p>
-
-<pre>
-boodler.py --list-drivers
-</pre>
-<p>
-
-You can adjust the behavior of each driver with various command-line
-arguments. Most understand the <code>--rate</code> and
-<code>--device</code> arguments (although the meaning of the latter
-depends on the driver). Some drivers also accept additional arguments,
-using the <code>--define <em>opt</em></code> or
-<code>--define <em>opt=val</em></code> command-line arguments. (Use 
-<code>--hardware</code> to show the driver details.)<p>
-
-Boodler currently offers these drivers:
-
-<h4><code>file</code> --   write file containing raw sample output</h4>
-
-The file will be named "boosound.raw" by default. To change this, pass
-a filename as the <code>--device</code>.
-<p>
-
-The file will contain raw PCM sound sample data, two channels, 16 bits
-per sample, signed (centered at 0). By default the samples will be
-in the native endianness of your computer, but you can change this with
-<code>--define end=big</code> or <code>--define end=little</code>.
-<p>
-
-This driver limits the size of the file. By default, it will only write
-five seconds of sound data; you can change the limit with the
-<code>--define time=<em>interval</em></code> option. If the
-sound agent stops before the time limit, you'll get a shorter file.
-<p>
-
-(Note that this driver writes to the file as quickly as possible.
-It probably won't take five seconds to generate a five-second
-sound file.)
-<p>
-
-<dl>
-<dt><code>--define time=<em>interval</em></code>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.
-<dt><code>--define end=big</code>
-<dd>Force the sound output to be written big-endian.
-<dt><code>--define end=little</code>
-<dd>Force the sound output to be written little-endian.
-</dl>
-
-<h4><code>stdout</code> -- write raw sample output to stdout</h4>
-
-This is similar to the <code>file</code> driver, but it streams its
-data to stdout, and there is no time limit. The 
-<code>--device</code> argument is ignored.
-<p>
-
-The <code>stdout</code> driver, like the <code>file</code> driver,
-generates sound data as quickly as possible. This will probably
-be much faster than real time! If you pipe the output to a file,
-you will have a very large file very soon. This driver is intended
-to be piped to an application that can regulate its input, such as
-<a href="http://www.icecast.org/ices.php">Ices</a>.
-<p>
-
-<dl>
-<dt><code>--define end=big</code>
-<dd>Force the sound output to be written big-endian.
-<dt><code>--define end=little</code>
-<dd>Force the sound output to be written little-endian.
-</dl>
-
-<h4><code>oss</code> --    Open Sound System</h4>
-
-This is the default output driver on Linux and other Unixes.
-Use <code>--device</code> to control which audio hardware device
-is used; the default is <code>/dev/dsp</code>.
-<p>
-
-<h4><code>alsa</code> --   Advanced Linux Sound Architecture</h4>
-
-Another Unix sound framework. Use <code>--device</code> to control which
-ALSA device is used; the default is <code>default</code>.
-<p>
-
-<dl>
-<dt><code>--define buffersize=<em>frames</em></code>
-<dd>Define the length of Boodler's generation buffer, in frames.
-The default is 4096.
-<dt><code>--define hwbuffer=<em>frames</em></code>
-<dd>Define the length of the ALSA sound buffer, in frames. The default
-is 16384. If you find that the sound skips when the CPU is busy,
-increase this value. The hwbuffer should not be shorter than the buffersize.
-<dt><code>--define periodsize=<em>frames</em></code>
-<dd>Define the length of the ALSA transfer period. This should be a
-fraction of the buffersize. The default is left up to the ALSA
-driver; it depends on the buffersize.
-</dl>
-
-<h4><code>esd</code> --    Enlightened Sound Daemon</h4>
-
-Yet another Unix sound framework. The <code>--device</code> option defines 
-the hostname to send sound to; it defaults to <code>localhost</code>.
-If no ESD daemon is running, this will attempt to write directly to
-<code>/dev/dsp</code>.
-<p>
-
-<h4><code>macosx</code> -- MacOSX CoreAudio</h4>
-
-This is the default output driver on MacOSX.
-<p>
-
-<dl>
-<dt><code>--define buffercount=<em>count</em></code>
-<dd>Create a queue of <em>count</em> buffers. If you find that the
-sound skips when the CPU is busy (for example, when you're dragging
-or resizing windows), increase this value. The default is 6.
-<dt><code>--define buffersize=<em>size</em></code>
-<dd>Set each CoreAudio buffer to be <em>size</em> bytes long.
-The default is 32768. (I have found that using a value of 65536
-or more causes clicking; I'm not sure why.)
-</dl>
-
-<h4><code>vorbis</code> -- write Ogg Vorbis file</h4>
-
-This writes a file, like the <code>file</code> driver; but it
-generates an Ogg Vorbis file. The default filename is "boosound.ogg".
-To change this, pass a filename as the <code>--device</code>.
-<p>
-
-<dl>
-<dt><code>--define time=<em>interval</em></code>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.
-<dt><code>--define quality=<em>val</em></code>
-<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
-quality) to 1.0 (high).
-</dl>
-
-<h4><code>shout</code> --  Shoutcast or Icecast source</h4>
-
-This generates an Ogg Vorbis stream, and sends it to a Shoutcast or
-Icecast server (using 
-<a href="http://www.icecast.org/download.php">libshout</a>).
-<p>
-
-<dl>
-<dt><code>--define shout-server=<em>name</em></code>
-<dd>Connect to shoutcast or icecast server <em>name</em>. Can be a
-domain or an IP address. Defaults to "127.0.0.1".
-<dt><code>--define shout-port=<em>port</em></code>
-<dd>Use port <em>port</em> on the streaming server. Defaults to 8000.
-<dt><code>--define shout-user=<em>name</em></code>
-<dd>Login with username <em>user</em> to the server. Defaults to "source".
-<dt><code>--define shout-password=<em>password</em></code>
-<dd>Login with password <em>password</em> to the server. Defaults to "hackme".
-<dt><code>--define shout-mount=<em>mount</em></code>
-<dd>With an icecast server, mount the sound on <em>mount</em>. Defaults to "/boodler.ogg".
-<dt><code>--define shout-protocol=<em>type</em></code>
-<dd>Use <em>type</em> as the protocol. Use "http" for icecast2,
-"xaudiocast" for icecast1, and "icy" for a shoutcast server. Defaults to "http".
-<dt><code>--define quality=<em>val</em></code>
-<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
-quality) to 1.0 (high).
-</dl>
-
-<h4><code>lame</code> -- write MP3 file with LAME encoder</h4>
-
-This writes a file, like the <code>file</code> driver; but it
-generates an MP3 file. The default filename is "boosound.mp3".
-To change this, pass a filename as the <code>--device</code>.
-<p>
-
-<dl>
-<dt><code>--define time=<em>interval</em></code>
-<dd>Generate approximately <em>interval</em> seconds of output. 
-This defaults to five seconds.
-<dt><code>--define quality=<em>val</em></code>
-<dd>Set the LAME VBR compression quality, from 9 (low bitrate and 
-quality) to 0 (high). Yes, it's backwards. The default is 2.
-<dt><code>--define fast</code>
-<dd>Use a faster VBR encoding algorithm. (Reduces quality somewhat.)
-<dt><code>--define abr=<em>rate</em></code>
-<dd>Use ABR (fixed average bit rate) of <em>rate</em> KBPS.
-The <em>rate</em> can be from 8 to 320.
-<dt><code>--define haste=<em>val</em></code>
-<dd>Modify the speed of the encoding algorithm, from 0 (slow and careful)
-to 9 (hasty). This affects the quality (but not the bit rate) of the output. 
-The default is 2.
-</dl>
-
-<h3>All the obscure options</h3>
-
-<pre>
-boodler.py [ options ] module.AgentClass [ data ... ]
+boodler.py --testsound
 </pre>
 
-<dl>
+<p>
+If that doesn't work, none of the rest of this will.
+</p>
 
-<dt><code>--output <em>driver</em></code>
-<dd>Select one of the available driver modules.
-The default is <code>oss</code> on Unix, or <code>macosx</code> on
-MacOSX.
+<h3>Installing packages</h3>
 
-<dt><code>--list-drivers</code>
-<dd>List the driver modules which are available. Any of the listed
-drivers may be used with the <code>--output</code> option.
+<p>
+Aside from that one test sound, all Boodler sounds and soundscapes are found in <em>packages,</em> which you must download and install from the <a href="http://boodler.org/">Boodler web site</a>. The package collection is at <a href="http://boodler.org/lib/">http://boodler.org/lib/</a>.
+</p>
 
-<dt><code>--device <em>device</em></code>
-<dd>Set the device which Boodler will write to. The details depend on
-which driver module you have selected.
+<p>
+If you take a look, you'll see a long list of files ending with ".boop". (For "Boodler package", right?) For example, <code>org.boodler.play.1.0.boop</code> indicates a package named "org.boodler.play", version 1.0. Package names look like reverse domain names (or like Java package names). This makes it easy for people to add new packages without accidentally choosing the same name. <code>org.boodler</code> packages are core Boodler code; <code>com.eblong.zarf</code> packages were created by your humble servant. (To be sure, I also wrote the <code>org.boodler</code> packages. But I keep a distinction between work I do as part of the Boodler engine and Boodler soundscapes that I design.)
+</p>
 
-<dt><code>--list-devices</code>
-<dd>List the devices which are available for this driver module.
-(Not all drivers provide such a list.)
+<p>
+A package can contain sound samples, soundscapes, or both. But to facilitate sharing, most packages contain only one or the other. So when you want a soundscape package, you will typically have to download both that package and the sound packages it relies on.
+</p>
 
-<dt><code>--rate <em>soundrate</em></code>
-<dd>Set the sampling rate (in frames per second) which Boodler will try
-to use. If the sound device does not support this rate, Boodler will try
-to fall back upon some sampling rate which is supported. The 
-default depends on the output driver, but may be 44100.
+<p>
+<em>(Some future version of Boodler will figure out these dependencies, find all the required packages, and download them automatically. Until that's written, though, you'll have to do it manually. We apologize.)</em>
+</p>
 
-<dt><code>--master <em>volume</em></code>
-<dd>Set the master mixing volume for all sounds. The default is 0.5.
-You should <em>not</em> increase this. If you do, any soundscapes that
-play more than one sound at a time (most of them) are likely to suffer from 
-clipping noise -- sporadic static. 
-(To increase Boodler's volume, you should use a mixer application to
-adjust your sound driver, or just turn up your speakers.)
-If you hear clipping noise in complex
-soundscapes, try <em>reducing</em> this option below 0.5.
+<p>
+You download packages using the <code>boodle-mgr.py</code> script. To begin with, try this:
+</p>
 
-<dt><code>--verbose</code>
-<dd>Turn on verbose handling of exceptions. Normally, if an exception
-occurs in the execution of an agent, Boodler just prints the name of
-the exception and continues running. If you set <code>--verbose</code>,
-Boodler will print out the entire Python stack trace.
+<pre>
+boodle-mgr.py install http://boodler.org/lib/org.boodler.old.crow.1.0.boop
+</pre>
 
-<dt><code>--hardware</code>
-<dd>Display the capabilities of your sound hardware at startup time.
-This shows you explicitly what sample format and frame rate Boodler is
-using. It also dumps whatever other information about the sound
-interface might (conceivably) be important.
+<p>
+This is a sound package, a collection of squawking crow samples. (It's filed in <code>org.boodler.old</code> because it was part of the sound library for Boodler version 1. I reorganized all those samples into <code>org.boodler.old</code> packages.)
+</p>
 
-<dt><code>--stats <em>interval</em></code>
-<dd>Turn on periodic statistics reporting. At intervals (given in
-seconds), Boodler will print out a message saying how many agents,
-channels, sounds, and note are queued up. This may be helpful for
-debugging soundscapes; if you see a value which increases without
-limit, you probably have a bug.
+<p>
+You should see this output:
+</p>
 
-<dt><code>--listen</code>
-<dd>Cause Boodler to listen for events on a network socket (port 31863).
-Agents can be triggered by these events. See <a href="#events">above</a>.
+<pre>
+Loading....
+Package: org.boodler.old.crow    Version: 1.0
+Title: Original Boodler crow collection
+</pre>
 
-<dt><code>--port <em>port</em></code>
-<dd>If <code>--listen</code> is used, this causes Boodler to listen
-on the given port number (instead of the default port 31863). 
-The port may also be an absolute pathname (beginning with "/"),
-in which case Boodler uses a Unix domain socket instead of a network
-socket.
+<p>
+You have now downloaded and installed the package named <code>org.boodler.old.crow</code>. The files have been stashed in your home directory. On a Mac, this will be in <code>~/Library/Application Support/Boodler</code>. On Linux or Windows, it will be a <code>~/.boodler</code> folder.
+</p>
 
-<dt><code>--define <em>opt</em></code>
-<dd>
+<p>
+Now install the soundscape which uses these crow samples:
+</p>
 
-<dt><code>--define <em>opt=val</em></code>
-<dd>Pass an option in to the sound driver. The available options
-depend on which driver Boodler is compiled with.
-Note that if an <em>=val</em> is supplied, there may not be any spaces
-before or after the equals sign. See the previous section
-for the meaning of the many options.
+<pre>
+boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.crows.1.0.boop
+</pre>
 
-</dl>
+<p>
+The <code>com.eblong.zarf.crows</code> package contains two soundscapes. Here's how to run the one named <code>ParliamentOfCrows</code>:
+</p>
 
-<hr>
+<pre>
+boodler.py com.eblong.zarf.crows/ParliamentOfCrows
+</pre>
+
+<p>
+You always run <code>boodler.py</code> by naming a package, followed by a slash, followed by the name of a soundscape in that package. You should hear a continual (and non-repeating!) stream of squawking noises. The soundscape will continue to play until you kill it, by hitting ctrl-C.
+</p>
+
+<p>
+If you see a "package directory does not exist" error, then you didn't install one or the other of these packages. Install them both, and the soundscape should play.
+</p>
+
+<h3>Managing your packages</h3>
+
+<p>
+The <code>boodle-mgr.py</code> script can do much more than download packages. It is a complete toolkit for managing your package collection. Try this:
+</p>
+
+<pre>
+boodle-mgr.py current
+</pre>
+
+<p>
+The "current" command shows all the packages you have installed. You should see:
+</p>
+
+<pre>
+   com.eblong.zarf.crows
+   org.boodler.old.crow
+2 packages installed (ignoring multiple versions)
+</pre>
+
+<p>
+See the <a href="boodle-mgr-ref.html"><code>boodle-mgr.py</code> reference</a> for complete documentation of <code>boodle-mgr.py</code>. But it's worth mentioning a few tricks here:
+</p>
+
+<p>
+The "contents" command shows the contents of an installed package:
+</p>
+
+<pre>
+boodle-mgr.py contents com.eblong.zarf.crows
+</pre>
+
+<p>
+This will list the sounds and soundscapes ("agent" means a soundscape) in that package:
+</p>
+
+<pre>
+Package: com.eblong.zarf.crows    Version: 1.0
+Resources: 2
+   ParliamentOfCrows [agent]
+   SomeCrows [agent]
+</pre>
+
+<p>
+The "describe" command shows metadata about a package: title, author, licensing, what packages it requires. The "delete" command, unsurprisingly, deletes a package. The "help" command lists all the available <code>boodle-mgr.py</code> commands.
+</p>
+
+<p>
+You can install a ".boop" file that you have saved locally, as well as installing by URL. You could have installed the <code>org.boodler.old.crow</code> package by downloading <a href="http://boodler.org/lib/org.boodler.old.crow.1.0.boop">http://boodler.org/lib/org.boodler.old.crow.1.0.boop</a> in your web browser, saving it as a file, and then typing:
+</p>
+
+<pre>
+boodle-mgr.py install org.boodler.old.crow.1.0.boop
+</pre>
+
+<p>
+Finally, <code>boodle-mgr.py</code> can be run as an interactive command-line tool. If you simply type <code>boodle-mgr.py</code> by itself, you will see a prompt, and you can type any of the above commands:
+</p>
+
+<pre>
+Welcome to Boodle-Manager. Type "help" for a list of commands.
+
+&gt; current
+   com.eblong.zarf.crows
+   org.boodler.old.crow
+2 packages installed (ignoring multiple versions)
+
+&gt; describe com.eblong.zarf.crows
+Package: com.eblong.zarf.crows    Version: 1.0
+Metadata entries: 5
+   boodler.main: main
+   boodler.package: com.eblong.zarf.crows
+   boodler.requires: org.boodler.old.crow
+   dc.creator: Andrew Plotkin
+   dc.title: The crows
+
+&gt; contents com.eblong.zarf.crows
+Package: com.eblong.zarf.crows    Version: 1.0
+Resources: 2
+   ParliamentOfCrows [agent]
+   SomeCrows [agent]
+
+&gt; quit
+&lt;exiting&gt;
+</pre>
+
+<h3>Passing arguments to soundscapes</h3>
+
+<p>
+Some soundscapes take additional options, which you can add to the command line after the soundscape names. If you just want to hear what the creator set up, you don't have to read this section. But options can let you customize your Boodler experience in all sorts of ways.
+</p>
+
+<p>
+Here's an example. Install these two packages:
+</p>
+
+<pre>
+boodle-mgr.py install http://boodler.org/lib/org.boodler.old.clock.1.0.boop
+boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.clock.1.0.boop
+</pre>
+
+<p>
+<code>Tick</code> is a very simple soundscape which plays a ticking clock:
+</p>
+
+<pre>
+boodler.py com.eblong.zarf.clock/Tick
+</pre>
+
+<p>
+But this soundscape also accepts a numeric argument, which modifies the speed of the ticking. The default value is 1; higher values speed up the clock, and lower values slow it down. Try:
+</p>
+
+<pre>
+boodler.py com.eblong.zarf.clock/Tick 1.3
+boodler.py com.eblong.zarf.clock/Tick 0.7
+</pre>
+
+<p>
+You can try other values. But be moderate. Lower than 0.2 or higher than 5 will be distorted or difficult to hear.
+</p>
+
+<p>
+(This is a simple resampling technique which changes both the pitch and the speed of the sound. Boodler does not offer fancier audio-editing capabilities like changing the pitch while holding the tempo constant.)
+</p>
+
+<p>
+In fact the <code>Tick</code> soundscape accepts <em>two</em> options. The second is a "pan" argument, which controls where in stereo space the ticking seems to come from. 0 is the center, -1 is the left channel, 1 is the right channel. So:
+</p>
+
+<pre>
+boodler.py com.eblong.zarf.clock/Tick 1 0.75
+</pre>
+
+<p>
+...will generate ticking of the normal speed, but mostly (not entirely) shifted to the right channel. You may have to plug in headphones or stereo speakers to hear this effect.
+</p>
+
+<p>
+You may notice that a negative value, for the left channel, doesn't actually work. It generates a confusing "no such option" error. This is because of the way Unix apps parse command-line options. You can work around it by either putting "--" before the soundscape name, or by putting all of the arguments in quotes.
+</p>
+
+<pre>
+boodler.py -- com.eblong.zarf.clock/Tick 1 -0.75
+boodler.py "com.eblong.zarf.clock/Tick 1 -0.75"
+</pre>
+
+<p>
+(Yes, you can give pan values greater than 1 or less than -1. These shift the sound source <em>past</em> the left or right speaker. It will still come from that side, but fainter, because it is "more distant".)
+</p>
+
+<p>
+What if you want to specify just the pan value, rather than both numbers? You can often give an argument by name. For example:
+</p>
+
+<pre>
+boodler.py com.eblong.zarf.clock/Tick pan=0.75
+</pre>
+
+<p>
+This gives a rightward stereo shift, as described above, but leaves the speed at the default value (1). The speed argument is called <code>pitch</code>, so you could also do:
+</p>
+
+<pre>
+boodler.py com.eblong.zarf.clock/Tick pitch=0.75
+</pre>
+
+<p>
+...to play a slow, center-field sound.
+</p>
+
+<p>
+<em>(How do you know what options a soundscape takes, and what they're named? The <code>Tick</code> soundscape accepts <code>pitch</code> and <code>pan</code>, but other soundscapes want different arguments, or none. Unfortunately, there is no current way to do this, except for examining the source code in your package collection. A future version of <code>boodle-mgr.py</code> will allow you to examine a soundscape and list its options.)</em>
+</p>
+
+<h3>Passing sound arguments to soundscapes</h3>
+
+<p>
+We've seen soundscapes make use of sounds from other packages. Some soundscapes accept sounds as arguments. Here's a handy trick; install this package:
+</p>
+
+<pre>
+boodle-mgr.py install http://boodler.org/lib/org.boodler.play.1.0.boop
+</pre>
+
+<p>
+Then try:
+</p>
+
+<pre>
+boodler.py org.boodler.play/OneSound org.boodler.old.clock/clock_cuckoo
+</pre>
+
+<p>
+This plays a "cuckoo" sample from the <code>org.boodler.old.clock</code> package you installed above. (If you see an "unable to load" error, go install it.)
+</p>
+
+<p>
+The <code>OneSound</code> soundscape can play any sound file from any Boodler package you have installed. Use the "contents" command (in <code>boodle-mgr.py</code>) to list the packages you have, and explore the sounds that are available. <code>OneSound</code> also has <code>pitch</code>, <code>volume</code>, and <code>pan</code> arguments, so you can alter the sounds as you play them:
+</p>
+
+<pre>
+boodler.py org.boodler.play/OneSound org.boodler.old.clock/clock_cuckoo pitch=1.5 pan=1
+</pre>
+
+<p>
+The <code>org.boodler.play</code> package has several tools for playing particular sounds. <code>SoundSequence</code> lets you play several sounds in a row:
+</p>
+
+<pre>
+boodler.py org.boodler.play/SoundSequence org.boodler.old.clock/clock_tick
+    org.boodler.old.clock/clock_chime org.boodler.old.clock/clock_cuckoo
+</pre>
+
+<p>
+(That should be typed all on one line, by the way.)
+</p>
+
+<p>
+<code>RepeatSound</code> plays a single sound over and over. You could say:
+</p>
+
+<pre>
+boodler.py org.boodler.play/RepeatSound org.boodler.old.clock/clock_tick
+</pre>
+
+<p>
+...and, in fact, this is essentially how the <code>com.eblong.zarf.clock/Tick</code> soundscape works.
+</p>
+
+<h3>Passing soundscapes to other soundscapes</h3>
+
+<p>
+Some soundscapes make use of other soundscapes -- not just sound samples. Some soundscapes accept other soundscapes <em>as arguments</em>. This lets you play all sorts of interesting tricks.
+</p>
+
+<p>
+Install these five packages. (You may have already installed the crows from the earlier example.)
+</p>
+
+<pre>
+boodle-mgr.py install http://boodler.org/lib/org.boodler.old.crow.1.0.boop
+boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.crows.1.0.boop
+boodle-mgr.py install http://boodler.org/lib/org.boodler.old.weather.1.0.boop
+boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.basicwind.1.0.boop
+boodle-mgr.py install http://boodler.org/lib/org.boodler.manage.1.1.boop
+</pre>
+
+<p>
+The <code>crows</code> and the <code>basicwind</code> give us a nice assortment of Halloweeny soundscapes:
+</p>
+
+<pre>
+boodler.py com.eblong.zarf.crows/ParliamentOfCrows
+boodler.py com.eblong.zarf.basicwind/Windstorm
+</pre>
+
+<p>
+It would be nice to play the crows and the wind simultaneously. You could <a href="design.html">learn soundscape design</a> and write a soundscape that blended them -- and I encourage you to do that. But the capability is already available, in <code>org.boodler.manage/Simultaneous</code>:
+</p>
+
+<pre>
+boodler.py org.boodler.manage/Simultaneous
+    com.eblong.zarf.crows/ParliamentOfCrows
+    com.eblong.zarf.basicwind/Windstorm
+</pre>
+
+<p>
+(That should be typed all on one line.)
+</p>
+
+<p>
+The <code>Simultaneous</code> soundscape takes a <em>list</em> of soundscapes as arguments, and plays all of them. You can even include arguments to the soundscapes on the list:
+</p>
+
+<pre>
+boodler.py "org.boodler.manage/Simultaneous
+    com.eblong.zarf.crows/ParliamentOfCrows
+    (com.eblong.zarf.basicwind/SteadyGale 0.8)"
+</pre>
+
+<p>
+<code>SteadyGale</code> takes a <code>pitch</code> argument, and this example lowers it to 0.8. The parenthesized list wraps up the soundscape and its arguments, and presents them to <code>Simultaneous</code> as a unit. Sadly, Unix treats parentheses specially, so you have to quote all the arguments, or use a lot of backslashes. (The "--" trick won't work here.)
+</p>
+
+<p>
+Some other varied examples:
+</p>
+
+<pre>
+boodler.py org.boodler.manage/Sequential 6 8 2
+    com.eblong.zarf.crows/ParliamentOfCrows
+    com.eblong.zarf.basicwind/Windstorm
+</pre>
+
+<p>
+As you might expect, <code>Sequential</code> plays several soundscapes in sequence -- in this case, it alternates between the crows and the wind. The numeric arguments tell it to switch every 6 to 8 seconds, with a two-second crossfade.
+</p>
+
+<pre>
+boodler.py org.boodler.manage/Limit com.eblong.zarf.basicwind/Windstorm
+</pre>
+
+<p>
+<code>Limit</code> plays a soundscape for a limited time -- 30 seconds, by default -- and then cuts it off. (Notice that when all soundscapes have ended, Boodler shuts down by itself.)
+</p>
+
+<pre>
+boodler.py org.boodler.manage/Limit com.eblong.zarf.basicwind/Windstorm 10 5
+</pre>
+
+<p>
+The two arguments are the length of time to play, and a fadeout time (in seconds).
+</p>
+
+<pre>
+boodler.py org.boodler.manage/VolumeModulateAgent com.eblong.zarf.crows/ParliamentOfCrows delta=0.6
+</pre>
+
+<p>
+<code>VolumeModulateAgent</code> plays another soundscape, but shifts the volume up or down roughly once per minute. If you let this run for several minutes, you'll hear the crows fade in and out a bit.
+</p>
+
+<hr/>
+<p>
 <em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
 
 </body></html>
