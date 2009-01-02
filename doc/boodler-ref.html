@@ -1,0 +1,476 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+<title>Boodler: The boodler.py Reference Manual</title>
+</head>
+<body>
+
+<h1>Boodler: The <code>boodler.py</code> Reference Manual</h1>
+
+<p>
+The <code>boodler.py</code> script plays soundscapes from your package collection. (To install soundscapes and data in your collection, see <a href="boodle-mgr-ref.html">boodle-mgr.py</a>.)
+</p>
+
+<pre>
+boodler.py [ options ] package/Agent [ data ... ]
+</pre>
+
+<p>
+You must usually supply the name of a soundscape (Agent class) to play, in the form <em>package.name/Agent</em>. 
+</p>
+
+<p>
+Normally, this loads the most current version of the package which is installed. To specify a particular version, you can say <em>package.name:X.Y/Agent</em>, where X and Y are numbers. This locates a version with major version exactly X, and minor version Y or later. (For other ways to specify versions, see <a href="http://volity.org/wiki/index.cgi?action=browse&amp;id=Version_Matching">this wiki page</a>.) The assumption is that if you want version 3.1 of a package, then 3.2 or 3.10 will be acceptable, but 4.0 is too big a change. To choose an <em>exact</em> version of a package, use two colons: <code>package.name::3.1.37a/Agent</code>
+</p>
+
+<p>
+Any arguments after the soundscape are passed along to that soundscape as data. See <a href="#args">Soundscape Arguments</a> for the format of these arguments. (If a soundscape argument begins with a minus sign, precede it with <code>--</code>, so that it is not grabbed as a script argument instead.)
+</p>
+
+<p>
+This special form:
+</p>
+
+<pre>
+boodler.py --testsound
+</pre>
+
+<p>
+...plays a test melody. This is always available; it does not have to be loaded from your collection.
+</p>
+
+<p>
+Type <code>boodler.py --help</code> or <code>boodler.py -h</code> for a complete list of options.
+</p>
+
+<h2>Options that control sound generation</h2>
+
+<dl>
+
+<dt><code>--output <em>driver</em></code></dt>
+<dd>Select one of the available driver modules. (See <a href="#drivers">below</a>.) The default is <code>oss</code> on Unix, or <code>macosx</code> on MacOSX.</dd>
+
+<dt><code>--list-drivers</code></dt>
+<dd>List the driver modules which are available. Any of the listed drivers may be used with the <code>--output</code> option.</dd>
+
+<dt><code>--device <em>device</em></code></dt>
+<dd>Set the device which Boodler will write to. The details depend on which driver module you have selected. (For a file-writing driver, this specifies the file to write.)</dd>
+
+<dt><code>--list-devices</code></dt>
+<dd>List the devices which are available for this driver module. (Not all drivers provide such a list. For a file-writing driver, any valid filename is a "device", so it makes no sense to list them.)</dd>
+
+<dt><code>--rate <em>soundrate</em></code></dt>
+<dd>Set the sampling rate (in frames per second) which Boodler will try to use. If the sound device does not support this rate, Boodler will try to fall back upon some sampling rate which is supported. The default depends on the output driver, but is often 44100.</dd>
+
+<dt><code>--master <em>volume</em></code></dt>
+<dd>Set the master mixing volume for all sounds. The default is 0.5. You should <em>not</em> increase this. If you do, any soundscapes that play more than one sound at a time (most of them) are likely to suffer from clipping noise -- sporadic static. (To increase Boodler's volume, you should use a mixer application to adjust your sound driver, or just turn up your speakers.) If you hear clipping noise in complex soundscapes, try <em>reducing</em> this option below 0.5.</dd>
+
+<dt><code>--hardware</code></dt>
+<dd>Display the capabilities of your sound hardware at startup time. This shows you explicitly what driver, sample format, and frame rate Boodler is using. It also dumps whatever other information about the sound interface might (conceivably) be important.</dd>
+
+<dt><code>--define <em>opt</em></code></dt>
+<dd></dd>
+
+<dt><code>--define <em>opt=val</em></code></dt>
+<dd>Pass an option in to the sound driver. The available options depend on which driver you are using. Note that if an <em>=val</em> is supplied, there may not be any spaces before or after the equals sign. See <a href="#drivers">below</a> for the meaning of the many options.</dd>
+
+</dl>
+
+<h2>Options that affect printed output</h2>
+
+<dl>
+
+<dt><code>--verbose</code></dt>
+<dd>Turn on verbose handling of exceptions. Normally, if an exception occurs in the execution of an agent, Boodler just prints the name of the exception and continues running. If you set <code>--verbose</code>, Boodler will print out the entire Python stack trace. Log messages are also more detailed in <code>--verbose</code> mode; you will see the entire log channel name, instead of a summary.</dd>
+
+<dt><code>--log <em>level</em></code></dt>
+<dd>Set logging to the given level, which may be <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, <code>critical</code>. The default is <code>warning</code>, meaning that messages of that severity <em>or worse</em> are printed. (In other words, by default, <code>debug</code> and <code>info</code> messages are suppressed.) Set this to <code>debug</code> to see lots of picayune detail about sound generation.</dd>
+
+<dt><code>--logconfig <em>configfile</em></code></dt>
+<dd>Format log messages according to the given file. This file can control how messages look, which messages appear, and where they are sent. (See the Python documentation for <a href="http://docs.python.org/library/logging.html#configuration-file-format">log config file format</a>.) A sample logging config file is distributed in the Boodler source as ./etc/logging.config.</dd>
+
+<dt><code>--stats <em>interval</em></code></dt>
+<dd>Turn on periodic statistics reporting. At intervals (given in seconds), Boodler will print out a message saying how many agents, channels, sounds, and note are queued up. This may be helpful for debugging soundscapes; if you see a value which increases without limit, you probably have a bug.</dd>
+
+</dl>
+
+<h2>Options for locating data</h2>
+
+<dl>
+
+<dt><code>--data <em>directory</em></code></dt>
+<dd>Boodler stores all its data in this directory. By default, this is a hidden folder in your home directory. On a Mac, it will be in <code>~/Library/Application Support/Boodler</code>. On Linux or Windows, it will be a <code>~/.boodler</code> folder.</dd>
+
+<dt><code>--collection <em>directory</em></code></dt>
+<dd>Boodler stores downloaded packages in this directory. By default, this is the <code>Collection</code> subdirectory of the <code>--data</code> folder (given above). There is generally no reason to change this.</dd>
+
+<dt><code>--external <em>directory</em></code></dt>
+<dd>This gives Boodler an additional directory, <em>outside</em> your normal package collection, to search for packages. (You may supply several <code>--external</code> directories if you wish.) This is generally useful only if you are developing a soundscape, and want to test it without packaging it up first.</dd>
+
+</dl>
+
+<h2>Options for external control</h2>
+
+<dl>
+
+<dt><code>--listen</code></dt>
+<dd>Cause Boodler to listen for events on a network socket (incoming port 31863, by default). Soundscapes can pay attention to these events and react to them.</dd>
+
+<dt><code>--port <em>port</em></code></dt>
+<dd>If <code>--listen</code> is used, this causes Boodler to listen on the given port number (instead of the default port 31863). The port may also be an absolute pathname (beginning with "/"), in which case Boodler uses a Unix domain socket instead of a network socket.</dd>
+
+<dt><code>--stdinevents</code></dt>
+<dd>Cause Boodler to listen for events on standard input. Soundscapes can pay attention to these events and react to them. This option is for programs which want to run Boodler as a subprocess.</dd>
+
+<dt><code>--prop=<em>opt</em></code></dt>
+<dd></dd>
+<dt><code>--prop=<em>opt=val</em></code></dt>
+<dd>Set a property value. Soundscapes can pay attention to these properties and react to them. (Think of them as soundscape-specific preferences.) Note that if an <em>=val</em> is supplied, there may not be any spaces before or after the equals sign.</dd>
+
+</dl>
+
+<h2>Environment variables</h2>
+
+<p>
+All of these environment variables are optional. You can set all of this information with command-line arguments. (And command-line arguments override environment variables, if provided.)
+</p>
+
+<dl>
+
+<dt><code>$BOODLER_DATA</code></dt>
+<dd>Boodler stores all its data in this directory. See the <code>--data</code> option.</dd>
+
+<dt><code>$BOODLER_COLLECTION</code></dt>
+<dd>Boodler stores downloaded packages in this directory. See the <code>--collection</code> option.</dd>
+
+<dt><code>$BOODLER_PROPERTIES</code></dt>
+<dd>Set a property value. See the <code>--prop</code> option. To set several properties, set this variable to a comma-separated list of <code>opt</code> or <code>opt=val</code>.</dd>
+
+<dt><code>$BOODLER_SOUND_PATH</code></dt>
+<dd>This is a holdover from Boodler 1.0. An old-style soundscape can load a sound from your <code>$BOODLER_SOUND_PATH</code>, rather than loading it from a package. This is supported only for the sake of old code; no modern soundscapes should rely on it.</dd>
+
+</dl>
+
+<h2><a name="drivers">Boodler sound drivers</a></h2>
+
+<p>
+Boodler currently offers these drivers:
+</p>
+
+<h4><code>file</code> --   write file containing raw sample output</h4>
+
+<p>
+The file will be named "boosound.raw" by default. To change this, pass
+a filename as the <code>--device</code>.
+</p>
+
+<p>
+The file will contain raw PCM sound sample data, two channels, 16 bits
+per sample, signed (centered at 0). By default the samples will be
+in the native endianness of your computer, but you can change this with
+<code>--define end=big</code> or <code>--define end=little</code>.
+</p>
+
+<p>
+This driver limits the size of the file. By default, it will only write
+five seconds of sound data; you can change the limit with the
+<code>--define time=<em>interval</em></code> option. If the
+sound agent stops before the time limit, you'll get a shorter file.
+</p>
+
+<p>
+(Note that this driver writes to the file as quickly as possible.
+It probably won't take five seconds to generate a five-second
+sound file.)
+</p>
+
+<dl>
+<dt><code>--define time=<em>interval</em></code></dt>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.</dd>
+<dt><code>--define end=big</code></dt>
+<dd>Force the sound output to be written big-endian.</dd>
+<dt><code>--define end=little</code></dt>
+<dd>Force the sound output to be written little-endian.</dd>
+</dl>
+
+<h4><code>stdout</code> -- write raw sample output to stdout</h4>
+
+<p>
+This is similar to the <code>file</code> driver, but it streams its
+data to stdout, and there is no time limit. The 
+<code>--device</code> argument is ignored.
+</p>
+
+<p>
+The <code>stdout</code> driver, like the <code>file</code> driver,
+generates sound data as quickly as possible. This will probably
+be much faster than real time! If you pipe the output to a file,
+you will have a very large file very soon. This driver is intended
+to be piped to an application that can regulate its input, such as
+<a href="http://www.icecast.org/ices.php">Ices</a>.
+</p>
+
+<dl>
+<dt><code>--define end=big</code></dt>
+<dd>Force the sound output to be written big-endian.</dd>
+<dt><code>--define end=little</code></dt>
+<dd>Force the sound output to be written little-endian.</dd>
+</dl>
+
+<h4><code>oss</code> --    Open Sound System</h4>
+
+<p>
+This is the default output driver on Linux and other Unixes.
+Use <code>--device</code> to control which audio hardware device
+is used; the default is <code>/dev/dsp</code>.
+</p>
+
+<h4><code>alsa</code> --   Advanced Linux Sound Architecture</h4>
+
+<p>
+Another Unix sound framework. Use <code>--device</code> to control which
+ALSA device is used; the default is <code>default</code>.
+</p>
+
+<dl>
+<dt><code>--define buffersize=<em>frames</em></code></dt>
+<dd>Define the length of Boodler's generation buffer, in frames.
+The default is 4096.</dd>
+<dt><code>--define hwbuffer=<em>frames</em></code></dt>
+<dd>Define the length of the ALSA sound buffer, in frames. The default
+is 16384. If you find that the sound skips when the CPU is busy,
+increase this value. The hwbuffer should not be shorter than the buffersize.</dd>
+<dt><code>--define periodsize=<em>frames</em></code></dt>
+<dd>Define the length of the ALSA transfer period. This should be a
+fraction of the buffersize. The default is left up to the ALSA
+driver; it depends on the buffersize.</dd>
+</dl>
+
+<h4><code>esd</code> --    Enlightened Sound Daemon</h4>
+
+<p>
+Yet another Unix sound framework. The <code>--device</code> option defines 
+the hostname to send sound to; it defaults to <code>localhost</code>.
+If no ESD daemon is running, this will attempt to write directly to
+<code>/dev/dsp</code>.
+</p>
+
+<h4><code>macosx</code> -- MacOSX CoreAudio</h4>
+
+<p>
+This is the default output driver on MacOSX.
+</p>
+
+<dl>
+<dt><code>--define buffercount=<em>count</em></code></dt>
+<dd>Create a queue of <em>count</em> buffers. If you find that the
+sound skips when the CPU is busy (for example, when you're dragging
+or resizing windows), increase this value. The default is 6.</dd>
+<dt><code>--define buffersize=<em>size</em></code></dt>
+<dd>Set each CoreAudio buffer to be <em>size</em> bytes long.
+The default is 32768. (I have found that using a value of 65536
+or more causes clicking; I'm not sure why.)</dd>
+</dl>
+
+<h4><code>vorbis</code> -- write Ogg Vorbis file</h4>
+
+<p>
+This writes a file, like the <code>file</code> driver; but it
+generates an Ogg Vorbis file. The default filename is "boosound.ogg".
+To change this, pass a filename as the <code>--device</code>.
+</p>
+
+<dl>
+<dt><code>--define time=<em>interval</em></code></dt>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.</dd>
+<dt><code>--define quality=<em>val</em></code></dt>
+<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
+quality) to 1.0 (high).</dd>
+</dl>
+
+<h4><code>shout</code> --  Shoutcast or Icecast source</h4>
+
+<p>
+This generates an Ogg Vorbis stream, and sends it to a Shoutcast or
+Icecast server (using 
+<a href="http://www.icecast.org/download.php">libshout</a>).
+</p>
+
+<dl>
+<dt><code>--define shout-server=<em>name</em></code></dt>
+<dd>Connect to shoutcast or icecast server <em>name</em>. Can be a
+domain or an IP address. Defaults to "127.0.0.1".</dd>
+<dt><code>--define shout-port=<em>port</em></code></dt>
+<dd>Use port <em>port</em> on the streaming server. Defaults to 8000.</dd>
+<dt><code>--define shout-user=<em>name</em></code></dt>
+<dd>Login with username <em>user</em> to the server. Defaults to "source".</dd>
+<dt><code>--define shout-password=<em>password</em></code></dt>
+<dd>Login with password <em>password</em> to the server. Defaults to "hackme".</dd>
+<dt><code>--define shout-mount=<em>mount</em></code></dt>
+<dd>With an icecast server, mount the sound on <em>mount</em>. Defaults to "/boodler.ogg".</dd>
+<dt><code>--define shout-protocol=<em>type</em></code></dt>
+<dd>Use <em>type</em> as the protocol. Use "http" for icecast2,
+"xaudiocast" for icecast1, and "icy" for a shoutcast server. Defaults to "http".</dd>
+<dt><code>--define quality=<em>val</em></code></dt>
+<dd>Set the Vorbis VBR compression quality, from 0.0 (low bitrate and 
+quality) to 1.0 (high).</dd>
+</dl>
+
+<h4><code>lame</code> -- write MP3 file with LAME encoder</h4>
+
+<p>
+This writes a file, like the <code>file</code> driver; but it
+generates an MP3 file. The default filename is "boosound.mp3".
+To change this, pass a filename as the <code>--device</code>.
+</p>
+
+<dl>
+<dt><code>--define time=<em>interval</em></code></dt>
+<dd>Generate approximately <em>interval</em> seconds of output. 
+This defaults to five seconds.</dd>
+<dt><code>--define quality=<em>val</em></code></dt>
+<dd>Set the LAME VBR compression quality, from 9 (low bitrate and 
+quality) to 0 (high). Yes, it's backwards. The default is 2.</dd>
+<dt><code>--define fast</code></dt>
+<dd>Use a faster VBR encoding algorithm. (Reduces quality somewhat.)</dd>
+<dt><code>--define abr=<em>rate</em></code></dt>
+<dd>Use ABR (fixed average bit rate) of <em>rate</em> KBPS.
+The <em>rate</em> can be from 8 to 320.</dd>
+<dt><code>--define haste=<em>val</em></code></dt>
+<dd>Modify the speed of the encoding algorithm, from 0 (slow and careful)
+to 9 (hasty). This affects the quality (but not the bit rate) of the output. 
+The default is 2.</dd>
+</dl>
+
+<h2><a name="args">Soundscape arguments</a></h2>
+
+<p>
+Boodler soundscape arguments are specified in a slightly addled S-expression syntax. (S-expressions are the building blocks of Lisp. (Expect parentheses.))
+</p>
+
+<h3>A word about parsing</h3>
+
+<p>
+The first thing to remember is that Boodler wants to parse all of the argument data itself. (We're not talking about the arguments to <code>boodler.py</code> itself -- those begin with dashes, and are handled in the usual Unix way. We're talking about the soundscape and the options passed to <em>it</em>.)
+</p>
+
+<p>
+Unix command-line tools usually get their arguments pre-split into words, but Boodler isn't interested in that, so it will jam all its arguments together and then do its own splitting. That is, the following command lines are exactly equivalent:
+</p>
+
+<pre>
+boodler.py pkg/Agent arg
+boodler.py " pkg/Agent arg "
+boodler.py pkg/Agent  "  "  arg
+</pre>
+
+<p>
+In all but the simplest cases, it's easiest to slap quotes around all of the argument data. That prevents the Unix shell from interpreting the parentheses to mean shell-language. However, in this section, we will ignore that and write all of our S-expressions without shell-quotes.
+</p>
+
+<h3>The syntax of S-expressions</h3>
+
+<p>
+Which is to say, the syntax of <em>Boodler's</em> S-expressions, which aren't really S-expressions, but I don't have a better term handy.
+</p>
+
+<p>
+An expression is a string, or a parenthesized list of expressions. The following are all strings:
+</p>
+
+<pre>
+abc
+123
+"string with four words"
+</pre>
+
+<p>
+The following are all lists:
+</p>
+
+<pre>
+()
+(abc 123 "string with four words")
+(() 123 (list with four strings))
+</pre>
+
+<p>
+A list can also contain <em>named</em> entries. Examples:
+</p>
+
+<pre>
+(x=y)
+(pitch=1.0 pan=0.5)
+(abc bcd cde one=1 two=() three=(list of (lists)))
+</pre>
+
+<p>
+That last example contains three positional (ordinary) entries plus three named entries. This extension will look very odd to Lisp habitu&eacute;s, but it's just what we need to specify the argument of a Python function.
+</p>
+
+<p>
+The other tedious-but-necessary details: a string can contain any characters, but you have to quote it if you want to include whitespace, single or double quotes, parentheses, backslash, or equals sign. You can quote a string with either single or double quotes, as long as you backslash any of that sort of quote inside it. Backslash backslashes, too.
+</p>
+
+<h3>S-expressions as soundscape arguments</h3>
+
+<p>
+Boodler interprets its soundscape and following arguments as a single S-expression, with the parentheses implied. The command
+</p>
+
+<pre>
+boodler.py org.boodler.play/OneSound 
+    org.boodler.old.clock/clock_cuckoo pitch=1.5 pan=1
+</pre>
+
+<p>
+...assembles itself as the S-expression
+</p>
+
+<pre>
+(org.boodler.play/OneSound 
+    org.boodler.old.clock/clock_cuckoo pitch=1.5 pan=1)
+</pre>
+
+<p>
+The first entry, of course, is interpreted as a soundscape agent to look up. The following entries (and named entries) are interpreted as <em>whatever type the soundscape is expecting for that argument.</em>
+</p>
+
+<p>
+This is important, because S-expressions don't themselves have type information (except for "list" and "not a list"). <code>1</code> is parsed simply as a string. But the <code>OneSound</code> agent declares that its <code>pan</code> argument needs to be a float. So the <code>1</code> is passed to it as the Python float value 1.0. If that argument needed to be an int, it would be passed in as the integer 1; if it needed to be a string, it would be the Python string "1".
+</p>
+
+<p>
+This is all straightforward for int, float, and string arguments. Bools aren't much harder; you can enter <code>true</code> or <code>false</code>, <code>yes</code> or <code>no</code>, or single-letter abbreviations of these -- or <code>1</code> or <code>0</code> -- and they will be interpreted as booleans in the obvious way.
+</p>
+
+<p>
+List or tuple arguments are assembled out of S-expression lists. If an argument expects a list of integers, <code>(1 23 456)</code> will become a Python list of length three. Types are checked carefully; <code>(1 xyzzy)</code> in the same place would raise an exception, because the string <code>xyzzy</code> cannot be interpreted as a Python integer.
+</p>
+
+<p>
+A <em>sound</em> argument must be a string in the usual form <em>package/resource</em>. In the examples above, <code>org.boodler.old.clock/clock_cuckoo</code> becomes a sound argument to <code>OneSound</code>. (If that package is available!) You can also use the forms <em>package:versionspec/resource</em> or <em>package::exactversion/resource</em>.
+</p>
+
+<p>
+Finally, we have <em>soundscape</em> arguments. If an argument expects a soundscape, you can fill in a <em>package.name/Agent</em> string, as usual. You can also fill in a list, of the form <em>(package.name/Agent argument argument...)</em>. This creates a soundscape with its own arguments, and passes the entire thing along as the original arguments. The inner arguments are checked in their turn, and so the whole thing is tidily recursive.
+</p>
+
+<p>
+Just a couple more special cases. If a soundscape is expected, you can enter a string <em>beginning</em> with a slash. This is looked up with Python's standard module system, rather than the Boodler package collection. You could use <code>/boodle.builtin.TestSoundAgent</code> to locate the class <code>TestSoundAgent</code> in the <code>boodle.builtin</code> module. (This part of the core Boodler engine; it's the agent invoked when you use the <code>--testsound</code> option.)
+</p>
+
+<p>
+Finally, if a soundscape is expected, you can also enter the empty list <code>()</code>. This is interpreted as a soundscape which plays nothing and ends immediately. It is, in fact, the same as <code>/boodle.builtin.NullAgent</code>.
+</p>
+
+
+<hr/>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
+
+</body></html>
