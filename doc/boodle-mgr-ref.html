@@ -1,1 +1,259 @@
-###
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+<title>Boodler: The boodle-mgr.py Reference Manual</title>
+</head>
+<body>
+
+<h1>Boodler: The <code>boodle-mgr.py</code> Reference Manual</h1>
+
+<p>
+The <code>boodle-mgr.py</code> script downloads, installs, and manages the Boodler packages in your collection. (To play soundscapes, see <a href="boodler-ref.html">boodler.py</a>.)
+</p>
+
+<pre>
+boodle-mgr.py [ options ] [ command... ]
+</pre>
+
+<p>
+The script offers many commands. For example, to list all the packages you currently have installed:
+</p>
+
+<pre>
+boodle-mgr.py list
+</pre>
+
+<p>
+You can also use the script interactively. If you just type:
+</p>
+
+<pre>
+boodle-mgr.py
+</pre>
+
+<p>
+...then you will see a command prompt. Type "list" to list your packages. You can continue entering commands until you type "quit", "q", ".", or ctrl-C.
+</p>
+
+<p>
+In general, <code>boodle-mgr.py</code> prompts for any arguments you do not provide on the command line.
+</p>
+
+<p>
+Type <code>boodle-mgr.py help</code> for a complete list of commands. Type <code>boodle-mgr.py --help</code> or <code>boodle-mgr.py -h</code> for a complete list of options. 
+</p>
+
+<h2>Options</h2>
+
+<dl>
+
+<dt><code>--force</code></dt>
+<dd>Skip "are you sure?" queries when deleting or overwriting package files. With this option, <code>boodle-mgr.py</code> will go ahead and do it without asking.</dd>
+
+<dt><code>--import</code></dt>
+<dd>Permit the execution of Python code in Boodler packages. Only use this when you are packaging your own soundscapes for other people to use. (See the <a href="#create">create</a> command.)</dd>
+
+<dt><code>--data <em>directory</em></code></dt>
+<dd>Boodler stores all its data in this directory. By default, this is a hidden folder in your home directory. On a Mac, it will be in <code>~/Library/Application Support/Boodler</code>. On Linux or Windows, it will be a <code>~/.boodler</code> folder.</dd>
+
+<dt><code>--collection <em>directory</em></code></dt>
+<dd>Boodler stores downloaded packages in this directory. By default, this is the <code>Collection</code> subdirectory of the <code>--data</code> folder (given above). There is generally no reason to change this.</dd>
+
+<dt><code>--download <em>directory</em></code></dt>
+<dd>Boodler stores temporary files, such as not-yet-unzipped packages, in this directory. By default, this is the <code>Download</code> subdirectory of the <code>--data</code> folder (given above). There is generally no reason to change this.</dd>
+
+</dl>
+
+<h2>Environment variables</h2>
+
+<p>
+All of these environment variables are optional. You can set all of this information with command-line arguments. (And command-line arguments override environment variables, if provided.)
+</p>
+
+<dl>
+
+<dt><code>$BOODLER_DATA</code></dt>
+<dd>Boodler stores all its data in this directory. See the <code>--data</code> option.</dd>
+
+<dt><code>$BOODLER_COLLECTION</code></dt>
+<dd>Boodler stores downloaded packages in this directory. See the <code>--collection</code> option.</dd>
+
+<dt><code>$BOODLER_DOWNLOAD</code></dt>
+<dd>Boodler stores temporary files in this directory. See the <code>--download</code> option.</dd>
+
+</dl>
+
+<h2>Commands</h2>
+
+<h4><code>help</code></h4>
+
+<p>
+List all available commands.
+</p>
+
+<h4><code>help</code> <em>command</em></h4>
+
+<p>
+Show some help on the given command. <em>(This is very minimal right now.)</em>
+</p>
+
+<h4><code>list</code></h4>
+
+<p>
+List all the packages you have installed. If you have multiple versions of a package (which can happen), this ignores that, and just shows a single entry.
+</p>
+
+<h4><code>listall</code></h4>
+
+<p>
+List all of the packages you have installed, showing version numbers. If you have multiple versions of a package, this displays that fact.
+</p>
+
+<h4><code>describe</code> <em>package</em></h4>
+<h4><code>describe</code> <em>package version</em></h4>
+
+<p>
+Describe a package. This displays all its metadata, which can include the title, author, license, and so on. It also shows what other package this package requires in order to work.
+</p>
+
+<p>
+If you do not include the version number, this describes the most recent version of the package you have installed.
+</p>
+
+<h4><code>describe</code> <em>file</em></h4>
+
+<p>
+Describe a package stored in a ".boop" file.
+</p>
+
+<h4><code>describe</code> <em>url</em></h4>
+
+<p>
+Describe a package found at a URL. The package file is downloaded to a temporary location and inspected there.
+</p>
+
+<p>
+(In interactive mode, <code>boodle-mgr.py</code> keeps temporary files cached until you quit. So if you do "describe <em>url</em>" followed by "install <em>url</em>", you won't download the file twice.) 
+</p>
+
+<h4><code>contents</code> <em>package</em></h4>
+<h4><code>contents</code> <em>package version</em></h4>
+<h4><code>contents</code> <em>file</em></h4>
+<h4><code>contents</code> <em>url</em></h4>
+
+<p>
+List the sounds and soundscapes contained in a package. (Soundscapes are labelled "agent", meaning a soundscape agent class.)
+</p>
+
+<p>
+You can specify the name of an installed package, a ".boop" file on disk, or a URL to download and inspect.
+</p>
+
+<h4><code>versions</code> <em>package</em></h4>
+
+<p>
+List all the versions of <em>package</em> that are installed.
+</p>
+
+<h4><code>obsolete</code></h4>
+
+<p>
+Search through your collection, and list all the package versions which can safely be deleted. A package version is considered obsolete if you have a newer one installed, <em>and</em> no current package requires the older version.
+</p>
+
+<p>
+After you install upgraded packages, you can use this command to see what can be deleted.
+</p>
+
+<h4><code>requires</code> <em>package</em></h4>
+<h4><code>requires</code> <em>package version</em></h4>
+
+<p>
+Search through your collection, and list all the packages which require the one you listed.
+</p>
+
+<h4><code>install</code> <em>url</em></h4>
+
+<p>
+Download a package from that URL, and install it in your collection.
+</p>
+
+<h4><code>install</code> <em>file</em></h4>
+
+<p>
+Install a package from a ".boop" file on disk.
+</p>
+
+<h4><code>install</code> <em>package version</em></h4>
+
+<p>
+Install a package from <a href="http://boodler.org/lib/">the Boodler web site</a>.
+</p>
+
+<p>
+<em>(A future version of Boodler will be able to locate the newest version of a package on the web server, and install it. Until then, you have to supply an explicit version number.)</em>
+</p>
+
+<h4><code>delete</code> <em>package</em></h4>
+
+<p>
+Delete a package from your collection. If you have multiple versions, delete all of them.
+</p>
+
+<h4><code>delete</code> <em>package version</em></h4>
+
+<p>
+Delete a particular version of a package from your collection.
+</p>
+
+<h4><code>deleteall</code></h4>
+
+<p>
+Delete every package in your collection.
+</p>
+
+<h4><code><a name="create">create</a></code> <em>directory</em></h4>
+<h4><code>create</code> <em>directory destfile</em></h4>
+
+<p>
+Create a Boodler package. If you do not specify a destination ".boop" file, Boodler will create one with an appropriate name ("<em>package.version</em>.boop", in the usual convention).
+</p>
+
+<p>
+You must set up the source directory with valid metadata files, and the Python source or sound sample files that you want to include in your package. This requires a certain amount of care. See the <a href="design.html">Boodler manual for designing soundscapes</a>.
+</p>
+
+<p>
+Note: the "create" command will only work if you have specified <code>--import</code> on the command line. This awkward dance is intended to aid security. <code>boodle-mgr.py</code> will normally refuse to import Python code from packages. You should only use <code>--import</code> when you intend to use the "create" command, packaging up a soundscape that you created yourself.
+</p>
+
+<p>
+<em>(This security is somewhat chimerical right now. While <code>boodle-mgr.py</code> is safe, <code>boodler.py</code> can import any package you have installed. So a package containing a Trojan horse would not be dangerous to install, but it could do damage when you tried to play soundscapes from it. Ideally, a future version of <code>boodler.py</code> would incorporate some kind of sandboxing, to safeguard against malicious packages. Unfortunately, the design of Python makes this difficult.)</em>
+</p>
+
+<h4><code>reload</code></h4>
+
+<p>
+Force <code>boodle-mgr.py</code> to re-scan your collection. You would only need to do this if some other process (or another copy of <code>boodle-mgr.py</code>) modified your collection directory while <code>boodle-mgr.py</code> was running.
+</p>
+
+<h4><code>lasterror</code></h4>
+
+<p>
+Display a full Python stack trace of the last error that occurred. This exists to aid debugging of <code>boodle-mgr.py</code>.
+</p>
+
+<h4><code>quit</code></h4>
+
+<p>
+Leave the interactive prompt and shut down <code>boodle-mgr.py</code>.
+</p>
+
+
+<hr/>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
+
+</body></html>
