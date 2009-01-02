@@ -23,6 +23,14 @@ def list_collection():
         vers = max(collection[name].keys())
         ls.append( (name, vers) )
     return ls
+def list_allvers_collection():
+    ls = []
+    for name in collection:
+        versls = collection[name].keys()
+        versls.sort()
+        versls.reverse()
+        ls.append( (name, versls) )
+    return ls
 
 def build_package(loader, name, vers='1.0',
     mod_content = None,
@@ -524,6 +532,14 @@ else two
     
         self.loader.clear_external_packages()
         
+    def subtest_list_all_packages(self):
+        ls = self.loader.list_all_packages()
+        ls2 = list_allvers_collection()
+            
+        ls.sort()
+        ls2.sort()
+        self.assertEqual(ls, ls2)
+        
     def subtest_list_all_current_packages(self):
         ls = self.loader.list_all_current_packages()
         ls2 = list_collection()
@@ -532,6 +548,21 @@ else two
         ls2.sort()
         self.assertEqual(ls, ls2)
         
+    def subtest_list_all_packages_ext(self):
+        tup = self.loader.add_external_package(self.external_one_path)
+        self.assertEqual(tup, ('external.one', '1.0'))
+        
+        ls = self.loader.list_all_packages()
+
+        ls2 = list_allvers_collection()
+        ls2.append( ('external.one', ['1.0']) )
+            
+        ls.sort()
+        ls2.sort()
+        self.assertEqual(ls, ls2)
+
+        self.loader.clear_external_packages()
+
     def subtest_list_all_current_packages_ext(self):
         tup = self.loader.add_external_package(self.external_one_path)
         self.assertEqual(tup, ('external.one', '1.0'))

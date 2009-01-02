@@ -84,7 +84,8 @@ class PackageLoader:
 	remove_external_package() -- remove an external directory
 	clear_external_packages() -- remove all external directories
 	find_all_dependencies() -- determine which packages depend on which others
-	list_all_current_packages() -- return a list of all the available packages
+	list_all_packages() -- return a list of all the available packages
+	list_all_current_packages() -- list the most recent versions of packages
 	load_package_dependencies() -- load all packages which a package depends on
 	import_package_content() -- import the package's content, if it hasn't been
 	load_item_by_name() -- import and return an item in a package
@@ -597,6 +598,34 @@ class PackageLoader:
 
 		self.all_deps = (forward, backward, bad)
 		return self.all_deps
+
+	def list_all_packages(self):
+		"""list_all_packages() -> list of (str, list of VersionNumber)
+
+		Search through the collection directory, and return a list of all the
+		available packages. 
+
+		Returns a list of (packagename, list of version) tuples. The top
+		list is in no particular order, but the version list will be sorted
+		newest-to-oldest.
+
+		This only searches the on-disk directory the first time you call
+		it. To force it to re-scan the directory, call clear_cache() first.
+		"""
+		
+		self.discover_all_groups()
+		res = []
+		for (pkgname, pgroup) in self.package_groups.items():
+			ls = []
+			for vers in pgroup.get_versions():
+				try:
+					self.load_specific(pkgname, vers)
+					ls.append(vers)
+				except PackageLoadError, ex:
+					pass
+			if (ls):
+				res.append( (pkgname, ls) )
+		return res
 
 	def list_all_current_packages(self):
 		"""list_all_current_packages() -> list of (str, VersionNumber)

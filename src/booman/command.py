@@ -220,9 +220,9 @@ class InstallCmd(Command):
 
 		### check dependencies!
 		
-class CurrentCmd(Command):
-	name = 'current'
-	description = 'List all the packages installed (newest version of each)'
+class ListCmd(Command):
+	name = 'list'
+	description = 'List all the packages installed'
 
 	def perform(self, source):
 		self.assert_done(source)
@@ -232,6 +232,26 @@ class CurrentCmd(Command):
 		for key in ls:
 			print '  ', format_package(key, False)
 		print len(ls), 'packages installed (ignoring multiple versions)'
+
+class ListAllCmd(Command):
+	name = 'listall'
+	description = 'List all the packages installed, including versions'
+
+	def perform(self, source):
+		self.assert_done(source)
+
+		ls = frame.loader.list_all_packages()
+		ls.sort()
+		count = 0
+		for (pkgname, verslist) in ls:
+			count += len(verslist)
+			vers = verslist.pop(0)
+			versions = str(vers)
+			if (verslist):
+				verslist = [ str(vers) for vers in verslist ]
+				versions += (' (also ' + ', '.join(verslist) + ')')
+			print '  ', pkgname, versions
+		print count, 'packages installed (including multiple versions)'
 
 class ObsoleteCmd(Command):
 	name = 'obsolete'
@@ -523,12 +543,13 @@ class LastErrorCmd(Command):
 # help commands.
 command_list = [
 	HelpCmd,
-	VerifyCmd,
-	ContentsCmd,
+	ListCmd,
+	ListAllCmd,
 	DescribeCmd,
-	CurrentCmd,
-	ObsoleteCmd,
+	ContentsCmd,
 	VersionsCmd,
+	VerifyCmd,
+	ObsoleteCmd,
 	RequiresCmd,
 	InstallCmd,
 	DeleteCmd,
