@@ -100,23 +100,6 @@ class QuitCmd(Command):
 		self.assert_done(source)
 		frame.set_quit()
 
-class VerifyCmd(Command):
-	name = 'verify'
-	synonyms = ['x']
-	description = 'Verify that a package is intact'
-
-	def perform(self, source):
-		tok = token.PackageFileURLToken()
-		(srctype, loc) = tok.accept(source)
-		self.assert_done(source)
-
-		ensure_fetched(srctype, loc)
-		pkg = frame.loader.find_source(srctype, loc)
-
-		print 'Package:', pkg.name, '   Version:', str(pkg.version)
-		meta = pkg.metadata
-		print 'Title:', meta.get_one('dc.title', '<not available>')
-
 class ContentsCmd(Command):
 	name = 'contents'
 	synonyms = ['resources']
@@ -367,7 +350,20 @@ class DeleteCmd(Command):
 				raise CommandError('No such package group: ' + pkgname)
 
 			if (not frame.is_force):
-				print ('Are you sure you want to delete all versions of ' 
+				desc = ' all versions of'
+				try:
+					# A bad collection dir shouldn't derail us here
+					pgroup = frame.loader.load_group(pkgname)
+					if (len(pgroup.versions) == 0):
+						desc = ' the directory for'
+					elif (len(pgroup.versions) == 1):
+						desc = ''
+					else:
+						desc = ' ' + str(len(pgroup.versions)) + ' versions of'
+				except:
+					pass
+				
+				print ('Are you sure you want to delete' + desc + ' '
 					+ pkgname + '?')
 				tok = token.YesNoToken()
 				res = tok.accept(source)
@@ -375,7 +371,7 @@ class DeleteCmd(Command):
 					raise CommandCancelled()
 
 			frame.loader.delete_group(pkgname)
-			print 'All versions of package', pkgname, 'deleted.'
+			print 'All of package', pkgname, 'deleted.'
 		else:
 			pkg = frame.loader.load(pkgname, vers)
 		
@@ -423,7 +419,7 @@ class CreateCmd(Command):
 		self.assert_done(source)
 
 		if (not frame.loader.importing_ok):
-			raise CommandError('Creating requires importing packages, and the import option has not been set.')
+			raise CommandError('Creating requires importing packages, and the --import option has not been set.')
 
 		absdirname = os.path.abspath(dirname)
 		abscoldir = os.path.abspath(frame.loader.collecdir)
@@ -548,7 +544,6 @@ command_list = [
 	DescribeCmd,
 	ContentsCmd,
 	VersionsCmd,
-	VerifyCmd,
 	ObsoleteCmd,
 	RequiresCmd,
 	InstallCmd,
