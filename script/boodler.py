@@ -345,8 +345,9 @@ for val in opts.rootprops:
 	op = None
 
 netport = opts.netport
-if ((netport is not None) and netport.startswith('/')):
-	netport = int(netport)
+if (netport is not None):
+	if (not netport.startswith('/')):
+		netport = int(netport)
 
 gen = generator.Generator(opts.basevolume, opts.stdinlisten,
 	opts.netlisten, netport, loader=loader)
