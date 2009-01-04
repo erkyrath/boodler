@@ -1,262 +1,211 @@
-<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
 <title>Boodler: Soundscape Basics</title>
 </head>
 <body>
 
-<h2>Boodler: Soundscape Basics</h2>
+<h1>Boodler: Soundscape Basics</h1>
 
-Boodler is written in Python; each soundscape is one or more pieces
-of Python code. If you wish to write your own, you will have to
-write some Python.
 <p>
+Boodler is written in Python; each soundscape is one or more pieces of Python code. If you wish to write your own, you will have to write some Python.
+</p>
 
-If you don't know Python, you get to learn some. This is unlikely to hurt
-much. If you only want to accomplish simple tasks, you can probably
-cut-and-paste them together from examples in this document. (If you
-want to do something complicated, you would have had to learn some
-programming or scripting language anyway.)
 <p>
+If you don't know Python, you get to learn some. This is unlikely to hurt much. If you only want to accomplish simple tasks, you can probably cut-and-paste them together from examples in this document. (If you want to do something complicated, you would have had to learn some programming or scripting language anyway.)
+</p>
 
-<h3>Some quick Python notes</h3>
+<h2>Some quick Python notes</h2>
 
-I will not attempt to teach Python here. Tutorials, reference manuals,
-and other tasty things can be found on the
-<a href="http://www.python.org/">Python web site</a>, and I commend
-you to them. However, if you're a complete Python newbie and you
-just want to experiment with Boodler, here are tips:
 <p>
+I will not attempt to teach Python here. Tutorials, reference manuals, and other tasty things can be found on the <a href="http://www.python.org/">Python web site</a>, and I commend you to them. However, if you're a complete Python newbie and you just want to experiment with Boodler, here are tips:
+</p>
 
-Python cares about indentation. (This is just about the only stupid
-thing about Python, and I suffer it willingly, but I don't pass up
-any opportunity to complain either. :-) If you're writing or editing
-a Python source file, you must keep the indentation consistent. If
-two lines are indented the same distance in an example, they'd better
-be indented the same distance in your code. 
 <p>
+Python cares about indentation. (This is just about the only stupid thing about Python, and I suffer it willingly, because other languages have much <em>stupider</em> stupid things.) If you're writing or editing a Python source file, you must keep the indentation consistent. If two lines are indented the same distance in an example, they'd better be indented the same distance in your code.
+</p>
 
-You can use either the tab key or the space bar to indent lines, but
-don't mix them in the same file. That leads to pain.
 <p>
+You can use either the tab key or the space bar to indent lines, but don't mix them in the same file. That leads to pain.
+</p>
 
-(Note: these rules are overly conservative. I am simplifying for the
-sake of the Python newbie. If you know how to mix tab indentation and
-space indentation safely, for heavens' sakes, go ahead.)
 <p>
-
 Back to Boodler.
+</p>
+
+<h2>Fundamental concepts</h2>
+
 <p>
-
-<h3>Fundamental concepts</h3>
-
 Boodler deals with agents, channels, and notes.
+</p>
+
 <p>
+A <em>note</em> is a particular sound file -- an AIFF, WAV, or AU -- played at a particular time. You can also specify a pitch, a volume, and some other parameters; or you can leave these at defaults.
+</p>
 
-A note is a particular sound file -- an AIFF, WAV, or AU -- played at 
-a particular time. You can also specify a pitch, a volume, and some other
-parameters; or you can leave these at defaults.
 <p>
+An <em>agent</em> is a piece of Python code that schedules notes and other agents. The agent decides which notes to play when, and which agents to start up when. An agent can also create channels.
+</p>
 
-An agent is a piece of Python code that schedules notes and other agents.
-The agent decides which notes to play when, and which agents to start
-up when. An agent can also create channels.
 <p>
+A <em>channel</em> is a collection of notes, agents, and channels. When Boodler starts up, there is exactly one channel, the <em>root channel</em>. An agent can create new channels inside the root channel -- and then go on to create channels inside those channels, and so on. The channels thus form a tree, with a single root.
+</p>
 
-A channel is a collection of notes, agents, and channels. When Boodler
-starts up, there is exactly one channel, the "root channel". An agent
-can create new channels inside the root channel -- and then go on to
-create channels inside those channels, and so on. The channels thus
-form a tree, with a single root.
 <p>
+The initial agent -- the one you specify first on the command line -- runs inside the root channel. Normally, when an agent schedules notes (or other agents), the notes are played (and the agents run) in the same channel as the original agent. However, an agent can create a new channel, and then place notes and other agents inside the new channel.
+</p>
 
-The initial agent -- the one you specify first on the command line -- 
-runs inside the root channel. Normally, when an agent schedules notes 
-(or other agents), the notes are played (and the agents run)
-in the same channel as the original agent. However, an agent
-can create a new channel, and then place notes and other agents inside
-the new channel.
 <p>
+Why all this foofaraw with channels? Because you can make a change to a channel, and that change will affect every note inside that channel -- including notes in channels inside channels inside it. (And so on.) For example, you can mute a channel (set its volume to zero) and thereby silence it and all its contents. Or you could set its volume to 50%, which would quiet all its contents by half. Or you could simply kill the channel; this would stop (and destroy) all notes and agents that are running inside it.
+</p>
 
-Why all this foofaraw with channels? Because you can make a change to
-a channel, and that change will affect every note inside that channel --
-including notes in channels inside channels inside it. (And so on.)
-For example,
-you can mute a channel (set its volume to zero) and thereby silence
-it and all its contents. Or you could set its volume to 50%, which would mute
-all its contents by half. Or you could simply kill the channel; this
-would stop (and destroy) all notes and agents that are running inside it.
 <p>
+(The root channel, of course, ultimately contains <em>every</em> note, agent, and channel. So if you kill the root channel, Boodler shuts down.)
+</p>
 
-(The root channel, of course, ultimately contains <em>every</em> note,
-agent, and channel. So if you kill the root channel, Boodler shuts down.)
+<h2>Sound properties</h2>
 
-<h3>Sound properties</h3>
-
-The point of Boodler is to play specified notes at specified times. As
-we have said, each note is taken from a sound file, but you can modify
-the way a note is played. Boodler lets you specify five parameters for a
-note: time, pitch, volume, pan, and (for some sound files) duration.
 <p>
+The point of Boodler is to play specified notes at specified times. As we have said, each note is taken from a sound file, but you can modify the way a note is played. Boodler lets you specify five parameters for a note: time, pitch, volume, pan, and (for some sound files) duration.
+</p>
 
 <dl>
 
-<dt>Time
-<dd>This is simply the time at which the sound begins playing. Time
-zero is when Boodler starts up. Time is always specified in seconds.
-(Fractional values, such as 0.1 or 1.5, are legitimate.)
-<p>
-
-Notes are always scheduled by agents, and agents run at a particular
-time. Therefore, when you specify a time, you always specify a 
-<em>relative</em> time; 1.0 means "one second from now". The "now"
-is the time at which the agent runs.
-<p>
-
-<dt>Pitch
-<dd>Whether the note is higher or lower -- imagine a piano keyboard.
-<p>
-
-Sadly for the musically trained in our audience, 
-pitch is not given in familiar musical notation -- you do not
-specify "D" or "A flat". (This might not even be meaningful;
-what does it mean to play a rainstorm in B minor?) Instead, you
-specify pitch as a frequency multiplier. The value 1.0 means to 
-play the sound in its original pitch -- the same pitch that is heard
-in the sound file it is taken from. The value 2.0 means to play
-the sound at twice the frequency. The value 0.5 means half the frequency,
-and so on.
-<p>
-
-The physics of musical sound indicate that for every doubling of frequency,
-the pitch rises by one octave. Pitch 0.5 is an octave down; pitch 2.0 is
-an octave up; pitch 4.0 is two octaves up; pitch 8.0 is three octaves up.
-<p>
-
-Since the entire waveform of the sound is sped up or slowed down, the
-duration of the sound changes. A sound played at pitch 2.0 will last half
-as long as the same sound played at 1.0; the same sound at pitch 0.25 will
-last four times as long. (This corresponds with your intuition that
-slowed-down sounds last longer. Just like on a record player that's running
-down. Um, remember record players? Sigh.)
-<p>
-
-You can specify any pitch greater than (but not equal to) zero. However,
-a value too close to zero or infinity will be inaudible.
-<p>
-
-<dt>Volume
-<dd>Whether the note is louder or softer. The value 1.0 indicates the
-sound's original volume. Volume 0.5 indicates half volume; 0.0 indicates
-a completely inaudible sound.
-<p>
-
-It is legal to play sounds at a volume greater than 1, but you risk overdriving
-the digital sound stream, which produces horrible static (clipping noise).
-In general, you should not do this.
-
-<dt>Duration
-<dd>The pitch of a sound always affects its duration. But with some
-sounds, you can extend the duration without changing the pitch.
-<p>
-
-For this to work, the sound must have looping information embedded 
-in it. (At this time, Python's sound-loading modules can only extract
-looping information from AIFF files. And not all AIFF files have loop
-parameters.)
-<p>
-
-Basically, the looping info specifies a segment of the sound which can be
-repeated over and over to extend its duration. This works better for some
-sounds than for others. For example, a trumpet blare can easily be looped --
-the beginning isn't much different from the end, so looping a segment
-isn't noticeable. A long roll of thunder can probably be looped, but
-the grumbles might start to sound repetitive if the sound is extended
-too far. A plucked guitar string would not loop very well at all; 
-the sound dies off smoothly, so looping any segment would lead to an
-audible "seam".
-<p>
-
-Some of the sounds in the Boodler sound library are looped, and some are
-not. It depends on how suited they are to loop-extension.
-<p>
-
-<dt>Pan
-<dd>Boodler can play both monaural and stereo sound files. It can also
-pan (shift) these sounds towards the left or right. 
-For mono sounds, this is straightforward: a pan value of 0 means the
-sound is played equally through both speakers; -1 means it is heard only
-in the left speaker; 1 means it is heard only on the right. Intermediate
-values cause a partial shifting. A value greater than 1 or less than -1 is
-just treated as 1 or -1, respectively.
-<p>
-
-(Note that these changes are done by muting one speaker or the other.
-A mono sound played at pan 1 will sound quieter to the listener than the same
-sound at pan 0, because the left speaker has been silenced, but the right
-has been left unchanged. (It might make more sense to double the volume
-of the right speaker, but that would run into clipping problems, so we
-don't bother.))
-<p>
-
-<dt>Stereo Panning
+<dt>Time</dt>
 <dd>
-(This isn't actually all that basic, so you might want to skip it
-for now.)
 <p>
+This is simply the time at which the sound begins playing. Time zero is when Boodler starts up. Time is always specified in seconds. (Fractional values, such as 0.1 or 1.5, are legitimate.)
+</p>
 
-A stereo sound is treated as two separate mono sounds: one at pan -1,
-one at pan 1. This makes intuitive sense; we hear the left channel
-of the sound only through the left speaker, and the right channel
-only on the right.
 <p>
+Notes are always scheduled by agents, and agents run at a particular time. Therefore, when you specify a time, you always specify a <em>relative</em> time; 1.0 means "one second from now". The "now" is the time at which the agent runs.
+</p>
+</dd>
 
-Unfortunately the picture gets more complicated when you try to pan a
-stereo sound. If you play a stereo sound at pan 1, 
-the left channel is now centered (pan 0), while the
-right channel is at 2, which is treated the same as 1, meaning all the way
-right. The sound will appear to have shifted right, but only partially.
+<dt>Pitch</dt>
+<dd>
 <p>
+Whether the note is higher or lower -- imagine a piano keyboard.
+</p>
 
-To make things worse, you can <em>contract</em> a stereo sound as well
-as shifting it. For example, you could take the original sound and
-play the left channel at -0.5, and the right channel at 0.5. The sound is
-still centered, but the two channels are closer together than before.
-You could even contract it <em>completely</em>, merging both channels 
-at pan position 0.
 <p>
+Sadly for the musically trained in our audience, pitch is not given in familiar musical notation -- you do not specify "D" or "A flat". (This might not even be meaningful; what does it mean to play a rainstorm in B minor?) Instead, you specify pitch as a frequency multiplier. The value 1.0 means to play the sound in its original pitch -- the same pitch that is heard in the sound file it is taken from. The value 2.0 means to play the sound at twice the frequency. The value 0.5 means half the frequency, and so on.
+</p>
 
-Or you can combine a contraction with a shift. If you contract a stereo
-sound by a factor of 0.5, and then shift it -0.25, you'll wind up with the
-left channel at -0.75 and the right channel at 0.25. 
 <p>
+The physics of musical sound indicate that for every doubling of frequency, the pitch rises by one octave. Pitch 0.5 is an octave down; pitch 2.0 is an octave up; pitch 4.0 is two octaves up; pitch 8.0 is three octaves up.
+</p>
 
-The especially geeky will recognize this as a one-dimensional
-affine transform, similar to the 2D transforms used in PostScript or the
-3D transforms used in computer graphics modelling.
-Is this not overkill for playing sounds in stereo?
 <p>
+(If you really want to deal in notes, there is a function in the <code>boodle.music</code> module which converts piano-keyboard intervals into frequency multipliers.)
+</p>
 
-Well, maybe. The advantage is this: you can treat an entire soundscape --
-a Boodler channel -- as a very complex stereo sound. It may have a mixture
-of mono and stereo sounds, each played at a different pan position. But
-this entire range of positions can still be shifted or compressed, just like
-a single sound.
 <p>
+Since the entire waveform of the sound is sped up or slowed down, the duration of the sound changes. A sound played at pitch 2.0 will last half as long as the same sound played at 1.0; the same sound at pitch 0.25 will last four times as long. (This corresponds with your intuition that slowed-down sounds last longer. Just like on a record player that's running down. Um, remember record players? Sigh.)
+</p>
 
-This is, in a nutshell, the power of Boodler. You can build up a complex
-effect in a channel, and then <em>use</em> it as a single component in
-another complex effect.
 <p>
+You can specify any pitch greater than (but not equal to) zero. However, a value too close to zero or infinity will be inaudible.
+</p>
+</dd>
+
+<dt>Volume</dt>
+<dd>
+<p>
+Whether the note is louder or softer. The value 1.0 indicates the sound's original volume. Volume 0.5 indicates half volume; 0.0 indicates a completely inaudible sound.
+</p>
+
+<p>
+It is legal to play sounds at a volume greater than 1, but you risk overdriving the digital sound stream, which produces horrible static (clipping noise). In general, you should not do this.
+</p>
+</dd>
+
+<dt>Duration</dt>
+<dd>
+<p>
+The pitch of a sound always affects its duration. But with some sounds, you can extend the duration without changing the pitch.
+</p>
+
+<p>
+For this to work, the sound must have looping information embedded in it. (At this time, Python's sound-loading modules can only extract looping information from AIFF files. And not all AIFF files have loop parameters.)
+</p>
+
+<p>
+Basically, the looping info specifies a segment of the sound which can be repeated over and over to extend its duration. This works better for some sounds than for others. For example, a trumpet blare can easily be looped -- the beginning isn't much different from the end, so looping a segment isn't noticeable. A long roll of thunder can probably be looped, but the grumbles might start to sound repetitive if the sound is extended too far. A plucked guitar string would not loop very well at all; the sound dies off smoothly, so looping any segment would lead to an audible "seam".
+</p>
+
+<p>
+Some of the sounds in the Boodler sound library are looped, and some are not. It depends on how suited they are to loop-extension.
+</p>
+</dd>
+
+<dt>Pan</dt>
+<dd>
+<p>
+Boodler can play both monaural and stereo sound files. It can also pan (shift) these sounds towards the left or right. For mono sounds, this is straightforward: a pan value of 0 means the sound is played equally through both speakers; -1 means it is heard only in the left speaker; 1 means it is heard only on the right. Intermediate values cause a partial shifting. A value greater than 1 or less than -1 is just treated as 1 or -1, respectively.
+</p>
+
+<p>
+What about values greater than 1 or less than -1? These also shift the sound to the left or right speaker, but the sound will also be <em>quieter</em>. Imagine that the sound has gone <em>past</em> the speaker, and started receding into the distance. A sound at position 2 will play (in the right speaker) at one-fourth the volume of position 1, according to the inverse square law.
+</p>
+
+<p>
+(No, we don't crank up the volume for sounds <em>closer</em> than 1. Position 0 is theoretically in the middle of your head, but that doesn't mean your head explodes. There's a plateau from -1 to 1, and the volume drops off beyond there.)
+</p>
+</dd>
+
+<dt>Complex Panning</dt>
+<dd>
+<p>
+(This is both confusing and not very important, so you might want to skip it for now. The above discussion is good enough for most soundscape work.)
+</p>
+
+<p>
+A stereo sound is treated as two separate mono sounds: one at pan -1, one at pan 1. This makes intuitive sense; we hear the left channel of the sound only through the left speaker, and the right channel only on the right.
+</p>
+
+<p>
+Unfortunately the picture gets more complicated when you try to pan a stereo sound. If you play a stereo sound at pan 1, the left channel is now centered (pan 0), while the right channel is at 2, which is all the way right, but quieter. The sound will appear to have shifted right, but only partially.
+</p>
+
+<p>
+To make things worse, you can <em>contract</em> a stereo sound as well as shifting it. For example, you could take the original sound and play the left channel at -0.5, and the right channel at 0.5. The sound is still centered, but the two channels are closer together than before. You could even contract it <em>completely</em>, merging both channels at pan position 0.
+</p>
+
+<p>
+Or you can combine a contraction with a shift. If you contract a stereo sound by a factor of 0.5, and then shift it -0.25, you'll wind up with the left channel at -0.75 and the right channel at 0.25.
+</p>
+
+<p>
+The especially geeky will recognize this as a one-dimensional affine transform, similar to the 2D transforms used in PostScript or the 3D transforms used in computer graphics modelling. But it's worse than that. Boodler actually <em>supports</em> 2D transforms. If you want, you can define a stereo shift -- or contraction -- in the Y direction. A sound at Y=2 is receding into the distance <em>in front of you</em>, so it will be centered, but quieter.
+</p>
+
+<p>
+This would almost make sense if Boodler supported 5.1 surround-sound. And someday, maybe it will. But right now Boodler only generates two-channel stereo. Isn't this kind of matrix math overkill?
+</p>
+
+<p>
+Well, maybe. The advantage is this: you can treat an entire soundscape -- a Boodler channel -- as a very complex stereo sound. It may have a mixture of mono and stereo sounds, each played at a different pan position. But this entire range of positions can still be shifted or compressed, just like a single sound.
+</p>
+
+<p>
+This is, in a nutshell, the power of Boodler. You can build up a complex effect in a channel, and then <em>use</em> it as a single component in another complex effect.
+</p>
+</dd>
 
 </dl>
 
-Enough digression. It's time to
-<a href="design-start.html">create a simple soundscape</a>.
 <p>
+Enough digression. It's time to <a href="design-start.html">create a simple soundscape</a>.
+</p>
 
-<hr>
+<hr/>
+<p>
 <em><a href="design.html">Designing Soundscapes</a></em>
+</p>
 <p>
 <em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
 
 </body></html>
