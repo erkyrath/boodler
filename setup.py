@@ -358,7 +358,7 @@ setup(name = 'Boodler',
 	license = 'GNU LGPL',
 	packages = ['boodle', 'boopak', 'booman'],
 	package_dir = {'': 'src'},
-	scripts = ['script/boodler.py', 'script/boodle-mgr.py', 'script/boomsg.py'],
+	scripts = ['script/boodler.py', 'script/boodle-mgr.py', 'script/boodle-event.py'],
 	ext_modules = list(all_extensions),
 	cmdclass = {
 		'build_ext': local_build_ext,
