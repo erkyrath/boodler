@@ -8,6 +8,54 @@
 
 <h1>Boodler: The <code>boodle-event.py</code> Reference Manual</h1>
 
+<p>
+The <code>boodle-event.py</code> script sends event messages to a listening Boodler process.
+</p>
+
+<pre>
+boodle-event.py [--hostname host] [--port port] evname [ evdata ... ]
+</pre>
+
+<p>
+Some soundscapes can receive events, or messages, sent by other programs. The <a href="boodler-ref.html">boodler.py</a> script listens on a network socket for these messages if you give the <code>--listen</code> argument. (If you do not, Boodler does <em>not</em> listen for events, and event-receiving agents will not work. This is the default behavior for reasons of security paranoia.)
+</p>
+
+<pre>
+boomsg.py go
+</pre>
+
+<p>
+This sends a simple message, <code>go</code>, to a listening Boodler process -- by default, on the same machine. To send a message to a different machine, you would say:
+</p>
+
+<pre>
+boomsg.py --hostname machine.addr.net go
+</pre>
+
+<p>
+You can also send a more complex message, with several words:
+</p>
+
+<pre>
+boomsg.py go 5.47 cheese
+</pre>
+
+<p>
+The effect of an event depends on what agent has been posted to receive it. For examples of soundscapes that receive events, see the <code>org.boodler.listen</code> package.
+</p>
+
+<h2>Options</h2>
+
+<dl>
+
+<dt><code>--hostname <em>host</em></code></dt>
+<dd>Specify the machine to send the event to. By default, the event goes to the same machine that <code>boodle-event.py</code> runs on.</dd>
+
+<dt><code>--port <em>port/pipe</em></code></dt>
+<dd>Send to the given port number (instead of the default port 31863). The port may also be an absolute pathname (beginning with "/"), in which case Boodler uses a Unix domain socket (on the same machine) instead of a network socket.</dd>
+
+</dl>
+
 <hr/>
 <p>
 <em><a href="index.html">Return to Boodler docs index</a></em>
