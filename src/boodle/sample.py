@@ -210,6 +210,8 @@ def get(sname):
 		if (not os.access(sname.pathname, os.R_OK)):
 			raise SampleError('file not readable: ' + sname.pathname)
 		(dummy, suffix) = os.path.splitext(sname.pathname)
+	elif (not (type(sname) in [str, unicode])):
+		raise SampleError('not a File or filename')
 	elif (os.path.isabs(sname)):
 		filename = sname
 		if (not os.access(filename, os.R_OK)):
