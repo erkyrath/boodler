@@ -45,7 +45,7 @@ A <em>note</em> is a particular sound file -- an AIFF, WAV, or AU -- played at a
 </p>
 
 <p>
-An <em>agent</em> is a piece of Python code that schedules notes and other agents. The agent decides which notes to play when, and which agents to start up when. An agent can also create channels.
+An <em>agent</em> (or "soundscape") is a piece of Python code that schedules notes and other agents. The agent decides which notes to play when, and which agents to start up when. An agent can also create channels.
 </p>
 
 <p>
@@ -195,6 +195,28 @@ This is, in a nutshell, the power of Boodler. You can build up a complex effect 
 </dd>
 
 </dl>
+
+<h2>Agents communicating</h2>
+
+<p>
+We might want agents to coordinate with each other -- either one-to-one, or in a "broadcast/listen" pattern.
+</p>
+
+<p>
+As noted above, one agent can start another one running; this is the most common form of coordination. Since an agent is just a Python object, any agent can also call methods or set fields of another agent.
+</p>
+
+<p>
+Agents can also communicate using <em>properties</em> and <em>events</em>. These are very general mechanisms which are built into the channel system. They are opt-in; an agent will not notice properties or events unless it is designed to. (And then it will generally pay attention only to specific properties or events -- the ones that concern it.)
+</p>
+
+<p>
+A <em>property</em> is a named value, set on a channel. Properties trickle downwards; a property is visible in all the subchannels of the channel it was set on. A property of the root channel is therefore visible to all agents. (Such properties can be used as "user preferences" for particular agent classes.)
+</p>
+
+<p>
+An <em>event</em> is a named value which occurs at a particular time, in a channel. Events trickle upwards; an event is heard in the channel it is sent, and in every channel that contains it. An event listener in the root channel will therefore hear every event.
+</p>
 
 <p>
 Enough digression. It's time to <a href="design-start.html">create a simple soundscape</a>.
