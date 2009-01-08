@@ -1,0 +1,462 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boopak.sparse</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boopak.html"><font color="#ffffff">boopak</font></a>.sparse</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boopak/sparse.py">boopak/sparse.py</a></font></td></tr></table>
+    <p><tt>sparse:&nbsp;A&nbsp;module&nbsp;which&nbsp;implements&nbsp;simple&nbsp;S-expressions.<br>
+&nbsp;<br>
+An&nbsp;S-expression&nbsp;is&nbsp;a&nbsp;string,&nbsp;or&nbsp;a&nbsp;parenthesized&nbsp;list&nbsp;of&nbsp;S-expressions.<br>
+In&nbsp;other&nbsp;words,&nbsp;good&nbsp;old&nbsp;Lisp-style&nbsp;expressions.&nbsp;This&nbsp;implementation<br>
+also&nbsp;allows&nbsp;named&nbsp;elements&nbsp;in&nbsp;lists&nbsp;(as&nbsp;well&nbsp;as&nbsp;the&nbsp;usual&nbsp;positional<br>
+elements).<br>
+&nbsp;<br>
+The&nbsp;following&nbsp;are&nbsp;valid&nbsp;S-expressions:<br>
+&nbsp;<br>
+&nbsp;&nbsp;string<br>
+&nbsp;&nbsp;()<br>
+&nbsp;&nbsp;(string)<br>
+&nbsp;&nbsp;(one&nbsp;two&nbsp;three)<br>
+&nbsp;&nbsp;(key=value&nbsp;key2=value2)<br>
+&nbsp;&nbsp;(list&nbsp;(containing&nbsp;a&nbsp;list)&nbsp;and&nbsp;((another)))<br>
+&nbsp;&nbsp;(one&nbsp;two&nbsp;named=(inner&nbsp;(list)&nbsp;()))<br>
+&nbsp;<br>
+A&nbsp;string&nbsp;can&nbsp;containing&nbsp;special&nbsp;characters&nbsp;--&nbsp;whitespace,&nbsp;quotes,&nbsp;equals,<br>
+parentheses&nbsp;--&nbsp;if&nbsp;it&nbsp;is&nbsp;quoted.&nbsp;Single&nbsp;or&nbsp;double&nbsp;quotes&nbsp;can&nbsp;be&nbsp;used.<br>
+Inside&nbsp;a&nbsp;quoted&nbsp;string,&nbsp;quotes&nbsp;and&nbsp;backslashes&nbsp;should&nbsp;be&nbsp;escaped&nbsp;with<br>
+a&nbsp;backslash.&nbsp;So&nbsp;the&nbsp;following&nbsp;are&nbsp;also&nbsp;valid:<br>
+&nbsp;<br>
+&nbsp;&nbsp;"quote&nbsp;"&nbsp;mark"<br>
+&nbsp;&nbsp;'single&nbsp;quote&nbsp;'&nbsp;mark'<br>
+&nbsp;&nbsp;"smiley&nbsp;=o)&nbsp;clown"<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;these&nbsp;three&nbsp;expressions&nbsp;are&nbsp;identical:<br>
+&nbsp;<br>
+&nbsp;&nbsp;string<br>
+&nbsp;&nbsp;"string"<br>
+&nbsp;&nbsp;'string'<br>
+&nbsp;<br>
+However,&nbsp;the&nbsp;following&nbsp;are&nbsp;not&nbsp;identical:<br>
+&nbsp;<br>
+&nbsp;&nbsp;(string)<br>
+&nbsp;&nbsp;"(string)"<br>
+&nbsp;<br>
+The&nbsp;former&nbsp;is&nbsp;a&nbsp;list&nbsp;containing&nbsp;one&nbsp;string;&nbsp;the&nbsp;latter&nbsp;is&nbsp;a&nbsp;string.<br>
+&nbsp;<br>
+This&nbsp;module&nbsp;lets&nbsp;you&nbsp;convert&nbsp;the&nbsp;textual&nbsp;representation&nbsp;of&nbsp;an&nbsp;expression<br>
+into&nbsp;a&nbsp;structured&nbsp;representation&nbsp;--&nbsp;a&nbsp;tree&nbsp;of&nbsp;<a href="#Tree">Tree</a>&nbsp;objects.&nbsp;(The&nbsp;subclasses<br>
+of&nbsp;<a href="#Tree">Tree</a>&nbsp;are&nbsp;<a href="#List">List</a>&nbsp;and&nbsp;<a href="#ID">ID</a>,&nbsp;representing&nbsp;lists&nbsp;and&nbsp;strings.)<br>
+&nbsp;<br>
+Classes:<br>
+&nbsp;<br>
+<a href="#Tree">Tree</a>&nbsp;--&nbsp;represents&nbsp;an&nbsp;S-expression<br>
+<a href="#List">List</a>&nbsp;--&nbsp;subclass&nbsp;which&nbsp;represents&nbsp;a&nbsp;list&nbsp;expression<br>
+<a href="#ID">ID</a>&nbsp;--&nbsp;subclass&nbsp;which&nbsp;represents&nbsp;a&nbsp;string&nbsp;expression<br>
+&nbsp;<br>
+Public&nbsp;functions:<br>
+&nbsp;<br>
+<a href="#-parse">parse</a>()&nbsp;--&nbsp;parse&nbsp;a&nbsp;string&nbsp;which&nbsp;contains&nbsp;exactly&nbsp;one&nbsp;S-expression<br>
+&nbsp;<br>
+Internal&nbsp;classes:<br>
+&nbsp;<br>
+<a href="#AttrToken">AttrToken</a>&nbsp;--&nbsp;represents&nbsp;a&nbsp;named&nbsp;value&nbsp;encountered&nbsp;during&nbsp;parsing<br>
+<a href="#ParseContext">ParseContext</a>&nbsp;--&nbsp;represents&nbsp;the&nbsp;state&nbsp;of&nbsp;an&nbsp;ongoing&nbsp;<a href="#-parse">parse</a>()&nbsp;operation</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/stringio.html">StringIO</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/codecs.html">codecs</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boopak.sparse.html#AttrToken">AttrToken</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.sparse.html#ParseContext">ParseContext</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.sparse.html#Tree">Tree</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.sparse.html#ID">ID</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.sparse.html#List">List</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.sparse.html#ParseError">ParseError</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="AttrToken">class <strong>AttrToken</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#AttrToken">AttrToken</a>:&nbsp;represents&nbsp;a&nbsp;named&nbsp;value&nbsp;encountered&nbsp;during&nbsp;parsing.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;an&nbsp;internal&nbsp;class;&nbsp;it&nbsp;should&nbsp;not&nbsp;be&nbsp;used&nbsp;outside&nbsp;this&nbsp;module.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="AttrToken-__init__"><strong>__init__</strong></a>(self, key)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ID">class <strong>ID</strong></a>(<a href="boopak.sparse.html#Tree">Tree</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ID">ID</a>:&nbsp;represents&nbsp;a&nbsp;string&nbsp;expression.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ID">ID</a>(val)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+The&nbsp;value&nbsp;that&nbsp;you&nbsp;pass&nbsp;to&nbsp;the&nbsp;constructor&nbsp;may&nbsp;be&nbsp;str&nbsp;or&nbsp;unicode.<br>
+It&nbsp;becomes&nbsp;the&nbsp;<a href="#ID">ID</a>'s&nbsp;underlying&nbsp;string&nbsp;value,&nbsp;so&nbsp;it&nbsp;should&nbsp;not&nbsp;be<br>
+quoted&nbsp;or&nbsp;escaped.<br>
+&nbsp;<br>
+For&nbsp;any&nbsp;str&nbsp;or&nbsp;unicode&nbsp;val,<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ID">ID</a>(val).<a href="#ID-as_string">as_string</a>()&nbsp;==&nbsp;val<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ID-__cmp__"><strong>__cmp__</strong></a>(self, other)</dt></dl>
+
+<dl><dt><a name="ID-__init__"><strong>__init__</strong></a>(self, id)</dt></dl>
+
+<dl><dt><a name="ID-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ID-as_boolean"><strong>as_boolean</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ID-as_float"><strong>as_float</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ID-as_integer"><strong>as_integer</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ID-as_string"><strong>as_string</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ID-serialize"><strong>serialize</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="boopak.sparse.html#Tree">Tree</a>:<br>
+<dl><dt><a name="ID-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="List">class <strong>List</strong></a>(<a href="boopak.sparse.html#Tree">Tree</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#List">List</a>:&nbsp;represents&nbsp;a&nbsp;list&nbsp;expression.<br>
+&nbsp;<br>
+A&nbsp;list&nbsp;can&nbsp;contain&nbsp;positional&nbsp;entries&nbsp;and&nbsp;named&nbsp;values;&nbsp;it&nbsp;therefore<br>
+acts&nbsp;as&nbsp;both&nbsp;an&nbsp;array&nbsp;and&nbsp;a&nbsp;dict.<br>
+&nbsp;<br>
+Array-style&nbsp;operations:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;len(l)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l[int]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l[int:int]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-append">append</a>(tree)<br>
+&nbsp;<br>
+Dict-style&nbsp;operations:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-has_attr">has_attr</a>(key)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-get_attr">get_attr</a>(key)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-set_attr">set_attr</a>(key,&nbsp;tree)<br>
+&nbsp;<br>
+(The&nbsp;keys&nbsp;in&nbsp;these&nbsp;operations&nbsp;must&nbsp;be&nbsp;strings.)<br>
+&nbsp;<br>
+Positional&nbsp;(array)&nbsp;values&nbsp;and&nbsp;named&nbsp;(dict)&nbsp;values&nbsp;are&nbsp;separate.&nbsp;If&nbsp;l<br>
+has&nbsp;no&nbsp;positional&nbsp;values,&nbsp;len(l)&nbsp;is&nbsp;zero,&nbsp;no&nbsp;matter&nbsp;how&nbsp;many&nbsp;named<br>
+values&nbsp;it&nbsp;has.&nbsp;Contrariwise,&nbsp;l.<a href="#List-get_attr">get_attr</a>()&nbsp;will&nbsp;never&nbsp;retrieve&nbsp;a<br>
+positional&nbsp;value.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#List">List</a>(val,&nbsp;val,&nbsp;...&nbsp;key=val,&nbsp;key=val)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Construct&nbsp;a&nbsp;<a href="#List">List</a>&nbsp;with&nbsp;the&nbsp;given&nbsp;named&nbsp;and/or&nbsp;positional&nbsp;values.&nbsp;All<br>
+values&nbsp;must&nbsp;be&nbsp;Trees.&nbsp;You&nbsp;can&nbsp;also&nbsp;construct&nbsp;a&nbsp;<a href="#List">List</a>&nbsp;from&nbsp;a&nbsp;Python<br>
+list&nbsp;or&nbsp;dict,&nbsp;using&nbsp;the&nbsp;forms&nbsp;<a href="#List">List</a>(*list)&nbsp;or&nbsp;<a href="#List">List</a>(**dict).<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="List-__contains__"><strong>__contains__</strong></a>(self, it)</dt></dl>
+
+<dl><dt><a name="List-__getitem__"><strong>__getitem__</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="List-__init__"><strong>__init__</strong></a>(self, *args, **attrs)</dt></dl>
+
+<dl><dt><a name="List-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="List-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="List-append"><strong>append</strong></a>(self, val)</dt><dd><tt><a href="#List-append">append</a>(val)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;the&nbsp;<a href="#Tree">Tree</a>&nbsp;as&nbsp;the&nbsp;last&nbsp;positional&nbsp;entry.</tt></dd></dl>
+
+<dl><dt><a name="List-get_attr"><strong>get_attr</strong></a>(self, key)</dt><dd><tt><a href="#List-get_attr">get_attr</a>(key)&nbsp;-&gt;&nbsp;<a href="#Tree">Tree</a><br>
+&nbsp;<br>
+Retrieve&nbsp;the&nbsp;named&nbsp;<a href="#Tree">Tree</a>&nbsp;which&nbsp;has&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;there&nbsp;is<br>
+no&nbsp;entry&nbsp;with&nbsp;that&nbsp;key,&nbsp;returns&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="List-has_attr"><strong>has_attr</strong></a>(self, key)</dt><dd><tt><a href="#List-has_attr">has_attr</a>(key)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Returns&nbsp;whether&nbsp;there&nbsp;is&nbsp;an&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key.</tt></dd></dl>
+
+<dl><dt><a name="List-serialize"><strong>serialize</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="List-set_attr"><strong>set_attr</strong></a>(self, key, val)</dt><dd><tt><a href="#List-set_attr">set_attr</a>(key,&nbsp;val)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;the&nbsp;<a href="#Tree">Tree</a>&nbsp;val&nbsp;as&nbsp;a&nbsp;named&nbsp;entry,&nbsp;with&nbsp;the&nbsp;given&nbsp;key.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="boopak.sparse.html#Tree">Tree</a>:<br>
+<dl><dt><a name="List-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="List-as_boolean"><strong>as_boolean</strong></a>(self)</dt><dd><tt><a href="#List-as_boolean">as_boolean</a>()&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;boolean&nbsp;value&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.&nbsp;The&nbsp;empty<br>
+string&nbsp;is&nbsp;considered&nbsp;false,&nbsp;as&nbsp;are&nbsp;'0',&nbsp;'no',&nbsp;or&nbsp;'false'.&nbsp;Or<br>
+really&nbsp;any&nbsp;string&nbsp;beginning&nbsp;with&nbsp;'0',&nbsp;'n',&nbsp;'N',&nbsp;'f',&nbsp;or&nbsp;'F'.<br>
+Anything&nbsp;else&nbsp;is&nbsp;true.<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>.</tt></dd></dl>
+
+<dl><dt><a name="List-as_float"><strong>as_float</strong></a>(self)</dt><dd><tt><a href="#List-as_float">as_float</a>()&nbsp;-&gt;&nbsp;float<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;float&nbsp;value&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>,&nbsp;or&nbsp;on&nbsp;a&nbsp;string&nbsp;which<br>
+is&nbsp;not&nbsp;interpretable&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
+
+<dl><dt><a name="List-as_integer"><strong>as_integer</strong></a>(self)</dt><dd><tt><a href="#List-as_integer">as_integer</a>()&nbsp;-&gt;&nbsp;int&nbsp;or&nbsp;long<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;integer&nbsp;value&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>,&nbsp;or&nbsp;on&nbsp;a&nbsp;string&nbsp;which<br>
+is&nbsp;not&nbsp;interpretable&nbsp;as&nbsp;an&nbsp;integer.</tt></dd></dl>
+
+<dl><dt><a name="List-as_string"><strong>as_string</strong></a>(self)</dt><dd><tt><a href="#List-as_string">as_string</a>()&nbsp;-&gt;&nbsp;str&nbsp;or&nbsp;unicode<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;string&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.&nbsp;(The&nbsp;result&nbsp;is&nbsp;not<br>
+quoted&nbsp;or&nbsp;escaped;&nbsp;it&nbsp;is&nbsp;the&nbsp;underlying&nbsp;string&nbsp;value.)<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ParseContext">class <strong>ParseContext</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ParseContext">ParseContext</a>:&nbsp;represents&nbsp;the&nbsp;state&nbsp;of&nbsp;an&nbsp;ongoing&nbsp;<a href="#-parse">parse</a>()&nbsp;operation.<br>
+&nbsp;<br>
+Parsing&nbsp;S-expressions&nbsp;is&nbsp;quite&nbsp;simple;&nbsp;we&nbsp;only&nbsp;need&nbsp;a&nbsp;stream&nbsp;of<br>
+characters&nbsp;and&nbsp;the&nbsp;ability&nbsp;to&nbsp;look&nbsp;ahead&nbsp;by&nbsp;one.&nbsp;(Or,&nbsp;if&nbsp;you&nbsp;like,<br>
+the&nbsp;ability&nbsp;to&nbsp;push&nbsp;one&nbsp;character&nbsp;back&nbsp;onto&nbsp;the&nbsp;stream.)<br>
+&nbsp;<br>
+Fields:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fl&nbsp;--&nbsp;a&nbsp;file-like&nbsp;object,&nbsp;from&nbsp;which&nbsp;characters&nbsp;are&nbsp;read.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nextch&nbsp;--&nbsp;if&nbsp;a&nbsp;character&nbsp;has&nbsp;been&nbsp;pushed&nbsp;back,&nbsp;it&nbsp;is&nbsp;here;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not,&nbsp;this&nbsp;is&nbsp;None.<br>
+&nbsp;<br>
+Constructor:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ParseContext">ParseContext</a>(fl)&nbsp;--&nbsp;constructor<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ParseContext-__init__"><strong>__init__</strong></a>(self, fl)</dt></dl>
+
+<dl><dt><a name="ParseContext-close"><strong>close</strong></a>(self)</dt><dd><tt><a href="#ParseContext-close">close</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Shut&nbsp;down&nbsp;the&nbsp;parser,&nbsp;and&nbsp;close&nbsp;the&nbsp;underlying&nbsp;stream.</tt></dd></dl>
+
+<dl><dt><a name="ParseContext-finalwhite"><strong>finalwhite</strong></a>(self)</dt><dd><tt><a href="#ParseContext-finalwhite">finalwhite</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Ensure&nbsp;that&nbsp;there&nbsp;are&nbsp;no&nbsp;more&nbsp;expressions&nbsp;in&nbsp;the&nbsp;stream.&nbsp;Trailing<br>
+whitespace&nbsp;is&nbsp;ignored.<br>
+&nbsp;<br>
+Raises&nbsp;<a href="#ParseError">ParseError</a>&nbsp;on&nbsp;failure.</tt></dd></dl>
+
+<dl><dt><a name="ParseContext-parseattr"><strong>parseattr</strong></a>(self)</dt><dd><tt><a href="#ParseContext-parseattr">parseattr</a>()&nbsp;-&gt;&nbsp;<a href="#Tree">Tree</a><br>
+&nbsp;<br>
+Parse&nbsp;the&nbsp;value&nbsp;part&nbsp;of&nbsp;a&nbsp;named&nbsp;value.&nbsp;The&nbsp;stream&nbsp;must&nbsp;be&nbsp;after<br>
+the&nbsp;equals&nbsp;sign.</tt></dd></dl>
+
+<dl><dt><a name="ParseContext-parseid"><strong>parseid</strong></a>(self)</dt><dd><tt><a href="#ParseContext-parseid">parseid</a>()&nbsp;-&gt;&nbsp;<a href="#ID">ID</a>&nbsp;or&nbsp;<a href="#AttrToken">AttrToken</a><br>
+&nbsp;<br>
+Parse&nbsp;an&nbsp;unquoted&nbsp;string&nbsp;expression.&nbsp;The&nbsp;stream&nbsp;must&nbsp;be&nbsp;at&nbsp;the<br>
+beginning&nbsp;of&nbsp;the&nbsp;expression.</tt></dd></dl>
+
+<dl><dt><a name="ParseContext-parselist"><strong>parselist</strong></a>(self)</dt><dd><tt><a href="#ParseContext-parselist">parselist</a>()&nbsp;-&gt;&nbsp;<a href="#List">List</a><br>
+&nbsp;<br>
+Parse&nbsp;a&nbsp;parenthesized&nbsp;list&nbsp;expression.&nbsp;The&nbsp;stream&nbsp;must&nbsp;be&nbsp;at<br>
+the&nbsp;beginning&nbsp;of&nbsp;the&nbsp;list&nbsp;contents,&nbsp;after&nbsp;the&nbsp;open&nbsp;parenthesis.</tt></dd></dl>
+
+<dl><dt><a name="ParseContext-parsestring"><strong>parsestring</strong></a>(self)</dt><dd><tt><a href="#ParseContext-parsestring">parsestring</a>()&nbsp;-&gt;&nbsp;<a href="#ID">ID</a><br>
+&nbsp;<br>
+Parse&nbsp;an&nbsp;quoted&nbsp;string&nbsp;expression.&nbsp;The&nbsp;stream&nbsp;must&nbsp;be&nbsp;at&nbsp;the<br>
+beginning&nbsp;of&nbsp;the&nbsp;expression,&nbsp;before&nbsp;the&nbsp;initial&nbsp;quote.</tt></dd></dl>
+
+<dl><dt><a name="ParseContext-parsetree"><strong>parsetree</strong></a>(self)</dt><dd><tt><a href="#ParseContext-parsetree">parsetree</a>()&nbsp;-&gt;&nbsp;<a href="#Tree">Tree</a>&nbsp;or&nbsp;EndOfList&nbsp;or&nbsp;<a href="#AttrToken">AttrToken</a><br>
+&nbsp;<br>
+Parse&nbsp;one&nbsp;expression&nbsp;from&nbsp;the&nbsp;stream,&nbsp;and&nbsp;return&nbsp;the&nbsp;<a href="#Tree">Tree</a>&nbsp;that<br>
+represents&nbsp;it.&nbsp;Leading&nbsp;whitespace&nbsp;is&nbsp;ignored.<br>
+&nbsp;<br>
+EndOfList&nbsp;indicates&nbsp;that&nbsp;a&nbsp;closing&nbsp;parenthesis&nbsp;has&nbsp;been<br>
+reached;&nbsp;an&nbsp;<a href="#AttrToken">AttrToken</a>&nbsp;instance&nbsp;indicates&nbsp;a&nbsp;named&nbsp;value&nbsp;such<br>
+as&nbsp;x=y.&nbsp;These&nbsp;are&nbsp;not&nbsp;valid&nbsp;expressions&nbsp;on&nbsp;their&nbsp;own;&nbsp;they&nbsp;can<br>
+only&nbsp;occur&nbsp;inside&nbsp;lists.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ParseError">class <strong>ParseError</strong></a>(<a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ParseError">ParseError</a>:&nbsp;represents&nbsp;an&nbsp;error&nbsp;parsing&nbsp;string&nbsp;data&nbsp;into&nbsp;Trees.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boopak.sparse.html#ParseError">ParseError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><a name="ParseError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22e79c&gt;<dd><tt>T.<a href="#ParseError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="ParseError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ParseError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ParseError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="ParseError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="ParseError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ParseError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="ParseError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="ParseError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ParseError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#ParseError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Tree">class <strong>Tree</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Tree">Tree</a>:&nbsp;represents&nbsp;an&nbsp;S-expression.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;a&nbsp;virtual&nbsp;base&nbsp;class.&nbsp;Do&nbsp;not&nbsp;instantiate&nbsp;it;&nbsp;instead&nbsp;use<br>
+the&nbsp;<a href="#List">List</a>&nbsp;or&nbsp;<a href="#ID">ID</a>&nbsp;class.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Tree-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tree-as_boolean"><strong>as_boolean</strong></a>(self)</dt><dd><tt><a href="#Tree-as_boolean">as_boolean</a>()&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;boolean&nbsp;value&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.&nbsp;The&nbsp;empty<br>
+string&nbsp;is&nbsp;considered&nbsp;false,&nbsp;as&nbsp;are&nbsp;'0',&nbsp;'no',&nbsp;or&nbsp;'false'.&nbsp;Or<br>
+really&nbsp;any&nbsp;string&nbsp;beginning&nbsp;with&nbsp;'0',&nbsp;'n',&nbsp;'N',&nbsp;'f',&nbsp;or&nbsp;'F'.<br>
+Anything&nbsp;else&nbsp;is&nbsp;true.<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>.</tt></dd></dl>
+
+<dl><dt><a name="Tree-as_float"><strong>as_float</strong></a>(self)</dt><dd><tt><a href="#Tree-as_float">as_float</a>()&nbsp;-&gt;&nbsp;float<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;float&nbsp;value&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>,&nbsp;or&nbsp;on&nbsp;a&nbsp;string&nbsp;which<br>
+is&nbsp;not&nbsp;interpretable&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
+
+<dl><dt><a name="Tree-as_integer"><strong>as_integer</strong></a>(self)</dt><dd><tt><a href="#Tree-as_integer">as_integer</a>()&nbsp;-&gt;&nbsp;int&nbsp;or&nbsp;long<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;integer&nbsp;value&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>,&nbsp;or&nbsp;on&nbsp;a&nbsp;string&nbsp;which<br>
+is&nbsp;not&nbsp;interpretable&nbsp;as&nbsp;an&nbsp;integer.</tt></dd></dl>
+
+<dl><dt><a name="Tree-as_string"><strong>as_string</strong></a>(self)</dt><dd><tt><a href="#Tree-as_string">as_string</a>()&nbsp;-&gt;&nbsp;str&nbsp;or&nbsp;unicode<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;string&nbsp;which&nbsp;this&nbsp;tree&nbsp;represents.&nbsp;(The&nbsp;result&nbsp;is&nbsp;not<br>
+quoted&nbsp;or&nbsp;escaped;&nbsp;it&nbsp;is&nbsp;the&nbsp;underlying&nbsp;string&nbsp;value.)<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;called&nbsp;on&nbsp;a&nbsp;<a href="#List">List</a>.</tt></dd></dl>
+
+<dl><dt><a name="Tree-serialize"><strong>serialize</strong></a>(self)</dt><dd><tt><a href="#Tree-serialize">serialize</a>()&nbsp;-&gt;&nbsp;str&nbsp;or&nbsp;unicode<br>
+&nbsp;<br>
+Convert&nbsp;this&nbsp;tree&nbsp;into&nbsp;its&nbsp;textual&nbsp;representation.&nbsp;Strings&nbsp;will<br>
+be&nbsp;quoted&nbsp;and&nbsp;escaped&nbsp;if&nbsp;necessary.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-escaper"><strong>escaper</strong></a> = unicode_escape_encode(...)</dt></dl>
+ <dl><dt><a name="-parse"><strong>parse</strong></a>(val)</dt><dd><tt><a href="#-parse">parse</a>(val)&nbsp;-&gt;&nbsp;<a href="#Tree">Tree</a><br>
+&nbsp;<br>
+Parse&nbsp;a&nbsp;str&nbsp;or&nbsp;unicode&nbsp;value&nbsp;which&nbsp;contains&nbsp;*exactly&nbsp;one*&nbsp;S-expression.<br>
+The&nbsp;value&nbsp;must&nbsp;contain&nbsp;one&nbsp;string&nbsp;(possibly&nbsp;quoted),&nbsp;or&nbsp;one&nbsp;parenthesized<br>
+list.&nbsp;If&nbsp;the&nbsp;expression&nbsp;is&nbsp;ill-formed&nbsp;(unbalanced&nbsp;parentheses&nbsp;or&nbsp;quotes),<br>
+this&nbsp;raises&nbsp;<a href="#ParseError">ParseError</a>.<br>
+&nbsp;<br>
+Whitespace&nbsp;before&nbsp;or&nbsp;after&nbsp;the&nbsp;expression&nbsp;is&nbsp;ignored.&nbsp;Inside&nbsp;a&nbsp;list,<br>
+whitespace&nbsp;separates&nbsp;expressions,&nbsp;but&nbsp;the&nbsp;amount&nbsp;is&nbsp;not&nbsp;significant.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;<a href="#-parse">parse</a>('')&nbsp;raises&nbsp;<a href="#ParseError">ParseError</a>,&nbsp;because&nbsp;it&nbsp;does&nbsp;not&nbsp;contain&nbsp;any<br>
+expression.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>EndOfList</strong> = &lt;object object at 0x27460&gt;</td></tr></table>
+</body></html>

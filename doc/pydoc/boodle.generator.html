@@ -1,0 +1,586 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boodle.generator</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boodle.html"><font color="#ffffff">boodle</font></a>.generator</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boodle/generator.py">boodle/generator.py</a></font></td></tr></table>
+    <p><tt>generator:&nbsp;A&nbsp;module&nbsp;containing&nbsp;various&nbsp;workhorse&nbsp;classes,&nbsp;used&nbsp;deep<br>
+in&nbsp;the&nbsp;heart&nbsp;of&nbsp;Boodler.<br>
+&nbsp;<br>
+<a href="#Generator">Generator</a>&nbsp;--&nbsp;stores&nbsp;the&nbsp;internal&nbsp;state&nbsp;of&nbsp;Boodler&nbsp;sound&nbsp;generation<br>
+<a href="#Channel">Channel</a>&nbsp;--&nbsp;for&nbsp;creating&nbsp;hierarchical&nbsp;trees&nbsp;of&nbsp;sounds&nbsp;and&nbsp;agents<br>
+<a href="#FrameCount">FrameCount</a>&nbsp;--&nbsp;represents&nbsp;a&nbsp;time&nbsp;(or&nbsp;duration)&nbsp;measured&nbsp;in&nbsp;sound&nbsp;frames<br>
+&nbsp;<br>
+<a href="#-run_agents">run_agents</a>()&nbsp;--&nbsp;the&nbsp;big&nbsp;function&nbsp;that&nbsp;does&nbsp;everything</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/stringio.html">StringIO</a><br>
+<a href="http://www.python.org/doc/current/library/bisect.html">bisect</a><br>
+<a href="boodle.html">boodle</a><br>
+</td><td width="25%" valign=top><a href="boodle.listen.html">boodle.listen</a><br>
+<a href="http://www.python.org/doc/current/library/logging.html">logging</a><br>
+<a href="boodle.sample.html">boodle.sample</a><br>
+</td><td width="25%" valign=top><a href="boodle.stereo.html">boodle.stereo</a><br>
+<a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
+<a href="http://www.python.org/doc/current/library/traceback.html">traceback</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boodle.html#BoodlerError">boodle.BoodlerError</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boodle.generator.html#BoodleInternalError">BoodleInternalError</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.generator.html#ChannelError">ChannelError</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.generator.html#ScheduleError">ScheduleError</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="boodle.generator.html#Channel">Channel</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.generator.html#FrameCount">FrameCount</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.generator.html#Generator">Generator</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="BoodleInternalError">class <strong>BoodleInternalError</strong></a>(<a href="boodle.html#BoodlerError">boodle.BoodlerError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#BoodleInternalError">BoodleInternalError</a>:&nbsp;Represents&nbsp;an&nbsp;internal&nbsp;sanity&nbsp;check&nbsp;going<br>
+wrong.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.generator.html#BoodleInternalError">BoodleInternalError</a></dd>
+<dd><a href="boodle.html#BoodlerError">boodle.BoodlerError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.BoodlerError</a>:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><a name="BoodleInternalError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22e79c&gt;<dd><tt>T.<a href="#BoodleInternalError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="BoodleInternalError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="BoodleInternalError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="BoodleInternalError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="BoodleInternalError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="BoodleInternalError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="BoodleInternalError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="BoodleInternalError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="BoodleInternalError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="BoodleInternalError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#BoodleInternalError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Channel">class <strong>Channel</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Channel">Channel</a>:&nbsp;a&nbsp;class&nbsp;for&nbsp;creating&nbsp;hierarchical&nbsp;trees&nbsp;of&nbsp;sounds&nbsp;and<br>
+agents.<br>
+&nbsp;<br>
+<a href="#Channel">Channel</a>&nbsp;objects&nbsp;should&nbsp;be&nbsp;created&nbsp;via&nbsp;Agent.new_channel()&nbsp;and<br>
+destroyed&nbsp;with&nbsp;the&nbsp;channel.<a href="#Channel-stop">stop</a>()&nbsp;method.<br>
+&nbsp;<br>
+Public&nbsp;methods&nbsp;and&nbsp;fields:<br>
+&nbsp;<br>
+parent&nbsp;--&nbsp;the&nbsp;parent&nbsp;of&nbsp;the&nbsp;channel&nbsp;(None&nbsp;if&nbsp;root)<br>
+<a href="#Channel-get_root_channel">get_root_channel</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;root&nbsp;channel&nbsp;of&nbsp;the&nbsp;tree<br>
+<a href="#Channel-set_volume">set_volume</a>()&nbsp;--&nbsp;change&nbsp;the&nbsp;volume&nbsp;of&nbsp;the&nbsp;channel<br>
+<a href="#Channel-set_pan">set_pan</a>()&nbsp;--&nbsp;change&nbsp;the&nbsp;channel&nbsp;to&nbsp;a&nbsp;new&nbsp;pan&nbsp;position<br>
+<a href="#Channel-stop">stop</a>()&nbsp;--&nbsp;stop&nbsp;the&nbsp;channel&nbsp;immediately<br>
+<a href="#Channel-get_prop">get_prop</a>()&nbsp;--&nbsp;get&nbsp;a&nbsp;property&nbsp;from&nbsp;this&nbsp;channel<br>
+<a href="#Channel-has_prop">has_prop</a>()&nbsp;--&nbsp;see&nbsp;whether&nbsp;this&nbsp;channel&nbsp;has&nbsp;a&nbsp;given&nbsp;property<br>
+<a href="#Channel-set_prop">set_prop</a>()&nbsp;--&nbsp;set&nbsp;a&nbsp;property&nbsp;on&nbsp;this&nbsp;channel<br>
+<a href="#Channel-del_prop">del_prop</a>()&nbsp;--&nbsp;delete&nbsp;a&nbsp;property&nbsp;from&nbsp;this&nbsp;channel<br>
+&nbsp;<br>
+Internal&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Channel-realstop">realstop</a>()&nbsp;--&nbsp;do&nbsp;the&nbsp;work&nbsp;of&nbsp;stopping&nbsp;the&nbsp;channel<br>
+<a href="#Channel-close">close</a>()&nbsp;--&nbsp;shut&nbsp;down&nbsp;the&nbsp;channel<br>
+<a href="#Channel-addnote">addnote</a>()&nbsp;--&nbsp;note&nbsp;that&nbsp;a&nbsp;note&nbsp;has&nbsp;been&nbsp;added&nbsp;to&nbsp;the&nbsp;channel<br>
+<a href="#Channel-remnote">remnote</a>()&nbsp;--&nbsp;note&nbsp;that&nbsp;a&nbsp;note&nbsp;has&nbsp;been&nbsp;removed&nbsp;from&nbsp;the&nbsp;channel<br>
+&nbsp;<br>
+Class&nbsp;method:<br>
+&nbsp;<br>
+<a href="#Channel-compare">compare</a>()&nbsp;--&nbsp;compare&nbsp;two&nbsp;channels&nbsp;in&nbsp;deepest-to-root&nbsp;order<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Channel-__init__"><strong>__init__</strong></a>(self, parent, gen, createagent, startvol, pan)</dt></dl>
+
+<dl><dt><a name="Channel-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Channel-addnote"><strong>addnote</strong></a>(self)</dt><dd><tt><a href="#Channel-addnote">addnote</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;a&nbsp;note&nbsp;has&nbsp;been&nbsp;added&nbsp;to&nbsp;the&nbsp;channel.<br>
+&nbsp;<br>
+Internal&nbsp;method.&nbsp;(Called&nbsp;from&nbsp;sample.queue_note.)</tt></dd></dl>
+
+<dl><dt><a name="Channel-close"><strong>close</strong></a>(self)</dt><dd><tt><a href="#Channel-close">close</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Shut&nbsp;down&nbsp;the&nbsp;channel.&nbsp;This&nbsp;presumes&nbsp;that&nbsp;all&nbsp;notes,&nbsp;agents,&nbsp;and<br>
+subchannels&nbsp;have&nbsp;already&nbsp;been&nbsp;deleted.<br>
+&nbsp;<br>
+Internal&nbsp;method.&nbsp;(This&nbsp;is&nbsp;called&nbsp;both&nbsp;from&nbsp;the&nbsp;explicit&nbsp;stop&nbsp;list,<br>
+and&nbsp;from&nbsp;the&nbsp;regular&nbsp;check&nbsp;for&nbsp;channels&nbsp;with&nbsp;no&nbsp;more&nbsp;stuff<br>
+scheduled.)</tt></dd></dl>
+
+<dl><dt><a name="Channel-del_prop"><strong>del_prop</strong></a>(self, key)</dt><dd><tt><a href="#Channel-del_prop">del_prop</a>(key)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;a&nbsp;property&nbsp;from&nbsp;this&nbsp;channel.&nbsp;If&nbsp;none&nbsp;is&nbsp;set,&nbsp;this&nbsp;has&nbsp;no<br>
+effect.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;this&nbsp;does&nbsp;not&nbsp;affect&nbsp;parent&nbsp;channels.&nbsp;So&nbsp;<a href="#Channel-get_prop">get_prop</a>(key)<br>
+may&nbsp;still&nbsp;return&nbsp;a&nbsp;value&nbsp;after&nbsp;<a href="#Channel-del_prop">del_prop</a>(key).</tt></dd></dl>
+
+<dl><dt><a name="Channel-get_prop"><strong>get_prop</strong></a>(self, key, default<font color="#909090">=None</font>)</dt><dd><tt><a href="#Channel-get_prop">get_prop</a>(key,&nbsp;default=None)&nbsp;-&gt;&nbsp;any<br>
+&nbsp;<br>
+Get&nbsp;a&nbsp;property&nbsp;from&nbsp;this&nbsp;channel.&nbsp;If&nbsp;none&nbsp;is&nbsp;set,&nbsp;see&nbsp;if&nbsp;one&nbsp;is<br>
+inherited&nbsp;from&nbsp;the&nbsp;parent.&nbsp;If&nbsp;there&nbsp;is&nbsp;no&nbsp;inherited&nbsp;value&nbsp;either,<br>
+return&nbsp;None,&nbsp;or&nbsp;the&nbsp;given&nbsp;default.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;None&nbsp;is&nbsp;a&nbsp;legal&nbsp;property&nbsp;value.&nbsp;To&nbsp;distinguish&nbsp;between<br>
+no&nbsp;property&nbsp;and&nbsp;a&nbsp;property&nbsp;set&nbsp;to&nbsp;None,&nbsp;use&nbsp;<a href="#Channel-has_prop">has_prop</a>().</tt></dd></dl>
+
+<dl><dt><a name="Channel-get_root_channel"><strong>get_root_channel</strong></a>(self)</dt><dd><tt><a href="#Channel-get_root_channel">get_root_channel</a>()&nbsp;-&gt;&nbsp;channel<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;root&nbsp;channel&nbsp;of&nbsp;the&nbsp;tree.</tt></dd></dl>
+
+<dl><dt><a name="Channel-has_prop"><strong>has_prop</strong></a>(self, key)</dt><dd><tt><a href="#Channel-has_prop">has_prop</a>(key)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+See&nbsp;whether&nbsp;this&nbsp;channel&nbsp;has&nbsp;a&nbsp;given&nbsp;property.&nbsp;If&nbsp;none&nbsp;is&nbsp;set,&nbsp;see<br>
+if&nbsp;one&nbsp;is&nbsp;inherited&nbsp;from&nbsp;the&nbsp;parent.</tt></dd></dl>
+
+<dl><dt><a name="Channel-realstop"><strong>realstop</strong></a>(self)</dt><dd><tt><a href="#Channel-realstop">realstop</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Do&nbsp;the&nbsp;work&nbsp;of&nbsp;stopping&nbsp;the&nbsp;channel.&nbsp;This&nbsp;deletes&nbsp;all&nbsp;notes<br>
+in&nbsp;the&nbsp;channel&nbsp;(and&nbsp;its&nbsp;subchannels),&nbsp;and&nbsp;all&nbsp;agents,&nbsp;and&nbsp;then<br>
+closes&nbsp;all&nbsp;the&nbsp;subchannels.&nbsp;Finally&nbsp;it&nbsp;closes&nbsp;the&nbsp;channel&nbsp;itself.<br>
+&nbsp;<br>
+Internal&nbsp;method.&nbsp;(The&nbsp;<a href="#Channel-stop">stop</a>()&nbsp;method&nbsp;queues&nbsp;this&nbsp;up&nbsp;in&nbsp;stoplist.)</tt></dd></dl>
+
+<dl><dt><a name="Channel-remnote"><strong>remnote</strong></a>(self)</dt><dd><tt><a href="#Channel-remnote">remnote</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;a&nbsp;note&nbsp;has&nbsp;been&nbsp;removed&nbsp;from&nbsp;the&nbsp;channel.<br>
+&nbsp;<br>
+Internal&nbsp;method.&nbsp;(Called&nbsp;from&nbsp;the&nbsp;callback&nbsp;to&nbsp;cboodle.create_note.)</tt></dd></dl>
+
+<dl><dt><a name="Channel-set_pan"><strong>set_pan</strong></a>(self, newpan, interval<font color="#909090">=0.5</font>)</dt><dd><tt><a href="#Channel-set_pan">set_pan</a>(newpan,&nbsp;interval=0.5)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Change&nbsp;the&nbsp;channel&nbsp;to&nbsp;a&nbsp;new&nbsp;pan&nbsp;position.&nbsp;This&nbsp;affects&nbsp;all&nbsp;notes<br>
+in&nbsp;the&nbsp;channel&nbsp;and&nbsp;any&nbsp;subchannels.<br>
+&nbsp;<br>
+The&nbsp;position&nbsp;is&nbsp;specified&nbsp;relative&nbsp;to&nbsp;the&nbsp;parent.&nbsp;A&nbsp;value&nbsp;of&nbsp;0<br>
+(or&nbsp;None,&nbsp;or&nbsp;stereo.default())&nbsp;places&nbsp;the&nbsp;channel&nbsp;in&nbsp;the&nbsp;same<br>
+position&nbsp;as&nbsp;its&nbsp;parent.&nbsp;A&nbsp;positive&nbsp;number&nbsp;shifts&nbsp;it&nbsp;to&nbsp;the&nbsp;right<br>
+of&nbsp;the&nbsp;parent;&nbsp;a&nbsp;negative&nbsp;number&nbsp;shifts&nbsp;it&nbsp;left.&nbsp;The&nbsp;value&nbsp;may<br>
+also&nbsp;be&nbsp;any&nbsp;object&nbsp;created&nbsp;by&nbsp;the&nbsp;stereo&nbsp;module.<br>
+&nbsp;<br>
+The&nbsp;change&nbsp;begins&nbsp;immediately,&nbsp;and&nbsp;occurs&nbsp;smoothly&nbsp;over&nbsp;the<br>
+interval&nbsp;given&nbsp;(in&nbsp;seconds).&nbsp;If&nbsp;no&nbsp;value&nbsp;is&nbsp;given,&nbsp;the&nbsp;interval<br>
+defaults&nbsp;to&nbsp;0.5&nbsp;(half&nbsp;a&nbsp;second).&nbsp;You&nbsp;should&nbsp;not&nbsp;use&nbsp;a&nbsp;shorter<br>
+interval;&nbsp;it&nbsp;may&nbsp;not&nbsp;be&nbsp;rendered&nbsp;correctly,&nbsp;particularly&nbsp;for<br>
+large&nbsp;changes.<br>
+&nbsp;<br>
+Due&nbsp;to&nbsp;the&nbsp;way&nbsp;the&nbsp;stereo&nbsp;code&nbsp;is&nbsp;written&nbsp;(a&nbsp;cheap&nbsp;and&nbsp;dirty&nbsp;hack),<br>
+two&nbsp;stereo&nbsp;changes&nbsp;scheduled&nbsp;too&nbsp;close&nbsp;together&nbsp;on&nbsp;the&nbsp;same&nbsp;channel<br>
+(within&nbsp;about&nbsp;one&nbsp;second)&nbsp;can&nbsp;interfere&nbsp;with&nbsp;each&nbsp;other.&nbsp;The&nbsp;earlier<br>
+one&nbsp;may&nbsp;be&nbsp;ignored&nbsp;entirely&nbsp;in&nbsp;favor&nbsp;of&nbsp;the&nbsp;later.&nbsp;Therefore,&nbsp;you<br>
+should&nbsp;not&nbsp;rely&nbsp;on&nbsp;rapid&nbsp;sequences&nbsp;of&nbsp;<a href="#Channel-set_pan">set_pan</a>()&nbsp;calls&nbsp;for&nbsp;your<br>
+sound&nbsp;effects.&nbsp;Set&nbsp;pan&nbsp;positions&nbsp;on&nbsp;individual&nbsp;notes&nbsp;instead,&nbsp;or<br>
+else&nbsp;create&nbsp;several&nbsp;channels.</tt></dd></dl>
+
+<dl><dt><a name="Channel-set_prop"><strong>set_prop</strong></a>(self, key, val)</dt><dd><tt><a href="#Channel-set_prop">set_prop</a>(key,&nbsp;val)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;a&nbsp;property&nbsp;on&nbsp;this&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="Channel-set_volume"><strong>set_volume</strong></a>(self, newvol, interval<font color="#909090">=0.0050000000000000001</font>)</dt><dd><tt><a href="#Channel-set_volume">set_volume</a>(newvolume,&nbsp;interval=0.005)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Change&nbsp;the&nbsp;volume&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;a&nbsp;new&nbsp;level&nbsp;(0&nbsp;means&nbsp;silence,<br>
+1&nbsp;means&nbsp;full&nbsp;volume).&nbsp;This&nbsp;affects&nbsp;all&nbsp;notes&nbsp;in&nbsp;the&nbsp;channel&nbsp;and<br>
+any&nbsp;subchannels.<br>
+&nbsp;<br>
+The&nbsp;volume&nbsp;change&nbsp;begins&nbsp;immediately,&nbsp;and&nbsp;occurs&nbsp;smoothly&nbsp;over<br>
+the&nbsp;interval&nbsp;given&nbsp;(in&nbsp;seconds).&nbsp;If&nbsp;no&nbsp;value&nbsp;is&nbsp;given,&nbsp;the&nbsp;interval<br>
+defaults&nbsp;to&nbsp;0.005&nbsp;(five&nbsp;milliseconds),&nbsp;which&nbsp;is&nbsp;short&nbsp;enough&nbsp;that<br>
+it&nbsp;will&nbsp;sound&nbsp;instantaneous.&nbsp;(You&nbsp;should&nbsp;not&nbsp;use&nbsp;an&nbsp;interval<br>
+shorter&nbsp;than&nbsp;0.005;&nbsp;it&nbsp;can&nbsp;cause&nbsp;undesirable&nbsp;clicks&nbsp;and&nbsp;pops.)<br>
+&nbsp;<br>
+Due&nbsp;to&nbsp;the&nbsp;way&nbsp;the&nbsp;volume&nbsp;code&nbsp;is&nbsp;written&nbsp;(a&nbsp;cheap&nbsp;and&nbsp;dirty&nbsp;hack),<br>
+two&nbsp;volume&nbsp;changes&nbsp;scheduled&nbsp;too&nbsp;close&nbsp;together&nbsp;on&nbsp;the&nbsp;same&nbsp;channel<br>
+(within&nbsp;about&nbsp;one&nbsp;second)&nbsp;can&nbsp;interfere&nbsp;with&nbsp;each&nbsp;other.&nbsp;The&nbsp;earlier<br>
+one&nbsp;may&nbsp;be&nbsp;ignored&nbsp;entirely&nbsp;in&nbsp;favor&nbsp;of&nbsp;the&nbsp;later.&nbsp;Therefore,&nbsp;you<br>
+should&nbsp;not&nbsp;rely&nbsp;on&nbsp;rapid&nbsp;sequences&nbsp;of&nbsp;<a href="#Channel-set_volume">set_volume</a>()&nbsp;calls&nbsp;for&nbsp;your<br>
+sound&nbsp;effects.&nbsp;Set&nbsp;volumes&nbsp;on&nbsp;individual&nbsp;notes&nbsp;instead,&nbsp;or&nbsp;else<br>
+create&nbsp;several&nbsp;channels.</tt></dd></dl>
+
+<dl><dt><a name="Channel-stop"><strong>stop</strong></a>(self)</dt><dd><tt><a href="#Channel-stop">stop</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Stop&nbsp;the&nbsp;channel&nbsp;immediately.&nbsp;All&nbsp;sounds&nbsp;playing&nbsp;in&nbsp;the&nbsp;channel&nbsp;<br>
+(or&nbsp;any&nbsp;subchannels)&nbsp;are&nbsp;cut&nbsp;off;&nbsp;all&nbsp;sounds&nbsp;and&nbsp;agents&nbsp;scheduled<br>
+to&nbsp;run&nbsp;are&nbsp;discarded.<br>
+&nbsp;<br>
+If&nbsp;any&nbsp;notes&nbsp;are&nbsp;playing&nbsp;with&nbsp;non-zero&nbsp;volume,&nbsp;their&nbsp;termination<br>
+may&nbsp;cause&nbsp;undesirable&nbsp;clicks&nbsp;and&nbsp;pops.&nbsp;It&nbsp;is&nbsp;best&nbsp;to&nbsp;set&nbsp;the&nbsp;volume<br>
+of&nbsp;a&nbsp;channel&nbsp;to&nbsp;zero&nbsp;before&nbsp;stopping&nbsp;it.&nbsp;(The&nbsp;FadeOutAgent&nbsp;class<br>
+can&nbsp;be&nbsp;used&nbsp;for&nbsp;this.)<br>
+&nbsp;<br>
+Due&nbsp;to&nbsp;the&nbsp;way&nbsp;sound&nbsp;generation&nbsp;is&nbsp;buffered,&nbsp;when&nbsp;an&nbsp;agent&nbsp;calls<br>
+channel.<a href="#Channel-stop">stop</a>(),&nbsp;the&nbsp;channel&nbsp;may&nbsp;be&nbsp;stopped&nbsp;slightly&nbsp;later&nbsp;than<br>
+it&nbsp;ought&nbsp;to&nbsp;be.</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Channel-compare"><strong>compare</strong></a>(ch1, ch2)</dt><dd><tt><a href="#Channel-compare">compare</a>(ch1,&nbsp;ch2)&nbsp;-&gt;&nbsp;int<br>
+&nbsp;<br>
+Compare&nbsp;two&nbsp;channels&nbsp;in&nbsp;depth&nbsp;order.&nbsp;Sorting&nbsp;a&nbsp;list&nbsp;of&nbsp;channels<br>
+with&nbsp;this&nbsp;comparison&nbsp;function&nbsp;will&nbsp;put&nbsp;the&nbsp;deepest&nbsp;ones&nbsp;first,<br>
+the&nbsp;root&nbsp;last.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>logger</strong> = None</dl>
+
+<dl><dt><strong>ordinal</strong> = 0</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ChannelError">class <strong>ChannelError</strong></a>(<a href="boodle.html#BoodlerError">boodle.BoodlerError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ChannelError">ChannelError</a>:&nbsp;Represents&nbsp;an&nbsp;invalid&nbsp;use&nbsp;of&nbsp;a&nbsp;channel.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.generator.html#ChannelError">ChannelError</a></dd>
+<dd><a href="boodle.html#BoodlerError">boodle.BoodlerError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.BoodlerError</a>:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><a name="ChannelError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22e79c&gt;<dd><tt>T.<a href="#ChannelError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="ChannelError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ChannelError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ChannelError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="ChannelError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="ChannelError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ChannelError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="ChannelError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="ChannelError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ChannelError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#ChannelError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FrameCount">class <strong>FrameCount</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#FrameCount">FrameCount</a>:&nbsp;Represents&nbsp;a&nbsp;time&nbsp;(or&nbsp;duration)&nbsp;measured&nbsp;in&nbsp;a&nbsp;fixed<br>
+number&nbsp;of&nbsp;sound&nbsp;frames.&nbsp;A&nbsp;frame&nbsp;is&nbsp;a&nbsp;group&nbsp;of&nbsp;values,&nbsp;one&nbsp;for&nbsp;each<br>
+channel.&nbsp;(For&nbsp;a&nbsp;mono&nbsp;sound&nbsp;file,&nbsp;therefore,&nbsp;a&nbsp;frame&nbsp;is&nbsp;the&nbsp;same&nbsp;as<br>
+a&nbsp;sample&nbsp;value.)&nbsp;When&nbsp;you&nbsp;see&nbsp;a&nbsp;sound&nbsp;rate&nbsp;like&nbsp;44100&nbsp;Hz,&nbsp;that's<br>
+measuring&nbsp;frames&nbsp;per&nbsp;second.<br>
+&nbsp;<br>
+<a href="#FrameCount">FrameCount</a>&nbsp;objects&nbsp;can&nbsp;be&nbsp;passed&nbsp;as&nbsp;the&nbsp;delay&nbsp;(or&nbsp;duration)&nbsp;value<br>
+for&nbsp;sched_note(),&nbsp;etc.&nbsp;However,&nbsp;you&nbsp;should&nbsp;only&nbsp;do&nbsp;this&nbsp;when&nbsp;you<br>
+need&nbsp;exact-frame&nbsp;scheduling.&nbsp;A&nbsp;soundscape&nbsp;which&nbsp;uses&nbsp;<a href="#FrameCount">FrameCount</a><br>
+values&nbsp;will&nbsp;come&nbsp;out&nbsp;different&nbsp;on&nbsp;different&nbsp;computers,&nbsp;because<br>
+not&nbsp;all&nbsp;audio&nbsp;devices&nbsp;play&nbsp;at&nbsp;the&nbsp;same&nbsp;frame&nbsp;rate.&nbsp;Boodler&nbsp;normally<br>
+compensates&nbsp;for&nbsp;this,&nbsp;but&nbsp;if&nbsp;you&nbsp;use&nbsp;FrameCounts,&nbsp;you&nbsp;are&nbsp;bypassing<br>
+that&nbsp;compensation.<br>
+&nbsp;<br>
+<a href="#FrameCount">FrameCount</a>(frames)&nbsp;--&nbsp;constructor.<br>
+&nbsp;<br>
+The&nbsp;argument&nbsp;should&nbsp;be&nbsp;an&nbsp;integer&nbsp;(or&nbsp;long)&nbsp;number&nbsp;of&nbsp;frames.&nbsp;No<br>
+range-checking&nbsp;is&nbsp;done&nbsp;at&nbsp;constructor-time.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="FrameCount-__init__"><strong>__init__</strong></a>(self, frames)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Generator">class <strong>Generator</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Generator">Generator</a>:&nbsp;A&nbsp;class&nbsp;that&nbsp;stores&nbsp;the&nbsp;internal&nbsp;state&nbsp;of&nbsp;Boodler<br>
+sound&nbsp;generation.<br>
+&nbsp;<br>
+Everything&nbsp;in&nbsp;this&nbsp;class&nbsp;is&nbsp;private&nbsp;to&nbsp;Boodler.<br>
+&nbsp;<br>
+Interesting&nbsp;fields:<br>
+&nbsp;<br>
+(Note&nbsp;that&nbsp;sets&nbsp;are&nbsp;implemented&nbsp;as&nbsp;dicts,&nbsp;where&nbsp;only&nbsp;the&nbsp;keys&nbsp;are<br>
+significant.&nbsp;It&nbsp;may&nbsp;be&nbsp;worth&nbsp;changing&nbsp;to&nbsp;Python&nbsp;sets,&nbsp;or&nbsp;it&nbsp;may<br>
+not.)<br>
+&nbsp;<br>
+queue&nbsp;--&nbsp;list&nbsp;of&nbsp;[runtime,&nbsp;agent,&nbsp;handler]&nbsp;lists.&nbsp;Sorted&nbsp;by<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;runtime&nbsp;(and,&nbsp;insignificantly,&nbsp;by&nbsp;the&nbsp;other&nbsp;list&nbsp;values).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;These&nbsp;are&nbsp;not&nbsp;tuples&nbsp;because&nbsp;we&nbsp;have&nbsp;to&nbsp;update&nbsp;the&nbsp;runtime&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;place&nbsp;occasionally.<br>
+rootchannel&nbsp;--&nbsp;the&nbsp;root&nbsp;channel&nbsp;object<br>
+channels&nbsp;--&nbsp;set&nbsp;of&nbsp;channels&nbsp;in&nbsp;existence<br>
+&nbsp;<br>
+allhandlers&nbsp;--&nbsp;set&nbsp;of&nbsp;all&nbsp;active&nbsp;handler&nbsp;objects<br>
+listeners&nbsp;--&nbsp;list&nbsp;of&nbsp;sources&nbsp;of&nbsp;external&nbsp;events<br>
+postqueue&nbsp;--&nbsp;list&nbsp;of&nbsp;events&nbsp;received&nbsp;from&nbsp;external&nbsp;sources.&nbsp;These<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;handled&nbsp;at&nbsp;the&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next&nbsp;run&nbsp;cycle<br>
+&nbsp;<br>
+loader&nbsp;--&nbsp;the&nbsp;package&nbsp;loader<br>
+&nbsp;<br>
+Internal&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Generator-close">close</a>()&nbsp;--&nbsp;shut&nbsp;down&nbsp;the&nbsp;generator&nbsp;object<br>
+<a href="#Generator-select_time">select_time</a>()&nbsp;--&nbsp;determine&nbsp;the&nbsp;schedule&nbsp;time&nbsp;represented&nbsp;by&nbsp;a&nbsp;value<br>
+<a href="#Generator-select_duration">select_duration</a>()&nbsp;--&nbsp;determine&nbsp;the&nbsp;duration&nbsp;represented&nbsp;by&nbsp;a&nbsp;value<br>
+<a href="#Generator-set_stats_interval">set_stats_interval</a>()&nbsp;--&nbsp;set&nbsp;the&nbsp;interval&nbsp;at&nbsp;which&nbsp;stats&nbsp;are&nbsp;dumped<br>
+<a href="#Generator-addagent">addagent</a>()&nbsp;--&nbsp;put&nbsp;an&nbsp;agent&nbsp;on&nbsp;the&nbsp;schedule&nbsp;queue<br>
+<a href="#Generator-remagent">remagent</a>()&nbsp;--&nbsp;remove&nbsp;an&nbsp;agent&nbsp;from&nbsp;the&nbsp;schedule&nbsp;queue<br>
+<a href="#Generator-addhandler">addhandler</a>()&nbsp;--&nbsp;add&nbsp;a&nbsp;Handler&nbsp;object&nbsp;to&nbsp;the&nbsp;system<br>
+<a href="#Generator-remhandlers">remhandlers</a>()&nbsp;--&nbsp;remove&nbsp;a&nbsp;list&nbsp;of&nbsp;Handler&nbsp;objects&nbsp;from&nbsp;the&nbsp;system<br>
+<a href="#Generator-sendevent">sendevent</a>()&nbsp;--&nbsp;process&nbsp;an&nbsp;event&nbsp;on&nbsp;the&nbsp;given&nbsp;channel<br>
+<a href="#Generator-dump_stats">dump_stats</a>()&nbsp;--&nbsp;write&nbsp;statistical&nbsp;information&nbsp;to&nbsp;the&nbsp;given&nbsp;file<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Generator-__init__"><strong>__init__</strong></a>(self, basevolume<font color="#909090">=0.5</font>, stdinlisten<font color="#909090">=False</font>, netlisten<font color="#909090">=False</font>, listenport<font color="#909090">=None</font>, loader<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Generator-addagent"><strong>addagent</strong></a>(self, ag, chan, runtime, handle)</dt><dd><tt><a href="#Generator-addagent">addagent</a>(ag,&nbsp;chan,&nbsp;runtime,&nbsp;handle)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Put&nbsp;an&nbsp;agent&nbsp;on&nbsp;the&nbsp;schedule&nbsp;queue.&nbsp;The&nbsp;arguments&nbsp;are&nbsp;the&nbsp;channel,<br>
+the&nbsp;scheduled&nbsp;time&nbsp;to&nbsp;run,&nbsp;and&nbsp;the&nbsp;function&nbsp;to&nbsp;call&nbsp;at&nbsp;that<br>
+time.&nbsp;(handle&nbsp;is&nbsp;commonly&nbsp;ag.run.)<br>
+&nbsp;<br>
+A&nbsp;given&nbsp;agent&nbsp;can&nbsp;only&nbsp;be&nbsp;on&nbsp;the&nbsp;queue&nbsp;once.</tt></dd></dl>
+
+<dl><dt><a name="Generator-addhandler"><strong>addhandler</strong></a>(self, han)</dt><dd><tt><a href="#Generator-addhandler">addhandler</a>(han)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;Handler&nbsp;object&nbsp;to&nbsp;the&nbsp;system.&nbsp;This&nbsp;sets&nbsp;up&nbsp;listening&nbsp;(and<br>
+channel&nbsp;holds)&nbsp;as&nbsp;described&nbsp;by&nbsp;the&nbsp;Handler.</tt></dd></dl>
+
+<dl><dt><a name="Generator-close"><strong>close</strong></a>(self)</dt><dd><tt><a href="#Generator-close">close</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Shut&nbsp;down&nbsp;the&nbsp;generator&nbsp;object&nbsp;and&nbsp;any&nbsp;resources&nbsp;it&nbsp;has&nbsp;open.<br>
+(This&nbsp;does&nbsp;not,&nbsp;however,&nbsp;shut&nbsp;down&nbsp;the&nbsp;cboodle&nbsp;module.&nbsp;The<br>
+caller&nbsp;must&nbsp;do&nbsp;that.)</tt></dd></dl>
+
+<dl><dt><a name="Generator-dump_stats"><strong>dump_stats</strong></a>(self, fl<font color="#909090">=None</font>)</dt><dd><tt><a href="#Generator-dump_stats">dump_stats</a>(fl=sys.stdout)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Write&nbsp;statistical&nbsp;information&nbsp;to&nbsp;the&nbsp;given&nbsp;file&nbsp;or&nbsp;stream.</tt></dd></dl>
+
+<dl><dt><a name="Generator-remagent"><strong>remagent</strong></a>(self, ag)</dt><dd><tt><a href="#Generator-remagent">remagent</a>(ag)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Remove&nbsp;an&nbsp;agent&nbsp;from&nbsp;the&nbsp;schedule&nbsp;queue.&nbsp;This&nbsp;does&nbsp;not&nbsp;check&nbsp;whether<br>
+it's&nbsp;on&nbsp;the&nbsp;queue&nbsp;first.<br>
+&nbsp;<br>
+(When&nbsp;agents&nbsp;reach&nbsp;the&nbsp;front&nbsp;of&nbsp;the&nbsp;queue&nbsp;and&nbsp;are&nbsp;played,&nbsp;they<br>
+aren't&nbsp;removed&nbsp;through&nbsp;this&nbsp;method.&nbsp;That's&nbsp;separate&nbsp;code&nbsp;in<br>
+<a href="#-run_agents">run_agents</a>().)</tt></dd></dl>
+
+<dl><dt><a name="Generator-remhandlers"><strong>remhandlers</strong></a>(self, hans)</dt><dd><tt><a href="#Generator-remhandlers">remhandlers</a>(hans)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Remove&nbsp;a&nbsp;list&nbsp;of&nbsp;Handler&nbsp;objects&nbsp;from&nbsp;the&nbsp;system.&nbsp;This&nbsp;shuts<br>
+down&nbsp;listening&nbsp;and&nbsp;releases&nbsp;held&nbsp;channels.<br>
+&nbsp;<br>
+It&nbsp;is&nbsp;safe&nbsp;for&nbsp;a&nbsp;Handler&nbsp;to&nbsp;appear&nbsp;more&nbsp;than&nbsp;once&nbsp;in&nbsp;the&nbsp;list.</tt></dd></dl>
+
+<dl><dt><a name="Generator-select_duration"><strong>select_duration</strong></a>(self, duration)</dt><dd><tt><a href="#Generator-select_duration">select_duration</a>(duration)&nbsp;-&gt;&nbsp;long<br>
+&nbsp;<br>
+Determine&nbsp;the&nbsp;duration&nbsp;represented&nbsp;by&nbsp;a&nbsp;value.&nbsp;Typically&nbsp;this&nbsp;is<br>
+a&nbsp;number&nbsp;(in&nbsp;seconds).&nbsp;It&nbsp;may&nbsp;also&nbsp;be&nbsp;a&nbsp;<a href="#FrameCount">FrameCount</a>&nbsp;object.<br>
+&nbsp;<br>
+This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;from&nbsp;Agent&nbsp;methods&nbsp;used&nbsp;by&nbsp;agent&nbsp;run()<br>
+code.<br>
+&nbsp;<br>
+Raises&nbsp;<a href="#ScheduleError">ScheduleError</a>&nbsp;for&nbsp;illegal&nbsp;values.</tt></dd></dl>
+
+<dl><dt><a name="Generator-select_time"><strong>select_time</strong></a>(self, delay)</dt><dd><tt><a href="#Generator-select_time">select_time</a>(delay)&nbsp;-&gt;&nbsp;long<br>
+&nbsp;<br>
+Determine&nbsp;the&nbsp;schedule&nbsp;time&nbsp;represented&nbsp;by&nbsp;a&nbsp;value.&nbsp;Typically&nbsp;this&nbsp;<br>
+is&nbsp;a&nbsp;number&nbsp;(in&nbsp;seconds),&nbsp;measured&nbsp;from&nbsp;the&nbsp;current&nbsp;agentruntime.<br>
+It&nbsp;may&nbsp;also&nbsp;be&nbsp;a&nbsp;<a href="#FrameCount">FrameCount</a>&nbsp;object.<br>
+&nbsp;<br>
+This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;from&nbsp;Agent&nbsp;methods&nbsp;used&nbsp;by&nbsp;agent&nbsp;run()<br>
+code.&nbsp;(Outside&nbsp;of&nbsp;run()&nbsp;time,&nbsp;the&nbsp;agentruntime&nbsp;is&nbsp;not&nbsp;set.)<br>
+&nbsp;<br>
+Raises&nbsp;<a href="#ScheduleError">ScheduleError</a>&nbsp;for&nbsp;illegal&nbsp;values.</tt></dd></dl>
+
+<dl><dt><a name="Generator-sendevent"><strong>sendevent</strong></a>(self, ev, chan)</dt><dd><tt><a href="#Generator-sendevent">sendevent</a>(ev,&nbsp;chan)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Process&nbsp;an&nbsp;event&nbsp;on&nbsp;the&nbsp;given&nbsp;channel.&nbsp;This&nbsp;invokes&nbsp;all&nbsp;the<br>
+listeners&nbsp;which&nbsp;are&nbsp;paying&nbsp;attention&nbsp;to&nbsp;the&nbsp;event.</tt></dd></dl>
+
+<dl><dt><a name="Generator-set_stats_interval"><strong>set_stats_interval</strong></a>(self, val)</dt><dd><tt><a href="#Generator-set_stats_interval">set_stats_interval</a>(val)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;the&nbsp;interval&nbsp;(in&nbsp;seconds)&nbsp;at&nbsp;which&nbsp;stats&nbsp;are&nbsp;dumped&nbsp;to&nbsp;the<br>
+logger.&nbsp;Pass&nbsp;None&nbsp;to&nbsp;turn&nbsp;stats&nbsp;off.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ScheduleError">class <strong>ScheduleError</strong></a>(<a href="boodle.html#BoodlerError">boodle.BoodlerError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ScheduleError">ScheduleError</a>:&nbsp;Represents&nbsp;an&nbsp;invalid&nbsp;use&nbsp;of&nbsp;the&nbsp;scheduler.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.generator.html#ScheduleError">ScheduleError</a></dd>
+<dd><a href="boodle.html#BoodlerError">boodle.BoodlerError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="boodle.html#BoodlerError">boodle.BoodlerError</a>:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><a name="ScheduleError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22e79c&gt;<dd><tt>T.<a href="#ScheduleError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="ScheduleError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ScheduleError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ScheduleError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="ScheduleError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="ScheduleError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ScheduleError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="ScheduleError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="ScheduleError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ScheduleError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#ScheduleError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-run_agents"><strong>run_agents</strong></a>(starttime, gen)</dt><dd><tt><a href="#-run_agents">run_agents</a>(starttime,&nbsp;gen)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+The&nbsp;big&nbsp;function&nbsp;that&nbsp;does&nbsp;everything.&nbsp;This&nbsp;is&nbsp;called&nbsp;regularly&nbsp;from<br>
+inside&nbsp;the&nbsp;cboodle&nbsp;module.&nbsp;Its&nbsp;task&nbsp;is&nbsp;to&nbsp;push&nbsp;notes&nbsp;into&nbsp;the&nbsp;note<br>
+queue,&nbsp;and&nbsp;also&nbsp;manage&nbsp;everything&nbsp;required&nbsp;to&nbsp;do&nbsp;that&nbsp;--&nbsp;agents,<br>
+channels,&nbsp;listeners,&nbsp;etc.<br>
+&nbsp;<br>
+Raises&nbsp;StopGeneration&nbsp;when&nbsp;the&nbsp;soundscape&nbsp;is&nbsp;over&nbsp;(i.e.,&nbsp;when&nbsp;all<br>
+channels&nbsp;have&nbsp;expired).</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>TRIMOFFSET</strong> = 13230000<br>
+<strong>TRIMTIME</strong> = 26460000<br>
+<strong>UNLOADAGE</strong> = 10000000<br>
+<strong>UNLOADTIME</strong> = 1323000<br>
+<strong>cboodle</strong> = &lt;boodle.DummyDriver&gt;</td></tr></table>
+</body></html>

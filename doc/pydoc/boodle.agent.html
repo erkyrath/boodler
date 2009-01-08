@@ -1,0 +1,457 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boodle.agent</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boodle.html"><font color="#ffffff">boodle</font></a>.agent</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boodle/agent.py">boodle/agent.py</a></font></td></tr></table>
+    <p><tt>agent:&nbsp;A&nbsp;module&nbsp;which&nbsp;contains&nbsp;the&nbsp;<a href="#Agent">Agent</a>&nbsp;class,&nbsp;the&nbsp;fundamental&nbsp;work<br>
+unit&nbsp;of&nbsp;Boodler.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boopak.argdef.html">boopak.argdef</a><br>
+<a href="boodle.html">boodle</a><br>
+<a href="boodle.generator.html">boodle.generator</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/logging.html">logging</a><br>
+<a href="boopak.pinfo.html">boopak.pinfo</a><br>
+<a href="boopak.pload.html">boopak.pload</a><br>
+</td><td width="25%" valign=top><a href="boodle.sample.html">boodle.sample</a><br>
+<a href="boopak.sparse.html">boopak.sparse</a><br>
+<a href="boodle.stereo.html">boodle.stereo</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/types.html">types</a><br>
+<a href="boopak.version.html">boopak.version</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boodle.agent.html#Agent">Agent</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.agent.html#Handler">Handler</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Agent">class <strong>Agent</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Agent">Agent</a>:&nbsp;base&nbsp;class&nbsp;for&nbsp;Boodler&nbsp;agents.<br>
+&nbsp;<br>
+Methods&nbsp;and&nbsp;fields&nbsp;to&nbsp;be&nbsp;overridden:<br>
+&nbsp;<br>
+<a href="#Agent-init">init</a>()&nbsp;--&nbsp;set&nbsp;the&nbsp;agent&nbsp;up<br>
+<a href="#Agent-run">run</a>()&nbsp;--&nbsp;perform&nbsp;the&nbsp;agent's&nbsp;action<br>
+<a href="#Agent-receive">receive</a>()&nbsp;--&nbsp;perform&nbsp;the&nbsp;agent's&nbsp;action<br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+channel&nbsp;--&nbsp;the&nbsp;channel&nbsp;in&nbsp;which&nbsp;this&nbsp;agent&nbsp;is&nbsp;running<br>
+firsttime&nbsp;--&nbsp;True&nbsp;the&nbsp;first&nbsp;time&nbsp;the&nbsp;<a href="#Agent-run">run</a>()&nbsp;method&nbsp;is&nbsp;called<br>
+&nbsp;<br>
+Methods&nbsp;which&nbsp;can&nbsp;be&nbsp;called&nbsp;from&nbsp;a&nbsp;<a href="#Agent-run">run</a>()&nbsp;method:<br>
+&nbsp;<br>
+<a href="#Agent-sched_note">sched_note</a>()&nbsp;--&nbsp;schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;be&nbsp;played<br>
+<a href="#Agent-sched_note_duration">sched_note_duration</a>()&nbsp;--&nbsp;schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;be&nbsp;played&nbsp;for&nbsp;an&nbsp;extended&nbsp;time<br>
+<a href="#Agent-sched_note_pan">sched_note_pan</a>()&nbsp;--&nbsp;schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;be&nbsp;played&nbsp;at&nbsp;a&nbsp;stereo&nbsp;position<br>
+<a href="#Agent-sched_note_duration_pan">sched_note_duration_pan</a>()&nbsp;--&nbsp;schedule&nbsp;a&nbsp;note,&nbsp;extended&nbsp;and&nbsp;stereo<br>
+<a href="#Agent-sched_note_params">sched_note_params</a>()&nbsp;--&nbsp;schedule&nbsp;a&nbsp;note,&nbsp;allowing&nbsp;all&nbsp;parameters<br>
+<a href="#Agent-sched_agent">sched_agent</a>()&nbsp;--&nbsp;schedule&nbsp;another&nbsp;agent&nbsp;to&nbsp;run<br>
+<a href="#Agent-resched">resched</a>()&nbsp;--&nbsp;schedule&nbsp;self&nbsp;to&nbsp;run&nbsp;again<br>
+<a href="#Agent-new_channel">new_channel</a>()&nbsp;--&nbsp;create&nbsp;a&nbsp;channel<br>
+<a href="#Agent-new_channel_pan">new_channel_pan</a>()&nbsp;--&nbsp;create&nbsp;a&nbsp;channel&nbsp;at&nbsp;a&nbsp;stereo&nbsp;position<br>
+<a href="#Agent-listen">listen</a>()&nbsp;--&nbsp;begin&nbsp;listening&nbsp;for&nbsp;events<br>
+<a href="#Agent-unlisten">unlisten</a>()&nbsp;--&nbsp;stop&nbsp;listening<br>
+<a href="#Agent-get_root_channel">get_root_channel</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;root&nbsp;channel&nbsp;of&nbsp;the&nbsp;channel&nbsp;tree<br>
+<a href="#Agent-post_listener_agent">post_listener_agent</a>()&nbsp;--&nbsp;post&nbsp;another&nbsp;agent&nbsp;to&nbsp;listen&nbsp;for&nbsp;events<br>
+<a href="#Agent-send_event">send_event</a>()&nbsp;--&nbsp;create&nbsp;an&nbsp;event,&nbsp;which&nbsp;posted&nbsp;agents&nbsp;may&nbsp;receive<br>
+<a href="#Agent-get_prop">get_prop</a>()&nbsp;--&nbsp;get&nbsp;a&nbsp;property&nbsp;from&nbsp;the&nbsp;agent's&nbsp;channel<br>
+<a href="#Agent-has_prop">has_prop</a>()&nbsp;--&nbsp;see&nbsp;whether&nbsp;the&nbsp;agent's&nbsp;channel&nbsp;has&nbsp;a&nbsp;given&nbsp;property<br>
+<a href="#Agent-set_prop">set_prop</a>()&nbsp;--&nbsp;set&nbsp;a&nbsp;property&nbsp;on&nbsp;the&nbsp;agent's&nbsp;channel<br>
+<a href="#Agent-del_prop">del_prop</a>()&nbsp;--&nbsp;delete&nbsp;a&nbsp;property&nbsp;from&nbsp;the&nbsp;agent's&nbsp;channel<br>
+<a href="#Agent-load_described">load_described</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;named&nbsp;module&nbsp;or&nbsp;agent<br>
+&nbsp;<br>
+Class&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Agent-get_title">get_title</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;string&nbsp;which&nbsp;describes&nbsp;the&nbsp;agent<br>
+<a href="#Agent-get_argument_list">get_argument_list</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;argument&nbsp;specification&nbsp;for&nbsp;the&nbsp;agent<br>
+<a href="#Agent-get_class_name">get_class_name</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;qualified&nbsp;names&nbsp;of&nbsp;the&nbsp;module&nbsp;and&nbsp;<a href="#Agent">Agent</a><br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Agent-__init__"><strong>__init__</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="Agent-del_prop"><strong>del_prop</strong></a>(self, key)</dt><dd><tt><a href="#Agent-del_prop">del_prop</a>(key)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;a&nbsp;property&nbsp;from&nbsp;the&nbsp;agent's&nbsp;channel.&nbsp;If&nbsp;none&nbsp;is&nbsp;set,&nbsp;this&nbsp;<br>
+has&nbsp;no&nbsp;effect.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;this&nbsp;does&nbsp;not&nbsp;affect&nbsp;parent&nbsp;channels.&nbsp;So&nbsp;<a href="#Agent-get_prop">get_prop</a>(key)<br>
+may&nbsp;still&nbsp;return&nbsp;a&nbsp;value&nbsp;after&nbsp;<a href="#Agent-del_prop">del_prop</a>(key).</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_prop"><strong>get_prop</strong></a>(self, key, default<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-get_prop">get_prop</a>(key,&nbsp;default=None)&nbsp;-&gt;&nbsp;any<br>
+&nbsp;<br>
+Get&nbsp;a&nbsp;property&nbsp;from&nbsp;the&nbsp;agent's&nbsp;channel.&nbsp;If&nbsp;none&nbsp;is&nbsp;set,&nbsp;see&nbsp;if&nbsp;<br>
+one&nbsp;is&nbsp;inherited&nbsp;from&nbsp;the&nbsp;parent.&nbsp;If&nbsp;there&nbsp;is&nbsp;no&nbsp;inherited&nbsp;value&nbsp;<br>
+either,&nbsp;return&nbsp;None,&nbsp;or&nbsp;the&nbsp;given&nbsp;default.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;None&nbsp;is&nbsp;a&nbsp;legal&nbsp;property&nbsp;value.&nbsp;To&nbsp;distinguish&nbsp;between<br>
+no&nbsp;property&nbsp;and&nbsp;a&nbsp;property&nbsp;set&nbsp;to&nbsp;None,&nbsp;use&nbsp;<a href="#Agent-has_prop">has_prop</a>().</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_root_channel"><strong>get_root_channel</strong></a>(self)</dt><dd><tt><a href="#Agent-get_root_channel">get_root_channel</a>()&nbsp;-&gt;&nbsp;channel<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;root&nbsp;channel&nbsp;of&nbsp;the&nbsp;channel&nbsp;tree.</tt></dd></dl>
+
+<dl><dt><a name="Agent-has_prop"><strong>has_prop</strong></a>(self, key)</dt><dd><tt><a href="#Agent-has_prop">has_prop</a>(key)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+See&nbsp;whether&nbsp;the&nbsp;agent's&nbsp;channel&nbsp;has&nbsp;a&nbsp;given&nbsp;property.&nbsp;If&nbsp;none&nbsp;is&nbsp;<br>
+set,&nbsp;see&nbsp;if&nbsp;one&nbsp;is&nbsp;inherited&nbsp;from&nbsp;the&nbsp;parent.</tt></dd></dl>
+
+<dl><dt><a name="Agent-init"><strong>init</strong></a>(self)</dt><dd><tt><a href="#Agent-init">init</a>(...)<br>
+&nbsp;<br>
+Set&nbsp;the&nbsp;agent&nbsp;up.&nbsp;The&nbsp;arguments&nbsp;are&nbsp;passed&nbsp;along&nbsp;from&nbsp;the&nbsp;<br>
+constructor&nbsp;call.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Agent">Agent</a>&nbsp;may&nbsp;override<br>
+this&nbsp;method;&nbsp;if&nbsp;it&nbsp;wants&nbsp;to&nbsp;accept&nbsp;constructor&nbsp;arguments,&nbsp;it<br>
+must&nbsp;override&nbsp;this.</tt></dd></dl>
+
+<dl><dt><a name="Agent-listen"><strong>listen</strong></a>(self, event<font color="#909090">=None</font>, handle<font color="#909090">=None</font>, hold<font color="#909090">=None</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-listen">listen</a>(event=self.<strong>selected_event</strong>,&nbsp;handle=self.<strong>receive</strong>,&nbsp;hold=None,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;<a href="#Handler">Handler</a><br>
+&nbsp;<br>
+Begin&nbsp;listening&nbsp;for&nbsp;events.&nbsp;The&nbsp;event&nbsp;should&nbsp;be&nbsp;a&nbsp;string,&nbsp;or&nbsp;a<br>
+function&nbsp;which&nbsp;returns&nbsp;a&nbsp;string.&nbsp;(If&nbsp;no&nbsp;event&nbsp;is&nbsp;given,&nbsp;the<br>
+agent.selected_event&nbsp;field&nbsp;will&nbsp;be&nbsp;consulted.)&nbsp;The&nbsp;agent&nbsp;will<br>
+listen&nbsp;on&nbsp;the&nbsp;given&nbsp;channel,&nbsp;or&nbsp;(if&nbsp;none&nbsp;is&nbsp;given)&nbsp;on&nbsp;the<br>
+agent's&nbsp;own&nbsp;channel.<br>
+&nbsp;<br>
+The&nbsp;agent&nbsp;will&nbsp;react&nbsp;whenever&nbsp;a&nbsp;matching&nbsp;event&nbsp;is&nbsp;seen&nbsp;on&nbsp;the<br>
+channel.&nbsp;An&nbsp;event&nbsp;matches&nbsp;if&nbsp;it&nbsp;is&nbsp;equal&nbsp;to&nbsp;the&nbsp;selected&nbsp;event<br>
+string,&nbsp;or&nbsp;begins&nbsp;with&nbsp;it;&nbsp;and&nbsp;if&nbsp;it&nbsp;is&nbsp;in&nbsp;the&nbsp;listening&nbsp;channel,<br>
+or&nbsp;a&nbsp;subchannel&nbsp;of&nbsp;it.&nbsp;(So&nbsp;event&nbsp;"foo.bar"&nbsp;will&nbsp;trigger&nbsp;agents<br>
+listening&nbsp;for&nbsp;event&nbsp;"foo.bar",&nbsp;"foo",&nbsp;or&nbsp;"".)<br>
+&nbsp;<br>
+When&nbsp;an&nbsp;agent&nbsp;is&nbsp;triggered,&nbsp;its&nbsp;<a href="#Agent-receive">receive</a>()&nbsp;method&nbsp;is&nbsp;run.&nbsp;(If&nbsp;you<br>
+pass&nbsp;a&nbsp;different&nbsp;function&nbsp;as&nbsp;handle,&nbsp;that&nbsp;function&nbsp;will&nbsp;be&nbsp;run.)<br>
+&nbsp;<br>
+The&nbsp;hold&nbsp;value&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;agent's&nbsp;channel&nbsp;will&nbsp;be&nbsp;kept<br>
+alive&nbsp;for&nbsp;as&nbsp;long&nbsp;as&nbsp;it&nbsp;listens.&nbsp;If&nbsp;this&nbsp;is&nbsp;False/None,&nbsp;the&nbsp;channel<br>
+will&nbsp;follow&nbsp;the&nbsp;usual&nbsp;rule&nbsp;and&nbsp;expire&nbsp;as&nbsp;soon&nbsp;as&nbsp;nothing&nbsp;is&nbsp;scheduled&nbsp;<br>
+on&nbsp;it.&nbsp;(A&nbsp;listening&nbsp;agent&nbsp;does&nbsp;not&nbsp;automatically&nbsp;count&nbsp;as&nbsp;scheduled!)<br>
+If&nbsp;the&nbsp;listening&nbsp;channel&nbsp;is&nbsp;not&nbsp;the&nbsp;same&nbsp;as&nbsp;the&nbsp;agent's&nbsp;own&nbsp;channel,<br>
+you&nbsp;may&nbsp;pass&nbsp;one&nbsp;of&nbsp;the&nbsp;constants&nbsp;HoldRun&nbsp;or&nbsp;HoldListen,&nbsp;to&nbsp;keep<br>
+just&nbsp;one&nbsp;of&nbsp;them&nbsp;alive.&nbsp;A&nbsp;True&nbsp;value&nbsp;will&nbsp;keep&nbsp;both.<br>
+&nbsp;<br>
+The&nbsp;<a href="#Agent-listen">listen</a>()&nbsp;method&nbsp;returns&nbsp;a&nbsp;<a href="#Handler">Handler</a>&nbsp;object.&nbsp;You&nbsp;may&nbsp;store&nbsp;this<br>
+for&nbsp;later&nbsp;use;&nbsp;it&nbsp;has&nbsp;a&nbsp;cancel()&nbsp;method&nbsp;which&nbsp;may&nbsp;be&nbsp;used&nbsp;to&nbsp;stop<br>
+listening.</tt></dd></dl>
+
+<dl><dt><a name="Agent-load_described"><strong>load_described</strong></a>(self, val, wantmodule<font color="#909090">=False</font>)</dt><dd><tt><a href="#Agent-load_described">load_described</a>(val,&nbsp;wantmodule=False)&nbsp;-&gt;&nbsp;<a href="#Agent">Agent</a>&nbsp;or&nbsp;module<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;named&nbsp;agent&nbsp;or&nbsp;module.&nbsp;The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;string&nbsp;(or<br>
+list&nbsp;of&nbsp;strings,&nbsp;or&nbsp;sparse&nbsp;Tree)&nbsp;giving&nbsp;a&nbsp;fully&nbsp;qualified&nbsp;name:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name:version.needed/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name::exact.version.number/AgentName<br>
+&nbsp;<br>
+To&nbsp;load&nbsp;an&nbsp;agent&nbsp;with&nbsp;arguments,&nbsp;just&nbsp;append&nbsp;the&nbsp;arguments.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;0.5&nbsp;2<br>
+&nbsp;<br>
+Just&nbsp;as&nbsp;on&nbsp;the&nbsp;command&nbsp;line,&nbsp;arguments&nbsp;referring&nbsp;to&nbsp;more&nbsp;agents<br>
+go&nbsp;in&nbsp;parentheses:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;(package.name/AnotherAgent&nbsp;2)<br>
+&nbsp;<br>
+To&nbsp;get&nbsp;an&nbsp;entire&nbsp;module,&nbsp;pass&nbsp;wantmodule=True.&nbsp;(And&nbsp;leave&nbsp;off&nbsp;the<br>
+"/AgentName"&nbsp;part,&nbsp;and&nbsp;don't&nbsp;use&nbsp;any&nbsp;arguments.)<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;is&nbsp;not&nbsp;intended&nbsp;for&nbsp;module&nbsp;creation&nbsp;time&nbsp;(loading&nbsp;one<br>
+module&nbsp;which&nbsp;another&nbsp;depends&nbsp;on).&nbsp;It&nbsp;bypasses&nbsp;Boodler's&nbsp;dependency<br>
+tracking.&nbsp;Use&nbsp;this&nbsp;method&nbsp;when&nbsp;your&nbsp;agent&nbsp;is&nbsp;using&nbsp;a&nbsp;user-specified<br>
+value&nbsp;to&nbsp;find&nbsp;an&nbsp;arbitrary&nbsp;Boodler&nbsp;entity.</tt></dd></dl>
+
+<dl><dt><a name="Agent-new_channel"><strong>new_channel</strong></a>(self, startvolume<font color="#909090">=1.0</font>, parent<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-new_channel">new_channel</a>(startvolume=1,&nbsp;parent=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;channel<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;new&nbsp;channel.&nbsp;The&nbsp;startvolume&nbsp;is&nbsp;the&nbsp;volume&nbsp;the&nbsp;channel<br>
+is&nbsp;initially&nbsp;set&nbsp;to;&nbsp;this&nbsp;will&nbsp;affect&nbsp;all&nbsp;sounds&nbsp;played&nbsp;in&nbsp;the<br>
+channel&nbsp;and&nbsp;any&nbsp;subchannels.&nbsp;The&nbsp;new&nbsp;channel&nbsp;will&nbsp;be&nbsp;a&nbsp;subchannel<br>
+of&nbsp;parent&nbsp;--&nbsp;if&nbsp;None&nbsp;or&nbsp;not&nbsp;supplied,&nbsp;it&nbsp;will&nbsp;be&nbsp;a&nbsp;subchannel&nbsp;of<br>
+the&nbsp;channel&nbsp;that&nbsp;the&nbsp;agent&nbsp;(self)&nbsp;is&nbsp;running&nbsp;in.</tt></dd></dl>
+
+<dl><dt><a name="Agent-new_channel_pan"><strong>new_channel_pan</strong></a>(self, pan<font color="#909090">=None</font>, startvolume<font color="#909090">=1.0</font>, parent<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-new_channel_pan">new_channel_pan</a>(pan=0,&nbsp;startvolume=1,&nbsp;parent=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;channel<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;new&nbsp;channel,&nbsp;panning&nbsp;the&nbsp;stereo&nbsp;origin&nbsp;of&nbsp;its&nbsp;sounds.<br>
+(See&nbsp;the&nbsp;stereo&nbsp;module.)&nbsp;The&nbsp;startvolume&nbsp;is&nbsp;the&nbsp;volume&nbsp;the&nbsp;channel<br>
+is&nbsp;initially&nbsp;set&nbsp;to;&nbsp;this&nbsp;will&nbsp;affect&nbsp;all&nbsp;sounds&nbsp;played&nbsp;in&nbsp;the<br>
+channel&nbsp;and&nbsp;any&nbsp;subchannels.&nbsp;The&nbsp;new&nbsp;channel&nbsp;will&nbsp;be&nbsp;a&nbsp;subchannel<br>
+of&nbsp;parent&nbsp;--&nbsp;if&nbsp;None&nbsp;or&nbsp;not&nbsp;supplied,&nbsp;it&nbsp;will&nbsp;be&nbsp;a&nbsp;subchannel&nbsp;of<br>
+the&nbsp;channel&nbsp;that&nbsp;the&nbsp;agent&nbsp;(self)&nbsp;is&nbsp;running&nbsp;in.</tt></dd></dl>
+
+<dl><dt><a name="Agent-post_listener_agent"><strong>post_listener_agent</strong></a>(self, ag, chan<font color="#909090">=None</font>, event<font color="#909090">=None</font>, handle<font color="#909090">=None</font>, hold<font color="#909090">=None</font>, listenchan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-post_listener_agent">post_listener_agent</a>(agent,&nbsp;chan=self.<strong>channel</strong>,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;event=ag.selected_event,&nbsp;handle=ag.receive,&nbsp;hold=None,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listenchan=chan)<br>
+&nbsp;<br>
+Post&nbsp;an&nbsp;agent&nbsp;to&nbsp;listen&nbsp;for&nbsp;events.&nbsp;This&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Agent-sched_agent">sched_agent</a>(ag,&nbsp;handle=ag.<a href="#Agent-listen">listen</a>(...))<br>
+&nbsp;<br>
+That&nbsp;is,&nbsp;the&nbsp;agent&nbsp;must&nbsp;not&nbsp;currently&nbsp;be&nbsp;scheduled.&nbsp;It&nbsp;runs<br>
+immediately,&nbsp;but&nbsp;only&nbsp;to&nbsp;call&nbsp;its&nbsp;<a href="#Agent-listen">listen</a>()&nbsp;method,&nbsp;with&nbsp;any<br>
+arguments&nbsp;you&nbsp;pass&nbsp;in.</tt></dd></dl>
+
+<dl><dt><a name="Agent-receive"><strong>receive</strong></a>(self, event)</dt><dd><tt><a href="#Agent-receive">receive</a>(event)<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action&nbsp;when&nbsp;an&nbsp;appropriate&nbsp;event&nbsp;arrives.&nbsp;<br>
+Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Agent">Agent</a>&nbsp;which&nbsp;listens&nbsp;for&nbsp;events&nbsp;must&nbsp;override&nbsp;this<br>
+method&nbsp;(or&nbsp;provide&nbsp;an&nbsp;alternative&nbsp;handler).<br>
+&nbsp;<br>
+The&nbsp;event&nbsp;is&nbsp;a&nbsp;tuple,&nbsp;starting&nbsp;with&nbsp;a&nbsp;string,&nbsp;followed&nbsp;(possibly)<br>
+by&nbsp;more&nbsp;values.</tt></dd></dl>
+
+<dl><dt><a name="Agent-resched"><strong>resched</strong></a>(self, delay<font color="#909090">=None</font>, chan<font color="#909090">=None</font>, handle<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-resched">resched</a>(delay=None,&nbsp;chan=self.<strong>channel</strong>,&nbsp;handle=self.<strong>run</strong>)<br>
+&nbsp;<br>
+Reschedule&nbsp;the&nbsp;current&nbsp;agent&nbsp;(self).&nbsp;The&nbsp;delay&nbsp;is&nbsp;a&nbsp;time&nbsp;(in<br>
+seconds)&nbsp;to&nbsp;delay&nbsp;before&nbsp;the&nbsp;agent&nbsp;runs&nbsp;again.&nbsp;The&nbsp;channel,&nbsp;if<br>
+None&nbsp;or&nbsp;not&nbsp;supplied,&nbsp;defaults&nbsp;to&nbsp;the&nbsp;same&nbsp;channel&nbsp;that&nbsp;self&nbsp;is<br>
+running&nbsp;in.<br>
+&nbsp;<br>
+If&nbsp;delay&nbsp;is&nbsp;not&nbsp;supplied,&nbsp;it&nbsp;defaults&nbsp;to&nbsp;the&nbsp;delay&nbsp;used&nbsp;when&nbsp;this<br>
+agent&nbsp;was&nbsp;first&nbsp;scheduled.&nbsp;Note&nbsp;that&nbsp;if&nbsp;this&nbsp;value&nbsp;was&nbsp;zero,&nbsp;<br>
+you&nbsp;will&nbsp;probably&nbsp;cause&nbsp;an&nbsp;infinite&nbsp;loop.<br>
+&nbsp;<br>
+The&nbsp;agent's&nbsp;<a href="#Agent-run">run</a>()&nbsp;method&nbsp;will&nbsp;be&nbsp;called,&nbsp;unless&nbsp;you&nbsp;specify&nbsp;a&nbsp;<br>
+handle&nbsp;different&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="Agent-run"><strong>run</strong></a>(self)</dt><dd><tt><a href="#Agent-run">run</a>()<br>
+&nbsp;<br>
+Perform&nbsp;the&nbsp;agent's&nbsp;action.&nbsp;Each&nbsp;subclass&nbsp;of&nbsp;<a href="#Agent">Agent</a>&nbsp;must&nbsp;override<br>
+this&nbsp;method.</tt></dd></dl>
+
+<dl><dt><a name="Agent-sched_agent"><strong>sched_agent</strong></a>(self, ag, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>, handle<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_agent">sched_agent</a>(agent,&nbsp;delay=0,&nbsp;chan=self.<strong>channel</strong>,&nbsp;handle=self.<strong>run</strong>)<br>
+&nbsp;<br>
+Schedule&nbsp;an&nbsp;agent&nbsp;to&nbsp;run.&nbsp;This&nbsp;may&nbsp;be&nbsp;the&nbsp;current&nbsp;agent&nbsp;(self)&nbsp;or&nbsp;<br>
+a&nbsp;newly-created&nbsp;agent.&nbsp;The&nbsp;delay&nbsp;is&nbsp;a&nbsp;time&nbsp;(in&nbsp;seconds)&nbsp;to&nbsp;delay<br>
+before&nbsp;the&nbsp;agent&nbsp;runs.&nbsp;The&nbsp;channel,&nbsp;if&nbsp;None&nbsp;or&nbsp;not&nbsp;supplied,<br>
+defaults&nbsp;to&nbsp;the&nbsp;same&nbsp;channel&nbsp;that&nbsp;self&nbsp;is&nbsp;running&nbsp;in.&nbsp;The&nbsp;agent's<br>
+<a href="#Agent-run">run</a>()&nbsp;method&nbsp;will&nbsp;be&nbsp;called,&nbsp;unless&nbsp;you&nbsp;specify&nbsp;a&nbsp;different<br>
+handle&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="Agent-sched_note"><strong>sched_note</strong></a>(self, samp, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note">sched_note</a>(sample,&nbsp;pitch=1,&nbsp;volume=1,&nbsp;delay=0,&nbsp;chan=self.<strong>channel</strong>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;<br>
+Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play.&nbsp;The&nbsp;sound&nbsp;is&nbsp;loaded&nbsp;from&nbsp;samp&nbsp;(which&nbsp;can<br>
+be&nbsp;a&nbsp;filename,&nbsp;File,&nbsp;or&nbsp;Sample&nbsp;object).&nbsp;The&nbsp;pitch&nbsp;is&nbsp;given&nbsp;as&nbsp;a<br>
+multiple&nbsp;of&nbsp;the&nbsp;sound's&nbsp;original&nbsp;frequency;&nbsp;the&nbsp;volume&nbsp;is&nbsp;given<br>
+as&nbsp;a&nbsp;fraction&nbsp;of&nbsp;the&nbsp;sound's&nbsp;original&nbsp;volume.&nbsp;The&nbsp;delay&nbsp;is&nbsp;a&nbsp;time<br>
+(in&nbsp;seconds)&nbsp;to&nbsp;delay&nbsp;before&nbsp;the&nbsp;note&nbsp;is&nbsp;played.&nbsp;The&nbsp;channel,<br>
+if&nbsp;None&nbsp;or&nbsp;not&nbsp;supplied,&nbsp;defaults&nbsp;to&nbsp;the&nbsp;same&nbsp;channel&nbsp;the&nbsp;agent&nbsp;is<br>
+running&nbsp;in.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;the&nbsp;expected&nbsp;duration&nbsp;of&nbsp;the&nbsp;sound,&nbsp;in&nbsp;seconds.</tt></dd></dl>
+
+<dl><dt><a name="Agent-sched_note_duration"><strong>sched_note_duration</strong></a>(self, samp, duration, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note_duration">sched_note_duration</a>(sample,&nbsp;duration,&nbsp;pitch=1,&nbsp;volume=1,&nbsp;delay=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;<br>
+Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play,&nbsp;extending&nbsp;the&nbsp;original&nbsp;sound&nbsp;sample&nbsp;to&nbsp;a<br>
+longer&nbsp;period&nbsp;of&nbsp;time.&nbsp;The&nbsp;duration&nbsp;is&nbsp;given&nbsp;in&nbsp;seconds.&nbsp;<br>
+&nbsp;<br>
+The&nbsp;sound&nbsp;is&nbsp;loaded&nbsp;from&nbsp;samp&nbsp;(which&nbsp;can&nbsp;be&nbsp;a&nbsp;filename,&nbsp;<br>
+File,&nbsp;or&nbsp;Sample&nbsp;object).&nbsp;The&nbsp;pitch&nbsp;is&nbsp;given&nbsp;as&nbsp;a&nbsp;multiple&nbsp;of&nbsp;the<br>
+sound's&nbsp;original&nbsp;frequency;&nbsp;the&nbsp;volume&nbsp;is&nbsp;given&nbsp;as&nbsp;a&nbsp;fraction<br>
+of&nbsp;the&nbsp;sound's&nbsp;original&nbsp;volume.&nbsp;The&nbsp;delay&nbsp;is&nbsp;a&nbsp;time&nbsp;(in&nbsp;seconds)<br>
+to&nbsp;delay&nbsp;before&nbsp;the&nbsp;note&nbsp;is&nbsp;played.&nbsp;The&nbsp;channel,&nbsp;if&nbsp;None&nbsp;or&nbsp;not<br>
+supplied,&nbsp;defaults&nbsp;to&nbsp;the&nbsp;same&nbsp;channel&nbsp;the&nbsp;agent&nbsp;is&nbsp;running&nbsp;in.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;the&nbsp;expected&nbsp;duration&nbsp;of&nbsp;the&nbsp;sound,&nbsp;in&nbsp;seconds.&nbsp;Due&nbsp;to<br>
+the&nbsp;way&nbsp;sounds&nbsp;are&nbsp;looped,&nbsp;this&nbsp;may&nbsp;be&nbsp;slightly&nbsp;longer&nbsp;than&nbsp;the<br>
+given&nbsp;duration.</tt></dd></dl>
+
+<dl><dt><a name="Agent-sched_note_duration_pan"><strong>sched_note_duration_pan</strong></a>(self, samp, duration, pan<font color="#909090">=None</font>, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note_duration_pan">sched_note_duration_pan</a>(sample,&nbsp;duration,&nbsp;pan=0,&nbsp;pitch=1,&nbsp;volume=1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay=0,&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;<br>
+Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play,&nbsp;panning&nbsp;the&nbsp;stereo&nbsp;origin&nbsp;of&nbsp;the&nbsp;sound.<br>
+The&nbsp;pan&nbsp;value&nbsp;defaults&nbsp;to&nbsp;0,&nbsp;meaning&nbsp;no&nbsp;shift&nbsp;in&nbsp;origin;<br>
+-1&nbsp;means&nbsp;directly&nbsp;to&nbsp;the&nbsp;left;&nbsp;1&nbsp;means&nbsp;directly&nbsp;to&nbsp;the&nbsp;right.&nbsp;The<br>
+value&nbsp;may&nbsp;also&nbsp;be&nbsp;an&nbsp;object&nbsp;created&nbsp;by&nbsp;the&nbsp;stereo&nbsp;module.<br>
+&nbsp;<br>
+The&nbsp;sound&nbsp;is&nbsp;loaded&nbsp;from&nbsp;samp&nbsp;(which&nbsp;can&nbsp;be&nbsp;a&nbsp;filename,&nbsp;File,<br>
+or&nbsp;Sample&nbsp;object).&nbsp;The&nbsp;pitch&nbsp;is&nbsp;given&nbsp;as&nbsp;a&nbsp;multiple&nbsp;of&nbsp;the<br>
+sound's&nbsp;original&nbsp;frequency;&nbsp;the&nbsp;volume&nbsp;is&nbsp;given&nbsp;as&nbsp;a&nbsp;fraction<br>
+of&nbsp;the&nbsp;sound's&nbsp;original&nbsp;volume.&nbsp;The&nbsp;delay&nbsp;is&nbsp;a&nbsp;time&nbsp;(in&nbsp;seconds)<br>
+to&nbsp;delay&nbsp;before&nbsp;the&nbsp;note&nbsp;is&nbsp;played.&nbsp;The&nbsp;channel,&nbsp;if&nbsp;None&nbsp;or&nbsp;not<br>
+supplied,&nbsp;defaults&nbsp;to&nbsp;the&nbsp;same&nbsp;channel&nbsp;the&nbsp;agent&nbsp;is&nbsp;running&nbsp;in.<br>
+&nbsp;<br>
+This&nbsp;extends&nbsp;the&nbsp;original&nbsp;sound&nbsp;sample&nbsp;to&nbsp;a&nbsp;longer&nbsp;period&nbsp;of&nbsp;time.&nbsp;<br>
+The&nbsp;duration&nbsp;is&nbsp;given&nbsp;in&nbsp;seconds.&nbsp;This&nbsp;returns&nbsp;the&nbsp;expected&nbsp;duration&nbsp;<br>
+of&nbsp;the&nbsp;sound,&nbsp;in&nbsp;seconds.&nbsp;Due&nbsp;to&nbsp;the&nbsp;way&nbsp;sounds&nbsp;are&nbsp;looped,&nbsp;this&nbsp;may&nbsp;<br>
+be&nbsp;slightly&nbsp;longer&nbsp;than&nbsp;the&nbsp;given&nbsp;duration.</tt></dd></dl>
+
+<dl><dt><a name="Agent-sched_note_pan"><strong>sched_note_pan</strong></a>(self, samp, pan<font color="#909090">=None</font>, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note_pan">sched_note_pan</a>(sample,&nbsp;pan=0,&nbsp;pitch=1,&nbsp;volume=1,&nbsp;delay=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;<br>
+Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play,&nbsp;panning&nbsp;the&nbsp;stereo&nbsp;origin&nbsp;of&nbsp;the&nbsp;sound.<br>
+The&nbsp;pan&nbsp;value&nbsp;defaults&nbsp;to&nbsp;0,&nbsp;meaning&nbsp;no&nbsp;shift&nbsp;in&nbsp;origin;<br>
+-1&nbsp;means&nbsp;directly&nbsp;to&nbsp;the&nbsp;left;&nbsp;1&nbsp;means&nbsp;directly&nbsp;to&nbsp;the&nbsp;right.&nbsp;The<br>
+value&nbsp;may&nbsp;also&nbsp;be&nbsp;an&nbsp;object&nbsp;created&nbsp;by&nbsp;the&nbsp;stereo&nbsp;module.<br>
+&nbsp;<br>
+The&nbsp;sound&nbsp;is&nbsp;loaded&nbsp;from&nbsp;samp&nbsp;(which&nbsp;can&nbsp;be&nbsp;a&nbsp;filename,&nbsp;File,<br>
+or&nbsp;Sample&nbsp;object).&nbsp;The&nbsp;pitch&nbsp;is&nbsp;given&nbsp;as&nbsp;a&nbsp;multiple&nbsp;of&nbsp;the<br>
+sound's&nbsp;original&nbsp;frequency;&nbsp;the&nbsp;volume&nbsp;is&nbsp;given&nbsp;as&nbsp;a&nbsp;fraction<br>
+of&nbsp;the&nbsp;sound's&nbsp;original&nbsp;volume.&nbsp;The&nbsp;delay&nbsp;is&nbsp;a&nbsp;time&nbsp;(in&nbsp;seconds)<br>
+to&nbsp;delay&nbsp;before&nbsp;the&nbsp;note&nbsp;is&nbsp;played.&nbsp;The&nbsp;channel,&nbsp;if&nbsp;None&nbsp;or&nbsp;not<br>
+supplied,&nbsp;defaults&nbsp;to&nbsp;the&nbsp;same&nbsp;channel&nbsp;the&nbsp;agent&nbsp;is&nbsp;running&nbsp;in.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;the&nbsp;expected&nbsp;duration&nbsp;of&nbsp;the&nbsp;sound,&nbsp;in&nbsp;seconds.</tt></dd></dl>
+
+<dl><dt><a name="Agent-sched_note_params"><strong>sched_note_params</strong></a>(self, samp, **args)</dt><dd><tt><a href="#Agent-sched_note_params">sched_note_params</a>(sample,&nbsp;param=value,&nbsp;param=value...)&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;<br>
+Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play.&nbsp;This&nbsp;method&nbsp;understands&nbsp;all&nbsp;the&nbsp;arguments<br>
+used&nbsp;by&nbsp;the&nbsp;other&nbsp;sched_note&nbsp;methods,&nbsp;but&nbsp;they&nbsp;must&nbsp;be&nbsp;supplied&nbsp;as<br>
+named&nbsp;keywords.&nbsp;The&nbsp;arguments&nbsp;may&nbsp;be&nbsp;in&nbsp;any&nbsp;order.<br>
+For&nbsp;example:&nbsp;"<a href="#Agent-sched_note_params">sched_note_params</a>(snd,&nbsp;volume=0.5,&nbsp;pitch=2)"<br>
+&nbsp;<br>
+The&nbsp;valid&nbsp;arguments,&nbsp;and&nbsp;their&nbsp;default&nbsp;values:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pitch&nbsp;=&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(original&nbsp;pitch)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;volume&nbsp;=&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;(full&nbsp;volume)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay&nbsp;=&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(play&nbsp;immediately)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pan&nbsp;=&nbsp;None&nbsp;&nbsp;&nbsp;&nbsp;(no&nbsp;stereo&nbsp;shift)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;=&nbsp;0&nbsp;&nbsp;(exactly&nbsp;once&nbsp;through&nbsp;the&nbsp;sound)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan&nbsp;=&nbsp;None&nbsp;&nbsp;&nbsp;(play&nbsp;in&nbsp;agent's&nbsp;own&nbsp;channel)</tt></dd></dl>
+
+<dl><dt><a name="Agent-send_event"><strong>send_event</strong></a>(self, evname, *args, **kwargs)</dt><dd><tt><a href="#Agent-send_event">send_event</a>(event,&nbsp;...,&nbsp;chan=self.<strong>channel</strong>)<br>
+&nbsp;<br>
+Send&nbsp;an&nbsp;event.&nbsp;The&nbsp;event&nbsp;consists&nbsp;of&nbsp;the&nbsp;given&nbsp;name,&nbsp;followed&nbsp;by<br>
+zero&nbsp;or&nbsp;more&nbsp;arguments&nbsp;(which&nbsp;may&nbsp;be&nbsp;any&nbsp;Python&nbsp;object).&nbsp;The<br>
+event&nbsp;is&nbsp;sent&nbsp;on&nbsp;the&nbsp;given&nbsp;channel,&nbsp;or&nbsp;(if&nbsp;none&nbsp;given)&nbsp;on&nbsp;the<br>
+agent's&nbsp;own&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="Agent-set_prop"><strong>set_prop</strong></a>(self, key, val)</dt><dd><tt><a href="#Agent-set_prop">set_prop</a>(key,&nbsp;val)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;a&nbsp;property&nbsp;on&nbsp;the&nbsp;agent's&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="Agent-unlisten"><strong>unlisten</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-unlisten">unlisten</a>(event=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Stop&nbsp;listening.&nbsp;If&nbsp;no&nbsp;event&nbsp;argument&nbsp;is&nbsp;given,&nbsp;stop&nbsp;listening&nbsp;to<br>
+all&nbsp;events.&nbsp;If&nbsp;an&nbsp;event&nbsp;is&nbsp;given,&nbsp;stop&nbsp;listening&nbsp;for&nbsp;that&nbsp;specific<br>
+event.</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="Agent-get_argument_list"><strong>get_argument_list</strong></a>(cla)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt><a href="#Agent-get_argument_list">get_argument_list</a>()&nbsp;-&gt;&nbsp;ArgList<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;argument&nbsp;list&nbsp;specification&nbsp;for&nbsp;the&nbsp;class.</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_class_name"><strong>get_class_name</strong></a>(cla)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt><a href="#Agent-get_class_name">get_class_name</a>()&nbsp;-&gt;&nbsp;(str,&nbsp;str,&nbsp;bool)<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;qualified&nbsp;name&nbsp;of&nbsp;the&nbsp;module,&nbsp;and&nbsp;of&nbsp;the&nbsp;<a href="#Agent">Agent</a>&nbsp;class<br>
+within&nbsp;the&nbsp;module.&nbsp;These&nbsp;strings&nbsp;are&nbsp;intended&nbsp;for&nbsp;logging&nbsp;and<br>
+error&nbsp;messages.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;bool&nbsp;return&nbsp;value&nbsp;is&nbsp;true,&nbsp;the&nbsp;module&nbsp;came&nbsp;from&nbsp;the<br>
+package&nbsp;collection;&nbsp;it&nbsp;is&nbsp;a&nbsp;package&nbsp;name&nbsp;(although&nbsp;with&nbsp;no&nbsp;version<br>
+information).&nbsp;If&nbsp;the&nbsp;value&nbsp;is&nbsp;false,&nbsp;the&nbsp;module&nbsp;came&nbsp;from<br>
+sys.path.</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_title"><strong>get_title</strong></a>(cla)<font color="#909090"><font face="helvetica, arial"> from __builtin__.classobj</font></font></dt><dd><tt><a href="#Agent-get_title">get_title</a>()&nbsp;-&gt;&nbsp;string<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;agent.&nbsp;This&nbsp;normally&nbsp;returns&nbsp;the&nbsp;title<br>
+value&nbsp;from&nbsp;the&nbsp;agent's&nbsp;metadata.&nbsp;(An&nbsp;agent&nbsp;class&nbsp;can&nbsp;override<br>
+this&nbsp;behavior,&nbsp;but&nbsp;there&nbsp;is&nbsp;usually&nbsp;no&nbsp;reason&nbsp;to&nbsp;do&nbsp;so.)</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>cached_argument_lists</strong> = {}</dl>
+
+<dl><dt><strong>cached_class_names</strong> = {}</dl>
+
+<dl><dt><strong>inited</strong> = False</dl>
+
+<dl><dt><strong>selected_event</strong> = None</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Handler">class <strong>Handler</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Handler">Handler</a>:&nbsp;Represents&nbsp;the&nbsp;state&nbsp;of&nbsp;one&nbsp;agent&nbsp;listening&nbsp;for&nbsp;one&nbsp;event.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;mostly&nbsp;a&nbsp;data&nbsp;object;&nbsp;the&nbsp;generator&nbsp;module&nbsp;uses&nbsp;its&nbsp;fields.<br>
+It&nbsp;does&nbsp;export&nbsp;one&nbsp;method,&nbsp;<a href="#Handler-cancel">cancel</a>(),&nbsp;for&nbsp;<a href="#Agent">Agent</a>&nbsp;code&nbsp;to&nbsp;make&nbsp;use&nbsp;of.<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Handler-cancel">cancel</a>()&nbsp;--&nbsp;stop&nbsp;listening<br>
+&nbsp;<br>
+Internal&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Handler-finalize">finalize</a>()&nbsp;--&nbsp;shut&nbsp;down&nbsp;the&nbsp;object<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Handler-__init__"><strong>__init__</strong></a>(self, ag, func, event, chan, hold)</dt></dl>
+
+<dl><dt><a name="Handler-cancel"><strong>cancel</strong></a>(self)</dt><dd><tt><a href="#Handler-cancel">cancel</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Stop&nbsp;listening.&nbsp;It&nbsp;is&nbsp;safe&nbsp;to&nbsp;call&nbsp;this&nbsp;more&nbsp;than&nbsp;once.</tt></dd></dl>
+
+<dl><dt><a name="Handler-finalize"><strong>finalize</strong></a>(self)</dt><dd><tt><a href="#Handler-finalize">finalize</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Shut&nbsp;down&nbsp;the&nbsp;<a href="#Handler">Handler</a>&nbsp;object&nbsp;and&nbsp;drop&nbsp;all&nbsp;references.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;an&nbsp;internal&nbsp;call.&nbsp;It&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;by&nbsp;<br>
+Generator.remhandlers(),&nbsp;and&nbsp;only&nbsp;after&nbsp;the&nbsp;listen&nbsp;has&nbsp;been<br>
+cancelled.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-load_described"><strong>load_described</strong></a>(loader, args, wantmodule<font color="#909090">=False</font>)</dt><dd><tt><a href="#-load_described">load_described</a>(loader,&nbsp;val,&nbsp;wantmodule=False)&nbsp;-&gt;&nbsp;module&nbsp;or&nbsp;<a href="#Agent">Agent</a><br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;named&nbsp;module&nbsp;or&nbsp;agent.&nbsp;The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;string&nbsp;(or<br>
+list&nbsp;of&nbsp;strings,&nbsp;or&nbsp;sparse&nbsp;Tree)&nbsp;giving&nbsp;a&nbsp;fully&nbsp;qualified&nbsp;name:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name:version.needed/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name::exact.version.number/AgentName<br>
+&nbsp;<br>
+To&nbsp;load&nbsp;an&nbsp;agent&nbsp;with&nbsp;arguments,&nbsp;just&nbsp;append&nbsp;the&nbsp;arguments.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;0.5&nbsp;2<br>
+&nbsp;<br>
+Just&nbsp;as&nbsp;on&nbsp;the&nbsp;command&nbsp;line,&nbsp;arguments&nbsp;referring&nbsp;to&nbsp;more&nbsp;agents<br>
+go&nbsp;in&nbsp;parentheses:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;(package.name/AnotherAgent&nbsp;2)<br>
+&nbsp;<br>
+To&nbsp;get&nbsp;an&nbsp;entire&nbsp;module,&nbsp;pass&nbsp;wantmodule=True.&nbsp;(And&nbsp;leave&nbsp;off&nbsp;the<br>
+"/AgentName"&nbsp;part,&nbsp;and&nbsp;don't&nbsp;use&nbsp;any&nbsp;arguments.)<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;is&nbsp;not&nbsp;intended&nbsp;for&nbsp;module&nbsp;creation&nbsp;time&nbsp;(loading&nbsp;one<br>
+module&nbsp;which&nbsp;another&nbsp;depends&nbsp;on).&nbsp;It&nbsp;bypasses&nbsp;Boodler's&nbsp;dependency<br>
+tracking.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>HoldBoth</strong> = True<br>
+<strong>HoldListen</strong> = 'listen'<br>
+<strong>HoldRun</strong> = 'run'<br>
+<strong>cboodle</strong> = &lt;boodle.DummyDriver&gt;</td></tr></table>
+</body></html>

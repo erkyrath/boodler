@@ -1,0 +1,554 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boopak.collect</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boopak.html"><font color="#ffffff">boopak</font></a>.collect</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boopak/collect.py">boopak/collect.py</a></font></td></tr></table>
+    <p><tt>collect:&nbsp;The&nbsp;<a href="#PackageCollection">PackageCollection</a>&nbsp;class.<br>
+&nbsp;<br>
+This&nbsp;module&nbsp;contains&nbsp;<a href="#PackageCollection">PackageCollection</a>,&nbsp;which&nbsp;is&nbsp;responsible&nbsp;for&nbsp;installing<br>
+and&nbsp;updating&nbsp;the&nbsp;Boodler&nbsp;packages&nbsp;in&nbsp;your&nbsp;collection.&nbsp;It&nbsp;is&nbsp;a&nbsp;subclass<br>
+of&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boopak.fetch.html">boopak.fetch</a><br>
+<a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+</td><td width="25%" valign=top><a href="boopak.pload.html">boopak.pload</a><br>
+<a href="boopak.version.html">boopak.version</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/zipfile.html">zipfile</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.collect.html#PackageCollection">PackageCollection</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PackageCollection">class <strong>PackageCollection</strong></a>(<a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#PackageCollection">PackageCollection</a>:&nbsp;manages&nbsp;a&nbsp;package&nbsp;collection.&nbsp;This&nbsp;is&nbsp;a&nbsp;subclass<br>
+of&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>;&nbsp;it&nbsp;adds&nbsp;the&nbsp;ability&nbsp;to&nbsp;install&nbsp;and&nbsp;delete&nbsp;packages.<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;is&nbsp;intended&nbsp;to&nbsp;be&nbsp;used&nbsp;by&nbsp;a&nbsp;Boodler&nbsp;UI.&nbsp;It&nbsp;should&nbsp;not&nbsp;be<br>
+used&nbsp;by&nbsp;a&nbsp;sound-playing&nbsp;process.<br>
+&nbsp;<br>
+Most&nbsp;of&nbsp;the&nbsp;methods&nbsp;defined&nbsp;here&nbsp;(installing,&nbsp;deleting,&nbsp;even&nbsp;examining<br>
+packages)&nbsp;invoke&nbsp;the&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>()&nbsp;method&nbsp;defined&nbsp;in&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>.<br>
+This&nbsp;reflects&nbsp;the&nbsp;fact&nbsp;that&nbsp;any&nbsp;package&nbsp;change&nbsp;can&nbsp;change&nbsp;the<br>
+dependency&nbsp;tree,&nbsp;which&nbsp;is&nbsp;part&nbsp;of&nbsp;what&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>&nbsp;caches.&nbsp;Clearing<br>
+the&nbsp;cache&nbsp;entirely&nbsp;is&nbsp;somewhat&nbsp;crude,&nbsp;but&nbsp;it's&nbsp;simple&nbsp;and&nbsp;it&nbsp;works.<br>
+&nbsp;<br>
+<a href="#PackageCollection">PackageCollection</a>(basedir=None,&nbsp;coldir=None,&nbsp;dldir=None,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;boodler_api_vers=None,&nbsp;importing_ok=False)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#PackageCollection">PackageCollection</a>.&nbsp;It&nbsp;requires&nbsp;two&nbsp;directory&nbsp;names:<br>
+coldir&nbsp;is&nbsp;the&nbsp;collection&nbsp;of&nbsp;packages,&nbsp;and&nbsp;dldir&nbsp;is&nbsp;a&nbsp;temporary<br>
+workspace&nbsp;for&nbsp;storing&nbsp;downloaded&nbsp;and&nbsp;unzipped&nbsp;files.&nbsp;Or&nbsp;you&nbsp;can&nbsp;just<br>
+provide&nbsp;a&nbsp;basedir,&nbsp;in&nbsp;which&nbsp;case&nbsp;these&nbsp;will&nbsp;be&nbsp;basedir/Collection<br>
+and&nbsp;basedir/Download&nbsp;(respectively).<br>
+&nbsp;<br>
+The&nbsp;coldir&nbsp;and&nbsp;dldir&nbsp;will&nbsp;be&nbsp;created,&nbsp;if&nbsp;necessary.&nbsp;When&nbsp;the<br>
+<a href="#PackageCollection">PackageCollection</a>&nbsp;shuts&nbsp;down,&nbsp;it&nbsp;will&nbsp;delete&nbsp;the&nbsp;files&nbsp;it&nbsp;has&nbsp;created<br>
+in&nbsp;the&nbsp;dldir.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+If&nbsp;a&nbsp;version&nbsp;is&nbsp;provided&nbsp;(either&nbsp;as&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;a&nbsp;string&nbsp;which<br>
+converts&nbsp;to&nbsp;one),&nbsp;then&nbsp;this&nbsp;is&nbsp;noted&nbsp;as&nbsp;the&nbsp;Boodler&nbsp;version&nbsp;which<br>
+packages&nbsp;must&nbsp;be&nbsp;compatible&nbsp;with.&nbsp;(As&nbsp;noted&nbsp;in&nbsp;the&nbsp;boodler.api_required<br>
+metadata&nbsp;field.)<br>
+&nbsp;<br>
+(Note&nbsp;that&nbsp;the&nbsp;boodler.api_required&nbsp;field&nbsp;is&nbsp;not&nbsp;checked&nbsp;until&nbsp;the<br>
+package&nbsp;is&nbsp;actually&nbsp;loaded,&nbsp;which&nbsp;is&nbsp;after&nbsp;version&nbsp;selection&nbsp;occurs.<br>
+Therefore,&nbsp;it&nbsp;is&nbsp;best&nbsp;if&nbsp;the&nbsp;collection&nbsp;only&nbsp;contains&nbsp;packages&nbsp;which<br>
+are&nbsp;compatible&nbsp;with&nbsp;the&nbsp;installed&nbsp;Boodler&nbsp;version.&nbsp;None&nbsp;of&nbsp;this&nbsp;is<br>
+likely&nbsp;to&nbsp;be&nbsp;important,&nbsp;since&nbsp;the&nbsp;Boodler&nbsp;API&nbsp;version&nbsp;is&nbsp;not&nbsp;expected<br>
+to&nbsp;change&nbsp;much&nbsp;after&nbsp;2.0.)<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;importing_ok&nbsp;flag&nbsp;is&nbsp;false,&nbsp;this&nbsp;loader&nbsp;will&nbsp;refuse&nbsp;to&nbsp;load<br>
+(that&nbsp;is,&nbsp;execute)&nbsp;Python&nbsp;code&nbsp;in&nbsp;packages.&nbsp;This&nbsp;is&nbsp;the&nbsp;default.<br>
+It&nbsp;should&nbsp;only&nbsp;be&nbsp;true&nbsp;if&nbsp;the&nbsp;create-package&nbsp;command&nbsp;is&nbsp;to&nbsp;be&nbsp;used.<br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+collecdir&nbsp;--&nbsp;the&nbsp;directory&nbsp;containing&nbsp;the&nbsp;package&nbsp;collection<br>
+downloaddir&nbsp;--&nbsp;the&nbsp;directory&nbsp;containing&nbsp;temporary&nbsp;files&nbsp;and&nbsp;directories<br>
+currently_creating&nbsp;--&nbsp;during&nbsp;a&nbsp;create&nbsp;operation,&nbsp;the&nbsp;package&nbsp;which&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;being&nbsp;created&nbsp;(at&nbsp;the&nbsp;moment)<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageCollection-find_source">find_source</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection,&nbsp;a&nbsp;.boop&nbsp;file,&nbsp;or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;Internet<br>
+<a href="#PackageCollection-install_source">install_source</a>()&nbsp;--&nbsp;install&nbsp;a&nbsp;package&nbsp;into&nbsp;the&nbsp;collection&nbsp;from&nbsp;a&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;the&nbsp;Internet<br>
+<a href="#PackageCollection-fetch_source">fetch_source</a>()&nbsp;--&nbsp;prepare&nbsp;to&nbsp;download&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;Internet<br>
+<a href="#PackageCollection-delete_package">delete_package</a>()&nbsp;--&nbsp;delete&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection<br>
+<a href="#PackageCollection-delete_group">delete_group</a>()&nbsp;--&nbsp;delete&nbsp;all&nbsp;versions&nbsp;of&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection<br>
+<a href="#PackageCollection-delete_whole_collection">delete_whole_collection</a>()&nbsp;--&nbsp;delete&nbsp;all&nbsp;packages&nbsp;in&nbsp;the&nbsp;entire&nbsp;collection<br>
+<a href="#PackageCollection-start_import_recording">start_import_recording</a>()&nbsp;--&nbsp;begin&nbsp;noting&nbsp;all&nbsp;bimport()&nbsp;calls<br>
+<a href="#PackageCollection-stop_import_recording">stop_import_recording</a>()&nbsp;--&nbsp;stop&nbsp;noting&nbsp;bimport()&nbsp;calls,&nbsp;and&nbsp;return&nbsp;them<br>
+<a href="#PackageCollection-record_import">record_import</a>()&nbsp;--&nbsp;note&nbsp;a&nbsp;bimport()&nbsp;call&nbsp;by&nbsp;a&nbsp;package&nbsp;being&nbsp;imported<br>
+<a href="#PackageCollection-create_temp_dir">create_temp_dir</a>()&nbsp;--&nbsp;create&nbsp;a&nbsp;new,&nbsp;empty&nbsp;directory&nbsp;in&nbsp;the&nbsp;temporary&nbsp;dir<br>
+<a href="#PackageCollection-create_temp_file">create_temp_file</a>()&nbsp;--&nbsp;create&nbsp;the&nbsp;pathname&nbsp;of&nbsp;a&nbsp;new&nbsp;temporary&nbsp;file<br>
+<a href="#PackageCollection-clean_temp">clean_temp</a>()&nbsp;--&nbsp;clean&nbsp;up&nbsp;the&nbsp;temporary&nbsp;workspace<br>
+<a href="#PackageCollection-shut_down">shut_down</a>()&nbsp;--&nbsp;shut&nbsp;down&nbsp;the&nbsp;<a href="#PackageCollection">PackageCollection</a><br>
+&nbsp;<br>
+Internal&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageCollection-rewrite_versions_file">rewrite_versions_file</a>()&nbsp;--&nbsp;write&nbsp;(or&nbsp;overwrite)&nbsp;a&nbsp;new&nbsp;Versions&nbsp;file<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PackageCollection-__init__"><strong>__init__</strong></a>(self, basedir<font color="#909090">=None</font>, coldir<font color="#909090">=None</font>, dldir<font color="#909090">=None</font>, boodler_api_vers<font color="#909090">=None</font>, importing_ok<font color="#909090">=False</font>)</dt></dl>
+
+<dl><dt><a name="PackageCollection-clean_temp"><strong>clean_temp</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-clean_temp">clean_temp</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Clean&nbsp;up&nbsp;the&nbsp;temporary&nbsp;download&nbsp;workspace.&nbsp;Delete&nbsp;all&nbsp;files,&nbsp;and<br>
+clear&nbsp;the&nbsp;internal&nbsp;caches&nbsp;that&nbsp;referred&nbsp;to&nbsp;them.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-create_temp_dir"><strong>create_temp_dir</strong></a>(self, label<font color="#909090">='tmp'</font>)</dt><dd><tt><a href="#PackageCollection-create_temp_dir">create_temp_dir</a>(label='tmp')&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;pathname&nbsp;of&nbsp;a&nbsp;new,&nbsp;empty&nbsp;directory&nbsp;in&nbsp;the&nbsp;temporary<br>
+workspace.&nbsp;This&nbsp;directory&nbsp;will&nbsp;be&nbsp;deleted&nbsp;by&nbsp;the&nbsp;next&nbsp;<a href="#PackageCollection-clean_temp">clean_temp</a>()<br>
+call.<br>
+&nbsp;<br>
+The&nbsp;optional&nbsp;label&nbsp;argument&nbsp;will&nbsp;be&nbsp;used&nbsp;in&nbsp;the&nbsp;directory&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-create_temp_file"><strong>create_temp_file</strong></a>(self, label<font color="#909090">='tmp'</font>)</dt><dd><tt><a href="#PackageCollection-create_temp_file">create_temp_file</a>(label='tmp')&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;pathname&nbsp;of&nbsp;a&nbsp;new&nbsp;file&nbsp;in&nbsp;the&nbsp;temporary&nbsp;workspace.<br>
+The&nbsp;file&nbsp;will&nbsp;not&nbsp;exist,&nbsp;but&nbsp;can&nbsp;be&nbsp;opened&nbsp;for&nbsp;writing.&nbsp;This<br>
+file&nbsp;will&nbsp;be&nbsp;deleted&nbsp;by&nbsp;the&nbsp;next&nbsp;<a href="#PackageCollection-clean_temp">clean_temp</a>()&nbsp;call.<br>
+&nbsp;<br>
+The&nbsp;optional&nbsp;label&nbsp;argument&nbsp;will&nbsp;be&nbsp;used&nbsp;in&nbsp;the&nbsp;file&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-delete_group"><strong>delete_group</strong></a>(self, pkgname)</dt><dd><tt><a href="#PackageCollection-delete_group">delete_group</a>(pkgname)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;all&nbsp;versions&nbsp;of&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;generate&nbsp;an&nbsp;error&nbsp;if&nbsp;the&nbsp;package&nbsp;group<br>
+is&nbsp;malformed,&nbsp;or&nbsp;even&nbsp;missing.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-delete_package"><strong>delete_package</strong></a>(self, pkgname, vers<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-delete_package">delete_package</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection.<br>
+&nbsp;<br>
+If&nbsp;no&nbsp;second&nbsp;argument&nbsp;is&nbsp;given,&nbsp;the&nbsp;most&nbsp;recent&nbsp;available&nbsp;version<br>
+of&nbsp;the&nbsp;package&nbsp;is&nbsp;deleted.&nbsp;If&nbsp;the&nbsp;argument&nbsp;is&nbsp;a&nbsp;VersionNumber,<br>
+that&nbsp;version&nbsp;will&nbsp;be&nbsp;deleted.&nbsp;If&nbsp;it&nbsp;is&nbsp;a&nbsp;VersionSpec,&nbsp;the&nbsp;most<br>
+recent&nbsp;version&nbsp;that&nbsp;matches&nbsp;the&nbsp;spec&nbsp;will&nbsp;be&nbsp;deleted.&nbsp;A&nbsp;string<br>
+value&nbsp;will&nbsp;be&nbsp;converted&nbsp;to&nbsp;a&nbsp;VersionSpec&nbsp;(not&nbsp;a&nbsp;VersionNumber).<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;last&nbsp;version&nbsp;of&nbsp;a&nbsp;package&nbsp;is&nbsp;deleted,&nbsp;the&nbsp;entire&nbsp;group<br>
+directory&nbsp;is&nbsp;deleted&nbsp;too.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-delete_whole_collection"><strong>delete_whole_collection</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-delete_whole_collection">delete_whole_collection</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;all&nbsp;packages&nbsp;in&nbsp;the&nbsp;entire&nbsp;collection.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-fetch_source"><strong>fetch_source</strong></a>(self, srctype, loc)</dt><dd><tt><a href="#PackageCollection-fetch_source">fetch_source</a>(srctype,&nbsp;loc)&nbsp;-&gt;&nbsp;None&nbsp;or&nbsp;Fetcher<br>
+&nbsp;<br>
+Make&nbsp;sure&nbsp;that&nbsp;a&nbsp;package&nbsp;of&nbsp;the&nbsp;form&nbsp;(Source_URL,&nbsp;url)&nbsp;is<br>
+downloaded&nbsp;and&nbsp;ready&nbsp;to&nbsp;be&nbsp;passed&nbsp;to&nbsp;<a href="#PackageCollection-find_source">find_source</a>()&nbsp;or<br>
+<a href="#PackageCollection-install_source">install_source</a>().&nbsp;If&nbsp;it&nbsp;already&nbsp;is&nbsp;(or&nbsp;if&nbsp;srctype&nbsp;is&nbsp;Source_FILE<br>
+or&nbsp;Source_PACKAGE),&nbsp;then&nbsp;this&nbsp;function&nbsp;returns&nbsp;None,&nbsp;and&nbsp;the<br>
+caller&nbsp;may&nbsp;proceed.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;URL&nbsp;is&nbsp;*not*&nbsp;downloaded,&nbsp;this&nbsp;returns&nbsp;a&nbsp;Fetcher&nbsp;object.<br>
+This&nbsp;should&nbsp;be&nbsp;called&nbsp;in&nbsp;some&nbsp;wise&nbsp;like&nbsp;this:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(not&nbsp;fetcher.is_done()):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fetcher.work()<br>
+&nbsp;<br>
+Once&nbsp;fetcher.is_done()&nbsp;returns&nbsp;true,&nbsp;the&nbsp;package&nbsp;is&nbsp;downloaded,<br>
+and&nbsp;the&nbsp;caller&nbsp;may&nbsp;proceed&nbsp;to&nbsp;<a href="#PackageCollection-find_source">find_source</a>()&nbsp;or&nbsp;<a href="#PackageCollection-install_source">install_source</a>().</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-find_source"><strong>find_source</strong></a>(self, srctype, loc)</dt><dd><tt><a href="#PackageCollection-find_source">find_source</a>(srctype,&nbsp;loc)&nbsp;-&gt;&nbsp;PackageInfo<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;package&nbsp;given&nbsp;(srctype,&nbsp;loc)&nbsp;in&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;forms:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
+&nbsp;<br>
+Source_PACKAGE&nbsp;will&nbsp;be&nbsp;found&nbsp;and&nbsp;loaded&nbsp;from&nbsp;the&nbsp;collection.<br>
+&nbsp;<br>
+Source_FILE&nbsp;will&nbsp;be&nbsp;unzipped&nbsp;(in&nbsp;the&nbsp;temporary&nbsp;work&nbsp;directory)<br>
+and&nbsp;then&nbsp;loaded.&nbsp;(However,&nbsp;the&nbsp;temporary&nbsp;directory&nbsp;will&nbsp;not&nbsp;be<br>
+kept&nbsp;in&nbsp;the&nbsp;loader's&nbsp;external&nbsp;package&nbsp;list.&nbsp;So&nbsp;you&nbsp;cannot&nbsp;reload<br>
+the&nbsp;package&nbsp;without&nbsp;doing&nbsp;another&nbsp;<a href="#PackageCollection-find_source">find_source</a>().&nbsp;To&nbsp;install&nbsp;the<br>
+file&nbsp;permanently,&nbsp;use&nbsp;<a href="#PackageCollection-install_source">install_source</a>().)<br>
+&nbsp;<br>
+Source_URL&nbsp;will&nbsp;be&nbsp;unzipped&nbsp;and&nbsp;loaded,&nbsp;but&nbsp;only&nbsp;if&nbsp;it&nbsp;has&nbsp;already<br>
+been&nbsp;fetched&nbsp;with&nbsp;<a href="#PackageCollection-fetch_source">fetch_source</a>().&nbsp;This&nbsp;is&nbsp;a&nbsp;blivet&nbsp;in&nbsp;the&nbsp;API;<br>
+it&nbsp;would&nbsp;be&nbsp;nice&nbsp;if&nbsp;<a href="#PackageCollection-find_source">find_source</a>()&nbsp;could&nbsp;fetch&nbsp;the&nbsp;URL&nbsp;too,&nbsp;but<br>
+that&nbsp;is&nbsp;potentially&nbsp;a&nbsp;slow&nbsp;operation,&nbsp;and&nbsp;<a href="#PackageCollection-find_source">find_source</a>()&nbsp;is&nbsp;not<br>
+set&nbsp;up&nbsp;for&nbsp;slow&nbsp;operations.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-install_source"><strong>install_source</strong></a>(self, srctype, loc)</dt><dd><tt><a href="#PackageCollection-install_source">install_source</a>(srctype,&nbsp;loc)&nbsp;-&gt;&nbsp;PackageInfo<br>
+&nbsp;<br>
+Install&nbsp;a&nbsp;package&nbsp;given&nbsp;(srctype,&nbsp;loc)&nbsp;in&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;forms:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
+&nbsp;<br>
+Source_PACKAGE&nbsp;is&nbsp;not&nbsp;a&nbsp;valid&nbsp;argument&nbsp;for&nbsp;this&nbsp;function,&nbsp;since<br>
+it&nbsp;refers&nbsp;to&nbsp;a&nbsp;package&nbsp;which&nbsp;is&nbsp;already&nbsp;installed.<br>
+&nbsp;<br>
+Source_FILE&nbsp;will&nbsp;be&nbsp;unzipped&nbsp;(in&nbsp;the&nbsp;temporary&nbsp;work&nbsp;directory)<br>
+and&nbsp;then&nbsp;moved&nbsp;to&nbsp;the&nbsp;collection&nbsp;directory.<br>
+&nbsp;<br>
+Source_URL&nbsp;will&nbsp;be&nbsp;unzipped&nbsp;and&nbsp;installed,&nbsp;but&nbsp;only&nbsp;if&nbsp;it&nbsp;has<br>
+already&nbsp;been&nbsp;fetched&nbsp;with&nbsp;<a href="#PackageCollection-fetch_source">fetch_source</a>().&nbsp;This&nbsp;is&nbsp;a&nbsp;blivet&nbsp;in<br>
+the&nbsp;API;&nbsp;it&nbsp;would&nbsp;be&nbsp;nice&nbsp;if&nbsp;<a href="#PackageCollection-install_source">install_source</a>()&nbsp;could&nbsp;fetch&nbsp;the<br>
+URL&nbsp;too,&nbsp;but&nbsp;that&nbsp;is&nbsp;potentially&nbsp;a&nbsp;slow&nbsp;operation,&nbsp;and<br>
+<a href="#PackageCollection-install_source">install_source</a>()&nbsp;is&nbsp;not&nbsp;set&nbsp;up&nbsp;for&nbsp;slow&nbsp;operations.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-record_import"><strong>record_import</strong></a>(self, pkg, name, spec<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-record_import">record_import</a>(pkg,&nbsp;name,&nbsp;spec=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Note&nbsp;a&nbsp;bimport()&nbsp;call&nbsp;by&nbsp;a&nbsp;package&nbsp;being&nbsp;imported.&nbsp;This&nbsp;should<br>
+only&nbsp;be&nbsp;called&nbsp;by&nbsp;bimport().</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-rewrite_versions_file"><strong>rewrite_versions_file</strong></a>(self, dirname, versionlist, pkgname<font color="#909090">='&lt;unknown&gt;'</font>)</dt><dd><tt><a href="#PackageCollection-rewrite_versions_file">rewrite_versions_file</a>(dirname,&nbsp;versionlist,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pkgname='&lt;unknown&gt;')&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Write&nbsp;(or&nbsp;overwrite)&nbsp;a&nbsp;new&nbsp;Versions&nbsp;file,&nbsp;in&nbsp;the&nbsp;given&nbsp;directory,<br>
+with&nbsp;the&nbsp;given&nbsp;list&nbsp;of&nbsp;VersionNumber&nbsp;objects.&nbsp;The&nbsp;pkgname&nbsp;is&nbsp;stored<br>
+in&nbsp;a&nbsp;comment&nbsp;line.<br>
+&nbsp;<br>
+The&nbsp;versionlist&nbsp;may&nbsp;be&nbsp;altered&nbsp;(sorted)&nbsp;by&nbsp;this&nbsp;function,&nbsp;so&nbsp;the<br>
+caller&nbsp;should&nbsp;not&nbsp;pass&nbsp;a&nbsp;list&nbsp;object&nbsp;which&nbsp;will&nbsp;be&nbsp;used&nbsp;again.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-shut_down"><strong>shut_down</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-shut_down">shut_down</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Shut&nbsp;down&nbsp;the&nbsp;<a href="#PackageCollection">PackageCollection</a>.&nbsp;It&nbsp;may&nbsp;not&nbsp;be&nbsp;used&nbsp;again.<br>
+&nbsp;<br>
+This&nbsp;cleans&nbsp;up&nbsp;the&nbsp;temporary&nbsp;download&nbsp;workspace.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-start_import_recording"><strong>start_import_recording</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-start_import_recording">start_import_recording</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;the&nbsp;collection&nbsp;to&nbsp;noting&nbsp;all&nbsp;bimport()&nbsp;calls&nbsp;in&nbsp;packages&nbsp;being<br>
+imported.&nbsp;(This&nbsp;is&nbsp;used&nbsp;only&nbsp;during&nbsp;package&nbsp;creation,&nbsp;to&nbsp;figure<br>
+out&nbsp;dependencies.)</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-stop_import_recording"><strong>stop_import_recording</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-stop_import_recording">stop_import_recording</a>()&nbsp;-&gt;&nbsp;dic<br>
+&nbsp;<br>
+Stop&nbsp;noting&nbsp;bimport()&nbsp;calls,&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;such&nbsp;calls<br>
+noted.&nbsp;The&nbsp;return&nbsp;dict&nbsp;maps&nbsp;(name,version)&nbsp;pairs&nbsp;to&nbsp;lists<br>
+of&nbsp;import&nbsp;requests&nbsp;by&nbsp;that&nbsp;package.&nbsp;Each&nbsp;request&nbsp;in&nbsp;such&nbsp;a&nbsp;list<br>
+looks&nbsp;like&nbsp;(name,spec),&nbsp;or&nbsp;(name,version)&nbsp;for&nbsp;an&nbsp;exact&nbsp;request,<br>
+for&nbsp;(name,None)&nbsp;for&nbsp;an&nbsp;any-version&nbsp;request.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>instance_count</strong> = 0</dl>
+
+<hr>
+Methods inherited from <a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>:<br>
+<dl><dt><a name="PackageCollection-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;<br>
+Add&nbsp;an&nbsp;external&nbsp;directory&nbsp;to&nbsp;load&nbsp;a&nbsp;package&nbsp;from.&nbsp;The&nbsp;argument<br>
+must&nbsp;be&nbsp;a&nbsp;complete&nbsp;(unpacked)&nbsp;Boodler&nbsp;directory,&nbsp;with&nbsp;a<br>
+Metadata&nbsp;file.&nbsp;That&nbsp;package&nbsp;will&nbsp;then&nbsp;be&nbsp;loadable&nbsp;(possibly<br>
+hiding&nbsp;a&nbsp;package&nbsp;in&nbsp;the&nbsp;collection&nbsp;directory).<br>
+&nbsp;<br>
+The&nbsp;metadata&nbsp;and&nbsp;resources&nbsp;fields,&nbsp;if&nbsp;supplied,&nbsp;override&nbsp;the&nbsp;<br>
+Metadata&nbsp;and&nbsp;Resources&nbsp;files&nbsp;in&nbsp;the&nbsp;directory.&nbsp;(The&nbsp;files&nbsp;do&nbsp;not<br>
+even&nbsp;have&nbsp;to&nbsp;exist.)&nbsp;If&nbsp;the&nbsp;metadata&nbsp;and&nbsp;resources&nbsp;fields&nbsp;are<br>
+None,&nbsp;the&nbsp;directory's&nbsp;files&nbsp;are&nbsp;checked&nbsp;as&nbsp;usual.&nbsp;(This&nbsp;override<br>
+feature&nbsp;is&nbsp;used&nbsp;by&nbsp;the&nbsp;package&nbsp;creation&nbsp;tool.&nbsp;It&nbsp;should&nbsp;not&nbsp;be<br>
+used&nbsp;for&nbsp;any&nbsp;other&nbsp;purpose.)<br>
+&nbsp;<br>
+Returns&nbsp;the&nbsp;name&nbsp;and&nbsp;version&nbsp;of&nbsp;the&nbsp;package&nbsp;that&nbsp;was&nbsp;found.<br>
+&nbsp;<br>
+Since&nbsp;this&nbsp;changes&nbsp;the&nbsp;set&nbsp;of&nbsp;what&nbsp;packages&nbsp;are&nbsp;available,<br>
+it&nbsp;implicitly&nbsp;invokes&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>().<br>
+&nbsp;<br>
+The&nbsp;external&nbsp;package&nbsp;facility&nbsp;is&nbsp;not&nbsp;intended&nbsp;to&nbsp;be&nbsp;how&nbsp;most<br>
+packages&nbsp;are&nbsp;loaded.&nbsp;Most&nbsp;packages&nbsp;should&nbsp;be&nbsp;in&nbsp;the&nbsp;collection<br>
+directory.&nbsp;You&nbsp;might&nbsp;add&nbsp;an&nbsp;external&nbsp;package&nbsp;in&nbsp;your&nbsp;development<br>
+workspace&nbsp;(while&nbsp;developing&nbsp;a&nbsp;soundscape),&nbsp;or&nbsp;in&nbsp;a&nbsp;temporary<br>
+download&nbsp;directory&nbsp;(while&nbsp;deciding&nbsp;whether&nbsp;to&nbsp;install&nbsp;a&nbsp;newly-<br>
+downloaded&nbsp;package).</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-attrify_filename"><strong>attrify_filename</strong></a>(self, pkg, mod, wholekey, res, filename)</dt><dd><tt><a href="#PackageCollection-attrify_filename">attrify_filename</a>(pkg,&nbsp;mod,&nbsp;wholekey,&nbsp;res,&nbsp;filename)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;filename,&nbsp;create&nbsp;a&nbsp;File&nbsp;representing&nbsp;it,&nbsp;and&nbsp;store&nbsp;the<br>
+File&nbsp;in&nbsp;the&nbsp;module&nbsp;at&nbsp;a&nbsp;location&nbsp;defined&nbsp;by&nbsp;wholekey.&nbsp;Submodules<br>
+are&nbsp;created&nbsp;as&nbsp;necessary.&nbsp;The&nbsp;res&nbsp;argument&nbsp;is&nbsp;the&nbsp;Resource<br>
+object&nbsp;associated&nbsp;with&nbsp;wholekey.<br>
+&nbsp;<br>
+The&nbsp;filename&nbsp;must&nbsp;be&nbsp;in&nbsp;universal&nbsp;format:&nbsp;relative&nbsp;to&nbsp;the&nbsp;package<br>
+root,&nbsp;and&nbsp;written&nbsp;with&nbsp;forward&nbsp;slashes,&nbsp;not&nbsp;backslashes.<br>
+&nbsp;<br>
+(If&nbsp;the&nbsp;filename&nbsp;is&nbsp;invalid&nbsp;or&nbsp;unsafe,&nbsp;ValueError&nbsp;is&nbsp;raised.<br>
+However,&nbsp;this&nbsp;does&nbsp;not&nbsp;check&nbsp;whether&nbsp;the&nbsp;file&nbsp;exists.)</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-clear_cache"><strong>clear_cache</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-clear_cache">clear_cache</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Erase&nbsp;the&nbsp;<a href="boopak.pload.html#PackageLoader">PackageLoader</a>'s&nbsp;entire&nbsp;knowledge&nbsp;of&nbsp;what&nbsp;groups&nbsp;and<br>
+packages&nbsp;are&nbsp;available.<br>
+&nbsp;<br>
+This&nbsp;should&nbsp;be&nbsp;called&nbsp;whenever&nbsp;packages&nbsp;are&nbsp;added&nbsp;to,&nbsp;modified<br>
+in,&nbsp;or&nbsp;deleted&nbsp;from&nbsp;the&nbsp;collection&nbsp;directory.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-clear_external_packages"><strong>clear_external_packages</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-clear_external_packages">clear_external_packages</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Remove&nbsp;all&nbsp;external&nbsp;directories.<br>
+&nbsp;<br>
+Since&nbsp;this&nbsp;changes&nbsp;the&nbsp;set&nbsp;of&nbsp;what&nbsp;packages&nbsp;are&nbsp;available,<br>
+it&nbsp;implicitly&nbsp;invokes&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>().</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-discover_all_groups"><strong>discover_all_groups</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-discover_all_groups">discover_all_groups</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Search&nbsp;through&nbsp;the&nbsp;collection&nbsp;directory,&nbsp;and&nbsp;load&nbsp;all&nbsp;the&nbsp;PackageGroups<br>
+that&nbsp;are&nbsp;available.<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-find_all_dependencies"><strong>find_all_dependencies</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-find_all_dependencies">find_all_dependencies</a>()&nbsp;-&gt;&nbsp;(dict,&nbsp;dict,&nbsp;dict)<br>
+&nbsp;<br>
+Go&nbsp;through&nbsp;the&nbsp;entire&nbsp;collection,&nbsp;and&nbsp;determine&nbsp;exactly&nbsp;which<br>
+packages&nbsp;depend&nbsp;on&nbsp;which&nbsp;other&nbsp;packages.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;a&nbsp;triple&nbsp;(forward,&nbsp;backward,&nbsp;bad).&nbsp;In&nbsp;the&nbsp;forward<br>
+dict,&nbsp;each&nbsp;package&nbsp;key&nbsp;(pkgname,vers)&nbsp;maps&nbsp;to&nbsp;an&nbsp;array&nbsp;of&nbsp;package<br>
+keys&nbsp;which&nbsp;the&nbsp;package&nbsp;depends&nbsp;on.&nbsp;In&nbsp;the&nbsp;backward&nbsp;dict,&nbsp;each<br>
+package&nbsp;key&nbsp;maps&nbsp;to&nbsp;an&nbsp;array&nbsp;of&nbsp;packages&nbsp;which&nbsp;depend&nbsp;*on*&nbsp;it.<br>
+In&nbsp;the&nbsp;bad&nbsp;dict,&nbsp;each&nbsp;package&nbsp;key&nbsp;maps&nbsp;to&nbsp;an&nbsp;array&nbsp;of<br>
+(pkgname,spec)&nbsp;of&nbsp;dependencies&nbsp;which&nbsp;could&nbsp;not&nbsp;be&nbsp;loaded.<br>
+&nbsp;<br>
+(In&nbsp;the&nbsp;bad&nbsp;dict&nbsp;tuples,&nbsp;the&nbsp;second&nbsp;element&nbsp;may&nbsp;be&nbsp;None,&nbsp;a<br>
+VersionSpec,&nbsp;or&nbsp;a&nbsp;VersionNumber.)<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-find_item_resources"><strong>find_item_resources</strong></a>(self, obj)</dt><dd><tt><a href="#PackageCollection-find_item_resources">find_item_resources</a>(obj)&nbsp;-&gt;&nbsp;(PackageInfo,&nbsp;Resource)<br>
+&nbsp;<br>
+Given&nbsp;an&nbsp;object&nbsp;in&nbsp;a&nbsp;package&nbsp;module,&nbsp;try&nbsp;to&nbsp;find&nbsp;the&nbsp;package,<br>
+and&nbsp;the&nbsp;Resource&nbsp;that&nbsp;represents&nbsp;the&nbsp;object.&nbsp;If&nbsp;it&nbsp;has&nbsp;no&nbsp;metadata<br>
+defined,&nbsp;this&nbsp;returns&nbsp;a&nbsp;blank&nbsp;Resource&nbsp;object.<br>
+&nbsp;<br>
+This&nbsp;tries&nbsp;to&nbsp;use&nbsp;object&nbsp;attributes&nbsp;such&nbsp;as&nbsp;__module__&nbsp;and&nbsp;__name__<br>
+to&nbsp;identify&nbsp;it.&nbsp;This&nbsp;will&nbsp;work&nbsp;on&nbsp;classes&nbsp;(but&nbsp;not&nbsp;instances)<br>
+defined&nbsp;in&nbsp;a&nbsp;module;&nbsp;this&nbsp;covers&nbsp;the&nbsp;normal&nbsp;case&nbsp;of&nbsp;Agent&nbsp;classes.<br>
+It&nbsp;will&nbsp;also&nbsp;work&nbsp;on&nbsp;File&nbsp;objects&nbsp;defined&nbsp;in&nbsp;a&nbsp;module.&nbsp;Beyond<br>
+that,&nbsp;results&nbsp;are&nbsp;questionable.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-generate_package_path"><strong>generate_package_path</strong></a>(self, pkgname, vers<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-generate_package_path">generate_package_path</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;pathname&nbsp;in&nbsp;the&nbsp;collection&nbsp;directory&nbsp;which&nbsp;contains&nbsp;the<br>
+given&nbsp;package&nbsp;group&nbsp;(if&nbsp;vers&nbsp;is&nbsp;None),&nbsp;or&nbsp;the&nbsp;given&nbsp;package<br>
+(otherwise).<br>
+&nbsp;<br>
+This&nbsp;does&nbsp;not&nbsp;create&nbsp;the&nbsp;directory&nbsp;or&nbsp;check&nbsp;for&nbsp;its&nbsp;existence.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;guaranteed&nbsp;to&nbsp;create&nbsp;a&nbsp;distinct&nbsp;pathname&nbsp;for&nbsp;every<br>
+pkgname&nbsp;or&nbsp;(pkgname,&nbsp;vers)&nbsp;pair.&nbsp;This&nbsp;is&nbsp;true&nbsp;even&nbsp;on&nbsp;case-<br>
+insensitive&nbsp;filesystems,&nbsp;which&nbsp;is&nbsp;a&nbsp;wrinkle,&nbsp;since&nbsp;version<br>
+strings&nbsp;are&nbsp;case-sensitive.&nbsp;We&nbsp;work&nbsp;around&nbsp;this&nbsp;by&nbsp;putting<br>
+a&nbsp;"^"&nbsp;character&nbsp;before&nbsp;each&nbsp;capital&nbsp;letter.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-import_package_content"><strong>import_package_content</strong></a>(self, pkg)</dt><dd><tt><a href="#PackageCollection-import_package_content">import_package_content</a>(pkg)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Import&nbsp;the&nbsp;package's&nbsp;content,&nbsp;if&nbsp;it&nbsp;hasn't&nbsp;already&nbsp;been&nbsp;imported.<br>
+&nbsp;<br>
+Warning:&nbsp;this&nbsp;method&nbsp;imports&nbsp;Python&nbsp;source&nbsp;code&nbsp;from&nbsp;the&nbsp;package<br>
+directory,&nbsp;which&nbsp;means&nbsp;it&nbsp;*executes*&nbsp;Python&nbsp;source&nbsp;code&nbsp;from&nbsp;the<br>
+package&nbsp;directory.&nbsp;Do&nbsp;not&nbsp;call&nbsp;this&nbsp;on&nbsp;untrusted&nbsp;packages.<br>
+&nbsp;<br>
+A&nbsp;sound-player&nbsp;will&nbsp;have&nbsp;to&nbsp;call&nbsp;this,&nbsp;but&nbsp;a&nbsp;package&nbsp;manager<br>
+should&nbsp;not.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-list_all_current_packages"><strong>list_all_current_packages</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-list_all_current_packages">list_all_current_packages</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;<br>
+Search&nbsp;through&nbsp;the&nbsp;collection&nbsp;directory,&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;the<br>
+available&nbsp;packages.&nbsp;If&nbsp;multiple&nbsp;versions&nbsp;of&nbsp;a&nbsp;package&nbsp;are&nbsp;available,<br>
+only&nbsp;the&nbsp;most&nbsp;recent&nbsp;will&nbsp;be&nbsp;listed.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;(packagename,&nbsp;version)&nbsp;tuples&nbsp;(in&nbsp;no&nbsp;particular<br>
+order).<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-list_all_packages"><strong>list_all_packages</strong></a>(self)</dt><dd><tt><a href="#PackageCollection-list_all_packages">list_all_packages</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;(str,&nbsp;list&nbsp;of&nbsp;VersionNumber)<br>
+&nbsp;<br>
+Search&nbsp;through&nbsp;the&nbsp;collection&nbsp;directory,&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;the<br>
+available&nbsp;packages.&nbsp;<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;(packagename,&nbsp;list&nbsp;of&nbsp;version)&nbsp;tuples.&nbsp;The&nbsp;top<br>
+list&nbsp;is&nbsp;in&nbsp;no&nbsp;particular&nbsp;order,&nbsp;but&nbsp;the&nbsp;version&nbsp;list&nbsp;will&nbsp;be&nbsp;sorted<br>
+newest-to-oldest.<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-load"><strong>load</strong></a>(self, pkgname, versionspec<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-load">load</a>(pkgname,&nbsp;versionspec=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;version&nbsp;spec.<br>
+&nbsp;<br>
+If&nbsp;no&nbsp;second&nbsp;argument&nbsp;is&nbsp;given,&nbsp;the&nbsp;most&nbsp;recent&nbsp;available&nbsp;version<br>
+of&nbsp;the&nbsp;package&nbsp;is&nbsp;loaded.&nbsp;If&nbsp;the&nbsp;argument&nbsp;is&nbsp;a&nbsp;VersionNumber,<br>
+that&nbsp;version&nbsp;will&nbsp;be&nbsp;loaded.&nbsp;If&nbsp;it&nbsp;is&nbsp;a&nbsp;VersionSpec,&nbsp;the&nbsp;most<br>
+recent&nbsp;version&nbsp;that&nbsp;matches&nbsp;the&nbsp;spec&nbsp;will&nbsp;be&nbsp;loaded.&nbsp;A&nbsp;string<br>
+value&nbsp;will&nbsp;be&nbsp;converted&nbsp;to&nbsp;a&nbsp;VersionSpec&nbsp;(not&nbsp;a&nbsp;VersionNumber).<br>
+&nbsp;<br>
+This&nbsp;generates&nbsp;a&nbsp;PackageNotFoundError&nbsp;if&nbsp;no&nbsp;matching&nbsp;package<br>
+is&nbsp;available.&nbsp;It&nbsp;generates&nbsp;PackageLoadError&nbsp;if&nbsp;the&nbsp;package<br>
+was&nbsp;malformed&nbsp;in&nbsp;some&nbsp;way&nbsp;which&nbsp;prevented&nbsp;loading.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-load_group"><strong>load_group</strong></a>(self, pkgname)</dt><dd><tt><a href="#PackageCollection-load_group">load_group</a>(self,&nbsp;pkgname)&nbsp;-&gt;&nbsp;PackageGroup<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;PackageGroup,&nbsp;given&nbsp;its&nbsp;package&nbsp;name.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;not&nbsp;tremendously&nbsp;useful&nbsp;for&nbsp;outside&nbsp;users,&nbsp;although&nbsp;you<br>
+can&nbsp;call&nbsp;it&nbsp;if&nbsp;you&nbsp;want.&nbsp;A&nbsp;PackageGroup&nbsp;represents&nbsp;all&nbsp;the<br>
+available&nbsp;versions&nbsp;of&nbsp;a&nbsp;particular&nbsp;package.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-load_item_by_name"><strong>load_item_by_name</strong></a>(self, name, package<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-load_item_by_name">load_item_by_name</a>(name,&nbsp;package=None)&nbsp;-&gt;&nbsp;value<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;string&nbsp;that&nbsp;names&nbsp;a&nbsp;resource&nbsp;--&nbsp;for&nbsp;example,<br>
+'com.eblong.example/reptile.Hiss'&nbsp;--&nbsp;import&nbsp;the&nbsp;module&nbsp;and<br>
+return&nbsp;the&nbsp;resource&nbsp;object.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;string&nbsp;begins&nbsp;with&nbsp;a&nbsp;slash&nbsp;('/boodle.builtin.NullAgent')<br>
+then&nbsp;the&nbsp;regular&nbsp;Python&nbsp;modules&nbsp;are&nbsp;searched.&nbsp;No&nbsp;importing<br>
+is&nbsp;done&nbsp;in&nbsp;this&nbsp;case;&nbsp;it&nbsp;is&nbsp;really&nbsp;intended&nbsp;only&nbsp;for&nbsp;the<br>
+contents&nbsp;of&nbsp;boodle.agent.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;string&nbsp;ends&nbsp;with&nbsp;a&nbsp;slash&nbsp;('com.eblong.example/'),&nbsp;then<br>
+the&nbsp;module&nbsp;itself&nbsp;is&nbsp;returned.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;package&nbsp;argument&nbsp;is&nbsp;supplied&nbsp;(a&nbsp;PackageInfo&nbsp;object),&nbsp;it<br>
+becomes&nbsp;the&nbsp;package&nbsp;to&nbsp;look&nbsp;in&nbsp;for&nbsp;unqualified&nbsp;resource&nbsp;names<br>
+('reptile.Hiss').&nbsp;If&nbsp;no&nbsp;package&nbsp;argument&nbsp;is&nbsp;supplied,&nbsp;then<br>
+an&nbsp;unqualified&nbsp;resource&nbsp;name&nbsp;raises&nbsp;ValueError.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-load_package_dependencies"><strong>load_package_dependencies</strong></a>(self, pkg)</dt><dd><tt><a href="#PackageCollection-load_package_dependencies">load_package_dependencies</a>(pkg)&nbsp;-&gt;&nbsp;(set,&nbsp;dict,&nbsp;int)<br>
+&nbsp;<br>
+Attempt&nbsp;to&nbsp;load&nbsp;all&nbsp;the&nbsp;packages&nbsp;which&nbsp;the&nbsp;given&nbsp;package&nbsp;depends&nbsp;on.<br>
+The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;PackageInfo&nbsp;object.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;a&nbsp;triple&nbsp;(good,&nbsp;bad,&nbsp;count):<br>
+&nbsp;<br>
+-&nbsp;good&nbsp;is&nbsp;a&nbsp;set&nbsp;containing&nbsp;(packagename,&nbsp;version)&nbsp;pairs&nbsp;for&nbsp;every<br>
+package&nbsp;that&nbsp;was&nbsp;loaded&nbsp;successfully.&nbsp;(This&nbsp;will&nbsp;include&nbsp;the&nbsp;original<br>
+package.)<br>
+-&nbsp;bad&nbsp;is&nbsp;a&nbsp;dict.&nbsp;The&nbsp;keys&nbsp;are&nbsp;packagenames&nbsp;which&nbsp;did&nbsp;not&nbsp;load<br>
+successfully.&nbsp;Each&nbsp;maps&nbsp;to&nbsp;a&nbsp;(nonempty)&nbsp;list&nbsp;of&nbsp;version&nbsp;requests<br>
+for&nbsp;that&nbsp;package,&nbsp;which&nbsp;could&nbsp;not&nbsp;be&nbsp;fulfilled.&nbsp;(The&nbsp;list&nbsp;contains<br>
+None,&nbsp;VersionSpecs,&nbsp;and&nbsp;VersionNumbers.&nbsp;Values&nbsp;may&nbsp;occur&nbsp;more&nbsp;than<br>
+once.)<br>
+-&nbsp;count&nbsp;is&nbsp;an&nbsp;int,&nbsp;representing&nbsp;how&nbsp;many&nbsp;actual&nbsp;errors&nbsp;occurred.<br>
+This&nbsp;describes&nbsp;package&nbsp;format&nbsp;problems&nbsp;and&nbsp;read&nbsp;errors.&nbsp;It&nbsp;does&nbsp;not<br>
+include&nbsp;packages&nbsp;that&nbsp;were&nbsp;simply&nbsp;not&nbsp;available.&nbsp;(The&nbsp;bad&nbsp;dict<br>
+includes&nbsp;both&nbsp;errors&nbsp;and&nbsp;not-availables;&nbsp;so&nbsp;len(bad)&nbsp;&gt;=&nbsp;count.)<br>
+&nbsp;<br>
+If&nbsp;bad&nbsp;is&nbsp;empty,&nbsp;then&nbsp;all&nbsp;dependencies&nbsp;are&nbsp;available.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;the&nbsp;good&nbsp;list&nbsp;may&nbsp;include&nbsp;more&nbsp;than&nbsp;one&nbsp;version&nbsp;of&nbsp;a<br>
+package.</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-load_specific"><strong>load_specific</strong></a>(self, pkgname, vers)</dt><dd><tt><a href="#PackageCollection-load_specific">load_specific</a>(pkgname,&nbsp;vers)&nbsp;-&gt;&nbsp;PackageInfo<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;specific&nbsp;version&nbsp;number.<br>
+(The&nbsp;version&nbsp;number&nbsp;may&nbsp;be&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;a&nbsp;string&nbsp;that<br>
+can&nbsp;be&nbsp;converted&nbsp;to&nbsp;one.)<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;an&nbsp;internal&nbsp;call;&nbsp;external&nbsp;callers&nbsp;should&nbsp;use&nbsp;<a href="#PackageCollection-load">load</a>().<br>
+&nbsp;<br>
+(<a href="#PackageCollection-load_specific">load_specific</a>()&nbsp;is&nbsp;intended&nbsp;to&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package<br>
+function&nbsp;which&nbsp;has&nbsp;already&nbsp;consulted&nbsp;package_groups&nbsp;and&nbsp;a<br>
+PackageGroup&nbsp;object.&nbsp;If&nbsp;you&nbsp;bypass&nbsp;those,&nbsp;you&nbsp;might&nbsp;load<br>
+a&nbsp;package&nbsp;which&nbsp;is&nbsp;not&nbsp;part&nbsp;of&nbsp;any&nbsp;PackageGroup.&nbsp;That&nbsp;would<br>
+leave&nbsp;the&nbsp;cache&nbsp;in&nbsp;a&nbsp;confusing&nbsp;state.)</tt></dd></dl>
+
+<dl><dt><a name="PackageCollection-remove_external_package"><strong>remove_external_package</strong></a>(self, dirname)</dt><dd><tt><a href="#PackageCollection-remove_external_package">remove_external_package</a>(dirname)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Remove&nbsp;an&nbsp;external&nbsp;directory.&nbsp;The&nbsp;argument&nbsp;should&nbsp;be&nbsp;one&nbsp;that&nbsp;was<br>
+previously&nbsp;passed&nbsp;to&nbsp;<a href="#PackageCollection-add_external_package">add_external_package</a>().&nbsp;(If&nbsp;it&nbsp;is&nbsp;not&nbsp;a<br>
+current&nbsp;external&nbsp;directory,&nbsp;this&nbsp;silently&nbsp;does&nbsp;nothing.)<br>
+&nbsp;<br>
+Since&nbsp;this&nbsp;changes&nbsp;the&nbsp;set&nbsp;of&nbsp;what&nbsp;packages&nbsp;are&nbsp;available,<br>
+it&nbsp;implicitly&nbsp;invokes&nbsp;<a href="#PackageCollection-clear_cache">clear_cache</a>().</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>:<br>
+<dl><dt><strong>global_loader</strong> = None</dl>
+
+<dl><dt><strong>import_recorder</strong> = None</dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-locate_package_directory"><strong>locate_package_directory</strong></a>(dirname)</dt><dd><tt><a href="#-locate_package_directory">locate_package_directory</a>(dirname)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;directory&nbsp;name,&nbsp;locate&nbsp;the&nbsp;(sole)&nbsp;subdirectory&nbsp;which&nbsp;is&nbsp;a<br>
+package&nbsp;directory.&nbsp;(This&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;the&nbsp;directory&nbsp;that&nbsp;was<br>
+passed&nbsp;in.)<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;necessary&nbsp;because&nbsp;some&nbsp;Zip&nbsp;archives&nbsp;unpack&nbsp;directly&nbsp;into&nbsp;the<br>
+destination&nbsp;directory;&nbsp;others&nbsp;create&nbsp;a&nbsp;subdirectory&nbsp;and&nbsp;unpack&nbsp;there.<br>
+We&nbsp;locate&nbsp;the&nbsp;"real"&nbsp;package&nbsp;directory&nbsp;by&nbsp;looking&nbsp;for&nbsp;a&nbsp;Metadata&nbsp;file.<br>
+If&nbsp;there&nbsp;is&nbsp;none,&nbsp;but&nbsp;there&nbsp;is&nbsp;a&nbsp;single&nbsp;subdirectory,&nbsp;we&nbsp;search<br>
+there.&nbsp;(Files&nbsp;and&nbsp;directories&nbsp;beginning&nbsp;with&nbsp;"."&nbsp;are&nbsp;ignored&nbsp;in&nbsp;this<br>
+process;&nbsp;that&nbsp;lets&nbsp;us&nbsp;cope&nbsp;with&nbsp;Mac&nbsp;directories&nbsp;and&nbsp;their&nbsp;".DS_Store"<br>
+annoyances.)<br>
+&nbsp;<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;no&nbsp;package&nbsp;directory&nbsp;is&nbsp;found.</tt></dd></dl>
+ <dl><dt><a name="-remove_recursively"><strong>remove_recursively</strong></a>(name)</dt><dd><tt><a href="#-remove_recursively">remove_recursively</a>(path)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;a&nbsp;file&nbsp;or&nbsp;directory&nbsp;(including&nbsp;all&nbsp;contents,&nbsp;for&nbsp;a&nbsp;directory).<br>
+This&nbsp;deletes&nbsp;symlinks&nbsp;but&nbsp;does&nbsp;not&nbsp;follow&nbsp;them.</tt></dd></dl>
+ <dl><dt><a name="-unpack_zip_file"><strong>unpack_zip_file</strong></a>(filename, dirname)</dt><dd><tt><a href="#-unpack_zip_file">unpack_zip_file</a>(filename,&nbsp;dirname)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Unpack&nbsp;the&nbsp;Zip&nbsp;archive&nbsp;at&nbsp;filename,&nbsp;creating&nbsp;directory&nbsp;dirname.<br>
+&nbsp;<br>
+If&nbsp;there&nbsp;was&nbsp;a&nbsp;directory&nbsp;dirname&nbsp;already,&nbsp;it&nbsp;is&nbsp;deleted&nbsp;before&nbsp;the<br>
+unpacking&nbsp;begins.<br>
+&nbsp;<br>
+This&nbsp;raises&nbsp;zipfile.BadZipfile&nbsp;if&nbsp;filename&nbsp;is&nbsp;not&nbsp;a&nbsp;valid&nbsp;Zip&nbsp;file.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>Filename_Collection</strong> = 'Collection'<br>
+<strong>Filename_Download</strong> = 'Download'<br>
+<strong>REPOSITORY_URL</strong> = 'http://boodler.org/lib/'<br>
+<strong>Source_FILE</strong> = 2<br>
+<strong>Source_PACKAGE</strong> = 1<br>
+<strong>Source_URL</strong> = 3<br>
+<strong>Suffix_PackageArchive</strong> = '.boop'</td></tr></table>
+</body></html>

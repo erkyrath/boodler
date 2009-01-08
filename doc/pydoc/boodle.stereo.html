@@ -1,0 +1,279 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boodle.stereo</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boodle.html"><font color="#ffffff">boodle</font></a>.stereo</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boodle/stereo.py">boodle/stereo.py</a></font></td></tr></table>
+    <p><tt>stereo:&nbsp;Utility&nbsp;functions&nbsp;for&nbsp;stereo&nbsp;panning.<br>
+&nbsp;<br>
+These&nbsp;functions&nbsp;return&nbsp;a&nbsp;stereo&nbsp;object&nbsp;--&nbsp;an&nbsp;object&nbsp;which&nbsp;represents&nbsp;a&nbsp;<br>
+range&nbsp;of&nbsp;stereo&nbsp;positions&nbsp;for&nbsp;a&nbsp;soundscale.&nbsp;Stereo&nbsp;objects&nbsp;can&nbsp;be&nbsp;passed<br>
+to&nbsp;new_channel_pan()&nbsp;or&nbsp;sched_note_pan().<br>
+&nbsp;<br>
+<a href="#-default">default</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;default&nbsp;stereo&nbsp;position<br>
+<a href="#-shift">shift</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;simple&nbsp;stereo&nbsp;shift<br>
+<a href="#-shiftxy">shiftxy</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;two-dimensional&nbsp;stereo&nbsp;shift<br>
+<a href="#-scale">scale</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;stretched&nbsp;or&nbsp;compressed&nbsp;stereo&nbsp;effect<br>
+<a href="#-scalexy">scalexy</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;two-dimensional&nbsp;stereo&nbsp;scaling<br>
+<a href="#-fixed">fixed</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;which&nbsp;is&nbsp;compressed&nbsp;to&nbsp;a&nbsp;point<br>
+<a href="#-fixedx">fixedx</a>()&nbsp;--&nbsp;an&nbsp;alias&nbsp;for&nbsp;fixed<br>
+<a href="#-fixedy">fixedy</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;which&nbsp;is&nbsp;compressed&nbsp;to&nbsp;a&nbsp;point&nbsp;on&nbsp;the&nbsp;Y&nbsp;axis<br>
+<a href="#-fixedxy">fixedxy</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;compressed&nbsp;to&nbsp;a&nbsp;point&nbsp;on&nbsp;the&nbsp;XY&nbsp;plane<br>
+<a href="#-compose">compose</a>()&nbsp;--&nbsp;apply&nbsp;one&nbsp;stereo&nbsp;effect&nbsp;on&nbsp;top&nbsp;of&nbsp;another<br>
+<a href="#-cast">cast</a>()&nbsp;--&nbsp;convert&nbsp;an&nbsp;object&nbsp;to&nbsp;a&nbsp;stereo&nbsp;effect</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/unittest.html">unittest</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>(<a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boodle.stereo.html#TestStereo">TestStereo</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TestStereo">class <strong>TestStereo</strong></a>(<a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boodle.stereo.html#TestStereo">TestStereo</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="TestStereo-assertStereo"><strong>assertStereo</strong></a>(self, val, tup)</dt></dl>
+
+<dl><dt><a name="TestStereo-test_compose"><strong>test_compose</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestStereo-test_construct"><strong>test_construct</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestStereo-test_extend"><strong>test_extend</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>:<br>
+<dl><dt><a name="TestStereo-__call__"><strong>__call__</strong></a>(self, *args, **kwds)</dt></dl>
+
+<dl><dt><a name="TestStereo-__init__"><strong>__init__</strong></a>(self, methodName<font color="#909090">='runTest'</font>)</dt><dd><tt>Create&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;class&nbsp;that&nbsp;will&nbsp;use&nbsp;the&nbsp;named&nbsp;test<br>
+method&nbsp;when&nbsp;executed.&nbsp;Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;instance&nbsp;does<br>
+not&nbsp;have&nbsp;a&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestStereo-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestStereo-assertAlmostEqual"><strong>assertAlmostEqual</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertAlmostEquals"><strong>assertAlmostEquals</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertEqual"><strong>assertEqual</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertEquals"><strong>assertEquals</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertFalse"><strong>assertFalse</strong></a> = failIf(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertNotAlmostEqual"><strong>assertNotAlmostEqual</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertNotAlmostEquals"><strong>assertNotAlmostEquals</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertNotEqual"><strong>assertNotEqual</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertNotEquals"><strong>assertNotEquals</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertRaises"><strong>assertRaises</strong></a> = failUnlessRaises(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assertTrue"><strong>assertTrue</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-assert_"><strong>assert_</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-countTestCases"><strong>countTestCases</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestStereo-debug"><strong>debug</strong></a>(self)</dt><dd><tt>Run&nbsp;the&nbsp;test&nbsp;without&nbsp;collecting&nbsp;errors&nbsp;in&nbsp;a&nbsp;TestResult</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-defaultTestResult"><strong>defaultTestResult</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestStereo-fail"><strong>fail</strong></a>(self, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;immediately,&nbsp;with&nbsp;the&nbsp;given&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-failIf"><strong>failIf</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-failIfAlmostEqual"><strong>failIfAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-failIfEqual"><strong>failIfEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-failUnless"><strong>failUnless</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-failUnlessAlmostEqual"><strong>failUnlessAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-failUnlessEqual"><strong>failUnlessEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-failUnlessRaises"><strong>failUnlessRaises</strong></a>(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-id"><strong>id</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestStereo-run"><strong>run</strong></a>(self, result<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="TestStereo-setUp"><strong>setUp</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;setting&nbsp;up&nbsp;the&nbsp;test&nbsp;fixture&nbsp;before&nbsp;exercising&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-shortDescription"><strong>shortDescription</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;test,&nbsp;or&nbsp;None&nbsp;if&nbsp;no<br>
+description&nbsp;has&nbsp;been&nbsp;provided.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;first&nbsp;line&nbsp;of<br>
+the&nbsp;specified&nbsp;test&nbsp;method's&nbsp;docstring.</tt></dd></dl>
+
+<dl><dt><a name="TestStereo-tearDown"><strong>tearDown</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;deconstructing&nbsp;the&nbsp;test&nbsp;fixture&nbsp;after&nbsp;testing&nbsp;it.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>:<br>
+<dl><dt><strong>failureException</strong> = &lt;type 'exceptions.AssertionError'&gt;<dd><tt>Assertion&nbsp;failed.</tt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-cast"><strong>cast</strong></a>(obj)</dt><dd><tt><a href="#-cast">cast</a>(obj)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Convert&nbsp;obj&nbsp;into&nbsp;a&nbsp;stereo&nbsp;object.&nbsp;If&nbsp;obj&nbsp;is&nbsp;None,&nbsp;this&nbsp;returns&nbsp;the<br>
+default&nbsp;stereo&nbsp;position.&nbsp;If&nbsp;obj&nbsp;is&nbsp;a&nbsp;number,&nbsp;this&nbsp;returns&nbsp;a&nbsp;simple<br>
+stereo&nbsp;shift&nbsp;--&nbsp;no&nbsp;scaling.&nbsp;If&nbsp;obj&nbsp;is&nbsp;a&nbsp;stereo&nbsp;object,&nbsp;this&nbsp;returns<br>
+it.</tt></dd></dl>
+ <dl><dt><a name="-compose"><strong>compose</strong></a>(stereo1, stereo2)</dt><dd><tt><a href="#-compose">compose</a>(stereo1,&nbsp;stereo2):<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;which&nbsp;is&nbsp;the&nbsp;result&nbsp;of&nbsp;applying&nbsp;of&nbsp;stereo1<br>
+on&nbsp;top&nbsp;of&nbsp;stereo2.&nbsp;This&nbsp;is&nbsp;the&nbsp;equivalent&nbsp;of&nbsp;a&nbsp;channel&nbsp;set&nbsp;to<br>
+stereo1,&nbsp;containing&nbsp;a&nbsp;channel&nbsp;stereo2.</tt></dd></dl>
+ <dl><dt><a name="-default"><strong>default</strong></a>()</dt><dd><tt><a href="#-default">default</a>()&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;stereo&nbsp;object&nbsp;which&nbsp;describes&nbsp;the&nbsp;default&nbsp;stereo&nbsp;position&nbsp;--<br>
+no&nbsp;shift,&nbsp;no&nbsp;contraction.</tt></dd></dl>
+ <dl><dt><a name="-extend_tuple"><strong>extend_tuple</strong></a>(obj)</dt><dd><tt><a href="#-extend_tuple">extend_tuple</a>(obj)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;stereo&nbsp;object,&nbsp;return&nbsp;a&nbsp;4-tuple&nbsp;which&nbsp;is&nbsp;an&nbsp;equivalent&nbsp;stereo<br>
+object.<br>
+&nbsp;<br>
+(This&nbsp;is&nbsp;an&nbsp;internal&nbsp;function.&nbsp;Outside&nbsp;callers&nbsp;should&nbsp;not&nbsp;make&nbsp;use<br>
+of&nbsp;it.)</tt></dd></dl>
+ <dl><dt><a name="-fixed"><strong>fixed</strong></a>(pos)</dt><dd><tt><a href="#-fixed">fixed</a>(pos)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;which&nbsp;is&nbsp;compressed&nbsp;to&nbsp;a&nbsp;point&nbsp;(on&nbsp;the&nbsp;X&nbsp;axis).<br>
+All&nbsp;sounds&nbsp;contained&nbsp;in&nbsp;this&nbsp;effect,&nbsp;no&nbsp;matter&nbsp;how&nbsp;shifted,&nbsp;will&nbsp;come<br>
+from&nbsp;a&nbsp;single&nbsp;point.&nbsp;If&nbsp;pos&nbsp;is&nbsp;zero,&nbsp;this&nbsp;will&nbsp;be&nbsp;the&nbsp;center;&nbsp;if&nbsp;-1,&nbsp;<br>
+directly&nbsp;to&nbsp;the&nbsp;left;&nbsp;if&nbsp;1,&nbsp;directly&nbsp;to&nbsp;the&nbsp;right.</tt></dd></dl>
+ <dl><dt><a name="-fixedx"><strong>fixedx</strong></a>(pos)</dt><dd><tt><a href="#-fixedx">fixedx</a>(pos)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+An&nbsp;alias&nbsp;for&nbsp;<a href="#-fixed">fixed</a>(pos).</tt></dd></dl>
+ <dl><dt><a name="-fixedxy"><strong>fixedxy</strong></a>(posx, posy)</dt><dd><tt><a href="#-fixedxy">fixedxy</a>(posx,&nbsp;posy)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;which&nbsp;is&nbsp;compressed&nbsp;to&nbsp;a&nbsp;point&nbsp;on&nbsp;the&nbsp;XY&nbsp;plane.</tt></dd></dl>
+ <dl><dt><a name="-fixedy"><strong>fixedy</strong></a>(posy)</dt><dd><tt><a href="#-fixedy">fixedy</a>(posy)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;which&nbsp;is&nbsp;compressed&nbsp;to&nbsp;a&nbsp;point&nbsp;on&nbsp;the&nbsp;Y&nbsp;axis.</tt></dd></dl>
+ <dl><dt><a name="-scale"><strong>scale</strong></a>(size)</dt><dd><tt><a href="#-scale">scale</a>(size)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;stereo&nbsp;effect&nbsp;which&nbsp;is&nbsp;not&nbsp;shifted&nbsp;left&nbsp;or&nbsp;right,&nbsp;but&nbsp;is<br>
+compressed&nbsp;or&nbsp;stretched&nbsp;from&nbsp;the&nbsp;center.&nbsp;If&nbsp;size&nbsp;is&nbsp;less&nbsp;than&nbsp;1,<br>
+the&nbsp;channels&nbsp;are&nbsp;compressed;&nbsp;zero&nbsp;causes&nbsp;every&nbsp;sound&nbsp;to&nbsp;be&nbsp;perfectly<br>
+centered.&nbsp;If&nbsp;size&nbsp;is&nbsp;greater&nbsp;than&nbsp;1,&nbsp;the&nbsp;channels&nbsp;are&nbsp;spread&nbsp;apart.<br>
+Negative&nbsp;values&nbsp;cause&nbsp;the&nbsp;left&nbsp;and&nbsp;right&nbsp;channels&nbsp;to&nbsp;swap.</tt></dd></dl>
+ <dl><dt><a name="-scalexy"><strong>scalexy</strong></a>(sizex<font color="#909090">=1</font>, sizey<font color="#909090">=1</font>)</dt><dd><tt><a href="#-scalexy">scalexy</a>(sizex=1,&nbsp;sizey=1)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;two-dimensional&nbsp;stereo&nbsp;scaling.&nbsp;If&nbsp;sizey&nbsp;is&nbsp;1&nbsp;(or&nbsp;omitted),<br>
+this&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;<a href="#-scale">scale</a>(sizex).</tt></dd></dl>
+ <dl><dt><a name="-shift"><strong>shift</strong></a>(pos)</dt><dd><tt><a href="#-shift">shift</a>(pos)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;simple&nbsp;stereo&nbsp;shift.&nbsp;If&nbsp;pos&nbsp;is&nbsp;zero,&nbsp;there&nbsp;is&nbsp;no&nbsp;shift&nbsp;in<br>
+origin;&nbsp;this&nbsp;returns&nbsp;the&nbsp;default&nbsp;stereo&nbsp;position.&nbsp;-1&nbsp;means&nbsp;directly<br>
+to&nbsp;the&nbsp;left;&nbsp;1&nbsp;means&nbsp;directly&nbsp;to&nbsp;the&nbsp;right.&nbsp;More&nbsp;extreme&nbsp;values<br>
+recede&nbsp;into&nbsp;the&nbsp;distance.</tt></dd></dl>
+ <dl><dt><a name="-shiftxy"><strong>shiftxy</strong></a>(posx<font color="#909090">=0</font>, posy<font color="#909090">=0</font>)</dt><dd><tt><a href="#-shiftxy">shiftxy</a>(posx=0,&nbsp;posy=0)&nbsp;-&gt;&nbsp;stereo<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;two-dimensional&nbsp;stereo&nbsp;shift.&nbsp;If&nbsp;posy&nbsp;is&nbsp;zero&nbsp;(or&nbsp;omitted),<br>
+this&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;<a href="#-shift">shift</a>(posx).</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>Identity</strong> = ()<br>
+<strong>Identity_2</strong> = (1.0, 0.0)<br>
+<strong>Identity_4</strong> = (1.0, 0.0, 1.0, 0.0)</td></tr></table>
+</body></html>

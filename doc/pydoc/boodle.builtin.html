@@ -1,0 +1,223 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boodle.builtin</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boodle.html"><font color="#ffffff">boodle</font></a>.builtin</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boodle/builtin.py">boodle/builtin.py</a></font></td></tr></table>
+    <p><tt>builtin:&nbsp;A&nbsp;module&nbsp;containing&nbsp;useful&nbsp;utility&nbsp;<a href="boodle.agent.html#Agent">Agent</a>&nbsp;classes.<br>
+&nbsp;<br>
+These&nbsp;Agents&nbsp;are&nbsp;too&nbsp;important&nbsp;to&nbsp;be&nbsp;distributed&nbsp;in&nbsp;an&nbsp;optional&nbsp;package;<br>
+they&nbsp;need&nbsp;to&nbsp;be&nbsp;available&nbsp;always.<br>
+&nbsp;<br>
+<a href="#NullAgent">NullAgent</a>&nbsp;--&nbsp;does&nbsp;nothing<br>
+<a href="#StopAgent">StopAgent</a>&nbsp;--&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;stop&nbsp;playing<br>
+<a href="#SetVolumeAgent">SetVolumeAgent</a>&nbsp;--&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;change&nbsp;to&nbsp;a&nbsp;given&nbsp;volume<br>
+<a href="#SetPanAgent">SetPanAgent</a>&nbsp;--&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;change&nbsp;to&nbsp;a&nbsp;given&nbsp;pan&nbsp;position<br>
+<a href="#FadeOutAgent">FadeOutAgent</a>&nbsp;--&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;fade&nbsp;down&nbsp;to&nbsp;zero&nbsp;volume&nbsp;over&nbsp;an&nbsp;interval<br>
+<a href="#FadeInOutAgent">FadeInOutAgent</a>&nbsp;--&nbsp;creates&nbsp;a&nbsp;channel&nbsp;that&nbsp;fades&nbsp;up,&nbsp;holds,&nbsp;and&nbsp;fades&nbsp;out<br>
+<a href="#TestSoundAgent">TestSoundAgent</a>&nbsp;--&nbsp;plays&nbsp;a&nbsp;little&nbsp;test&nbsp;melody</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boodle.agent.html">boodle.agent</a><br>
+</td><td width="25%" valign=top><a href="boopak.pinfo.html">boopak.pinfo</a><br>
+</td><td width="25%" valign=top><a href="boodle.sample.html">boodle.sample</a><br>
+</td><td width="25%" valign=top><a href="boodle.stereo.html">boodle.stereo</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boodle.agent.html#Agent">boodle.agent.Agent</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boodle.builtin.html#FadeInOutAgent">FadeInOutAgent</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.builtin.html#FadeOutAgent">FadeOutAgent</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.builtin.html#NullAgent">NullAgent</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.builtin.html#SetPanAgent">SetPanAgent</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.builtin.html#SetVolumeAgent">SetVolumeAgent</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.builtin.html#StopAgent">StopAgent</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.builtin.html#TestSoundAgent">TestSoundAgent</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FadeInOutAgent">class <strong>FadeInOutAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#FadeInOutAgent">FadeInOutAgent</a>(agent,&nbsp;liveinterval,&nbsp;fadeinterval,&nbsp;fadeoutinterval=fadeinterval):<br>
+&nbsp;<br>
+This&nbsp;agent&nbsp;creates&nbsp;a&nbsp;channel&nbsp;with&nbsp;an&nbsp;agent,&nbsp;and&nbsp;causes&nbsp;that&nbsp;channel<br>
+to&nbsp;fade&nbsp;up&nbsp;from&nbsp;zero&nbsp;volume,&nbsp;remain&nbsp;at&nbsp;full&nbsp;volume,&nbsp;and&nbsp;then&nbsp;fade&nbsp;out<br>
+and&nbsp;stop.<br>
+&nbsp;<br>
+The&nbsp;fadeinterval&nbsp;is&nbsp;the&nbsp;time&nbsp;the&nbsp;channel&nbsp;takes&nbsp;to&nbsp;fade&nbsp;in&nbsp;or&nbsp;out.<br>
+The&nbsp;liveinterval&nbsp;is&nbsp;the&nbsp;duration&nbsp;of&nbsp;maximum&nbsp;volume&nbsp;(from&nbsp;the&nbsp;end<br>
+of&nbsp;fade-in&nbsp;to&nbsp;the&nbsp;beginning&nbsp;of&nbsp;fade-out).<br>
+&nbsp;<br>
+If&nbsp;two&nbsp;intervals&nbsp;are&nbsp;given,&nbsp;the&nbsp;first&nbsp;is&nbsp;the&nbsp;fade-in&nbsp;time,&nbsp;and&nbsp;the<br>
+second&nbsp;is&nbsp;the&nbsp;fade-out&nbsp;time.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="FadeInOutAgent-__init__"><strong>__init__</strong></a>(self, agentinst, liveinterval<font color="#909090">=10.0</font>, fadeinterval<font color="#909090">=1.0</font>, fadeoutinterval<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="FadeInOutAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FadeInOutAgent-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FadeOutAgent">class <strong>FadeOutAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#FadeOutAgent">FadeOutAgent</a>(interval):<br>
+&nbsp;<br>
+This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;fade&nbsp;down&nbsp;to&nbsp;zero&nbsp;volume&nbsp;over&nbsp;a<br>
+given&nbsp;interval,&nbsp;and&nbsp;then&nbsp;stop.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="FadeOutAgent-__init__"><strong>__init__</strong></a>(self, duration<font color="#909090">=0.0050000000000000001</font>)</dt></dl>
+
+<dl><dt><a name="FadeOutAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FadeOutAgent-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="NullAgent">class <strong>NullAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#NullAgent">NullAgent</a>:<br>
+&nbsp;<br>
+This&nbsp;agent&nbsp;does&nbsp;nothing.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="NullAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="NullAgent-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SetPanAgent">class <strong>SetPanAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SetPanAgent">SetPanAgent</a>:<br>
+&nbsp;<br>
+This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;change&nbsp;to&nbsp;a&nbsp;given&nbsp;pan&nbsp;position.&nbsp;(See<br>
+Channel.set_pan.)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="SetPanAgent-__init__"><strong>__init__</strong></a>(self, newpan, duration<font color="#909090">=0.5</font>)</dt></dl>
+
+<dl><dt><a name="SetPanAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SetPanAgent-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SetVolumeAgent">class <strong>SetVolumeAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SetVolumeAgent">SetVolumeAgent</a>:<br>
+&nbsp;<br>
+This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;change&nbsp;to&nbsp;a&nbsp;given&nbsp;volume.&nbsp;(See<br>
+Channel.set_volume.)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="SetVolumeAgent-__init__"><strong>__init__</strong></a>(self, newvol, duration<font color="#909090">=0.0050000000000000001</font>)</dt></dl>
+
+<dl><dt><a name="SetVolumeAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SetVolumeAgent-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="StopAgent">class <strong>StopAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#StopAgent">StopAgent</a>:<br>
+&nbsp;<br>
+This&nbsp;agent&nbsp;causes&nbsp;a&nbsp;channel&nbsp;to&nbsp;stop&nbsp;playing.&nbsp;(See&nbsp;Channel.stop.)<br>
+All&nbsp;notes&nbsp;and&nbsp;agents&nbsp;in&nbsp;the&nbsp;channel&nbsp;(and&nbsp;subchannels)&nbsp;will&nbsp;be<br>
+discarded.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="StopAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="StopAgent-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TestSoundAgent">class <strong>TestSoundAgent</strong></a>(<a href="boodle.agent.html#Agent">boodle.agent.Agent</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#TestSoundAgent">TestSoundAgent</a>:<br>
+&nbsp;<br>
+Plays&nbsp;a&nbsp;little&nbsp;test&nbsp;melody.&nbsp;This&nbsp;does&nbsp;some&nbsp;under-the-cover&nbsp;contortions<br>
+to&nbsp;create&nbsp;a&nbsp;sound&nbsp;sample&nbsp;without&nbsp;loading&nbsp;any&nbsp;Boodler&nbsp;modules&nbsp;from<br>
+the&nbsp;external&nbsp;module&nbsp;collection.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TestSoundAgent-get_title"><strong>get_title</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestSoundAgent-run"><strong>run</strong></a>(self)</dt></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="TestSoundAgent-getsound"><strong>getsound</strong></a>()</dt><dd><tt><a href="#TestSoundAgent-getsound">getsound</a>()&nbsp;-&gt;&nbsp;File<br>
+Create&nbsp;a&nbsp;sound&nbsp;sample&nbsp;object&nbsp;for&nbsp;a&nbsp;short&nbsp;musical&nbsp;note.&nbsp;The&nbsp;AIFF<br>
+sound&nbsp;data&nbsp;is&nbsp;kept&nbsp;in&nbsp;memory,&nbsp;not&nbsp;stored&nbsp;in&nbsp;an&nbsp;actual&nbsp;file&nbsp;anywhere.<br>
+This&nbsp;caches&nbsp;the&nbsp;File&nbsp;object;&nbsp;if&nbsp;you&nbsp;call&nbsp;it&nbsp;more&nbsp;than&nbsp;once,&nbsp;you'll<br>
+get&nbsp;the&nbsp;same&nbsp;File.</tt></dd></dl>
+
+<dl><dt><a name="TestSoundAgent-makesound"><strong>makesound</strong></a>(fl)</dt><dd><tt><a href="#TestSoundAgent-makesound">makesound</a>(fl)&nbsp;-&gt;&nbsp;None<br>
+Generate&nbsp;AIFF&nbsp;sound&nbsp;data&nbsp;for&nbsp;a&nbsp;short&nbsp;musical&nbsp;note,&nbsp;and&nbsp;write&nbsp;the<br>
+AIFF&nbsp;to&nbsp;the&nbsp;given&nbsp;file.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>sound</strong> = None</dl>
+
+<hr>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__all__</strong> = ['NullAgent', 'StopAgent', 'SetVolumeAgent', 'SetPanAgent', 'FadeOutAgent', 'FadeInOutAgent', 'TestSoundAgent']</td></tr></table>
+</body></html>

@@ -1,0 +1,369 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module booman.create</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="booman.html"><font color="#ffffff">booman</font></a>.create</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/booman/create.py">booman/create.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Boodler:&nbsp;a&nbsp;programmable&nbsp;soundscape&nbsp;tool<br>
+#&nbsp;Copyright&nbsp;2002-9&nbsp;by&nbsp;Andrew&nbsp;Plotkin&nbsp;&lt;erkyrath@eblong.com&gt;<br>
+#&nbsp;&nbsp;&nbsp;&lt;<a href="http://boodler.org/">http://boodler.org/</a>&gt;<br>
+#&nbsp;This&nbsp;program&nbsp;is&nbsp;distributed&nbsp;under&nbsp;the&nbsp;LGPL.<br>
+#&nbsp;See&nbsp;the&nbsp;LGPL&nbsp;document,&nbsp;or&nbsp;the&nbsp;above&nbsp;URL,&nbsp;for&nbsp;details.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boopak.argdef.html">boopak.argdef</a><br>
+<a href="booman.html">booman</a><br>
+<a href="boopak.collect.html">boopak.collect</a><br>
+<a href="http://www.python.org/doc/current/library/inspect.html">inspect</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/keyword.html">keyword</a><br>
+<a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+<a href="boopak.pinfo.html">boopak.pinfo</a><br>
+<a href="boopak.pload.html">boopak.pload</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/re.html">re</a><br>
+<a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
+<a href="http://www.python.org/doc/current/library/types.html">types</a><br>
+<a href="http://www.python.org/doc/current/library/unittest.html">unittest</a><br>
+</td><td width="25%" valign=top><a href="boopak.version.html">boopak.version</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="booman.html#CommandError">booman.CommandError</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="booman.create.html#ConstructError">ConstructError</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="booman.create.html#WalkContext">WalkContext</a>
+</font></dt><dt><font face="helvetica, arial"><a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>(<a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="booman.create.html#TestCreate">TestCreate</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ConstructError">class <strong>ConstructError</strong></a>(<a href="booman.html#CommandError">booman.CommandError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ConstructError">ConstructError</a>:&nbsp;represents&nbsp;an&nbsp;error&nbsp;during&nbsp;package&nbsp;construction.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.create.html#ConstructError">ConstructError</a></dd>
+<dd><a href="booman.html#CommandError">booman.CommandError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ConstructError-__init__"><strong>__init__</strong></a>(self, dirname, msg)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="booman.html#CommandError">booman.CommandError</a>:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22e79c&gt;<dd><tt>T.<a href="#ConstructError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="ConstructError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ConstructError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ConstructError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ConstructError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ConstructError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ConstructError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="ConstructError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ConstructError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="ConstructError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ConstructError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#ConstructError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="ConstructError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#ConstructError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="ConstructError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="ConstructError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#ConstructError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TestCreate">class <strong>TestCreate</strong></a>(<a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="booman.create.html#TestCreate">TestCreate</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="TestCreate-test_build_package_filename"><strong>test_build_package_filename</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-test_parse_package_filename"><strong>test_parse_package_filename</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-test_parse_package_filename_assume"><strong>test_parse_package_filename_assume</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-test_parse_package_filename_bad"><strong>test_parse_package_filename_bad</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>:<br>
+<dl><dt><a name="TestCreate-__call__"><strong>__call__</strong></a>(self, *args, **kwds)</dt></dl>
+
+<dl><dt><a name="TestCreate-__init__"><strong>__init__</strong></a>(self, methodName<font color="#909090">='runTest'</font>)</dt><dd><tt>Create&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;class&nbsp;that&nbsp;will&nbsp;use&nbsp;the&nbsp;named&nbsp;test<br>
+method&nbsp;when&nbsp;executed.&nbsp;Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;instance&nbsp;does<br>
+not&nbsp;have&nbsp;a&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;name.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-assertAlmostEqual"><strong>assertAlmostEqual</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertAlmostEquals"><strong>assertAlmostEquals</strong></a> = failUnlessAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertEqual"><strong>assertEqual</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertEquals"><strong>assertEquals</strong></a> = failUnlessEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertFalse"><strong>assertFalse</strong></a> = failIf(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertNotAlmostEqual"><strong>assertNotAlmostEqual</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertNotAlmostEquals"><strong>assertNotAlmostEquals</strong></a> = failIfAlmostEqual(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertNotEqual"><strong>assertNotEqual</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertNotEquals"><strong>assertNotEquals</strong></a> = failIfEqual(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertRaises"><strong>assertRaises</strong></a> = failUnlessRaises(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assertTrue"><strong>assertTrue</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-assert_"><strong>assert_</strong></a> = failUnless(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-countTestCases"><strong>countTestCases</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-debug"><strong>debug</strong></a>(self)</dt><dd><tt>Run&nbsp;the&nbsp;test&nbsp;without&nbsp;collecting&nbsp;errors&nbsp;in&nbsp;a&nbsp;TestResult</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-defaultTestResult"><strong>defaultTestResult</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-fail"><strong>fail</strong></a>(self, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;immediately,&nbsp;with&nbsp;the&nbsp;given&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-failIf"><strong>failIf</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;if&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-failIfAlmostEqual"><strong>failIfAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-failIfEqual"><strong>failIfEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;equal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-failUnless"><strong>failUnless</strong></a>(self, expr, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;the&nbsp;test&nbsp;unless&nbsp;the&nbsp;expression&nbsp;is&nbsp;true.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-failUnlessAlmostEqual"><strong>failUnlessAlmostEqual</strong></a>(self, first, second, places<font color="#909090">=7</font>, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;their<br>
+difference&nbsp;rounded&nbsp;to&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places<br>
+(default&nbsp;7)&nbsp;and&nbsp;comparing&nbsp;to&nbsp;zero.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;decimal&nbsp;places&nbsp;(from&nbsp;zero)&nbsp;are&nbsp;usually&nbsp;not&nbsp;the&nbsp;same<br>
+as&nbsp;significant&nbsp;digits&nbsp;(measured&nbsp;from&nbsp;the&nbsp;most&nbsp;signficant&nbsp;digit).</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-failUnlessEqual"><strong>failUnlessEqual</strong></a>(self, first, second, msg<font color="#909090">=None</font>)</dt><dd><tt>Fail&nbsp;if&nbsp;the&nbsp;two&nbsp;objects&nbsp;are&nbsp;unequal&nbsp;as&nbsp;determined&nbsp;by&nbsp;the&nbsp;'=='<br>
+operator.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-failUnlessRaises"><strong>failUnlessRaises</strong></a>(self, excClass, callableObj, *args, **kwargs)</dt><dd><tt>Fail&nbsp;unless&nbsp;an&nbsp;exception&nbsp;of&nbsp;class&nbsp;excClass&nbsp;is&nbsp;thrown<br>
+by&nbsp;callableObj&nbsp;when&nbsp;invoked&nbsp;with&nbsp;arguments&nbsp;args&nbsp;and&nbsp;keyword<br>
+arguments&nbsp;kwargs.&nbsp;If&nbsp;a&nbsp;different&nbsp;type&nbsp;of&nbsp;exception&nbsp;is<br>
+thrown,&nbsp;it&nbsp;will&nbsp;not&nbsp;be&nbsp;caught,&nbsp;and&nbsp;the&nbsp;test&nbsp;case&nbsp;will&nbsp;be<br>
+deemed&nbsp;to&nbsp;have&nbsp;suffered&nbsp;an&nbsp;error,&nbsp;exactly&nbsp;as&nbsp;for&nbsp;an<br>
+unexpected&nbsp;exception.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-id"><strong>id</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TestCreate-run"><strong>run</strong></a>(self, result<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="TestCreate-setUp"><strong>setUp</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;setting&nbsp;up&nbsp;the&nbsp;test&nbsp;fixture&nbsp;before&nbsp;exercising&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-shortDescription"><strong>shortDescription</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;one-line&nbsp;description&nbsp;of&nbsp;the&nbsp;test,&nbsp;or&nbsp;None&nbsp;if&nbsp;no<br>
+description&nbsp;has&nbsp;been&nbsp;provided.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;first&nbsp;line&nbsp;of<br>
+the&nbsp;specified&nbsp;test&nbsp;method's&nbsp;docstring.</tt></dd></dl>
+
+<dl><dt><a name="TestCreate-tearDown"><strong>tearDown</strong></a>(self)</dt><dd><tt>Hook&nbsp;method&nbsp;for&nbsp;deconstructing&nbsp;the&nbsp;test&nbsp;fixture&nbsp;after&nbsp;testing&nbsp;it.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/unittest.html#TestCase">unittest.TestCase</a>:<br>
+<dl><dt><strong>failureException</strong> = &lt;type 'exceptions.AssertionError'&gt;<dd><tt>Assertion&nbsp;failed.</tt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="WalkContext">class <strong>WalkContext</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#WalkContext">WalkContext</a>:&nbsp;context&nbsp;structure&nbsp;used&nbsp;by&nbsp;<a href="#-walk_module">walk_module</a>().<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="WalkContext-__init__"><strong>__init__</strong></a>(self, pkg)</dt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-build_package_filename"><strong>build_package_filename</strong></a>(pkgname, pkgvers)</dt><dd><tt><a href="#-build_package_filename">build_package_filename</a>(pkgname,&nbsp;pkgvers)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;package&nbsp;name&nbsp;and&nbsp;version,&nbsp;return&nbsp;the&nbsp;canonical&nbsp;name&nbsp;of<br>
+the&nbsp;file&nbsp;containing&nbsp;it.&nbsp;(This&nbsp;is&nbsp;also&nbsp;used&nbsp;for&nbsp;constructing<br>
+package&nbsp;URLs;&nbsp;the&nbsp;filename&nbsp;of&nbsp;a&nbsp;package&nbsp;on&nbsp;a&nbsp;server&nbsp;is&nbsp;the&nbsp;same<br>
+as&nbsp;on&nbsp;disk.)<br>
+&nbsp;<br>
+This&nbsp;will&nbsp;look&nbsp;like&nbsp;"PACKAGE.VERSION.boop".<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;guaranteed&nbsp;to&nbsp;create&nbsp;a&nbsp;distinct&nbsp;pathname&nbsp;for&nbsp;every<br>
+(pkgname,&nbsp;vers)&nbsp;pair.&nbsp;This&nbsp;is&nbsp;true&nbsp;even&nbsp;on&nbsp;case-insensitive<br>
+filesystems,&nbsp;which&nbsp;is&nbsp;a&nbsp;wrinkle,&nbsp;since&nbsp;version&nbsp;strings&nbsp;are<br>
+case-sensitive.&nbsp;We&nbsp;work&nbsp;around&nbsp;this&nbsp;by&nbsp;putting&nbsp;a&nbsp;"^"&nbsp;character<br>
+before&nbsp;each&nbsp;capital&nbsp;letter.</tt></dd></dl>
+ <dl><dt><a name="-construct_zipfile"><strong>construct_zipfile</strong></a>(fl, tup, dirname, contents, metadatafile, resourcesfile<font color="#909090">=None</font>)</dt><dd><tt><a href="#-construct_zipfile">construct_zipfile</a>(fl,&nbsp;(pkgname,&nbsp;pkgvers),&nbsp;dirname,&nbsp;contents,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metadatafile,&nbsp;resourcesfile=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Write&nbsp;out&nbsp;a&nbsp;zip&nbsp;file&nbsp;containing&nbsp;the&nbsp;given&nbsp;package&nbsp;data.<br>
+The&nbsp;fl&nbsp;must&nbsp;be&nbsp;a&nbsp;ZipFile&nbsp;object,&nbsp;newly&nbsp;opened&nbsp;for&nbsp;writing.<br>
+The&nbsp;dirname&nbsp;contains&nbsp;the&nbsp;package&nbsp;data;&nbsp;metadatafile&nbsp;and<br>
+resourcesfile&nbsp;must&nbsp;be&nbsp;valid&nbsp;Metadata&nbsp;and&nbsp;Resources&nbsp;files.<br>
+(Not&nbsp;Metadata&nbsp;and&nbsp;Resources&nbsp;objects,&nbsp;but&nbsp;rather&nbsp;the&nbsp;files<br>
+produced&nbsp;by&nbsp;dump()ing&nbsp;them.)</tt></dd></dl>
+ <dl><dt><a name="-examine_directory"><strong>examine_directory</strong></a>(loader, dirname, destname<font color="#909090">=None</font>)</dt><dd><tt><a href="#-examine_directory">examine_directory</a>(loader,&nbsp;dirname,&nbsp;destname=None)&nbsp;-&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((pkgname,&nbsp;pkgvers),&nbsp;contents,&nbsp;metadata,&nbsp;resources)<br>
+&nbsp;<br>
+Look&nbsp;at&nbsp;a&nbsp;directory&nbsp;containing&nbsp;package&nbsp;data.&nbsp;Figure&nbsp;out&nbsp;its&nbsp;metadata<br>
+and&nbsp;resources,&nbsp;considering&nbsp;both&nbsp;the&nbsp;directory&nbsp;contents&nbsp;and&nbsp;the<br>
+contents&nbsp;of&nbsp;the&nbsp;Metadata&nbsp;and&nbsp;Resources&nbsp;files&nbsp;(if&nbsp;present).<br>
+&nbsp;<br>
+The&nbsp;destname,&nbsp;if&nbsp;provided,&nbsp;may&nbsp;also&nbsp;be&nbsp;used&nbsp;to&nbsp;figure&nbsp;out&nbsp;the<br>
+package's&nbsp;desired&nbsp;name&nbsp;and&nbsp;version&nbsp;number.<br>
+&nbsp;<br>
+The&nbsp;loader&nbsp;argument&nbsp;must&nbsp;be&nbsp;a&nbsp;PackageLoader.&nbsp;This&nbsp;is&nbsp;used&nbsp;for&nbsp;a&nbsp;test<br>
+import,&nbsp;during&nbsp;the&nbsp;process.<br>
+&nbsp;<br>
+Any&nbsp;fatal&nbsp;errors&nbsp;will&nbsp;raise&nbsp;<a href="#ConstructError">ConstructError</a>.&nbsp;This&nbsp;may&nbsp;also&nbsp;print<br>
+(non-fatal)&nbsp;warning&nbsp;messages.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;of&nbsp;four&nbsp;items:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;the&nbsp;package&nbsp;name&nbsp;and&nbsp;version:&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;files&nbsp;(not&nbsp;subdirs)&nbsp;in&nbsp;the&nbsp;directory;&nbsp;each<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;tuple&nbsp;(realname,&nbsp;resourcename),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;realname&nbsp;is&nbsp;the&nbsp;current&nbsp;absolute&nbsp;path&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resourcename&nbsp;is&nbsp;the&nbsp;universal&nbsp;relative&nbsp;path&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;Metadata&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;Resources&nbsp;object.<br>
+&nbsp;<br>
+###&nbsp;ignore&nbsp;.pyc&nbsp;and&nbsp;~&nbsp;files&nbsp;in&nbsp;contents?&nbsp;Or&nbsp;warn&nbsp;about&nbsp;them?</tt></dd></dl>
+ <dl><dt><a name="-parse_package_filename"><strong>parse_package_filename</strong></a>(val, assume_1<font color="#909090">=True</font>)</dt><dd><tt><a href="#-parse_package_filename">parse_package_filename</a>(val,&nbsp;assume_1)&nbsp;-&gt;&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;package&nbsp;filename,&nbsp;return&nbsp;the&nbsp;package&nbsp;name&nbsp;and&nbsp;version&nbsp;that<br>
+it&nbsp;should&nbsp;contain.&nbsp;If&nbsp;the&nbsp;filename&nbsp;is&nbsp;not&nbsp;a&nbsp;canonical&nbsp;form,&nbsp;raise<br>
+ValueError.<br>
+&nbsp;<br>
+The&nbsp;name&nbsp;can&nbsp;look&nbsp;like&nbsp;"PACKAGE.VERSION.boop"&nbsp;or&nbsp;"PACKAGE.boop".<br>
+In&nbsp;the&nbsp;latter&nbsp;case,&nbsp;the&nbsp;version&nbsp;returned&nbsp;depends&nbsp;on&nbsp;the&nbsp;assume_1<br>
+argument.&nbsp;To&nbsp;get&nbsp;version&nbsp;1.0,&nbsp;pass&nbsp;True;&nbsp;to&nbsp;get&nbsp;None,&nbsp;pass&nbsp;False.</tt></dd></dl>
+ <dl><dt><a name="-resolve_argument_list"><strong>resolve_argument_list</strong></a>(dirname, key, ag)</dt></dl>
+ <dl><dt><a name="-resolve_dependency_metadata"><strong>resolve_dependency_metadata</strong></a>(dirname, pkgname, pkgvers, resources, metadata, import_record, context)</dt></dl>
+ <dl><dt><a name="-walk_module"><strong>walk_module</strong></a>(context, mod, prefix<font color="#909090">=''</font>)</dt><dd><tt><a href="#-walk_module">walk_module</a>(context,&nbsp;mod,&nbsp;prefix='')&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Walk&nbsp;through&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;given&nbsp;module,&nbsp;and&nbsp;all&nbsp;its&nbsp;submodules.<br>
+This&nbsp;looks&nbsp;for&nbsp;Agents.<br>
+&nbsp;<br>
+Callers&nbsp;should&nbsp;not&nbsp;pass&nbsp;a&nbsp;prefix&nbsp;argument.&nbsp;That&nbsp;is&nbsp;used&nbsp;for&nbsp;the<br>
+recursion.</tt></dd></dl>
+ <dl><dt><a name="-warning"><strong>warning</strong></a>(dirname, msg)</dt><dd><tt><a href="#-warning">warning</a>(dirname,&nbsp;msg)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Print&nbsp;a&nbsp;warning.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>version_start_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x2e7f20&gt;</td></tr></table>
+</body></html>

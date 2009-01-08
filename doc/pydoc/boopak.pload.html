@@ -1,0 +1,557 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boopak.pload</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boopak.html"><font color="#ffffff">boopak</font></a>.pload</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boopak/pload.py">boopak/pload.py</a></font></td></tr></table>
+    <p><tt>pload:&nbsp;The&nbsp;<a href="#PackageLoader">PackageLoader</a>&nbsp;class.<br>
+&nbsp;<br>
+This&nbsp;module&nbsp;contains&nbsp;<a href="#PackageLoader">PackageLoader</a>,&nbsp;which&nbsp;is&nbsp;responsible&nbsp;for&nbsp;loading&nbsp;and<br>
+tracking&nbsp;the&nbsp;Boodler&nbsp;packages&nbsp;in&nbsp;your&nbsp;collection.<br>
+&nbsp;<br>
+(This&nbsp;does&nbsp;not&nbsp;install&nbsp;or&nbsp;modify&nbsp;packages&nbsp;in&nbsp;your&nbsp;collection.&nbsp;The&nbsp;collect<br>
+module&nbsp;handles&nbsp;those&nbsp;tasks.)</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boopak.html">boopak</a><br>
+<a href="http://www.python.org/doc/current/library/imp.html">imp</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+<a href="http://www.python.org/doc/current/library/sets.html">sets</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
+<a href="http://www.python.org/doc/current/library/types.html">types</a><br>
+</td><td width="25%" valign=top><a href="boopak.version.html">boopak.version</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boopak.pload.html#ExternalDir">ExternalDir</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoader">PackageLoader</a>
+</font></dt><dt><font face="helvetica, arial"><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.pload.html#PackageNotFoundError">PackageNotFoundError</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ExternalDir">class <strong>ExternalDir</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ExternalDir">ExternalDir</a>:&nbsp;information&nbsp;about&nbsp;a&nbsp;package&nbsp;directory&nbsp;outside&nbsp;the<br>
+collection.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;a&nbsp;simple&nbsp;data&nbsp;structure,&nbsp;stored&nbsp;as&nbsp;the&nbsp;values&nbsp;in&nbsp;the&nbsp;loader's<br>
+external_dirs&nbsp;mapping.<br>
+&nbsp;<br>
+<a href="#ExternalDir">ExternalDir</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+The&nbsp;dirname&nbsp;contains&nbsp;the&nbsp;(local)&nbsp;pathname&nbsp;of&nbsp;the&nbsp;directory&nbsp;to&nbsp;consider.<br>
+&nbsp;<br>
+The&nbsp;metadata&nbsp;and&nbsp;resources&nbsp;fields,&nbsp;if&nbsp;supplied,&nbsp;override&nbsp;the&nbsp;Metadata<br>
+and&nbsp;Resources&nbsp;files&nbsp;in&nbsp;the&nbsp;directory.&nbsp;(The&nbsp;files&nbsp;do&nbsp;not&nbsp;even&nbsp;have&nbsp;to<br>
+exist.)&nbsp;If&nbsp;the&nbsp;metadata&nbsp;and&nbsp;resources&nbsp;fields&nbsp;are&nbsp;None,&nbsp;the&nbsp;directory's<br>
+files&nbsp;are&nbsp;checked&nbsp;as&nbsp;usual.&nbsp;(This&nbsp;override&nbsp;feature&nbsp;is&nbsp;used&nbsp;by&nbsp;the<br>
+package&nbsp;creation&nbsp;tool.)<br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+dirname&nbsp;--&nbsp;the&nbsp;directory&nbsp;which&nbsp;contains&nbsp;the&nbsp;package<br>
+metadata&nbsp;--&nbsp;the&nbsp;supplied&nbsp;Metadata&nbsp;object&nbsp;(if&nbsp;any)<br>
+resources&nbsp;--&nbsp;the&nbsp;supplied&nbsp;Resources&nbsp;object&nbsp;(if&nbsp;any)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ExternalDir-__init__"><strong>__init__</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PackageLoadError">class <strong>PackageLoadError</strong></a>(<a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#PackageLoadError">PackageLoadError</a>:&nbsp;represents&nbsp;a&nbsp;failure&nbsp;to&nbsp;load&nbsp;a&nbsp;package.<br>
+&nbsp;<br>
+This&nbsp;represents&nbsp;some&nbsp;kind&nbsp;of&nbsp;internal&nbsp;error&nbsp;or&nbsp;package&nbsp;formatting<br>
+problem.&nbsp;(If&nbsp;the&nbsp;package&nbsp;simply&nbsp;was&nbsp;not&nbsp;available,&nbsp;the&nbsp;subclass<br>
+<a href="#PackageNotFoundError">PackageNotFoundError</a>&nbsp;will&nbsp;be&nbsp;used.)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boopak.pload.html#PackageLoadError">PackageLoadError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="PackageLoadError-__init__"><strong>__init__</strong></a>(self, pkgname, val<font color="#909090">='unable to load'</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22e79c&gt;<dd><tt>T.<a href="#PackageLoadError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="PackageLoadError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="PackageLoadError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="PackageLoadError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="PackageLoadError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoadError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PackageLoadError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="PackageLoadError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="PackageLoadError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PackageLoadError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageLoadError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PackageLoader">class <strong>PackageLoader</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#PackageLoader">PackageLoader</a>:&nbsp;manages&nbsp;a&nbsp;package&nbsp;collection,&nbsp;loading&nbsp;packages&nbsp;as<br>
+requested.&nbsp;Also&nbsp;maintains&nbsp;an&nbsp;(in-memory)&nbsp;cache,&nbsp;to&nbsp;speed&nbsp;up&nbsp;load<br>
+requests.<br>
+&nbsp;<br>
+You&nbsp;can&nbsp;also&nbsp;specify&nbsp;extra&nbsp;directories,&nbsp;outside&nbsp;the&nbsp;collection,<br>
+to&nbsp;load&nbsp;packages&nbsp;from.<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;does&nbsp;not&nbsp;deal&nbsp;with&nbsp;writing&nbsp;package&nbsp;files&nbsp;into&nbsp;the<br>
+collection&nbsp;directory.&nbsp;(For&nbsp;that,&nbsp;see&nbsp;PackageCollection,&nbsp;in<br>
+collect.py.)<br>
+&nbsp;<br>
+The&nbsp;<a href="#PackageLoader">PackageLoader</a>&nbsp;is&nbsp;used&nbsp;in&nbsp;two&nbsp;ways.&nbsp;A&nbsp;Boodler&nbsp;UI&nbsp;will&nbsp;want&nbsp;to<br>
+call&nbsp;the&nbsp;<a href="#PackageLoader-list_all_current_packages">list_all_current_packages</a>()&nbsp;method,&nbsp;which&nbsp;loads&nbsp;all&nbsp;the<br>
+descriptive&nbsp;information&nbsp;in&nbsp;the&nbsp;collection.&nbsp;A&nbsp;Boodler&nbsp;sound-playing<br>
+process&nbsp;will&nbsp;only&nbsp;call&nbsp;the&nbsp;<a href="#PackageLoader-load">load</a>()&nbsp;method,&nbsp;which&nbsp;loads&nbsp;the&nbsp;particular<br>
+classes&nbsp;desired.<br>
+&nbsp;<br>
+<a href="#PackageLoader">PackageLoader</a>(dirname,&nbsp;boodler_api_vers=None,&nbsp;importing_ok=False)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#PackageLoader">PackageLoader</a>,&nbsp;given&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;directory&nbsp;which&nbsp;contains<br>
+a&nbsp;collection&nbsp;of&nbsp;packages.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;version&nbsp;is&nbsp;provided&nbsp;(either&nbsp;as&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;a&nbsp;string&nbsp;which<br>
+converts&nbsp;to&nbsp;one),&nbsp;then&nbsp;this&nbsp;is&nbsp;noted&nbsp;as&nbsp;the&nbsp;Boodler&nbsp;version&nbsp;which<br>
+packages&nbsp;must&nbsp;be&nbsp;compatible&nbsp;with.&nbsp;(As&nbsp;noted&nbsp;in&nbsp;the&nbsp;boodler.api_required<br>
+metadata&nbsp;field.)<br>
+&nbsp;<br>
+(Note&nbsp;that&nbsp;the&nbsp;boodler.api_required&nbsp;field&nbsp;is&nbsp;not&nbsp;checked&nbsp;until&nbsp;the<br>
+package&nbsp;is&nbsp;actually&nbsp;loaded,&nbsp;which&nbsp;is&nbsp;after&nbsp;version&nbsp;selection&nbsp;occurs.<br>
+Therefore,&nbsp;it&nbsp;is&nbsp;best&nbsp;if&nbsp;the&nbsp;collection&nbsp;only&nbsp;contains&nbsp;packages&nbsp;which<br>
+are&nbsp;compatible&nbsp;with&nbsp;the&nbsp;installed&nbsp;Boodler&nbsp;version.&nbsp;None&nbsp;of&nbsp;this&nbsp;is<br>
+likely&nbsp;to&nbsp;be&nbsp;important,&nbsp;since&nbsp;the&nbsp;Boodler&nbsp;API&nbsp;version&nbsp;is&nbsp;not&nbsp;expected<br>
+to&nbsp;change&nbsp;much&nbsp;after&nbsp;2.0.)<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;importing_ok&nbsp;flag&nbsp;is&nbsp;false,&nbsp;this&nbsp;loader&nbsp;will&nbsp;refuse&nbsp;to&nbsp;load<br>
+(that&nbsp;is,&nbsp;execute)&nbsp;Python&nbsp;code&nbsp;in&nbsp;packages.&nbsp;This&nbsp;is&nbsp;the&nbsp;default.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;only&nbsp;one&nbsp;importing_ok&nbsp;loader&nbsp;can&nbsp;exist&nbsp;in&nbsp;the&nbsp;process.<br>
+(This&nbsp;is&nbsp;because&nbsp;loaded&nbsp;modules&nbsp;need&nbsp;to&nbsp;be&nbsp;able&nbsp;to&nbsp;find&nbsp;the&nbsp;loader<br>
+through&nbsp;static&nbsp;variables.)<br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+collecdir&nbsp;--&nbsp;the&nbsp;directory&nbsp;containing&nbsp;the&nbsp;package&nbsp;collection<br>
+currently_importing&nbsp;--&nbsp;during&nbsp;an&nbsp;import&nbsp;operation,&nbsp;the&nbsp;package&nbsp;which&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;being&nbsp;imported&nbsp;(at&nbsp;the&nbsp;moment)<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageLoader-load">load</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;version&nbsp;spec<br>
+<a href="#PackageLoader-load_group">load_group</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;PackageGroup,&nbsp;given&nbsp;its&nbsp;package&nbsp;name<br>
+<a href="#PackageLoader-clear_cache">clear_cache</a>()&nbsp;--&nbsp;erase&nbsp;the&nbsp;<a href="#PackageLoader">PackageLoader</a>'s&nbsp;entire&nbsp;knowledge<br>
+<a href="#PackageLoader-generate_package_path">generate_package_path</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;pathname&nbsp;in&nbsp;the&nbsp;collection&nbsp;dir<br>
+<a href="#PackageLoader-add_external_package">add_external_package</a>()&nbsp;--&nbsp;add&nbsp;an&nbsp;external&nbsp;directory&nbsp;to&nbsp;load&nbsp;a&nbsp;package&nbsp;from<br>
+<a href="#PackageLoader-remove_external_package">remove_external_package</a>()&nbsp;--&nbsp;remove&nbsp;an&nbsp;external&nbsp;directory<br>
+<a href="#PackageLoader-clear_external_packages">clear_external_packages</a>()&nbsp;--&nbsp;remove&nbsp;all&nbsp;external&nbsp;directories<br>
+<a href="#PackageLoader-find_all_dependencies">find_all_dependencies</a>()&nbsp;--&nbsp;determine&nbsp;which&nbsp;packages&nbsp;depend&nbsp;on&nbsp;which&nbsp;others<br>
+<a href="#PackageLoader-list_all_packages">list_all_packages</a>()&nbsp;--&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;the&nbsp;available&nbsp;packages<br>
+<a href="#PackageLoader-list_all_current_packages">list_all_current_packages</a>()&nbsp;--&nbsp;list&nbsp;the&nbsp;most&nbsp;recent&nbsp;versions&nbsp;of&nbsp;packages<br>
+<a href="#PackageLoader-load_package_dependencies">load_package_dependencies</a>()&nbsp;--&nbsp;load&nbsp;all&nbsp;packages&nbsp;which&nbsp;a&nbsp;package&nbsp;depends&nbsp;on<br>
+<a href="#PackageLoader-import_package_content">import_package_content</a>()&nbsp;--&nbsp;import&nbsp;the&nbsp;package's&nbsp;content,&nbsp;if&nbsp;it&nbsp;hasn't&nbsp;been<br>
+<a href="#PackageLoader-load_item_by_name">load_item_by_name</a>()&nbsp;--&nbsp;import&nbsp;and&nbsp;return&nbsp;an&nbsp;item&nbsp;in&nbsp;a&nbsp;package<br>
+<a href="#PackageLoader-find_item_resources">find_item_resources</a>()&nbsp;--&nbsp;find&nbsp;the&nbsp;Resource&nbsp;for&nbsp;an&nbsp;item&nbsp;in&nbsp;a&nbsp;package<br>
+<a href="#PackageLoader-attrify_filename">attrify_filename</a>()&nbsp;--&nbsp;given&nbsp;a&nbsp;filename,&nbsp;add&nbsp;its&nbsp;File&nbsp;to&nbsp;the&nbsp;module<br>
+<a href="#PackageLoader-start_import_recording">start_import_recording</a>()&nbsp;--&nbsp;stub,&nbsp;overridden&nbsp;in&nbsp;PackageCollection<br>
+<a href="#PackageLoader-stop_import_recording">stop_import_recording</a>()&nbsp;--&nbsp;stub,&nbsp;overridden&nbsp;in&nbsp;PackageCollection<br>
+&nbsp;<br>
+Internal&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageLoader-load_specific">load_specific</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;specific&nbsp;version<br>
+<a href="#PackageLoader-discover_all_groups">discover_all_groups</a>()&nbsp;--&nbsp;search&nbsp;through&nbsp;the&nbsp;collection&nbsp;directory<br>
+&nbsp;<br>
+Class&nbsp;global&nbsp;field:<br>
+&nbsp;<br>
+global_loader&nbsp;--&nbsp;If&nbsp;a&nbsp;<a href="#PackageLoader">PackageLoader</a>&nbsp;can&nbsp;import&nbsp;packages,&nbsp;it&nbsp;needs&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;accessible&nbsp;from&nbsp;a&nbsp;global&nbsp;context.&nbsp;(See&nbsp;the&nbsp;package&nbsp;module.)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#PackageLoader">PackageLoader</a>.global_loader&nbsp;is&nbsp;where&nbsp;to&nbsp;find&nbsp;it.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PackageLoader-__init__"><strong>__init__</strong></a>(self, collecdir, boodler_api_vers<font color="#909090">=None</font>, importing_ok<font color="#909090">=False</font>)</dt></dl>
+
+<dl><dt><a name="PackageLoader-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;<br>
+Add&nbsp;an&nbsp;external&nbsp;directory&nbsp;to&nbsp;load&nbsp;a&nbsp;package&nbsp;from.&nbsp;The&nbsp;argument<br>
+must&nbsp;be&nbsp;a&nbsp;complete&nbsp;(unpacked)&nbsp;Boodler&nbsp;directory,&nbsp;with&nbsp;a<br>
+Metadata&nbsp;file.&nbsp;That&nbsp;package&nbsp;will&nbsp;then&nbsp;be&nbsp;loadable&nbsp;(possibly<br>
+hiding&nbsp;a&nbsp;package&nbsp;in&nbsp;the&nbsp;collection&nbsp;directory).<br>
+&nbsp;<br>
+The&nbsp;metadata&nbsp;and&nbsp;resources&nbsp;fields,&nbsp;if&nbsp;supplied,&nbsp;override&nbsp;the&nbsp;<br>
+Metadata&nbsp;and&nbsp;Resources&nbsp;files&nbsp;in&nbsp;the&nbsp;directory.&nbsp;(The&nbsp;files&nbsp;do&nbsp;not<br>
+even&nbsp;have&nbsp;to&nbsp;exist.)&nbsp;If&nbsp;the&nbsp;metadata&nbsp;and&nbsp;resources&nbsp;fields&nbsp;are<br>
+None,&nbsp;the&nbsp;directory's&nbsp;files&nbsp;are&nbsp;checked&nbsp;as&nbsp;usual.&nbsp;(This&nbsp;override<br>
+feature&nbsp;is&nbsp;used&nbsp;by&nbsp;the&nbsp;package&nbsp;creation&nbsp;tool.&nbsp;It&nbsp;should&nbsp;not&nbsp;be<br>
+used&nbsp;for&nbsp;any&nbsp;other&nbsp;purpose.)<br>
+&nbsp;<br>
+Returns&nbsp;the&nbsp;name&nbsp;and&nbsp;version&nbsp;of&nbsp;the&nbsp;package&nbsp;that&nbsp;was&nbsp;found.<br>
+&nbsp;<br>
+Since&nbsp;this&nbsp;changes&nbsp;the&nbsp;set&nbsp;of&nbsp;what&nbsp;packages&nbsp;are&nbsp;available,<br>
+it&nbsp;implicitly&nbsp;invokes&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>().<br>
+&nbsp;<br>
+The&nbsp;external&nbsp;package&nbsp;facility&nbsp;is&nbsp;not&nbsp;intended&nbsp;to&nbsp;be&nbsp;how&nbsp;most<br>
+packages&nbsp;are&nbsp;loaded.&nbsp;Most&nbsp;packages&nbsp;should&nbsp;be&nbsp;in&nbsp;the&nbsp;collection<br>
+directory.&nbsp;You&nbsp;might&nbsp;add&nbsp;an&nbsp;external&nbsp;package&nbsp;in&nbsp;your&nbsp;development<br>
+workspace&nbsp;(while&nbsp;developing&nbsp;a&nbsp;soundscape),&nbsp;or&nbsp;in&nbsp;a&nbsp;temporary<br>
+download&nbsp;directory&nbsp;(while&nbsp;deciding&nbsp;whether&nbsp;to&nbsp;install&nbsp;a&nbsp;newly-<br>
+downloaded&nbsp;package).</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-attrify_filename"><strong>attrify_filename</strong></a>(self, pkg, mod, wholekey, res, filename)</dt><dd><tt><a href="#PackageLoader-attrify_filename">attrify_filename</a>(pkg,&nbsp;mod,&nbsp;wholekey,&nbsp;res,&nbsp;filename)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;filename,&nbsp;create&nbsp;a&nbsp;File&nbsp;representing&nbsp;it,&nbsp;and&nbsp;store&nbsp;the<br>
+File&nbsp;in&nbsp;the&nbsp;module&nbsp;at&nbsp;a&nbsp;location&nbsp;defined&nbsp;by&nbsp;wholekey.&nbsp;Submodules<br>
+are&nbsp;created&nbsp;as&nbsp;necessary.&nbsp;The&nbsp;res&nbsp;argument&nbsp;is&nbsp;the&nbsp;Resource<br>
+object&nbsp;associated&nbsp;with&nbsp;wholekey.<br>
+&nbsp;<br>
+The&nbsp;filename&nbsp;must&nbsp;be&nbsp;in&nbsp;universal&nbsp;format:&nbsp;relative&nbsp;to&nbsp;the&nbsp;package<br>
+root,&nbsp;and&nbsp;written&nbsp;with&nbsp;forward&nbsp;slashes,&nbsp;not&nbsp;backslashes.<br>
+&nbsp;<br>
+(If&nbsp;the&nbsp;filename&nbsp;is&nbsp;invalid&nbsp;or&nbsp;unsafe,&nbsp;ValueError&nbsp;is&nbsp;raised.<br>
+However,&nbsp;this&nbsp;does&nbsp;not&nbsp;check&nbsp;whether&nbsp;the&nbsp;file&nbsp;exists.)</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-clear_cache"><strong>clear_cache</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-clear_cache">clear_cache</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Erase&nbsp;the&nbsp;<a href="#PackageLoader">PackageLoader</a>'s&nbsp;entire&nbsp;knowledge&nbsp;of&nbsp;what&nbsp;groups&nbsp;and<br>
+packages&nbsp;are&nbsp;available.<br>
+&nbsp;<br>
+This&nbsp;should&nbsp;be&nbsp;called&nbsp;whenever&nbsp;packages&nbsp;are&nbsp;added&nbsp;to,&nbsp;modified<br>
+in,&nbsp;or&nbsp;deleted&nbsp;from&nbsp;the&nbsp;collection&nbsp;directory.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-clear_external_packages"><strong>clear_external_packages</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-clear_external_packages">clear_external_packages</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Remove&nbsp;all&nbsp;external&nbsp;directories.<br>
+&nbsp;<br>
+Since&nbsp;this&nbsp;changes&nbsp;the&nbsp;set&nbsp;of&nbsp;what&nbsp;packages&nbsp;are&nbsp;available,<br>
+it&nbsp;implicitly&nbsp;invokes&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>().</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-discover_all_groups"><strong>discover_all_groups</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-discover_all_groups">discover_all_groups</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Search&nbsp;through&nbsp;the&nbsp;collection&nbsp;directory,&nbsp;and&nbsp;load&nbsp;all&nbsp;the&nbsp;PackageGroups<br>
+that&nbsp;are&nbsp;available.<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-find_all_dependencies"><strong>find_all_dependencies</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-find_all_dependencies">find_all_dependencies</a>()&nbsp;-&gt;&nbsp;(dict,&nbsp;dict,&nbsp;dict)<br>
+&nbsp;<br>
+Go&nbsp;through&nbsp;the&nbsp;entire&nbsp;collection,&nbsp;and&nbsp;determine&nbsp;exactly&nbsp;which<br>
+packages&nbsp;depend&nbsp;on&nbsp;which&nbsp;other&nbsp;packages.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;a&nbsp;triple&nbsp;(forward,&nbsp;backward,&nbsp;bad).&nbsp;In&nbsp;the&nbsp;forward<br>
+dict,&nbsp;each&nbsp;package&nbsp;key&nbsp;(pkgname,vers)&nbsp;maps&nbsp;to&nbsp;an&nbsp;array&nbsp;of&nbsp;package<br>
+keys&nbsp;which&nbsp;the&nbsp;package&nbsp;depends&nbsp;on.&nbsp;In&nbsp;the&nbsp;backward&nbsp;dict,&nbsp;each<br>
+package&nbsp;key&nbsp;maps&nbsp;to&nbsp;an&nbsp;array&nbsp;of&nbsp;packages&nbsp;which&nbsp;depend&nbsp;*on*&nbsp;it.<br>
+In&nbsp;the&nbsp;bad&nbsp;dict,&nbsp;each&nbsp;package&nbsp;key&nbsp;maps&nbsp;to&nbsp;an&nbsp;array&nbsp;of<br>
+(pkgname,spec)&nbsp;of&nbsp;dependencies&nbsp;which&nbsp;could&nbsp;not&nbsp;be&nbsp;loaded.<br>
+&nbsp;<br>
+(In&nbsp;the&nbsp;bad&nbsp;dict&nbsp;tuples,&nbsp;the&nbsp;second&nbsp;element&nbsp;may&nbsp;be&nbsp;None,&nbsp;a<br>
+VersionSpec,&nbsp;or&nbsp;a&nbsp;VersionNumber.)<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-find_item_resources"><strong>find_item_resources</strong></a>(self, obj)</dt><dd><tt><a href="#PackageLoader-find_item_resources">find_item_resources</a>(obj)&nbsp;-&gt;&nbsp;(PackageInfo,&nbsp;Resource)<br>
+&nbsp;<br>
+Given&nbsp;an&nbsp;object&nbsp;in&nbsp;a&nbsp;package&nbsp;module,&nbsp;try&nbsp;to&nbsp;find&nbsp;the&nbsp;package,<br>
+and&nbsp;the&nbsp;Resource&nbsp;that&nbsp;represents&nbsp;the&nbsp;object.&nbsp;If&nbsp;it&nbsp;has&nbsp;no&nbsp;metadata<br>
+defined,&nbsp;this&nbsp;returns&nbsp;a&nbsp;blank&nbsp;Resource&nbsp;object.<br>
+&nbsp;<br>
+This&nbsp;tries&nbsp;to&nbsp;use&nbsp;object&nbsp;attributes&nbsp;such&nbsp;as&nbsp;__module__&nbsp;and&nbsp;__name__<br>
+to&nbsp;identify&nbsp;it.&nbsp;This&nbsp;will&nbsp;work&nbsp;on&nbsp;classes&nbsp;(but&nbsp;not&nbsp;instances)<br>
+defined&nbsp;in&nbsp;a&nbsp;module;&nbsp;this&nbsp;covers&nbsp;the&nbsp;normal&nbsp;case&nbsp;of&nbsp;Agent&nbsp;classes.<br>
+It&nbsp;will&nbsp;also&nbsp;work&nbsp;on&nbsp;File&nbsp;objects&nbsp;defined&nbsp;in&nbsp;a&nbsp;module.&nbsp;Beyond<br>
+that,&nbsp;results&nbsp;are&nbsp;questionable.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-generate_package_path"><strong>generate_package_path</strong></a>(self, pkgname, vers<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-generate_package_path">generate_package_path</a>(pkgname,&nbsp;vers=None)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;pathname&nbsp;in&nbsp;the&nbsp;collection&nbsp;directory&nbsp;which&nbsp;contains&nbsp;the<br>
+given&nbsp;package&nbsp;group&nbsp;(if&nbsp;vers&nbsp;is&nbsp;None),&nbsp;or&nbsp;the&nbsp;given&nbsp;package<br>
+(otherwise).<br>
+&nbsp;<br>
+This&nbsp;does&nbsp;not&nbsp;create&nbsp;the&nbsp;directory&nbsp;or&nbsp;check&nbsp;for&nbsp;its&nbsp;existence.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;guaranteed&nbsp;to&nbsp;create&nbsp;a&nbsp;distinct&nbsp;pathname&nbsp;for&nbsp;every<br>
+pkgname&nbsp;or&nbsp;(pkgname,&nbsp;vers)&nbsp;pair.&nbsp;This&nbsp;is&nbsp;true&nbsp;even&nbsp;on&nbsp;case-<br>
+insensitive&nbsp;filesystems,&nbsp;which&nbsp;is&nbsp;a&nbsp;wrinkle,&nbsp;since&nbsp;version<br>
+strings&nbsp;are&nbsp;case-sensitive.&nbsp;We&nbsp;work&nbsp;around&nbsp;this&nbsp;by&nbsp;putting<br>
+a&nbsp;"^"&nbsp;character&nbsp;before&nbsp;each&nbsp;capital&nbsp;letter.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-import_package_content"><strong>import_package_content</strong></a>(self, pkg)</dt><dd><tt><a href="#PackageLoader-import_package_content">import_package_content</a>(pkg)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Import&nbsp;the&nbsp;package's&nbsp;content,&nbsp;if&nbsp;it&nbsp;hasn't&nbsp;already&nbsp;been&nbsp;imported.<br>
+&nbsp;<br>
+Warning:&nbsp;this&nbsp;method&nbsp;imports&nbsp;Python&nbsp;source&nbsp;code&nbsp;from&nbsp;the&nbsp;package<br>
+directory,&nbsp;which&nbsp;means&nbsp;it&nbsp;*executes*&nbsp;Python&nbsp;source&nbsp;code&nbsp;from&nbsp;the<br>
+package&nbsp;directory.&nbsp;Do&nbsp;not&nbsp;call&nbsp;this&nbsp;on&nbsp;untrusted&nbsp;packages.<br>
+&nbsp;<br>
+A&nbsp;sound-player&nbsp;will&nbsp;have&nbsp;to&nbsp;call&nbsp;this,&nbsp;but&nbsp;a&nbsp;package&nbsp;manager<br>
+should&nbsp;not.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-list_all_current_packages"><strong>list_all_current_packages</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-list_all_current_packages">list_all_current_packages</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;<br>
+Search&nbsp;through&nbsp;the&nbsp;collection&nbsp;directory,&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;the<br>
+available&nbsp;packages.&nbsp;If&nbsp;multiple&nbsp;versions&nbsp;of&nbsp;a&nbsp;package&nbsp;are&nbsp;available,<br>
+only&nbsp;the&nbsp;most&nbsp;recent&nbsp;will&nbsp;be&nbsp;listed.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;(packagename,&nbsp;version)&nbsp;tuples&nbsp;(in&nbsp;no&nbsp;particular<br>
+order).<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-list_all_packages"><strong>list_all_packages</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-list_all_packages">list_all_packages</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;(str,&nbsp;list&nbsp;of&nbsp;VersionNumber)<br>
+&nbsp;<br>
+Search&nbsp;through&nbsp;the&nbsp;collection&nbsp;directory,&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;the<br>
+available&nbsp;packages.&nbsp;<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;(packagename,&nbsp;list&nbsp;of&nbsp;version)&nbsp;tuples.&nbsp;The&nbsp;top<br>
+list&nbsp;is&nbsp;in&nbsp;no&nbsp;particular&nbsp;order,&nbsp;but&nbsp;the&nbsp;version&nbsp;list&nbsp;will&nbsp;be&nbsp;sorted<br>
+newest-to-oldest.<br>
+&nbsp;<br>
+This&nbsp;only&nbsp;searches&nbsp;the&nbsp;on-disk&nbsp;directory&nbsp;the&nbsp;first&nbsp;time&nbsp;you&nbsp;call<br>
+it.&nbsp;To&nbsp;force&nbsp;it&nbsp;to&nbsp;re-scan&nbsp;the&nbsp;directory,&nbsp;call&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>()&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-load"><strong>load</strong></a>(self, pkgname, versionspec<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-load">load</a>(pkgname,&nbsp;versionspec=None)&nbsp;-&gt;&nbsp;PackageInfo<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;version&nbsp;spec.<br>
+&nbsp;<br>
+If&nbsp;no&nbsp;second&nbsp;argument&nbsp;is&nbsp;given,&nbsp;the&nbsp;most&nbsp;recent&nbsp;available&nbsp;version<br>
+of&nbsp;the&nbsp;package&nbsp;is&nbsp;loaded.&nbsp;If&nbsp;the&nbsp;argument&nbsp;is&nbsp;a&nbsp;VersionNumber,<br>
+that&nbsp;version&nbsp;will&nbsp;be&nbsp;loaded.&nbsp;If&nbsp;it&nbsp;is&nbsp;a&nbsp;VersionSpec,&nbsp;the&nbsp;most<br>
+recent&nbsp;version&nbsp;that&nbsp;matches&nbsp;the&nbsp;spec&nbsp;will&nbsp;be&nbsp;loaded.&nbsp;A&nbsp;string<br>
+value&nbsp;will&nbsp;be&nbsp;converted&nbsp;to&nbsp;a&nbsp;VersionSpec&nbsp;(not&nbsp;a&nbsp;VersionNumber).<br>
+&nbsp;<br>
+This&nbsp;generates&nbsp;a&nbsp;<a href="#PackageNotFoundError">PackageNotFoundError</a>&nbsp;if&nbsp;no&nbsp;matching&nbsp;package<br>
+is&nbsp;available.&nbsp;It&nbsp;generates&nbsp;<a href="#PackageLoadError">PackageLoadError</a>&nbsp;if&nbsp;the&nbsp;package<br>
+was&nbsp;malformed&nbsp;in&nbsp;some&nbsp;way&nbsp;which&nbsp;prevented&nbsp;loading.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-load_group"><strong>load_group</strong></a>(self, pkgname)</dt><dd><tt><a href="#PackageLoader-load_group">load_group</a>(self,&nbsp;pkgname)&nbsp;-&gt;&nbsp;PackageGroup<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;PackageGroup,&nbsp;given&nbsp;its&nbsp;package&nbsp;name.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;not&nbsp;tremendously&nbsp;useful&nbsp;for&nbsp;outside&nbsp;users,&nbsp;although&nbsp;you<br>
+can&nbsp;call&nbsp;it&nbsp;if&nbsp;you&nbsp;want.&nbsp;A&nbsp;PackageGroup&nbsp;represents&nbsp;all&nbsp;the<br>
+available&nbsp;versions&nbsp;of&nbsp;a&nbsp;particular&nbsp;package.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-load_item_by_name"><strong>load_item_by_name</strong></a>(self, name, package<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-load_item_by_name">load_item_by_name</a>(name,&nbsp;package=None)&nbsp;-&gt;&nbsp;value<br>
+&nbsp;<br>
+Given&nbsp;a&nbsp;string&nbsp;that&nbsp;names&nbsp;a&nbsp;resource&nbsp;--&nbsp;for&nbsp;example,<br>
+'com.eblong.example/reptile.Hiss'&nbsp;--&nbsp;import&nbsp;the&nbsp;module&nbsp;and<br>
+return&nbsp;the&nbsp;resource&nbsp;object.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;string&nbsp;begins&nbsp;with&nbsp;a&nbsp;slash&nbsp;('/boodle.builtin.NullAgent')<br>
+then&nbsp;the&nbsp;regular&nbsp;Python&nbsp;modules&nbsp;are&nbsp;searched.&nbsp;No&nbsp;importing<br>
+is&nbsp;done&nbsp;in&nbsp;this&nbsp;case;&nbsp;it&nbsp;is&nbsp;really&nbsp;intended&nbsp;only&nbsp;for&nbsp;the<br>
+contents&nbsp;of&nbsp;boodle.agent.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;string&nbsp;ends&nbsp;with&nbsp;a&nbsp;slash&nbsp;('com.eblong.example/'),&nbsp;then<br>
+the&nbsp;module&nbsp;itself&nbsp;is&nbsp;returned.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;package&nbsp;argument&nbsp;is&nbsp;supplied&nbsp;(a&nbsp;PackageInfo&nbsp;object),&nbsp;it<br>
+becomes&nbsp;the&nbsp;package&nbsp;to&nbsp;look&nbsp;in&nbsp;for&nbsp;unqualified&nbsp;resource&nbsp;names<br>
+('reptile.Hiss').&nbsp;If&nbsp;no&nbsp;package&nbsp;argument&nbsp;is&nbsp;supplied,&nbsp;then<br>
+an&nbsp;unqualified&nbsp;resource&nbsp;name&nbsp;raises&nbsp;ValueError.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-load_package_dependencies"><strong>load_package_dependencies</strong></a>(self, pkg)</dt><dd><tt><a href="#PackageLoader-load_package_dependencies">load_package_dependencies</a>(pkg)&nbsp;-&gt;&nbsp;(set,&nbsp;dict,&nbsp;int)<br>
+&nbsp;<br>
+Attempt&nbsp;to&nbsp;load&nbsp;all&nbsp;the&nbsp;packages&nbsp;which&nbsp;the&nbsp;given&nbsp;package&nbsp;depends&nbsp;on.<br>
+The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;PackageInfo&nbsp;object.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;a&nbsp;triple&nbsp;(good,&nbsp;bad,&nbsp;count):<br>
+&nbsp;<br>
+-&nbsp;good&nbsp;is&nbsp;a&nbsp;set&nbsp;containing&nbsp;(packagename,&nbsp;version)&nbsp;pairs&nbsp;for&nbsp;every<br>
+package&nbsp;that&nbsp;was&nbsp;loaded&nbsp;successfully.&nbsp;(This&nbsp;will&nbsp;include&nbsp;the&nbsp;original<br>
+package.)<br>
+-&nbsp;bad&nbsp;is&nbsp;a&nbsp;dict.&nbsp;The&nbsp;keys&nbsp;are&nbsp;packagenames&nbsp;which&nbsp;did&nbsp;not&nbsp;load<br>
+successfully.&nbsp;Each&nbsp;maps&nbsp;to&nbsp;a&nbsp;(nonempty)&nbsp;list&nbsp;of&nbsp;version&nbsp;requests<br>
+for&nbsp;that&nbsp;package,&nbsp;which&nbsp;could&nbsp;not&nbsp;be&nbsp;fulfilled.&nbsp;(The&nbsp;list&nbsp;contains<br>
+None,&nbsp;VersionSpecs,&nbsp;and&nbsp;VersionNumbers.&nbsp;Values&nbsp;may&nbsp;occur&nbsp;more&nbsp;than<br>
+once.)<br>
+-&nbsp;count&nbsp;is&nbsp;an&nbsp;int,&nbsp;representing&nbsp;how&nbsp;many&nbsp;actual&nbsp;errors&nbsp;occurred.<br>
+This&nbsp;describes&nbsp;package&nbsp;format&nbsp;problems&nbsp;and&nbsp;read&nbsp;errors.&nbsp;It&nbsp;does&nbsp;not<br>
+include&nbsp;packages&nbsp;that&nbsp;were&nbsp;simply&nbsp;not&nbsp;available.&nbsp;(The&nbsp;bad&nbsp;dict<br>
+includes&nbsp;both&nbsp;errors&nbsp;and&nbsp;not-availables;&nbsp;so&nbsp;len(bad)&nbsp;&gt;=&nbsp;count.)<br>
+&nbsp;<br>
+If&nbsp;bad&nbsp;is&nbsp;empty,&nbsp;then&nbsp;all&nbsp;dependencies&nbsp;are&nbsp;available.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;the&nbsp;good&nbsp;list&nbsp;may&nbsp;include&nbsp;more&nbsp;than&nbsp;one&nbsp;version&nbsp;of&nbsp;a<br>
+package.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-load_specific"><strong>load_specific</strong></a>(self, pkgname, vers)</dt><dd><tt><a href="#PackageLoader-load_specific">load_specific</a>(pkgname,&nbsp;vers)&nbsp;-&gt;&nbsp;PackageInfo<br>
+&nbsp;<br>
+Load&nbsp;a&nbsp;package,&nbsp;given&nbsp;its&nbsp;name&nbsp;and&nbsp;a&nbsp;specific&nbsp;version&nbsp;number.<br>
+(The&nbsp;version&nbsp;number&nbsp;may&nbsp;be&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;a&nbsp;string&nbsp;that<br>
+can&nbsp;be&nbsp;converted&nbsp;to&nbsp;one.)<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;an&nbsp;internal&nbsp;call;&nbsp;external&nbsp;callers&nbsp;should&nbsp;use&nbsp;<a href="#PackageLoader-load">load</a>().<br>
+&nbsp;<br>
+(<a href="#PackageLoader-load_specific">load_specific</a>()&nbsp;is&nbsp;intended&nbsp;to&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package<br>
+function&nbsp;which&nbsp;has&nbsp;already&nbsp;consulted&nbsp;package_groups&nbsp;and&nbsp;a<br>
+PackageGroup&nbsp;object.&nbsp;If&nbsp;you&nbsp;bypass&nbsp;those,&nbsp;you&nbsp;might&nbsp;load<br>
+a&nbsp;package&nbsp;which&nbsp;is&nbsp;not&nbsp;part&nbsp;of&nbsp;any&nbsp;PackageGroup.&nbsp;That&nbsp;would<br>
+leave&nbsp;the&nbsp;cache&nbsp;in&nbsp;a&nbsp;confusing&nbsp;state.)</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-remove_external_package"><strong>remove_external_package</strong></a>(self, dirname)</dt><dd><tt><a href="#PackageLoader-remove_external_package">remove_external_package</a>(dirname)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Remove&nbsp;an&nbsp;external&nbsp;directory.&nbsp;The&nbsp;argument&nbsp;should&nbsp;be&nbsp;one&nbsp;that&nbsp;was<br>
+previously&nbsp;passed&nbsp;to&nbsp;<a href="#PackageLoader-add_external_package">add_external_package</a>().&nbsp;(If&nbsp;it&nbsp;is&nbsp;not&nbsp;a<br>
+current&nbsp;external&nbsp;directory,&nbsp;this&nbsp;silently&nbsp;does&nbsp;nothing.)<br>
+&nbsp;<br>
+Since&nbsp;this&nbsp;changes&nbsp;the&nbsp;set&nbsp;of&nbsp;what&nbsp;packages&nbsp;are&nbsp;available,<br>
+it&nbsp;implicitly&nbsp;invokes&nbsp;<a href="#PackageLoader-clear_cache">clear_cache</a>().</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-start_import_recording"><strong>start_import_recording</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-start_import_recording">start_import_recording</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Stub,&nbsp;overridden&nbsp;in&nbsp;PackageCollection.&nbsp;In&nbsp;a&nbsp;<a href="#PackageLoader">PackageLoader</a>,&nbsp;this<br>
+does&nbsp;nothing.</tt></dd></dl>
+
+<dl><dt><a name="PackageLoader-stop_import_recording"><strong>stop_import_recording</strong></a>(self)</dt><dd><tt><a href="#PackageLoader-stop_import_recording">stop_import_recording</a>()&nbsp;-&gt;&nbsp;dic<br>
+&nbsp;<br>
+Stub,&nbsp;overridden&nbsp;in&nbsp;PackageCollection.&nbsp;In&nbsp;a&nbsp;<a href="#PackageLoader">PackageLoader</a>,&nbsp;this<br>
+does&nbsp;nothing&nbsp;and&nbsp;returns&nbsp;an&nbsp;empty&nbsp;dict.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>global_loader</strong> = None</dl>
+
+<dl><dt><strong>import_recorder</strong> = None</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PackageNotFoundError">class <strong>PackageNotFoundError</strong></a>(<a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#PackageNotFoundError">PackageNotFoundError</a>:&nbsp;represents&nbsp;a&nbsp;failure&nbsp;to&nbsp;load&nbsp;a&nbsp;package<br>
+because&nbsp;it&nbsp;was&nbsp;not&nbsp;in&nbsp;the&nbsp;collection.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boopak.pload.html#PackageNotFoundError">PackageNotFoundError</a></dd>
+<dd><a href="boopak.pload.html#PackageLoadError">PackageLoadError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>:<br>
+<dl><dt><a name="PackageNotFoundError-__init__"><strong>__init__</strong></a>(self, pkgname, val<font color="#909090">='unable to load'</font>)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="boopak.pload.html#PackageLoadError">PackageLoadError</a>:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22e79c&gt;<dd><tt>T.<a href="#PackageNotFoundError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="PackageNotFoundError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="PackageNotFoundError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="PackageNotFoundError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="PackageNotFoundError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="PackageNotFoundError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PackageNotFoundError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="PackageNotFoundError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="PackageNotFoundError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PackageNotFoundError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#PackageNotFoundError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>Filename_Metadata</strong> = 'Metadata'<br>
+<strong>Filename_Resources</strong> = 'Resources'<br>
+<strong>Filename_Versions</strong> = 'Versions'</td></tr></table>
+</body></html>

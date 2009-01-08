@@ -1,0 +1,603 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boopak.pinfo</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boopak.html"><font color="#ffffff">boopak</font></a>.pinfo</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boopak/pinfo.py">boopak/pinfo.py</a></font></td></tr></table>
+    <p><tt>pinfo:&nbsp;Classes&nbsp;which&nbsp;describe&nbsp;a&nbsp;Boodler&nbsp;module&nbsp;and&nbsp;its&nbsp;contents.<br>
+&nbsp;<br>
+Classes:<br>
+&nbsp;<br>
+<a href="#PackageInfo">PackageInfo</a>&nbsp;--&nbsp;represents&nbsp;a&nbsp;single&nbsp;package<br>
+<a href="#PackageGroup">PackageGroup</a>&nbsp;--&nbsp;represents&nbsp;all&nbsp;the&nbsp;versions&nbsp;of&nbsp;a&nbsp;particular&nbsp;package<br>
+<a href="#Metadata">Metadata</a>&nbsp;--&nbsp;represents&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;<a href="#Metadata">Metadata</a>&nbsp;file<br>
+<a href="#Resources">Resources</a>&nbsp;--&nbsp;represents&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;<a href="#Resources">Resources</a>&nbsp;file<br>
+<a href="#Resource">Resource</a>&nbsp;--&nbsp;represents&nbsp;one&nbsp;section&nbsp;in&nbsp;a&nbsp;<a href="#Resources">Resources</a>&nbsp;file<br>
+<a href="#File">File</a>&nbsp;--&nbsp;represents&nbsp;a&nbsp;file&nbsp;in&nbsp;a&nbsp;package<br>
+&nbsp;<br>
+Utility&nbsp;functions:<br>
+&nbsp;<br>
+<a href="#-parse_package_name">parse_package_name</a>()&nbsp;--&nbsp;parse&nbsp;a&nbsp;package&nbsp;name&nbsp;into&nbsp;a&nbsp;list&nbsp;of&nbsp;elements<br>
+<a href="#-encode_package_name">encode_package_name</a>()&nbsp;--&nbsp;convert&nbsp;a&nbsp;package&nbsp;name&nbsp;and&nbsp;version&nbsp;number&nbsp;into&nbsp;an&nbsp;ID<br>
+<a href="#-parse_resource_name">parse_resource_name</a>()&nbsp;--&nbsp;parse&nbsp;a&nbsp;resource&nbsp;name&nbsp;into&nbsp;a&nbsp;list&nbsp;of&nbsp;elements<br>
+<a href="#-build_safe_pathname">build_safe_pathname</a>()&nbsp;--&nbsp;turn&nbsp;a&nbsp;relative&nbsp;pathname&nbsp;into&nbsp;an&nbsp;absolute&nbsp;one,&nbsp;safely<br>
+<a href="#-dict_accumulate">dict_accumulate</a>()&nbsp;--&nbsp;build&nbsp;a&nbsp;dict&nbsp;which&nbsp;maps&nbsp;keys&nbsp;to&nbsp;arrays<br>
+<a href="#-dict_all_values">dict_all_values</a>()&nbsp;--&nbsp;get&nbsp;list&nbsp;of&nbsp;all&nbsp;the&nbsp;values&nbsp;in&nbsp;a&nbsp;dict,&nbsp;recursively<br>
+<a href="#-deunicode">deunicode</a>()&nbsp;--&nbsp;decode&nbsp;a&nbsp;UTF-8&nbsp;string&nbsp;into&nbsp;a&nbsp;unicode&nbsp;object</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/codecs.html">codecs</a><br>
+<a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/re.html">re</a><br>
+<a href="http://www.python.org/doc/current/library/sets.html">sets</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
+<a href="http://www.python.org/doc/current/library/types.html">types</a><br>
+</td><td width="25%" valign=top><a href="boopak.version.html">boopak.version</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boopak.pinfo.html#File">File</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#Metadata">Metadata</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#PackageGroup">PackageGroup</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#PackageInfo">PackageInfo</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#Resource">Resource</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#Resources">Resources</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="File">class <strong>File</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#File">File</a>:&nbsp;represents&nbsp;a&nbsp;file&nbsp;in&nbsp;a&nbsp;package.<br>
+&nbsp;<br>
+<a href="#File">File</a>(pkg,&nbsp;pathname,&nbsp;univname=None)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Creates&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;given&nbsp;package.&nbsp;(The&nbsp;package&nbsp;may&nbsp;be&nbsp;None&nbsp;if&nbsp;you<br>
+are&nbsp;creating&nbsp;a&nbsp;<a href="#File">File</a>&nbsp;object&nbsp;ad-hoc.&nbsp;Unless&nbsp;it's&nbsp;for&nbsp;a&nbsp;"mix-in"&nbsp;sound<br>
+file&nbsp;--&nbsp;those&nbsp;need&nbsp;to&nbsp;know&nbsp;where&nbsp;they&nbsp;live.)<br>
+&nbsp;<br>
+The&nbsp;pathname&nbsp;should&nbsp;be&nbsp;a&nbsp;valid,&nbsp;non-relative&nbsp;pathname&nbsp;in&nbsp;native<br>
+form.&nbsp;You&nbsp;can&nbsp;also&nbsp;supply&nbsp;the&nbsp;universal,&nbsp;relative-to-the-package<br>
+pathname&nbsp;as&nbsp;univname;&nbsp;this&nbsp;is&nbsp;used&nbsp;only&nbsp;when&nbsp;printing&nbsp;the&nbsp;filename<br>
+for&nbsp;human&nbsp;eyes.<br>
+&nbsp;<br>
+The&nbsp;file&nbsp;need&nbsp;not&nbsp;exist.&nbsp;But&nbsp;since&nbsp;this&nbsp;class&nbsp;only&nbsp;handles&nbsp;reading<br>
+files,&nbsp;a&nbsp;<a href="#File">File</a>&nbsp;that&nbsp;refers&nbsp;to&nbsp;a&nbsp;nonexistent&nbsp;path&nbsp;can&nbsp;only&nbsp;generate<br>
+IOError&nbsp;when&nbsp;opened.<br>
+&nbsp;<br>
+Public&nbsp;method:<br>
+&nbsp;<br>
+<a href="#File-open">open</a>()&nbsp;--&nbsp;open&nbsp;the&nbsp;file&nbsp;for&nbsp;reading<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="File-__init__"><strong>__init__</strong></a>(self, pkg, pathname, univname<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="File-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="File-open"><strong>open</strong></a>(self, binary<font color="#909090">=False</font>)</dt><dd><tt><a href="#File-open">open</a>(binary=False)&nbsp;-&gt;&nbsp;file<br>
+&nbsp;<br>
+Open&nbsp;the&nbsp;file&nbsp;for&nbsp;reading.&nbsp;Returns&nbsp;a&nbsp;Python&nbsp;file&nbsp;object.<br>
+If&nbsp;binary&nbsp;is&nbsp;False,&nbsp;the&nbsp;file&nbsp;is&nbsp;opened&nbsp;with&nbsp;newline&nbsp;translation<br>
+('rU');&nbsp;otherwise,&nbsp;in&nbsp;binary&nbsp;mode&nbsp;('rb').</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Metadata">class <strong>Metadata</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Metadata">Metadata</a>:&nbsp;represents&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;<a href="#Metadata">Metadata</a>&nbsp;file.<br>
+&nbsp;<br>
+<a href="#Metadata">Metadata</a>(pkgname,&nbsp;file=None)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#Metadata">Metadata</a>&nbsp;object&nbsp;by&nbsp;reading&nbsp;the&nbsp;given&nbsp;file.&nbsp;(This&nbsp;should<br>
+be&nbsp;a&nbsp;readable&nbsp;file&nbsp;object;&nbsp;typically,&nbsp;the&nbsp;result&nbsp;of&nbsp;opening&nbsp;a<br>
+<a href="#Metadata">Metadata</a>&nbsp;file.)&nbsp;It&nbsp;is&nbsp;the&nbsp;caller's&nbsp;responsibility&nbsp;to&nbsp;close&nbsp;the<br>
+file&nbsp;afterwards.&nbsp;If&nbsp;no&nbsp;file&nbsp;is&nbsp;provided,&nbsp;the&nbsp;<a href="#Metadata">Metadata</a>&nbsp;will&nbsp;be<br>
+empty.<br>
+&nbsp;<br>
+(The&nbsp;file&nbsp;should&nbsp;be&nbsp;opened&nbsp;with&nbsp;mode&nbsp;'rbU'.&nbsp;This&nbsp;is&nbsp;relaxed&nbsp;about<br>
+newlines,&nbsp;but&nbsp;careful&nbsp;about&nbsp;high-bit&nbsp;characters,&nbsp;so&nbsp;that&nbsp;UTF-8<br>
+decoding&nbsp;will&nbsp;work.&nbsp;Note&nbsp;that&nbsp;the&nbsp;file&nbsp;should&nbsp;offer&nbsp;bytes,&nbsp;not<br>
+Unicode&nbsp;characters.)<br>
+&nbsp;<br>
+The&nbsp;first&nbsp;argument&nbsp;is&nbsp;a&nbsp;package&nbsp;name,&nbsp;but&nbsp;this&nbsp;is&nbsp;only&nbsp;used&nbsp;for<br>
+error&nbsp;messages.&nbsp;If&nbsp;the&nbsp;package&nbsp;name&nbsp;is&nbsp;not&nbsp;known&nbsp;when&nbsp;you&nbsp;read&nbsp;the<br>
+metadata,&nbsp;pass&nbsp;in&nbsp;something&nbsp;usable&nbsp;as&nbsp;a&nbsp;label.<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Metadata-get_all">get_all</a>()&nbsp;--&nbsp;get&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>
+<a href="#Metadata-get_one">get_one</a>()&nbsp;--&nbsp;get&nbsp;the&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>
+<a href="#Metadata-keys">keys</a>()&nbsp;--&nbsp;get&nbsp;the&nbsp;keys&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Metadata">Metadata</a>&nbsp;object<br>
+<a href="#Metadata-clone">clone</a>()&nbsp;--&nbsp;create&nbsp;a&nbsp;<a href="#Metadata">Metadata</a>&nbsp;object&nbsp;identical&nbsp;to&nbsp;this&nbsp;one<br>
+<a href="#Metadata-dump">dump</a>()&nbsp;--&nbsp;write&nbsp;the&nbsp;contents&nbsp;of&nbsp;this&nbsp;<a href="#Metadata">Metadata</a>&nbsp;object&nbsp;to&nbsp;a&nbsp;file<br>
+<a href="#Metadata-add">add</a>()&nbsp;--&nbsp;add&nbsp;a&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key&nbsp;and&nbsp;value<br>
+<a href="#Metadata-delete_all">delete_all</a>()&nbsp;--&nbsp;delete&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Metadata-__init__"><strong>__init__</strong></a>(self, pkgname, fl<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Metadata-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Metadata-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Metadata-add"><strong>add</strong></a>(self, key, val)</dt><dd><tt><a href="#Metadata-add">add</a>(key,&nbsp;val)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key&nbsp;and&nbsp;value.<br>
+&nbsp;<br>
+(This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package&nbsp;management&nbsp;tool.&nbsp;A<br>
+package&nbsp;should&nbsp;not&nbsp;modify&nbsp;its&nbsp;own&nbsp;metadata.)</tt></dd></dl>
+
+<dl><dt><a name="Metadata-clone"><strong>clone</strong></a>(self)</dt><dd><tt><a href="#Metadata-clone">clone</a>()&nbsp;-&gt;&nbsp;<a href="#Metadata">Metadata</a><br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#Metadata">Metadata</a>&nbsp;object&nbsp;identical&nbsp;to&nbsp;this&nbsp;one.&nbsp;(This&nbsp;is&nbsp;a&nbsp;deep<br>
+copy.)</tt></dd></dl>
+
+<dl><dt><a name="Metadata-delete_all"><strong>delete_all</strong></a>(self, key)</dt><dd><tt><a href="#Metadata-delete_all">delete_all</a>(key)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;there&nbsp;are&nbsp;none,<br>
+this&nbsp;does&nbsp;nothing.<br>
+&nbsp;<br>
+(This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package&nbsp;management&nbsp;tool.&nbsp;A<br>
+package&nbsp;should&nbsp;not&nbsp;modify&nbsp;its&nbsp;own&nbsp;metadata.)</tt></dd></dl>
+
+<dl><dt><a name="Metadata-dump"><strong>dump</strong></a>(self, fl, comment<font color="#909090">=None</font>)</dt><dd><tt><a href="#Metadata-dump">dump</a>(file,&nbsp;comment=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Write&nbsp;the&nbsp;contents&nbsp;of&nbsp;this&nbsp;<a href="#Metadata">Metadata</a>&nbsp;object&nbsp;to&nbsp;a&nbsp;file.&nbsp;The&nbsp;file<br>
+must&nbsp;be&nbsp;able&nbsp;to&nbsp;accept&nbsp;unicode&nbsp;writes.&nbsp;(Preferably&nbsp;by&nbsp;encoding<br>
+them&nbsp;via&nbsp;UTF-8.)&nbsp;(Note:&nbsp;this&nbsp;doesn't&nbsp;match&nbsp;the&nbsp;constructor,<br>
+which&nbsp;does&nbsp;its&nbsp;own&nbsp;UTF-8&nbsp;decoding.)<br>
+&nbsp;<br>
+If&nbsp;comment&nbsp;is&nbsp;a&nbsp;string,&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;strings,&nbsp;they&nbsp;will&nbsp;appear<br>
+at&nbsp;the&nbsp;top&nbsp;of&nbsp;the&nbsp;file.&nbsp;You&nbsp;need&nbsp;not&nbsp;include&nbsp;the&nbsp;'#'&nbsp;character&nbsp;in<br>
+the&nbsp;comment&nbsp;argument.</tt></dd></dl>
+
+<dl><dt><a name="Metadata-get_all"><strong>get_all</strong></a>(self, key)</dt><dd><tt><a href="#Metadata-get_all">get_all</a>(key)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;unicode<br>
+&nbsp;<br>
+Returns&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;there&nbsp;are&nbsp;none,<br>
+this&nbsp;returns&nbsp;an&nbsp;empty&nbsp;list.</tt></dd></dl>
+
+<dl><dt><a name="Metadata-get_one"><strong>get_one</strong></a>(self, key, default<font color="#909090">=None</font>)</dt><dd><tt><a href="#Metadata-get_one">get_one</a>(key,&nbsp;default=None)&nbsp;-&gt;&nbsp;unicode<br>
+&nbsp;<br>
+Returns&nbsp;the&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;there&nbsp;are&nbsp;none,<br>
+this&nbsp;returns&nbsp;None&nbsp;(or&nbsp;the&nbsp;default&nbsp;argument,&nbsp;if&nbsp;supplied).&nbsp;If&nbsp;there<br>
+is&nbsp;more&nbsp;than&nbsp;one&nbsp;such&nbsp;entry,&nbsp;this&nbsp;returns&nbsp;the&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="Metadata-keys"><strong>keys</strong></a>(self)</dt><dd><tt><a href="#Metadata-keys">keys</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;unicode<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;keys&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Metadata">Metadata</a>&nbsp;object.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PackageGroup">class <strong>PackageGroup</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#PackageGroup">PackageGroup</a>:&nbsp;represents&nbsp;all&nbsp;the&nbsp;versions&nbsp;of&nbsp;a&nbsp;particular&nbsp;package<br>
+that&nbsp;are&nbsp;currently&nbsp;available.<br>
+&nbsp;<br>
+<a href="#PackageGroup">PackageGroup</a>(loader,&nbsp;pkgname)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#PackageGroup">PackageGroup</a>&nbsp;attached&nbsp;to&nbsp;the&nbsp;given&nbsp;PackageLoader,&nbsp;with&nbsp;the<br>
+given&nbsp;package&nbsp;name.<br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;package&nbsp;name<br>
+loader&nbsp;--&nbsp;the&nbsp;PackageLoader&nbsp;which&nbsp;loaded&nbsp;the&nbsp;package<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageGroup-get_num_versions">get_num_versions</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;number&nbsp;of&nbsp;versions&nbsp;available<br>
+<a href="#PackageGroup-get_versions">get_versions</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;versions&nbsp;available&nbsp;for&nbsp;this&nbsp;package<br>
+<a href="#PackageGroup-has_version">has_version</a>()&nbsp;--&nbsp;return&nbsp;whether&nbsp;the&nbsp;package&nbsp;has&nbsp;the&nbsp;given&nbsp;version&nbsp;number<br>
+<a href="#PackageGroup-find_version_match">find_version_match</a>()&nbsp;--&nbsp;find&nbsp;the&nbsp;most&nbsp;recent&nbsp;version&nbsp;matching&nbsp;the&nbsp;spec<br>
+&nbsp;<br>
+Internal&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageGroup-discover_versions">discover_versions</a>()&nbsp;--&nbsp;determine&nbsp;what&nbsp;versions&nbsp;are&nbsp;available<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PackageGroup-__init__"><strong>__init__</strong></a>(self, loader, pkgname, dirname)</dt></dl>
+
+<dl><dt><a name="PackageGroup-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="PackageGroup-discover_versions"><strong>discover_versions</strong></a>(self, fl, external_versions<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageGroup-discover_versions">discover_versions</a>(file,&nbsp;external_versions=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Determine&nbsp;what&nbsp;versions&nbsp;are&nbsp;available.&nbsp;We&nbsp;look&nbsp;both&nbsp;at&nbsp;the&nbsp;contents<br>
+of&nbsp;an&nbsp;open&nbsp;Versions&nbsp;file,&nbsp;and&nbsp;at&nbsp;a&nbsp;list&nbsp;of&nbsp;versions&nbsp;found&nbsp;in&nbsp;external<br>
+packages.&nbsp;Either&nbsp;of&nbsp;these&nbsp;may&nbsp;be&nbsp;None.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;an&nbsp;internal&nbsp;method;&nbsp;it&nbsp;is&nbsp;called&nbsp;only&nbsp;by&nbsp;load_group,&nbsp;when<br>
+the&nbsp;<a href="#PackageGroup">PackageGroup</a>&nbsp;is&nbsp;created.</tt></dd></dl>
+
+<dl><dt><a name="PackageGroup-find_version_match"><strong>find_version_match</strong></a>(self, spec<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageGroup-find_version_match">find_version_match</a>(spec=None)&nbsp;-&gt;&nbsp;VersionNumber<br>
+&nbsp;<br>
+Find&nbsp;the&nbsp;most&nbsp;recent&nbsp;version&nbsp;matching&nbsp;the&nbsp;given&nbsp;VersionSpec.<br>
+If&nbsp;no&nbsp;spec&nbsp;is&nbsp;given,&nbsp;just&nbsp;return&nbsp;the&nbsp;most&nbsp;recent&nbsp;version.&nbsp;If<br>
+there&nbsp;are&nbsp;no&nbsp;versions&nbsp;that&nbsp;fit&nbsp;the&nbsp;requirement,&nbsp;returns&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="PackageGroup-get_num_versions"><strong>get_num_versions</strong></a>(self)</dt><dd><tt><a href="#PackageGroup-get_num_versions">get_num_versions</a>()&nbsp;-&gt;&nbsp;int<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;number&nbsp;of&nbsp;versions&nbsp;available&nbsp;for&nbsp;this&nbsp;package.</tt></dd></dl>
+
+<dl><dt><a name="PackageGroup-get_versions"><strong>get_versions</strong></a>(self)</dt><dd><tt><a href="#PackageGroup-get_versions">get_versions</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;VersionNumbers<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;versions&nbsp;available&nbsp;for&nbsp;this&nbsp;package.</tt></dd></dl>
+
+<dl><dt><a name="PackageGroup-has_version"><strong>has_version</strong></a>(self, vers)</dt><dd><tt><a href="#PackageGroup-has_version">has_version</a>(vers)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Return&nbsp;whether&nbsp;the&nbsp;package&nbsp;has&nbsp;the&nbsp;given&nbsp;version&nbsp;number&nbsp;available.<br>
+The&nbsp;argument&nbsp;must&nbsp;be&nbsp;a&nbsp;VersionNumber.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PackageInfo">class <strong>PackageInfo</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#PackageInfo">PackageInfo</a>:&nbsp;represents&nbsp;a&nbsp;single&nbsp;package.<br>
+&nbsp;<br>
+A&nbsp;<a href="#PackageInfo">PackageInfo</a>&nbsp;is&nbsp;not&nbsp;the&nbsp;imported&nbsp;module&nbsp;object&nbsp;which&nbsp;a&nbsp;Boodler&nbsp;module&nbsp;<br>
+sees&nbsp;from&nbsp;the&nbsp;inside.&nbsp;It's&nbsp;a&nbsp;wrapper&nbsp;around&nbsp;that.<br>
+&nbsp;<br>
+<a href="#PackageInfo">PackageInfo</a>(loader,&nbsp;name,&nbsp;vers,&nbsp;dir,&nbsp;metadata,&nbsp;resources,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;external)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+name&nbsp;--&nbsp;the&nbsp;package&nbsp;name<br>
+version&nbsp;--&nbsp;the&nbsp;package&nbsp;version&nbsp;number<br>
+key&nbsp;--&nbsp;a&nbsp;tuple&nbsp;containing&nbsp;(name,&nbsp;version)<br>
+encoded_name&nbsp;--&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;package's&nbsp;module<br>
+metadata&nbsp;--&nbsp;the&nbsp;<a href="#Metadata">Metadata</a>&nbsp;for&nbsp;the&nbsp;package<br>
+resources&nbsp;--&nbsp;the&nbsp;<a href="#Resources">Resources</a>&nbsp;for&nbsp;the&nbsp;package<br>
+loader&nbsp;--&nbsp;the&nbsp;PackageLoader&nbsp;which&nbsp;loaded&nbsp;the&nbsp;package<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageInfo-load_dependencies">load_dependencies</a>()&nbsp;--&nbsp;attempt&nbsp;to&nbsp;load&nbsp;everything&nbsp;this&nbsp;package&nbsp;depends&nbsp;on<br>
+<a href="#PackageInfo-get_content">get_content</a>()&nbsp;--&nbsp;return&nbsp;the&nbsp;module&nbsp;which&nbsp;is&nbsp;the&nbsp;content&nbsp;of&nbsp;this&nbsp;package<br>
+<a href="#PackageInfo-get_file">get_file</a>()&nbsp;--&nbsp;get&nbsp;a&nbsp;<a href="#File">File</a>&nbsp;object&nbsp;contained&nbsp;within&nbsp;this&nbsp;package<br>
+<a href="#PackageInfo-open_file">open_file</a>()&nbsp;--&nbsp;open&nbsp;a&nbsp;<a href="#File">File</a>&nbsp;object&nbsp;contained&nbsp;within&nbsp;this&nbsp;package<br>
+&nbsp;<br>
+Internal&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#PackageInfo-validate_metadata">validate_metadata</a>()&nbsp;--&nbsp;check&nbsp;the&nbsp;metadata,&nbsp;and&nbsp;load&nbsp;information&nbsp;from&nbsp;it<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PackageInfo-__init__"><strong>__init__</strong></a>(self, loader, name, vers, dir, metadata, resources, external)</dt></dl>
+
+<dl><dt><a name="PackageInfo-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="PackageInfo-get_content"><strong>get_content</strong></a>(self)</dt><dd><tt><a href="#PackageInfo-get_content">get_content</a>()&nbsp;-&gt;&nbsp;module<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;module&nbsp;which&nbsp;is&nbsp;the&nbsp;content&nbsp;of&nbsp;this&nbsp;package.<br>
+&nbsp;<br>
+Warning:&nbsp;this&nbsp;method&nbsp;imports&nbsp;Python&nbsp;source&nbsp;code&nbsp;from&nbsp;the&nbsp;package<br>
+directory,&nbsp;which&nbsp;means&nbsp;it&nbsp;*executes*&nbsp;Python&nbsp;source&nbsp;code&nbsp;from&nbsp;the<br>
+package&nbsp;directory.&nbsp;Do&nbsp;not&nbsp;call&nbsp;this&nbsp;on&nbsp;untrusted&nbsp;packages.<br>
+&nbsp;<br>
+A&nbsp;sound-player&nbsp;will&nbsp;have&nbsp;to&nbsp;call&nbsp;this,&nbsp;but&nbsp;a&nbsp;package&nbsp;manager<br>
+should&nbsp;not.&nbsp;(The&nbsp;package&nbsp;creation&nbsp;tool&nbsp;does,&nbsp;though.)</tt></dd></dl>
+
+<dl><dt><a name="PackageInfo-get_file"><strong>get_file</strong></a>(self, filename)</dt><dd><tt><a href="#PackageInfo-get_file">get_file</a>(filename)&nbsp;-&gt;&nbsp;<a href="#File">File</a><br>
+&nbsp;<br>
+Get&nbsp;a&nbsp;<a href="#File">File</a>&nbsp;object&nbsp;representing&nbsp;a&nbsp;file&nbsp;contained&nbsp;in&nbsp;this&nbsp;package.<br>
+The&nbsp;filename&nbsp;must&nbsp;be&nbsp;in&nbsp;universal&nbsp;format:&nbsp;relative&nbsp;to&nbsp;the&nbsp;package<br>
+root,&nbsp;and&nbsp;written&nbsp;with&nbsp;forward&nbsp;slashes,&nbsp;not&nbsp;backslashes.<br>
+&nbsp;<br>
+(If&nbsp;the&nbsp;filename&nbsp;is&nbsp;invalid&nbsp;or&nbsp;unsafe,&nbsp;ValueError&nbsp;is&nbsp;raised.<br>
+However,&nbsp;this&nbsp;does&nbsp;not&nbsp;check&nbsp;whether&nbsp;the&nbsp;file&nbsp;exists.)</tt></dd></dl>
+
+<dl><dt><a name="PackageInfo-load_dependencies"><strong>load_dependencies</strong></a>(self)</dt><dd><tt><a href="#PackageInfo-load_dependencies">load_dependencies</a>()&nbsp;-&gt;&nbsp;(set,&nbsp;dict,&nbsp;int)<br>
+&nbsp;<br>
+Attempt&nbsp;to&nbsp;load&nbsp;all&nbsp;the&nbsp;packages&nbsp;which&nbsp;this&nbsp;package&nbsp;depends&nbsp;on.<br>
+&nbsp;<br>
+This&nbsp;returns&nbsp;a&nbsp;triple&nbsp;(good,&nbsp;bad,&nbsp;count):<br>
+&nbsp;<br>
+-&nbsp;good&nbsp;is&nbsp;a&nbsp;set&nbsp;containing&nbsp;(packagename,&nbsp;version)&nbsp;pairs&nbsp;for&nbsp;every<br>
+package&nbsp;that&nbsp;was&nbsp;loaded&nbsp;successfully.&nbsp;(This&nbsp;will&nbsp;include&nbsp;the&nbsp;original<br>
+package.)<br>
+-&nbsp;bad&nbsp;is&nbsp;a&nbsp;dict.&nbsp;The&nbsp;keys&nbsp;are&nbsp;packagenames&nbsp;which&nbsp;did&nbsp;not&nbsp;load<br>
+successfully.&nbsp;Each&nbsp;maps&nbsp;to&nbsp;a&nbsp;(nonempty)&nbsp;list&nbsp;of&nbsp;version&nbsp;requests<br>
+for&nbsp;that&nbsp;package,&nbsp;which&nbsp;could&nbsp;not&nbsp;be&nbsp;fulfilled.&nbsp;(The&nbsp;list&nbsp;contains<br>
+None,&nbsp;VersionSpecs,&nbsp;and&nbsp;VersionNumbers.&nbsp;Values&nbsp;may&nbsp;occur&nbsp;more&nbsp;than<br>
+once.)<br>
+-&nbsp;count&nbsp;is&nbsp;an&nbsp;int,&nbsp;representing&nbsp;how&nbsp;many&nbsp;actual&nbsp;errors&nbsp;occurred.<br>
+This&nbsp;describes&nbsp;package&nbsp;format&nbsp;problems&nbsp;and&nbsp;read&nbsp;errors.&nbsp;It&nbsp;does&nbsp;not<br>
+include&nbsp;packages&nbsp;that&nbsp;were&nbsp;simply&nbsp;not&nbsp;available.&nbsp;(The&nbsp;bad&nbsp;dict<br>
+includes&nbsp;both&nbsp;errors&nbsp;and&nbsp;not-availables;&nbsp;so&nbsp;len(bad)&nbsp;&gt;=&nbsp;count.)<br>
+&nbsp;<br>
+If&nbsp;bad&nbsp;is&nbsp;empty,&nbsp;then&nbsp;all&nbsp;dependencies&nbsp;are&nbsp;available.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;the&nbsp;good&nbsp;list&nbsp;may&nbsp;include&nbsp;more&nbsp;than&nbsp;one&nbsp;version&nbsp;of&nbsp;a<br>
+package.</tt></dd></dl>
+
+<dl><dt><a name="PackageInfo-open_file"><strong>open_file</strong></a>(self, filename, binary<font color="#909090">=False</font>)</dt><dd><tt><a href="#PackageInfo-open_file">open_file</a>(filename,&nbsp;binary=False)&nbsp;-&gt;&nbsp;file<br>
+&nbsp;<br>
+Open&nbsp;a&nbsp;file&nbsp;contained&nbsp;within&nbsp;this&nbsp;package.&nbsp;The&nbsp;filename&nbsp;must&nbsp;be<br>
+in&nbsp;universal&nbsp;format:&nbsp;relative&nbsp;to&nbsp;the&nbsp;package&nbsp;root,&nbsp;and&nbsp;written<br>
+with&nbsp;forward&nbsp;slashes,&nbsp;not&nbsp;backslashes.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;<a href="#PackageInfo-get_file">get_file</a>(filename).open(binary).<br>
+&nbsp;<br>
+(If&nbsp;the&nbsp;filename&nbsp;is&nbsp;invalid&nbsp;or&nbsp;unsafe,&nbsp;ValueError&nbsp;is&nbsp;raised.<br>
+If&nbsp;the&nbsp;file&nbsp;does&nbsp;not&nbsp;exist,&nbsp;IOError&nbsp;is&nbsp;raised.)</tt></dd></dl>
+
+<dl><dt><a name="PackageInfo-validate_metadata"><strong>validate_metadata</strong></a>(self)</dt><dd><tt><a href="#PackageInfo-validate_metadata">validate_metadata</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Make&nbsp;sure&nbsp;that&nbsp;the&nbsp;metadata&nbsp;object&nbsp;attached&nbsp;to&nbsp;this&nbsp;package<br>
+correctly&nbsp;describes&nbsp;the&nbsp;package.&nbsp;Also&nbsp;loads&nbsp;up&nbsp;various&nbsp;fields<br>
+with&nbsp;information&nbsp;from&nbsp;the&nbsp;metadata&nbsp;object.<br>
+&nbsp;<br>
+Also&nbsp;checks&nbsp;that&nbsp;the&nbsp;resource&nbsp;tree&nbsp;has&nbsp;a&nbsp;valid&nbsp;shape.<br>
+&nbsp;<br>
+If&nbsp;anything&nbsp;is&nbsp;discovered&nbsp;to&nbsp;be&nbsp;wrong,&nbsp;this&nbsp;raises&nbsp;PackageLoadError.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;called&nbsp;by&nbsp;the&nbsp;package&nbsp;loader&nbsp;(and&nbsp;nothing&nbsp;else&nbsp;should<br>
+call&nbsp;it).</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Resource">class <strong>Resource</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Resource">Resource</a>:&nbsp;represents&nbsp;one&nbsp;section&nbsp;in&nbsp;a&nbsp;<a href="#Resources">Resources</a>&nbsp;file.<br>
+&nbsp;<br>
+<a href="#Resource">Resource</a>(key)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#Resource">Resource</a>&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;(The&nbsp;resource&nbsp;key&nbsp;is&nbsp;a<br>
+Python-style&nbsp;qualified&nbsp;identifier:&nbsp;"foo"&nbsp;or&nbsp;"Mod.Foo".)<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Resource-get_all">get_all</a>()&nbsp;--&nbsp;get&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>
+<a href="#Resource-get_one">get_one</a>()&nbsp;--&nbsp;get&nbsp;the&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>
+<a href="#Resource-keys">keys</a>()&nbsp;--&nbsp;get&nbsp;the&nbsp;keys&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Resource">Resource</a>&nbsp;object<br>
+<a href="#Resource-dump">dump</a>()&nbsp;--&nbsp;write&nbsp;the&nbsp;contents&nbsp;of&nbsp;this&nbsp;<a href="#Resource">Resource</a>&nbsp;object&nbsp;to&nbsp;a&nbsp;file<br>
+<a href="#Resource-add">add</a>()&nbsp;--&nbsp;add&nbsp;a&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key&nbsp;and&nbsp;value<br>
+<a href="#Resource-delete_all">delete_all</a>()&nbsp;--&nbsp;delete&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Resource-__init__"><strong>__init__</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="Resource-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Resource-add"><strong>add</strong></a>(self, key, val)</dt><dd><tt><a href="#Resource-add">add</a>(key,&nbsp;val)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key&nbsp;and&nbsp;value.<br>
+&nbsp;<br>
+(This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package&nbsp;management&nbsp;tool.&nbsp;A<br>
+package&nbsp;should&nbsp;not&nbsp;modify&nbsp;its&nbsp;own&nbsp;metadata.)</tt></dd></dl>
+
+<dl><dt><a name="Resource-delete_all"><strong>delete_all</strong></a>(self, key)</dt><dd><tt><a href="#Resource-delete_all">delete_all</a>(key)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Delete&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;there&nbsp;are&nbsp;none,<br>
+this&nbsp;does&nbsp;nothing.<br>
+&nbsp;<br>
+(This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package&nbsp;management&nbsp;tool.&nbsp;A<br>
+package&nbsp;should&nbsp;not&nbsp;modify&nbsp;its&nbsp;own&nbsp;metadata.)</tt></dd></dl>
+
+<dl><dt><a name="Resource-dump"><strong>dump</strong></a>(self, fl)</dt><dd><tt><a href="#Resource-dump">dump</a>(file)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Write&nbsp;the&nbsp;contents&nbsp;of&nbsp;this&nbsp;<a href="#Resource">Resource</a>&nbsp;object&nbsp;to&nbsp;a&nbsp;file.</tt></dd></dl>
+
+<dl><dt><a name="Resource-get_all"><strong>get_all</strong></a>(self, key)</dt><dd><tt><a href="#Resource-get_all">get_all</a>(key)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;unicode<br>
+&nbsp;<br>
+Returns&nbsp;all&nbsp;metadata&nbsp;entries&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;there&nbsp;are&nbsp;none,<br>
+this&nbsp;returns&nbsp;an&nbsp;empty&nbsp;list.</tt></dd></dl>
+
+<dl><dt><a name="Resource-get_one"><strong>get_one</strong></a>(self, key, default<font color="#909090">=None</font>)</dt><dd><tt><a href="#Resource-get_one">get_one</a>(key,&nbsp;default=None)&nbsp;-&gt;&nbsp;unicode<br>
+&nbsp;<br>
+Returns&nbsp;the&nbsp;metadata&nbsp;entry&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;there&nbsp;are&nbsp;none,<br>
+this&nbsp;returns&nbsp;None&nbsp;(or&nbsp;the&nbsp;default&nbsp;argument,&nbsp;if&nbsp;supplied).&nbsp;If&nbsp;there<br>
+is&nbsp;more&nbsp;than&nbsp;one&nbsp;such&nbsp;entry,&nbsp;this&nbsp;returns&nbsp;the&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="Resource-keys"><strong>keys</strong></a>(self)</dt><dd><tt><a href="#Resource-keys">keys</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;unicode<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;keys&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Resource">Resource</a>&nbsp;object.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Resources">class <strong>Resources</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Resources">Resources</a>:&nbsp;represents&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;<a href="#Resources">Resources</a>&nbsp;file.<br>
+&nbsp;<br>
+<a href="#Resources">Resources</a>(pkgname,&nbsp;file=None)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#Resources">Resources</a>&nbsp;object&nbsp;by&nbsp;reading&nbsp;the&nbsp;given&nbsp;file.&nbsp;(This&nbsp;should<br>
+be&nbsp;a&nbsp;readable&nbsp;file&nbsp;object;&nbsp;typically,&nbsp;the&nbsp;result&nbsp;of&nbsp;opening&nbsp;a<br>
+<a href="#Resources">Resources</a>&nbsp;file.)&nbsp;It&nbsp;is&nbsp;the&nbsp;caller's&nbsp;responsibility&nbsp;to&nbsp;close&nbsp;the<br>
+file&nbsp;afterwards.&nbsp;If&nbsp;no&nbsp;file&nbsp;is&nbsp;provided,&nbsp;the&nbsp;<a href="#Resources">Resources</a>&nbsp;object&nbsp;will<br>
+be&nbsp;empty.<br>
+&nbsp;<br>
+(The&nbsp;file&nbsp;should&nbsp;be&nbsp;opened&nbsp;with&nbsp;mode&nbsp;'rbU'.&nbsp;This&nbsp;is&nbsp;relaxed&nbsp;about<br>
+newlines,&nbsp;but&nbsp;careful&nbsp;about&nbsp;high-bit&nbsp;characters,&nbsp;so&nbsp;that&nbsp;UTF-8<br>
+decoding&nbsp;will&nbsp;work.&nbsp;Note&nbsp;that&nbsp;the&nbsp;file&nbsp;should&nbsp;offer&nbsp;bytes,&nbsp;not<br>
+Unicode&nbsp;characters.)<br>
+&nbsp;<br>
+The&nbsp;first&nbsp;argument&nbsp;is&nbsp;a&nbsp;package&nbsp;name,&nbsp;but&nbsp;this&nbsp;is&nbsp;only&nbsp;used&nbsp;for<br>
+error&nbsp;messages.&nbsp;If&nbsp;the&nbsp;package&nbsp;name&nbsp;is&nbsp;not&nbsp;known&nbsp;when&nbsp;you&nbsp;read&nbsp;the<br>
+resources,&nbsp;pass&nbsp;in&nbsp;something&nbsp;usable&nbsp;as&nbsp;a&nbsp;label.<br>
+&nbsp;<br>
+This&nbsp;does&nbsp;not&nbsp;take&nbsp;any&nbsp;pains&nbsp;to&nbsp;verify&nbsp;that&nbsp;the&nbsp;resources&nbsp;exist.&nbsp;That<br>
+is&nbsp;the&nbsp;responsibility&nbsp;of&nbsp;whoever&nbsp;created&nbsp;the&nbsp;package.<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#Resources-get">get</a>()&nbsp;--&nbsp;get&nbsp;the&nbsp;<a href="#Resource">Resource</a>&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>
+<a href="#Resources-keys">keys</a>()&nbsp;--&nbsp;get&nbsp;the&nbsp;keys&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Resources">Resources</a>&nbsp;object<br>
+<a href="#Resources-resources">resources</a>()&nbsp;--&nbsp;get&nbsp;the&nbsp;<a href="#Resources">Resources</a>&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Resources">Resources</a>&nbsp;object<br>
+<a href="#Resources-build_tree">build_tree</a>()&nbsp;--&nbsp;construct&nbsp;a&nbsp;nested&nbsp;dict&nbsp;representing&nbsp;the&nbsp;resources<br>
+<a href="#Resources-dump">dump</a>()&nbsp;--&nbsp;write&nbsp;the&nbsp;contents&nbsp;of&nbsp;this&nbsp;<a href="#Resources">Resources</a>&nbsp;object&nbsp;to&nbsp;a&nbsp;file<br>
+<a href="#Resources-create">create</a>()&nbsp;--&nbsp;create&nbsp;a&nbsp;<a href="#Resource">Resource</a>&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;key<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Resources-__init__"><strong>__init__</strong></a>(self, pkgname, fl<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Resources-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Resources-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Resources-build_tree"><strong>build_tree</strong></a>(self)</dt><dd><tt><a href="#Resources-build_tree">build_tree</a>()&nbsp;-&gt;&nbsp;dict<br>
+&nbsp;<br>
+Construct&nbsp;a&nbsp;dict&nbsp;containing&nbsp;the&nbsp;namespaced&nbsp;groups&nbsp;and&nbsp;resources&nbsp;<br>
+in&nbsp;this&nbsp;<a href="#Resources">Resources</a>&nbsp;object.&nbsp;Individual&nbsp;resources&nbsp;are&nbsp;represented&nbsp;by<br>
+keys;&nbsp;groups&nbsp;are&nbsp;represented&nbsp;by&nbsp;dicts&nbsp;containing&nbsp;more&nbsp;groups<br>
+and&nbsp;resources.<br>
+&nbsp;<br>
+Example:&nbsp;if&nbsp;the&nbsp;resource&nbsp;keys&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'one',&nbsp;'two',&nbsp;'grp.three',&nbsp;'grp.four'<br>
+then&nbsp;<a href="#Resources-build_tree">build_tree</a>()&nbsp;will&nbsp;return&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'one':&nbsp;'one',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'two':&nbsp;'two',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'grp':&nbsp;{&nbsp;'three':&nbsp;'grp.three',&nbsp;'four':&nbsp;'grp.four'&nbsp;}<br>
+}<br>
+&nbsp;<br>
+A&nbsp;single&nbsp;entry&nbsp;cannot&nbsp;be&nbsp;both&nbsp;a&nbsp;group&nbsp;and&nbsp;a&nbsp;resource.&nbsp;(That&nbsp;is,<br>
+'one'&nbsp;and&nbsp;'one.two'&nbsp;cannot&nbsp;both&nbsp;be&nbsp;resource&nbsp;keys.)&nbsp;If&nbsp;this<br>
+rule&nbsp;is&nbsp;violated,&nbsp;<a href="#Resources-build_tree">build_tree</a>()&nbsp;will&nbsp;raise&nbsp;ValueError.&nbsp;Duplicate<br>
+keys&nbsp;also&nbsp;raise&nbsp;ValueError.</tt></dd></dl>
+
+<dl><dt><a name="Resources-create"><strong>create</strong></a>(self, key)</dt><dd><tt><a href="#Resources-create">create</a>(key)&nbsp;-&gt;&nbsp;<a href="#Resource">Resource</a><br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;<a href="#Resource">Resource</a>&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;the&nbsp;key&nbsp;is&nbsp;not<br>
+a&nbsp;valid&nbsp;resource&nbsp;key,&nbsp;or&nbsp;if&nbsp;it&nbsp;already&nbsp;exists,&nbsp;this&nbsp;raises&nbsp;ValueError.<br>
+&nbsp;<br>
+(This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;by&nbsp;a&nbsp;package&nbsp;management&nbsp;tool.&nbsp;A<br>
+package&nbsp;should&nbsp;not&nbsp;modify&nbsp;its&nbsp;own&nbsp;metadata.)</tt></dd></dl>
+
+<dl><dt><a name="Resources-dump"><strong>dump</strong></a>(self, fl, comment<font color="#909090">=None</font>)</dt><dd><tt><a href="#Resources-dump">dump</a>(file,&nbsp;comment=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Write&nbsp;the&nbsp;contents&nbsp;of&nbsp;this&nbsp;<a href="#Resources">Resources</a>&nbsp;object&nbsp;to&nbsp;a&nbsp;file.&nbsp;The&nbsp;file<br>
+must&nbsp;be&nbsp;able&nbsp;to&nbsp;accept&nbsp;unicode&nbsp;writes.&nbsp;(Preferably&nbsp;by&nbsp;encoding<br>
+them&nbsp;via&nbsp;UTF-8.)&nbsp;(Note:&nbsp;this&nbsp;doesn't&nbsp;match&nbsp;the&nbsp;constructor,<br>
+which&nbsp;does&nbsp;its&nbsp;own&nbsp;UTF-8&nbsp;decoding.)<br>
+&nbsp;<br>
+If&nbsp;comment&nbsp;is&nbsp;a&nbsp;string,&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;strings,&nbsp;they&nbsp;will&nbsp;appear<br>
+at&nbsp;the&nbsp;top&nbsp;of&nbsp;the&nbsp;file.&nbsp;You&nbsp;need&nbsp;not&nbsp;include&nbsp;the&nbsp;'#'&nbsp;character&nbsp;in<br>
+the&nbsp;comment&nbsp;argument.</tt></dd></dl>
+
+<dl><dt><a name="Resources-get"><strong>get</strong></a>(self, key)</dt><dd><tt><a href="#Resources-get">get</a>(key)&nbsp;-&gt;&nbsp;<a href="#Resource">Resource</a><br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;<a href="#Resource">Resource</a>&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;key.&nbsp;If&nbsp;not&nbsp;found,&nbsp;returns<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Resources-keys"><strong>keys</strong></a>(self)</dt><dd><tt><a href="#Resources-keys">keys</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;str<br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;keys&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Resources">Resources</a>&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="Resources-resources"><strong>resources</strong></a>(self)</dt><dd><tt><a href="#Resources-resources">resources</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;<a href="#Resource">Resource</a><br>
+&nbsp;<br>
+Get&nbsp;the&nbsp;<a href="#Resources">Resources</a>&nbsp;contained&nbsp;in&nbsp;this&nbsp;<a href="#Resources">Resources</a>&nbsp;object.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-build_safe_pathname"><strong>build_safe_pathname</strong></a>(basedir, filename)</dt><dd><tt><a href="#-build_safe_pathname">build_safe_pathname</a>(basedir,&nbsp;filename)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Take&nbsp;a&nbsp;relative&nbsp;filename&nbsp;and&nbsp;append&nbsp;it&nbsp;to&nbsp;a&nbsp;base&nbsp;pathname,&nbsp;checking<br>
+for&nbsp;dangerous&nbsp;practices.<br>
+&nbsp;<br>
+The&nbsp;relative&nbsp;filename&nbsp;must&nbsp;be&nbsp;in&nbsp;universal&nbsp;format:&nbsp;slashes,&nbsp;no<br>
+backslashes.&nbsp;It&nbsp;must&nbsp;not&nbsp;begin&nbsp;with&nbsp;a&nbsp;slash,&nbsp;and&nbsp;it&nbsp;must&nbsp;not&nbsp;contain<br>
+'..'&nbsp;elements.&nbsp;(Single&nbsp;dots&nbsp;are&nbsp;okay.)&nbsp;If&nbsp;these&nbsp;rules&nbsp;are&nbsp;violated,<br>
+this&nbsp;function&nbsp;raises&nbsp;a&nbsp;ValueError.<br>
+&nbsp;<br>
+The&nbsp;base&nbsp;pathname&nbsp;must&nbsp;be&nbsp;in&nbsp;platform&nbsp;format&nbsp;(ie,&nbsp;on&nbsp;Windows,&nbsp;it<br>
+should&nbsp;be&nbsp;backslash-delimited).&nbsp;The&nbsp;result&nbsp;will&nbsp;be&nbsp;in&nbsp;platform<br>
+format&nbsp;as&nbsp;well.<br>
+&nbsp;<br>
+The&nbsp;result&nbsp;will&nbsp;be&nbsp;plain&nbsp;ascii&nbsp;characters,&nbsp;and&nbsp;will&nbsp;be&nbsp;stored&nbsp;as&nbsp;a<br>
+str&nbsp;(even&nbsp;if&nbsp;the&nbsp;arguments&nbsp;are&nbsp;unicode).&nbsp;This&nbsp;is&nbsp;mostly&nbsp;to&nbsp;work&nbsp;around<br>
+some&nbsp;annoyances&nbsp;with&nbsp;the&nbsp;aifc&nbsp;module,&nbsp;which&nbsp;refuses&nbsp;to&nbsp;accept&nbsp;unicode<br>
+pathnames.</tt></dd></dl>
+ <dl><dt><a name="-deunicode"><strong>deunicode</strong></a>(ln)</dt><dd><tt><a href="#-deunicode">deunicode</a>(ln)&nbsp;-&gt;&nbsp;unicode<br>
+&nbsp;<br>
+Decode&nbsp;a&nbsp;UTF-8&nbsp;string&nbsp;into&nbsp;a&nbsp;unicode&nbsp;object.&nbsp;This&nbsp;also&nbsp;strips&nbsp;off&nbsp;the<br>
+BOM&nbsp;character&nbsp;(byte&nbsp;order&nbsp;mark,&nbsp;U+FEFF)&nbsp;which&nbsp;occurs&nbsp;at&nbsp;the&nbsp;start&nbsp;of<br>
+some&nbsp;UTF-8&nbsp;files.<br>
+&nbsp;<br>
+(The&nbsp;'utf-8-sig'&nbsp;decoder&nbsp;would&nbsp;take&nbsp;care&nbsp;of&nbsp;the&nbsp;BOM&nbsp;for&nbsp;us,&nbsp;but&nbsp;it<br>
+doesn't&nbsp;exist&nbsp;in&nbsp;Python&nbsp;2.3.5)</tt></dd></dl>
+ <dl><dt><a name="-dict_accumulate"><strong>dict_accumulate</strong></a>(dic, key, val)</dt><dd><tt><a href="#-dict_accumulate">dict_accumulate</a>(dic,&nbsp;key,&nbsp;val)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Build&nbsp;a&nbsp;dict&nbsp;which&nbsp;maps&nbsp;keys&nbsp;to&nbsp;arrays.&nbsp;dic[key]&nbsp;is&nbsp;an&nbsp;array&nbsp;containing<br>
+all&nbsp;the&nbsp;values&nbsp;which&nbsp;have&nbsp;been&nbsp;added&nbsp;under&nbsp;the&nbsp;key.&nbsp;(If&nbsp;none&nbsp;have,<br>
+the&nbsp;dict&nbsp;will&nbsp;not&nbsp;contain&nbsp;that&nbsp;key.)<br>
+&nbsp;<br>
+Returns&nbsp;whether&nbsp;this&nbsp;is&nbsp;the&nbsp;first&nbsp;time&nbsp;this&nbsp;key&nbsp;has&nbsp;been&nbsp;added.</tt></dd></dl>
+ <dl><dt><a name="-dict_all_values"><strong>dict_all_values</strong></a>(dic, ls<font color="#909090">=None</font>)</dt><dd><tt><a href="#-dict_all_values">dict_all_values</a>(dic,&nbsp;ls=None)&nbsp;-&gt;&nbsp;ls<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;the&nbsp;values&nbsp;in&nbsp;dic,&nbsp;walking&nbsp;recursively&nbsp;into<br>
+all&nbsp;dicts&nbsp;that&nbsp;are&nbsp;values.&nbsp;(If&nbsp;the&nbsp;argument&nbsp;is&nbsp;not&nbsp;a&nbsp;dict,&nbsp;this<br>
+just&nbsp;returns&nbsp;[dic].)<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;optional&nbsp;argument&nbsp;ls&nbsp;is&nbsp;provided,&nbsp;the&nbsp;values&nbsp;are&nbsp;appended<br>
+to&nbsp;it&nbsp;(and&nbsp;it&nbsp;is&nbsp;also&nbsp;returned).</tt></dd></dl>
+ <dl><dt><a name="-encode_package_name"><strong>encode_package_name</strong></a>(pkgname, vers)</dt><dd><tt><a href="#-encode_package_name">encode_package_name</a>(pkgname,&nbsp;vers)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Convert&nbsp;a&nbsp;Boodler&nbsp;package&nbsp;name&nbsp;and&nbsp;VersionNumber&nbsp;into&nbsp;a&nbsp;legal&nbsp;Python<br>
+identifier.&nbsp;(This&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;"real"&nbsp;name&nbsp;for&nbsp;the&nbsp;package&nbsp;module&nbsp;--<br>
+the&nbsp;name&nbsp;Python&nbsp;knows&nbsp;about.)<br>
+&nbsp;<br>
+The&nbsp;encoding&nbsp;guarantees&nbsp;that&nbsp;two&nbsp;modules&nbsp;with&nbsp;different&nbsp;(pkgname,&nbsp;vers)<br>
+keys&nbsp;will&nbsp;produce&nbsp;different&nbsp;identifiers.</tt></dd></dl>
+ <dl><dt><a name="-parse_package_name"><strong>parse_package_name</strong></a>(pkgname)</dt><dd><tt><a href="#-parse_package_name">parse_package_name</a>(pkgname)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;str<br>
+&nbsp;<br>
+Parse&nbsp;a&nbsp;package&nbsp;name&nbsp;(e.g.,&nbsp;"org.boodler.sample")&nbsp;into&nbsp;a&nbsp;list&nbsp;of<br>
+elements&nbsp;(["org",&nbsp;"boodler",&nbsp;"sample"]).<br>
+&nbsp;<br>
+Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;name&nbsp;was&nbsp;in&nbsp;any&nbsp;way&nbsp;invalid.&nbsp;(Thus,<br>
+this&nbsp;function&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;ensure&nbsp;that&nbsp;a&nbsp;package&nbsp;name&nbsp;is&nbsp;valid.)</tt></dd></dl>
+ <dl><dt><a name="-parse_resource_name"><strong>parse_resource_name</strong></a>(resname)</dt><dd><tt><a href="#-parse_resource_name">parse_resource_name</a>(resname)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;str<br>
+&nbsp;<br>
+Parse&nbsp;a&nbsp;resource&nbsp;name&nbsp;(e.g.,&nbsp;"voice.Doh")&nbsp;into&nbsp;a&nbsp;list&nbsp;of&nbsp;elements<br>
+(["voice",&nbsp;"Doh"]).<br>
+&nbsp;<br>
+Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;name&nbsp;was&nbsp;in&nbsp;any&nbsp;way&nbsp;invalid.&nbsp;(Thus,<br>
+this&nbsp;function&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;ensure&nbsp;that&nbsp;a&nbsp;resource&nbsp;name&nbsp;is&nbsp;valid.)</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>capital_letter_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x5ccf20&gt;<br>
+<strong>caret_letter_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x543560&gt;<br>
+<strong>ident_name_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x5f43e0&gt;<br>
+<strong>package_name_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x26590&gt;<br>
+<strong>resource_name_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x321b00&gt;</td></tr></table>
+</body></html>

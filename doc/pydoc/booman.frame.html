@@ -1,0 +1,90 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module booman.frame</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="booman.html"><font color="#ffffff">booman</font></a>.frame</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/booman/frame.py">booman/frame.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Boodler:&nbsp;a&nbsp;programmable&nbsp;soundscape&nbsp;tool<br>
+#&nbsp;Copyright&nbsp;2002-9&nbsp;by&nbsp;Andrew&nbsp;Plotkin&nbsp;&lt;erkyrath@eblong.com&gt;<br>
+#&nbsp;&nbsp;&nbsp;&lt;<a href="http://boodler.org/">http://boodler.org/</a>&gt;<br>
+#&nbsp;This&nbsp;program&nbsp;is&nbsp;distributed&nbsp;under&nbsp;the&nbsp;LGPL.<br>
+#&nbsp;See&nbsp;the&nbsp;LGPL&nbsp;document,&nbsp;or&nbsp;the&nbsp;above&nbsp;URL,&nbsp;for&nbsp;details.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/stringio.html">StringIO</a><br>
+<a href="booman.html">booman</a><br>
+</td><td width="25%" valign=top><a href="boopak.collect.html">boopak.collect</a><br>
+<a href="booman.token.html">booman.token</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/traceback.html">traceback</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-cleanup"><strong>cleanup</strong></a>()</dt><dd><tt><a href="#-cleanup">cleanup</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Shut&nbsp;down&nbsp;the&nbsp;PackageCollection&nbsp;object.&nbsp;Must&nbsp;be&nbsp;called&nbsp;when&nbsp;the<br>
+interpreter&nbsp;is&nbsp;exiting.</tt></dd></dl>
+ <dl><dt><a name="-get_last_backtrace"><strong>get_last_backtrace</strong></a>()</dt><dd><tt><a href="#-get_last_backtrace">get_last_backtrace</a>()&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Get&nbsp;a&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;backtrace&nbsp;of&nbsp;the&nbsp;last&nbsp;Exception<br>
+that&nbsp;was&nbsp;caught.<br>
+&nbsp;<br>
+(The&nbsp;return&nbsp;string&nbsp;will&nbsp;have&nbsp;several&nbsp;lines,&nbsp;separated&nbsp;by&nbsp;newlines.<br>
+However,&nbsp;it&nbsp;will&nbsp;not&nbsp;end&nbsp;with&nbsp;a&nbsp;newline.)</tt></dd></dl>
+ <dl><dt><a name="-handle"><strong>handle</strong></a>(args<font color="#909090">=None</font>)</dt><dd><tt><a href="#-handle">handle</a>(args=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Process&nbsp;one&nbsp;command&nbsp;(from&nbsp;user&nbsp;input,&nbsp;or&nbsp;from&nbsp;the&nbsp;arguments&nbsp;provided).<br>
+In&nbsp;interactive&nbsp;mode,&nbsp;this&nbsp;is&nbsp;called&nbsp;repeatedly.&nbsp;If&nbsp;there&nbsp;are&nbsp;command-<br>
+line&nbsp;arguments,&nbsp;this&nbsp;is&nbsp;called&nbsp;once,&nbsp;with&nbsp;the&nbsp;list&nbsp;of&nbsp;arguments&nbsp;passed<br>
+in.<br>
+&nbsp;<br>
+This&nbsp;catches&nbsp;all&nbsp;exceptions&nbsp;except&nbsp;KeyboardInterrupt.</tt></dd></dl>
+ <dl><dt><a name="-note_backtrace"><strong>note_backtrace</strong></a>()</dt><dd><tt><a href="#-note_backtrace">note_backtrace</a>()&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Record&nbsp;a&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;backtrace&nbsp;of&nbsp;the&nbsp;current&nbsp;Exception.<br>
+This&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;from&nbsp;an&nbsp;exception&nbsp;handler.</tt></dd></dl>
+ <dl><dt><a name="-quit_yet"><strong>quit_yet</strong></a>()</dt><dd><tt><a href="#-quit_yet">quit_yet</a>()&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Return&nbsp;whether&nbsp;the&nbsp;Quit&nbsp;command&nbsp;has&nbsp;been&nbsp;executed.</tt></dd></dl>
+ <dl><dt><a name="-set_force_option"><strong>set_force_option</strong></a>(val<font color="#909090">=True</font>)</dt><dd><tt><a href="#-set_force_option">set_force_option</a>(val=True)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;whether&nbsp;the&nbsp;interpreter&nbsp;should&nbsp;prompt&nbsp;to&nbsp;confirm&nbsp;dangerous&nbsp;actions.<br>
+(True&nbsp;means&nbsp;don't.)&nbsp;This&nbsp;is&nbsp;called&nbsp;during&nbsp;setup&nbsp;if&nbsp;the&nbsp;--force&nbsp;option<br>
+was&nbsp;supplied.</tt></dd></dl>
+ <dl><dt><a name="-set_interactive"><strong>set_interactive</strong></a>(val<font color="#909090">=True</font>)</dt><dd><tt><a href="#-set_interactive">set_interactive</a>(val=True)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;whether&nbsp;the&nbsp;interpreter&nbsp;is&nbsp;prompting&nbsp;for&nbsp;commands,&nbsp;or&nbsp;if&nbsp;commands<br>
+were&nbsp;supplied&nbsp;as&nbsp;arguments.</tt></dd></dl>
+ <dl><dt><a name="-set_quit"><strong>set_quit</strong></a>(val<font color="#909090">=True</font>)</dt><dd><tt><a href="#-set_quit">set_quit</a>(val=True)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;the&nbsp;shutdown&nbsp;flag.&nbsp;This&nbsp;is&nbsp;called&nbsp;when&nbsp;the&nbsp;Quit&nbsp;command&nbsp;is&nbsp;executed.</tt></dd></dl>
+ <dl><dt><a name="-setup_loader"><strong>setup_loader</strong></a>(basedir, coldir, dldir, importing_ok<font color="#909090">=False</font>)</dt><dd><tt><a href="#-setup_loader">setup_loader</a>(basedir,&nbsp;coldir,&nbsp;dldir,&nbsp;importing_ok=False)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Create&nbsp;the&nbsp;PackageCollection,&nbsp;which&nbsp;will&nbsp;be&nbsp;used&nbsp;by&nbsp;all&nbsp;commands.<br>
+(See&nbsp;the&nbsp;PackageCollection&nbsp;class&nbsp;for&nbsp;the&nbsp;arguments.)</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>is_force</strong> = False<br>
+<strong>is_interactive</strong> = False<br>
+<strong>last_backtrace</strong> = None<br>
+<strong>loader</strong> = None<br>
+<strong>shutdown</strong> = False</td></tr></table>
+</body></html>

@@ -1,0 +1,340 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boopak.version</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boopak.html"><font color="#ffffff">boopak</font></a>.version</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boopak/version.py">boopak/version.py</a></font></td></tr></table>
+    <p><tt>version:&nbsp;A&nbsp;module&nbsp;which&nbsp;manages&nbsp;version&nbsp;numbers&nbsp;and&nbsp;version&nbsp;number<br>
+requirements.<br>
+&nbsp;<br>
+Classes:<br>
+&nbsp;<br>
+<a href="#VersionNumber">VersionNumber</a>&nbsp;--&nbsp;represents&nbsp;a&nbsp;structured&nbsp;version&nbsp;number<br>
+<a href="#VersionSpec">VersionSpec</a>&nbsp;--&nbsp;represents&nbsp;a&nbsp;requirement&nbsp;for&nbsp;certain&nbsp;version&nbsp;numbers<br>
+<a href="#VersionFormatError">VersionFormatError</a>&nbsp;--&nbsp;<a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">ValueError</a>&nbsp;representing&nbsp;a&nbsp;bad&nbsp;<a href="#VersionNumber">VersionNumber</a>/Spec<br>
+&nbsp;<br>
+Internal&nbsp;class:<br>
+&nbsp;<br>
+<a href="#VersionPattern">VersionPattern</a>&nbsp;--&nbsp;represents&nbsp;one&nbsp;PATTERN&nbsp;element&nbsp;of&nbsp;a&nbsp;<a href="#VersionSpec">VersionSpec</a></tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/re.html">re</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boopak.version.html#VersionNumber">VersionNumber</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.version.html#VersionPattern">VersionPattern</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boopak.version.html#VersionSpec">VersionSpec</a>
+</font></dt><dt><font face="helvetica, arial"><a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>(<a href="http://www.python.org/doc/current/library/exceptions.html#StandardError">exceptions.StandardError</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.version.html#VersionFormatError">VersionFormatError</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VersionFormatError">class <strong>VersionFormatError</strong></a>(<a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#VersionFormatError">VersionFormatError</a>:&nbsp;A&nbsp;<a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">ValueError</a>&nbsp;produced&nbsp;when&nbsp;trying&nbsp;to&nbsp;create<br>
+an&nbsp;illegal&nbsp;<a href="#VersionNumber">VersionNumber</a>&nbsp;or&nbsp;<a href="#VersionSpec">VersionSpec</a>.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="boopak.version.html#VersionFormatError">VersionFormatError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#StandardError">exceptions.StandardError</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="http://www.python.org/doc/current/library/__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>:<br>
+<dl><dt><a name="VersionFormatError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#ValueError">exceptions.ValueError</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x22f79c&gt;<dd><tt>T.<a href="#VersionFormatError-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="VersionFormatError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="VersionFormatError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="VersionFormatError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="VersionFormatError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="VersionFormatError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="VersionFormatError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="VersionFormatError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="VersionFormatError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="VersionFormatError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#VersionFormatError-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="http://www.python.org/doc/current/library/exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VersionNumber">class <strong>VersionNumber</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#VersionNumber">VersionNumber</a>:&nbsp;represents&nbsp;a&nbsp;structured&nbsp;version&nbsp;number.<br>
+&nbsp;<br>
+A&nbsp;<a href="#VersionNumber">VersionNumber</a>&nbsp;has&nbsp;the&nbsp;form&nbsp;"MAJOR",&nbsp;"MAJOR.MINOR",&nbsp;or<br>
+"MAJOR.MINOR.RELEASE".&nbsp;MAJOR&nbsp;must&nbsp;be&nbsp;a&nbsp;positive&nbsp;integer&nbsp;(not&nbsp;zero).<br>
+MINOR&nbsp;must&nbsp;be&nbsp;a&nbsp;non-negative&nbsp;integer&nbsp;(zero&nbsp;is&nbsp;allowed).&nbsp;RELEASE,<br>
+if&nbsp;present,&nbsp;must&nbsp;be&nbsp;a&nbsp;string&nbsp;of&nbsp;letters,&nbsp;digits,&nbsp;plus,&nbsp;minus,<br>
+underscore,&nbsp;dot.<br>
+&nbsp;<br>
+The&nbsp;version&nbsp;numbers&nbsp;"3"&nbsp;and&nbsp;"3.0"&nbsp;are&nbsp;considered&nbsp;equal&nbsp;(the<br>
+minor&nbsp;value&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;zero&nbsp;if&nbsp;not&nbsp;given).&nbsp;However,&nbsp;this<br>
+is&nbsp;not&nbsp;true&nbsp;of&nbsp;the&nbsp;release&nbsp;value;&nbsp;"3.0"&nbsp;and&nbsp;"3.0.0"&nbsp;are&nbsp;considered<br>
+different.&nbsp;(This&nbsp;is&nbsp;a&nbsp;quirk&nbsp;of&nbsp;the&nbsp;version-matching&nbsp;algorithm,&nbsp;which<br>
+requires&nbsp;a&nbsp;major&nbsp;and&nbsp;minor&nbsp;value&nbsp;but&nbsp;ignores&nbsp;the&nbsp;release&nbsp;value.)<br>
+&nbsp;<br>
+VersionNumbers&nbsp;are&nbsp;immutable,&nbsp;and&nbsp;may&nbsp;be&nbsp;used&nbsp;as&nbsp;dict&nbsp;keys.&nbsp;You&nbsp;can<br>
+compare&nbsp;them&nbsp;with&nbsp;==,&nbsp;!=,&nbsp;&lt;,&nbsp;&gt;,&nbsp;and&nbsp;so&nbsp;on.<br>
+&nbsp;<br>
+Constructors:<br>
+&nbsp;<br>
+<a href="#VersionNumber">VersionNumber</a>()&nbsp;--&nbsp;default&nbsp;version&nbsp;"1.0"<br>
+<a href="#VersionNumber">VersionNumber</a>(int)&nbsp;--&nbsp;construct&nbsp;"X.0"<br>
+<a href="#VersionNumber">VersionNumber</a>(int,&nbsp;int)&nbsp;--&nbsp;construct&nbsp;"X.Y"<br>
+<a href="#VersionNumber">VersionNumber</a>(int,&nbsp;int,&nbsp;val,&nbsp;val,&nbsp;...)&nbsp;--&nbsp;construct&nbsp;"X.Y.val.val..."<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(the&nbsp;release&nbsp;values&nbsp;may&nbsp;be&nbsp;int&nbsp;or&nbsp;str)<br>
+<a href="#VersionNumber">VersionNumber</a>(str)&nbsp;--&nbsp;parse&nbsp;a&nbsp;string&nbsp;into&nbsp;a&nbsp;<a href="#VersionNumber">VersionNumber</a><br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+major&nbsp;--&nbsp;the&nbsp;major&nbsp;value&nbsp;(int)<br>
+minor&nbsp;--&nbsp;the&nbsp;minor&nbsp;value&nbsp;(int)<br>
+release&nbsp;--&nbsp;the&nbsp;release&nbsp;string&nbsp;(may&nbsp;be&nbsp;None)<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#VersionNumber-match">match</a>()&nbsp;--&nbsp;compare&nbsp;to&nbsp;a&nbsp;<a href="#VersionSpec">VersionSpec</a><br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VersionNumber-__cmp__"><strong>__cmp__</strong></a>(self, vers)</dt></dl>
+
+<dl><dt><a name="VersionNumber-__eq__"><strong>__eq__</strong></a>(self, vers)</dt></dl>
+
+<dl><dt><a name="VersionNumber-__hash__"><strong>__hash__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionNumber-__init__"><strong>__init__</strong></a>(self, *args)</dt></dl>
+
+<dl><dt><a name="VersionNumber-__ne__"><strong>__ne__</strong></a>(self, vers)</dt></dl>
+
+<dl><dt><a name="VersionNumber-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionNumber-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionNumber-init_num"><strong>init_num</strong></a>(self, major, minor<font color="#909090">=None</font>, release<font color="#909090">=()</font>)</dt><dd><tt><a href="#VersionNumber-init_num">init_num</a>(major,&nbsp;minor=None,&nbsp;release=())<br>
+&nbsp;<br>
+Utility&nbsp;function&nbsp;for&nbsp;constructor.&nbsp;(Do&nbsp;not&nbsp;call.)</tt></dd></dl>
+
+<dl><dt><a name="VersionNumber-init_str"><strong>init_str</strong></a>(self, arg)</dt><dd><tt><a href="#VersionNumber-init_str">init_str</a>(arg)<br>
+&nbsp;<br>
+Utility&nbsp;function&nbsp;for&nbsp;constructor.&nbsp;(Do&nbsp;not&nbsp;call.)</tt></dd></dl>
+
+<dl><dt><a name="VersionNumber-match"><strong>match</strong></a>(self, spec)</dt><dd><tt><a href="#VersionNumber-match">match</a>(spec)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Compare&nbsp;the&nbsp;version&nbsp;number&nbsp;to&nbsp;a&nbsp;<a href="#VersionSpec">VersionSpec</a>&nbsp;(or&nbsp;to&nbsp;a&nbsp;string&nbsp;which<br>
+defines&nbsp;a&nbsp;<a href="#VersionSpec">VersionSpec</a>).&nbsp;Return&nbsp;True&nbsp;if&nbsp;the&nbsp;version&nbsp;number&nbsp;satisfies<br>
+the&nbsp;spec.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VersionPattern">class <strong>VersionPattern</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#VersionPattern">VersionPattern</a>:&nbsp;represents&nbsp;one&nbsp;PATTERN&nbsp;element&nbsp;of&nbsp;a&nbsp;<a href="#VersionSpec">VersionSpec</a>.<br>
+&nbsp;<br>
+A&nbsp;<a href="#VersionPattern">VersionPattern</a>&nbsp;looks&nbsp;like&nbsp;one&nbsp;of:&nbsp;"VERSION",&nbsp;"VERSION.",&nbsp;"VERSION-",<br>
+"-VERSION",&nbsp;"VERSION-VERSION".<br>
+A&nbsp;VERSION&nbsp;is&nbsp;"MAJOR"&nbsp;or&nbsp;"MAJOR.MINOR".<br>
+&nbsp;<br>
+(This&nbsp;class&nbsp;is&nbsp;used&nbsp;internally&nbsp;by&nbsp;<a href="#VersionSpec">VersionSpec</a>,&nbsp;and&nbsp;should&nbsp;be&nbsp;ignored<br>
+by&nbsp;outside&nbsp;callers.)<br>
+&nbsp;<br>
+Constructors:<br>
+&nbsp;<br>
+<a href="#VersionPattern">VersionPattern</a>((int,int))&nbsp;--&nbsp;construct&nbsp;"X.Y"<br>
+<a href="#VersionPattern">VersionPattern</a>((int,int),&nbsp;(int,int))&nbsp;--&nbsp;construct&nbsp;"X.Y-Z.W"<br>
+<a href="#VersionPattern">VersionPattern</a>((int,int),&nbsp;None)&nbsp;--&nbsp;construct&nbsp;"X.Y-"<br>
+<a href="#VersionPattern">VersionPattern</a>(None,&nbsp;(int,int))&nbsp;--&nbsp;construct&nbsp;"-Z.W"<br>
+<a href="#VersionPattern">VersionPattern</a>(str)&nbsp;--&nbsp;parse&nbsp;a&nbsp;string&nbsp;into&nbsp;a&nbsp;<a href="#VersionPattern">VersionPattern</a><br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#VersionPattern-match">match</a>()&nbsp;--&nbsp;compare&nbsp;to&nbsp;a&nbsp;version&nbsp;major/minor&nbsp;number<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VersionPattern-__cmp__"><strong>__cmp__</strong></a>(self, other)</dt></dl>
+
+<dl><dt><a name="VersionPattern-__hash__"><strong>__hash__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionPattern-__init__"><strong>__init__</strong></a>(self, start, end<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="VersionPattern-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionPattern-init_str"><strong>init_str</strong></a>(self, val)</dt><dd><tt><a href="#VersionPattern-init_str">init_str</a>(arg)<br>
+&nbsp;<br>
+Utility&nbsp;function&nbsp;for&nbsp;constructor.&nbsp;(Do&nbsp;not&nbsp;call.)</tt></dd></dl>
+
+<dl><dt><a name="VersionPattern-init_tup"><strong>init_tup</strong></a>(self, startpair, endpair)</dt><dd><tt><a href="#VersionPattern-init_tup">init_tup</a>(arg)<br>
+&nbsp;<br>
+Utility&nbsp;function&nbsp;for&nbsp;constructor.&nbsp;(Do&nbsp;not&nbsp;call.)</tt></dd></dl>
+
+<dl><dt><a name="VersionPattern-match"><strong>match</strong></a>(self, major, minor)</dt><dd><tt><a href="#VersionPattern-match">match</a>(major,&nbsp;minor)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Compare&nbsp;the&nbsp;pattern&nbsp;to&nbsp;a&nbsp;version&nbsp;number&nbsp;(as&nbsp;major&nbsp;and&nbsp;minor<br>
+values).&nbsp;Return&nbsp;True&nbsp;if&nbsp;the&nbsp;version&nbsp;number&nbsp;satisfies&nbsp;the&nbsp;pattern.</tt></dd></dl>
+
+<dl><dt><a name="VersionPattern-parse_number"><strong>parse_number</strong></a>(self, val)</dt><dd><tt><a href="#VersionPattern-parse_number">parse_number</a>(val)&nbsp;-&gt;&nbsp;(int,int)<br>
+&nbsp;<br>
+Parse&nbsp;a&nbsp;string&nbsp;of&nbsp;the&nbsp;form&nbsp;"X"&nbsp;or&nbsp;"X.Y"&nbsp;into&nbsp;a&nbsp;pair&nbsp;of&nbsp;numbers.<br>
+(If&nbsp;there&nbsp;is&nbsp;no&nbsp;second&nbsp;number,&nbsp;it&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;zero.)<br>
+&nbsp;<br>
+This&nbsp;parsing&nbsp;is&nbsp;strict;&nbsp;no&nbsp;spaces&nbsp;or&nbsp;other&nbsp;extraneous&nbsp;characters<br>
+are&nbsp;allowed.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>ANDON</strong> = 3</dl>
+
+<dl><dt><strong>RANGE</strong> = 1</dl>
+
+<dl><dt><strong>SIMPLE</strong> = 0</dl>
+
+<dl><dt><strong>UPTO</strong> = 2</dl>
+
+<dl><dt><strong>typenames</strong> = {0: 'SIMPLE', 1: 'RANGE', 2: 'UPTO', 3: 'ANDON'}</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="VersionSpec">class <strong>VersionSpec</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#VersionSpec">VersionSpec</a>:&nbsp;represents&nbsp;a&nbsp;requirement&nbsp;for&nbsp;certain&nbsp;version&nbsp;numbers.<br>
+&nbsp;<br>
+A&nbsp;<a href="#VersionSpec">VersionSpec</a>&nbsp;looks&nbsp;like&nbsp;one&nbsp;or&nbsp;more&nbsp;PATTERNS,&nbsp;separated&nbsp;by&nbsp;commas.<br>
+A&nbsp;PATTERN&nbsp;looks&nbsp;like&nbsp;one&nbsp;of:&nbsp;"VERSION",&nbsp;"VERSION.",&nbsp;"VERSION-",<br>
+"-VERSION",&nbsp;"VERSION-VERSION".<br>
+A&nbsp;VERSION&nbsp;is&nbsp;"MAJOR"&nbsp;or&nbsp;"MAJOR.MINOR".<br>
+&nbsp;<br>
+(Here&nbsp;a&nbsp;complex,&nbsp;but&nbsp;legal,&nbsp;<a href="#VersionSpec">VersionSpec</a>:&nbsp;"-2.3,5,7.3.,9.9-10.1,13.5-")<br>
+&nbsp;<br>
+A&nbsp;<a href="#VersionSpec">VersionSpec</a>&nbsp;matches&nbsp;a&nbsp;version&nbsp;number&nbsp;if&nbsp;any&nbsp;of&nbsp;its&nbsp;PATTERNs&nbsp;match.<br>
+PATTERNs&nbsp;match&nbsp;as&nbsp;follows:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y"&nbsp;--&nbsp;major&nbsp;version&nbsp;must&nbsp;be&nbsp;X,&nbsp;minor&nbsp;version&nbsp;must&nbsp;be&nbsp;Y&nbsp;or&nbsp;higher<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y."&nbsp;--&nbsp;major&nbsp;version&nbsp;must&nbsp;be&nbsp;X,&nbsp;minor&nbsp;version&nbsp;must&nbsp;be&nbsp;Y<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y-"&nbsp;--&nbsp;major&nbsp;version&nbsp;is&nbsp;X,&nbsp;minor&nbsp;version&nbsp;is&nbsp;Y&nbsp;or&nbsp;higher&nbsp;*or*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;major&nbsp;version&nbsp;is&nbsp;higher&nbsp;than&nbsp;X<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"-Z.W"&nbsp;--&nbsp;major&nbsp;version&nbsp;is&nbsp;Z,&nbsp;minor&nbsp;version&nbsp;is&nbsp;W&nbsp;is&nbsp;lower&nbsp;*or*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;major&nbsp;version&nbsp;is&nbsp;lower&nbsp;than&nbsp;Z<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y-Z.W"&nbsp;--&nbsp;both&nbsp;of&nbsp;the&nbsp;above<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;all&nbsp;cases,&nbsp;the&nbsp;release&nbsp;value&nbsp;of&nbsp;the&nbsp;version&nbsp;number&nbsp;is&nbsp;ignored.<br>
+&nbsp;<br>
+VersionSpecs&nbsp;are&nbsp;immutable,&nbsp;and&nbsp;may&nbsp;be&nbsp;used&nbsp;as&nbsp;dict&nbsp;keys.&nbsp;However,<br>
+they&nbsp;compare&nbsp;naively;&nbsp;they&nbsp;will&nbsp;only&nbsp;test&nbsp;as&nbsp;equal&nbsp;if&nbsp;they&nbsp;are<br>
+visually&nbsp;identical.&nbsp;The&nbsp;specs&nbsp;"1-3,3-5"&nbsp;and&nbsp;"1-5"&nbsp;are&nbsp;logically<br>
+equivalent,&nbsp;but&nbsp;they&nbsp;will&nbsp;compare&nbsp;unequal.<br>
+&nbsp;<br>
+VersionSpecs&nbsp;cannot&nbsp;be&nbsp;compared&nbsp;with&nbsp;&lt;,&nbsp;&gt;,&nbsp;&lt;=,&nbsp;&gt;=.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+Constructors:<br>
+&nbsp;<br>
+<a href="#VersionSpec">VersionSpec</a>()&nbsp;--&nbsp;default&nbsp;spec&nbsp;"1.0-";&nbsp;this&nbsp;matches&nbsp;anything<br>
+<a href="#VersionSpec">VersionSpec</a>(int)&nbsp;--&nbsp;construct&nbsp;"X.0"<br>
+<a href="#VersionSpec">VersionSpec</a>(int,&nbsp;int)&nbsp;--&nbsp;construct&nbsp;"X.Y"<br>
+<a href="#VersionSpec">VersionSpec</a>(str)&nbsp;--&nbsp;parse&nbsp;a&nbsp;string&nbsp;into&nbsp;a&nbsp;<a href="#VersionSpec">VersionSpec</a><br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;when&nbsp;parsing&nbsp;a&nbsp;string,&nbsp;extraneous&nbsp;characters&nbsp;are&nbsp;firmly<br>
+rejected.&nbsp;Do&nbsp;not&nbsp;put&nbsp;spaces&nbsp;in&nbsp;your&nbsp;comma-separated&nbsp;list.<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#VersionSpec-match">match</a>()&nbsp;--&nbsp;compare&nbsp;to&nbsp;a&nbsp;<a href="#VersionNumber">VersionNumber</a><br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="VersionSpec-__eq__"><strong>__eq__</strong></a>(self, vers)</dt></dl>
+
+<dl><dt><a name="VersionSpec-__hash__"><strong>__hash__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionSpec-__init__"><strong>__init__</strong></a>(self, *args)</dt></dl>
+
+<dl><dt><a name="VersionSpec-__ne__"><strong>__ne__</strong></a>(self, vers)</dt></dl>
+
+<dl><dt><a name="VersionSpec-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionSpec-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="VersionSpec-init_num"><strong>init_num</strong></a>(self, major, minor<font color="#909090">=None</font>)</dt><dd><tt><a href="#VersionSpec-init_num">init_num</a>(major,&nbsp;minor=None)<br>
+&nbsp;<br>
+Utility&nbsp;function&nbsp;for&nbsp;constructor.&nbsp;(Do&nbsp;not&nbsp;call.)</tt></dd></dl>
+
+<dl><dt><a name="VersionSpec-init_str"><strong>init_str</strong></a>(self, arg)</dt><dd><tt><a href="#VersionSpec-init_str">init_str</a>(arg)<br>
+&nbsp;<br>
+Utility&nbsp;function&nbsp;for&nbsp;constructor.&nbsp;(Do&nbsp;not&nbsp;call.)</tt></dd></dl>
+
+<dl><dt><a name="VersionSpec-match"><strong>match</strong></a>(self, vnum)</dt><dd><tt><a href="#VersionSpec-match">match</a>(vnum)&nbsp;-&gt;&nbsp;bool<br>
+&nbsp;<br>
+Compare&nbsp;the&nbsp;version&nbsp;spec&nbsp;to&nbsp;a&nbsp;<a href="#VersionNumber">VersionNumber</a>&nbsp;(or&nbsp;to&nbsp;a&nbsp;string&nbsp;or<br>
+int&nbsp;which&nbsp;defines&nbsp;a&nbsp;<a href="#VersionNumber">VersionNumber</a>).&nbsp;Return&nbsp;True&nbsp;if&nbsp;the&nbsp;version<br>
+number&nbsp;satisfies&nbsp;the&nbsp;spec.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>all_digits_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x57c440&gt;<br>
+<strong>release_element_regexp</strong> = &lt;_sre.SRE_Pattern object at 0x82a48&gt;</td></tr></table>
+</body></html>

@@ -1,0 +1,131 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boodle.listen</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boodle.html"><font color="#ffffff">boodle</font></a>.listen</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boodle/listen.py">boodle/listen.py</a></font></td></tr></table>
+    <p><tt>listen:&nbsp;A&nbsp;module&nbsp;containing&nbsp;ways&nbsp;for&nbsp;Boodler&nbsp;to&nbsp;listen&nbsp;to&nbsp;external<br>
+events.<br>
+&nbsp;<br>
+<a href="#SocketListener">SocketListener</a>&nbsp;--&nbsp;listen&nbsp;for&nbsp;events&nbsp;on&nbsp;an&nbsp;Internet&nbsp;or&nbsp;Unix&nbsp;domain&nbsp;socket<br>
+<a href="#StdinListener">StdinListener</a>&nbsp;--&nbsp;listen&nbsp;for&nbsp;events&nbsp;on&nbsp;stdin<br>
+&nbsp;<br>
+(Logically&nbsp;these&nbsp;are&nbsp;subclasses&nbsp;of&nbsp;a&nbsp;base&nbsp;Listener&nbsp;class,&nbsp;but&nbsp;I&nbsp;didn't<br>
+implement&nbsp;it&nbsp;that&nbsp;way.)</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boodle.html">boodle</a><br>
+<a href="http://www.python.org/doc/current/library/errno.html">errno</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/fcntl.html">fcntl</a><br>
+<a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/select.html">select</a><br>
+<a href="http://www.python.org/doc/current/library/socket.html">socket</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="boodle.listen.html#SocketListener">SocketListener</a>
+</font></dt><dt><font face="helvetica, arial"><a href="boodle.listen.html#StdinListener">StdinListener</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SocketListener">class <strong>SocketListener</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SocketListener">SocketListener</a>:&nbsp;Listen&nbsp;for&nbsp;events&nbsp;on&nbsp;an&nbsp;Internet&nbsp;or&nbsp;Unix&nbsp;domain&nbsp;socket.<br>
+&nbsp;<br>
+This&nbsp;opens&nbsp;a&nbsp;socket;&nbsp;external&nbsp;processes&nbsp;can&nbsp;connect&nbsp;and&nbsp;send&nbsp;Boodler<br>
+events&nbsp;to&nbsp;it.&nbsp;You&nbsp;can&nbsp;open&nbsp;either&nbsp;Internet&nbsp;sockets&nbsp;(with&nbsp;a&nbsp;numeric<br>
+port&nbsp;number),&nbsp;or&nbsp;Unix&nbsp;domain&nbsp;sockets.&nbsp;(Unix&nbsp;sockets&nbsp;exist&nbsp;as&nbsp;a&nbsp;"file"<br>
+on&nbsp;disk;&nbsp;only&nbsp;processes&nbsp;on&nbsp;the&nbsp;same&nbsp;machine&nbsp;can&nbsp;connect&nbsp;to&nbsp;a&nbsp;Unix<br>
+socket.)<br>
+&nbsp;<br>
+<a href="#SocketListener">SocketListener</a>(handler,&nbsp;listenport=31863)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+The&nbsp;socket&nbsp;is&nbsp;opened&nbsp;as&nbsp;soon&nbsp;as&nbsp;the&nbsp;<a href="#SocketListener">SocketListener</a>&nbsp;is&nbsp;constructed.<br>
+If&nbsp;listenport&nbsp;is&nbsp;an&nbsp;integer,&nbsp;this&nbsp;will&nbsp;be&nbsp;an&nbsp;Internet&nbsp;socket.&nbsp;If<br>
+listenport&nbsp;is&nbsp;a&nbsp;string,&nbsp;it&nbsp;will&nbsp;be&nbsp;a&nbsp;Unix&nbsp;domain&nbsp;socket.<br>
+&nbsp;<br>
+Events&nbsp;will&nbsp;be&nbsp;sent&nbsp;to&nbsp;the&nbsp;handler&nbsp;function.<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#SocketListener-poll">poll</a>()&nbsp;--&nbsp;read&nbsp;as&nbsp;many&nbsp;events&nbsp;as&nbsp;are&nbsp;available<br>
+<a href="#SocketListener-close">close</a>()&nbsp;--&nbsp;close&nbsp;the&nbsp;socket<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="SocketListener-__init__"><strong>__init__</strong></a>(self, handler, listenport<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="SocketListener-close"><strong>close</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SocketListener-poll"><strong>poll</strong></a>(self)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>unlinkport</strong> = None</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="StdinListener">class <strong>StdinListener</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#StdinListener">StdinListener</a>:&nbsp;Listen&nbsp;for&nbsp;events&nbsp;arriving&nbsp;on&nbsp;standard&nbsp;input.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;intended&nbsp;for&nbsp;when&nbsp;Boodler&nbsp;is&nbsp;running&nbsp;as&nbsp;a&nbsp;subordinate&nbsp;process<br>
+in&nbsp;some&nbsp;other&nbsp;program.&nbsp;The&nbsp;hosting&nbsp;program&nbsp;can&nbsp;write&nbsp;event&nbsp;data&nbsp;in<br>
+to&nbsp;Boodler.<br>
+&nbsp;<br>
+<a href="#StdinListener">StdinListener</a>(handler)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Events&nbsp;will&nbsp;be&nbsp;sent&nbsp;to&nbsp;the&nbsp;handler&nbsp;function.<br>
+&nbsp;<br>
+Public&nbsp;methods:<br>
+&nbsp;<br>
+<a href="#StdinListener-poll">poll</a>()&nbsp;--&nbsp;read&nbsp;as&nbsp;many&nbsp;events&nbsp;as&nbsp;are&nbsp;available<br>
+<a href="#StdinListener-close">close</a>()&nbsp;--&nbsp;close&nbsp;the&nbsp;socket<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="StdinListener-__init__"><strong>__init__</strong></a>(self, handler)</dt></dl>
+
+<dl><dt><a name="StdinListener-close"><strong>close</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="StdinListener-poll"><strong>poll</strong></a>(self)</dt></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-handle_by_lines"><strong>handle_by_lines</strong></a>(handler, dat)</dt><dd><tt><a href="#-handle_by_lines">handle_by_lines</a>(handler,&nbsp;dat)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Take&nbsp;an&nbsp;input&nbsp;buffer,&nbsp;parse&nbsp;as&nbsp;many&nbsp;events&nbsp;out&nbsp;of&nbsp;it&nbsp;as&nbsp;possible,<br>
+handle&nbsp;them,&nbsp;and&nbsp;return&nbsp;the&nbsp;remainder.&nbsp;For&nbsp;each&nbsp;valid&nbsp;event,&nbsp;the<br>
+handler&nbsp;argument&nbsp;will&nbsp;be&nbsp;called&nbsp;with&nbsp;the&nbsp;event&nbsp;tuple&nbsp;for&nbsp;an<br>
+argument.<br>
+&nbsp;<br>
+An&nbsp;event&nbsp;is&nbsp;a&nbsp;newline-terminated&nbsp;string&nbsp;(which&nbsp;is&nbsp;not&nbsp;just&nbsp;whitespace).<br>
+So&nbsp;the&nbsp;returned&nbsp;value&nbsp;will&nbsp;be&nbsp;the&nbsp;remainder&nbsp;after&nbsp;the&nbsp;last&nbsp;newline.<br>
+The&nbsp;event&nbsp;line&nbsp;is&nbsp;split&nbsp;on&nbsp;whitespace,&nbsp;producing&nbsp;a&nbsp;tuple&nbsp;of&nbsp;strings.</tt></dd></dl>
+</td></tr></table>
+</body></html>

@@ -1,0 +1,66 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module boodle.music</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="boodle.html"><font color="#ffffff">boodle</font></a>.music</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="index.html">index</a><br><a href="../../src/boodle/music.py">boodle/music.py</a></font></td></tr></table>
+    <p><tt>music:&nbsp;Utility&nbsp;functions&nbsp;for&nbsp;musical&nbsp;computation.<br>
+&nbsp;<br>
+<a href="#-get_pitch">get_pitch</a>()&nbsp;--&nbsp;the&nbsp;pitch&nbsp;factor&nbsp;that&nbsp;corresponds&nbsp;to&nbsp;a&nbsp;given&nbsp;number&nbsp;of&nbsp;semitones<br>
+<a href="#-decibel">decibel</a>()&nbsp;--&nbsp;the&nbsp;volume&nbsp;factor&nbsp;that&nbsp;corresponds&nbsp;to&nbsp;a&nbsp;given&nbsp;number&nbsp;of&nbsp;decibels</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/math.html">math</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-decibel"><strong>decibel</strong></a>(val<font color="#909090">=0</font>)</dt><dd><tt><a href="#-decibel">decibel</a>(val=0)&nbsp;-&gt;&nbsp;float<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;volume&nbsp;factor&nbsp;that&nbsp;corresponds&nbsp;to&nbsp;a&nbsp;given&nbsp;number&nbsp;of&nbsp;decibels.<br>
+&nbsp;<br>
+If&nbsp;val&nbsp;is&nbsp;zero,&nbsp;this&nbsp;returns&nbsp;1.&nbsp;If&nbsp;val&nbsp;is&nbsp;negative,&nbsp;this&nbsp;returns&nbsp;a<br>
+value&nbsp;less&nbsp;than&nbsp;1&nbsp;(but&nbsp;greater&nbsp;than&nbsp;zero);&nbsp;this&nbsp;value&nbsp;will&nbsp;reduce&nbsp;a<br>
+sound&nbsp;by&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;decibels.&nbsp;If&nbsp;val&nbsp;is&nbsp;positive,&nbsp;this<br>
+returns&nbsp;a&nbsp;value&nbsp;greater&nbsp;than&nbsp;1,&nbsp;which&nbsp;will&nbsp;amplify&nbsp;a&nbsp;sound.<br>
+&nbsp;<br>
+Example:&nbsp;Fading&nbsp;a&nbsp;sound&nbsp;by&nbsp;three&nbsp;decibels&nbsp;will&nbsp;approximately&nbsp;halve<br>
+its&nbsp;amplitude;&nbsp;therefore,&nbsp;<a href="#-decibel">decibel</a>(-3)&nbsp;is&nbsp;approximately&nbsp;0.5.</tt></dd></dl>
+ <dl><dt><a name="-get_pitch"><strong>get_pitch</strong></a>(semi)</dt><dd><tt><a href="#-get_pitch">get_pitch</a>(semi)&nbsp;-&gt;&nbsp;float<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;pitch&nbsp;factor&nbsp;that&nbsp;corresponds&nbsp;to&nbsp;a&nbsp;given&nbsp;number&nbsp;of&nbsp;semitones.<br>
+The&nbsp;argument&nbsp;must&nbsp;be&nbsp;an&nbsp;integer.<br>
+&nbsp;<br>
+If&nbsp;val&nbsp;is&nbsp;zero,&nbsp;this&nbsp;returns&nbsp;1.&nbsp;If&nbsp;val&nbsp;is&nbsp;negative,&nbsp;this&nbsp;returns&nbsp;a<br>
+value&nbsp;less&nbsp;than&nbsp;1&nbsp;(but&nbsp;greater&nbsp;than&nbsp;zero);&nbsp;this&nbsp;value&nbsp;will&nbsp;lower&nbsp;a<br>
+sound&nbsp;by&nbsp;the&nbsp;given&nbsp;number&nbsp;of&nbsp;semitones.&nbsp;If&nbsp;val&nbsp;is&nbsp;positive,&nbsp;this<br>
+returns&nbsp;a&nbsp;value&nbsp;greater&nbsp;than&nbsp;1,&nbsp;which&nbsp;will&nbsp;raise&nbsp;a&nbsp;sound.<br>
+&nbsp;<br>
+Example:&nbsp;Raising&nbsp;a&nbsp;sound&nbsp;by&nbsp;one&nbsp;octave&nbsp;(twelve&nbsp;semitones)&nbsp;will&nbsp;exactly<br>
+double&nbsp;its&nbsp;pitch;&nbsp;therefore,&nbsp;<a href="#-get_pitch">get_pitch</a>(12)&nbsp;is&nbsp;2.0.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>chromatic_octave</strong> = [1.0, 1.0594630943592953, 1.122462048309373, 1.189207115002721, 1.2599210498948732, 1.3348398541700344, 1.4142135623730951, 1.4983070768766815, 1.5874010519681994, 1.681792830507429, 1.7817974362806785, 1.8877486253633868]<br>
+<strong>decibel_factor</strong> = 0.23025850929940461<br>
+<strong>ix</strong> = 7<br>
+<strong>octaves</strong> = [1, 2, 4, 8, 16, 32, 64, 128]<br>
+<strong>val</strong> = 128</td></tr></table>
+</body></html>
