@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+<title>Boodler: Building Packages</title>
+</head>
+<body>
+
+<h1>Boodler: Building Packages</h1>
+
+<p>
+Say you've created a <code>bootest</code> directory which contains a working soundscape called <code>Example</code>. (And if you followed the <a href="design-start.html">previous chapter</a> of this manual, you do.) How do you turn it into a .boop package? Easy:
+</p>
+
+<pre>
+boodle-mgr.py --import create bootest
+</pre>
+
+<p>
+Type that, and you'll see this output:
+</p>
+
+<pre>
+Package created: /home/zarf/com.example.bootest.1.0.boop
+</pre>
+
+<p>
+(The .boop file will be created in the same directory as you put the <code>bootest</code> folder, actually.)
+</p>
+
+<p>
+The <code><a href="boodle-mgr-ref.html">boodle-mgr.py</a></code> script is for package management, and its "create" command scans a package directory, figures out what's in it, and creates a .boop package.  
+</p>
+
+<p>
+(The <code>--import</code> option is necessary, for security reasons. Not-yet-implemented security, at that. See the documentation for the <a href="boodle-mgr-ref.html#create">create</a> command. Or, just use it and don't fret about why.)
+</p>
+
+<p>
+This newly-created .boop file can be installed, same as any .boop that you download:
+</p>
+
+<pre>
+boodle-mgr.py install /home/zarf/com.example.bootest.1.0.boop
+</pre>
+
+<p>
+(Fill in the actual location of the .boop you created, of course.)
+</p>
+
+<p>
+You can now play the <code>Example</code> soundscape without using the <code>--external</code> option:
+</p>
+
+<pre>
+boodler.py com.example.bootest/Example
+</pre>
+
+<p>
+Now that you've installed it, Boodler is able to locate the package in your collection. It is no longer relying on the contents of the <code>bootest</code> directory. You could even delete the <code>bootest</code> directory if you wanted. But you shouldn't, because we're going to keep updating it throughout this manual.
+</p>
+
+<h2>Metadata</h2>
+
+<p>
+The creation process figured out that the package name was <code>com.example.bootest</code>. How? By looking in the <code>Metadata</code> file that you created. That contained a line of the form:
+</p>
+
+<pre>
+boodler.package: com.example.bootest
+</pre>
+
+<p>
+You can add other lines to specify other information about your package. For example, if you added this line:
+</p>
+
+<pre>
+boodler.version: 1.1
+</pre>
+
+<p>
+...then you would be defining version 1.1 of your package. The "create" command would then create a file named <code>com.example.bootest.1.1.boop</code>.
+</p>
+
+<p>
+You will usually want to specify your own name in the <code>Metadata</code> file, and perhaps other bibliographic information. You would add lines like these:
+</p>
+
+<pre>
+dc.creator: Andrew Plotkin
+dc.title: Example plinking module
+</pre>
+
+<p>
+The "dc." prefix refers to "<a href="http://dublincore.org/">Dublin Core</a>", a common standard for metadata. (In contrast, the "boodler." lines are information that control Boodler's behavior.) 
+</p>
+
+<p>
+These are the most common "dc." terms:
+</p>
+
+<ul>
+<li><code>dc.creator</code>: the name of the package's creator</li>
+<li><code>dc.title</code>: the title</li>
+<li><code>dc.description</code>: a longer explanation of the package</li>
+<li><code>dc.created</code>: the creation date</li>
+<li><code>dc.modified</code>: the last modification date</li>
+<li><code>dc.source</code>: your home page URL, or where people can find you</li>
+<li><code>dc.license</code>: the terms under which people can use the package</li>
+<li><code>dc.rights</code>: information about who owns the package material (if not you)</li>
+</ul>
+
+<p>
+There are many more <a href="http://dublincore.org/documents/dcmi-terms/">Dublin Core metadata terms</a>, but the ones listed here are most useful for Boodler packages.
+</p>
+
+<p>
+<em>(A future version of the Boodler web site will display this metadata information when you are browsing through available packages.)</em>
+</p>
+
+<h2>Resources</h2>
+
+<p>
+You've defined a title for your package. But you should also define a title for each <em>soundscape</em> in the package. You do this by creating a <code>Resources</code> file in your <code>bootest</code> directory. Create a file with that name, containing these lines:
+</p>
+
+<pre>
+:Example
+dc.title: Example soundscape
+</pre>
+
+<p>
+<code>Resources</code> is rather like <code>Metadata</code>, except that it's divided into sections, one for each resource you want to describe. (A resource is a sound or a soundscape that will go into the package.) A line <em>beginning</em> with a colon is the start of a section. In this case, we have just one section, giving the <code>Example</code> soundscape a title.
+</p>
+
+<p>
+Try running the soundscape:
+</p>
+
+<pre>
+boodler.py --external bootest com.example.bootest/Example
+</pre>
+
+<p>
+We've gone back to using the <code>--external</code> option, because we want to pick up the changes you just made to the <code>bootest</code> directory. You'll see this output:
+</p>
+
+<pre>
+16:20:43 (root) located external package: com.example.bootest 1.0
+16:20:44 (root) Running "Example soundscape"
+</pre>
+
+<p>
+Boodler displays your soundscape title, instead of "unnamed agent".
+</p>
+
+<p>
+(Yes, you could put any Dublin Core metadata terms into a <code>Resources</code> file. But you usually only need the <code>dc.title</code>. That's because, usually, all the soundscapes have the same <code>dc.creator</code> and so on. If you don't specify a term in the <code>Resources</code> file, the value in the <code>Metadata</code> file is assumed to apply. If you want to put a different modification date on each soundscape, or some such, feel free.)
+</p>
+
+<h2>Building a package with sound resources</h2>
+
+<p>
+You can put sounds, as well as soundscapes, into packages. (You've probably figured this out, given all the sound packages you've installed.) Boodler's native sound formats are AIFF, WAV, and AU.
+</p>
+
+<p>
+<em>(Yes, MP3 and Ogg would be nice. But Python doesn't support those formats out of the box, so decoding them would make Boodler harder to build. It would also be slow. Maybe a future version of Boodler will support them.)</em>
+</p>
+
+<p>
+It's generally best practice to keep sounds and soundscapes in separate packages. That way, another package can import your sounds without worrying about your soundscapes -- or vice versa.
+</p>
+
+<p>
+So, create a second package directory named <code>bootest2</code>. Give it a <code>Metadata</code> file with <em>only</em> this line:
+</p>
+
+<pre>
+boodler.package: com.example.bootest2
+</pre>
+
+<p>
+You don't want a <code>boodler.main</code> line, because that defines the location of a Python source file, and this package won't have one.
+</p>
+
+<p>
+Now copy some AIFF or WAV files into <code>bootest2</code>.
+</p>
+
+<p>
+You have to be careful about filenames, though. A Boodler sound resource must have a Python-legal name. That means letters, digits, and underscores only (and it can't begin with a digit). No other punctuation, except for the ".aiff", ".wav", or ".au" suffix.
+</p>
+
+<p>
+Say you've found a <code>foop.aiff</code> file that you want to incorporate into Boodler. Copy it into <code>bootest2</code>. 
+</p>
+
+<p>
+You now have a valid Boodler package directory. You can use the standard sound-playing tool, <code>org.boodler.play/OneSound</code>, to play it. Type this (all on one line):
+</p>
+
+<pre>
+boodler.py --external bootest2 org.boodler.play/OneSound
+    com.example.bootest2/foop
+</pre>
+
+<p>
+Notice what's going on here. We use the <code>--external</code> option to load in the <code>com.example.bootest2</code> package. That's not where the <code>OneSound</code> agent is -- just where the <code>foop</code> resource can be found. <code>OneSound</code> comes from the <code>org.boodler.play</code> package, which you should have installed already (from the Boodler site).
+</p>
+
+<p>
+The argument to <code>OneSound</code> is the full name of the sound resource we want to play: <code>com.example.bootest2/foop</code>. That's available because of the <code>--external</code> option. So it works; the sound plays.
+</p>
+
+<p>
+You can define a <code>Resources</code> file for sounds, just as you can for soundscapes:
+</p>
+
+<pre>
+:foop
+dc.title: A foop-like noise
+</pre>
+
+<p>
+If you put several sounds in the package (which you typically will), you'd have one section per sound resource, each beginning with a line beginning with a colon.
+</p>
+
+<h2>A package with both sounds and soundscapes</h2>
+
+<p>
+I said you generally don't want to do this. But let's pretend that you do, for the sake of documentation.
+</p>
+
+<p>
+Copy your <code>foop.aiff</code> into the <code>bootest</code> directory. We'll make that sound directly accessible from the Python code in <code>main.py</code>.
+</p>
+
+<pre>
+from boopak.package import *
+from boodle import agent
+
+bexport()
+
+class Example(agent.Agent):
+    def run(self):
+        self.sched_note(foop)
+</pre>
+
+<p>
+The new feature here is the <code>bexport()</code> call. What this means is, look through the sound files in the package directory, and make each one a sound resource in the package. Each one also becomes a variable in the code itself. In this case, we have a resource <code>com.example.bootest/foop</code> which can be referred to from other packages, and a value <code>foop</code> that can be used inside the package. (Which the <code>sched_note</code> call does.)
+</p>
+
+<p>
+In sound-only packages -- packages with no Python source -- this resource-exporting process is automatic. You only need the <code>bexport()</code> call when you have Python code and sound files in the same package.
+</p>
+
+<p>
+(In fact, you can use <code>bexport()</code> to control <em>which</em> sound files get turned into resources. But we don't need to worry about that here.)
+</p>
+
+<h2>Next...</h2>
+
+<p>
+<a href="design-channel.html">Tricks with soundscape channels</a>.
+</p>
+
+<hr/>
+<p>
+<em><a href="design.html">Designing Soundscapes</a></em>
+</p>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
+
+</body></html>
