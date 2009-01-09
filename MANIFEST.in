@@ -5,7 +5,6 @@ include GPL LGPL README TODO
 recursive-include src/cboodle *.h *.c
 include src/cboodle/PORTING
 graft doc
-graft effects
 graft etc
 
 global-exclude *~
