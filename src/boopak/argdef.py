@@ -151,6 +151,11 @@ find_resource_ref() -- work out the representation of a resource
 resolve_value() -- resolve a value or wrapped value
 """
 
+# Declare the imports list, so that "from boodle.argdef import *"
+# doesn't pull in random garbage. This only lists what a typical
+# sound module would need. Functions like node_to_value() are not
+# included, even though they're not listed as "internal" above.
+
 __all__ = [
 	'Arg', 'ArgClassWrapper', 'ArgDefError', 'ArgExtra',
 	'ArgList', 'ArgListWrapper', 'ArgTupleWrapper', 'ArgWrapper',
@@ -487,8 +492,8 @@ class ArgList:
 		function this way:
 
 			(ls, dic) = arglist.resolve(tree)
-			wrap = ArgClassWrapper(f, ls, dic)
-			wrap()
+			clas = ArgClassWrapper(f, ls, dic)
+			clas()
 		"""
 		
 		if (not isinstance(node, sparse.List)):
@@ -827,8 +832,8 @@ class Arg:
 		if (node.has_attr('type')):
 			dic['type'] = node_to_type(node.get_attr('type'))
 		if (node.has_attr('default')):
-			wrap = node_to_value(dic.get('type'), node.get_attr('default'))
-			dic['default'] = resolve_value(wrap)
+			clas = node_to_value(dic.get('type'), node.get_attr('default'))
+			dic['default'] = resolve_value(clas)
 			### What if this is an AgentClass?
 			### should this *always* be a wrapped value? For the cases where
 			### the default is an Agent instance that we don't know how to
@@ -1022,11 +1027,11 @@ class Wrapped:
 	looks like:
 
 		(ls, dic) = arglist.resolve(tree)
-		wrap = ArgClassWrapper(f, ls, dic)
-		wrap()
+		clas = ArgClassWrapper(f, ls, dic)
+		clas()
 
 	Plain types are instantiated in the resolve() method. Wrapped types
-	are instantiated in the wrap() invocation. If wrap() is invoked
+	are instantiated in the clas() invocation. If clas() is invoked
 	a second time, the wrapped types get a second instantiation,
 	independent of the first.
 
@@ -1034,8 +1039,8 @@ class Wrapped:
 	You never need to wrap those types. But for mutable types, the
 	difference is important. If the ArgList contains an Agent type,
 	an Agent instance will be created at resolve() time, and *shared*
-	between all wrap() calls. If it instead contains a Wrapped(Agent)
-	type, each wrap() call will get a *new* Agent instance.
+	between all clas() calls. If it instead contains a Wrapped(Agent)
+	type, each clas() call will get a *new* Agent instance.
 
 	Wrapped(type) -- constructor
 
@@ -1335,8 +1340,8 @@ def node_to_value(type, node):
 		loader = pload.PackageLoader.global_loader
 		if (not loader):
 			raise ArgDefError('cannot load resource, because there is no loader')
-		wrap = load_described(loader, node)
-		return wrap
+		clas = load_described(loader, node)
+		return clas
 
 	raise ValueError('cannot handle type: ' + str(type))
 
