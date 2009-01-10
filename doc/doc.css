@@ -1,0 +1,50 @@
+
+body {
+  font-family: Gill Sans, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  background: #EFEBDC;
+}
+
+p {
+  font-family: Palatino, Georgia, serif;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+ul {
+  font-family: Palatino, Georgia, serif;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+dl {
+  font-family: Palatino, Georgia, serif;
+  font-size: 12px;
+  line-height: 14px;
+  margin-left: 20px;
+}
+
+pre {
+  margin-left: 10px;
+  border-left: 4px solid #D8D8C8;
+  padding-left: 6px;
+}
+
+h1 {
+  font-weight: normal;
+  color: #443;
+  margin-left: 20px;
+}
+
+h2 {
+  font-weight: normal;
+  font-size: 17px;
+  color: #443;
+  margin-left: 2px;
+}
+
+h3 {
+  font-weight: normal;
+  color: #222;
+}
+
