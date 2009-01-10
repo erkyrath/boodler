@@ -9,11 +9,17 @@
 
 <h1>Boodler: Soundscapes With Arguments</h1>
 
-You've passed arguments to soundscapes on the command line, and even run soundscapes (such as `OneSound`) that required an argument. Now let's write a soundscape that *accepts* arguments.
+<p>
+You've passed arguments to soundscapes on the command line, and even run soundscapes (such as <code>OneSound</code>) that required an argument. Now let's write a soundscape that <em>accepts</em> arguments.
+</p>
 
-To do this, add an `init()` method to your Agent class. This is called during construction, with any arguments (named or unnamed) that were provided.
+<p>
+To do this, add an <code>init()</code> method to your Agent class. This is called during construction, with any arguments (named or unnamed) that were provided.
+</p>
 
-(Python devotees should note that this is an `init()` method, not `__init__()`. The Agent base class has an `__init__()` method, which you are unlikely to need to override or call. It passes along all its arguments to the `init()` that you write.)
+<p>
+(Python devotees should note that this is an <code>init()</code> method, not <code>__init__()</code>. The Agent base class has an <code>__init__()</code> method, which you are unlikely to need to override or call. It passes along all its arguments to the <code>init()</code> that you write.)
+</p>
 
 <pre>
 from boopak.package import *
@@ -37,29 +43,53 @@ class Example(agent.Agent):
         self.sched_agent(ag)
 </pre>
 
-The `Example2` soundscape plinks forever, and takes two arguments: the plinking pitch and the repeat time. `Example` creates two instances of `Example2`. The first has pitch 1.5 (high) and repeats every half-second, and the other has pitch 1 (normal) and repeats every 1.21 seconds. Both are scheduled to start immediately, so when you run `Example`...
+<p>
+The <code>Example2</code> soundscape plinks forever, and takes two arguments: the plinking pitch and the repeat time. <code>Example</code> creates two instances of <code>Example2</code>. The first has pitch 1.5 (high) and repeats every half-second, and the other has pitch 1 (normal) and repeats every 1.21 seconds. Both are scheduled to start immediately, so when you run <code>Example</code>...
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example
+<pre>
+boodler.py --extern bootest com.example.bootest/Example
+</pre>
 
+<p>
 ...you hear a quick high plinking interspersed with a low, slower sound.
+</p>
 
-Your `init()` method can do anything you want.  But remember that it is called when the agent instance is created. This is *before* the agent is scheduled, placed in a channel, or set running. Therefore, the `init()` method cannot schedule notes or agents, or create channels, or do anything else that affects the stream of sound. (If you think you want to do these things, you probably really want to create a separate agent class that does them in its `run()` method.)
+<p>
+Your <code>init()</code> method can do anything you want.  But remember that it is called when the agent instance is created. This is <em>before</em> the agent is scheduled, placed in a channel, or set running. Therefore, the <code>init()</code> method cannot schedule notes or agents, or create channels, or do anything else that affects the stream of sound. (If you think you want to do these things, you probably really want to create a separate agent class that does them in its <code>run()</code> method.)
+</p>
 
-Most often, `init()` will just take its arguments and store them away for `run()` time. In the example, we take the `pitch` argument and attach it to the agent instance, as `self.pitch`. We do the same with `reptime`.
+<p>
+Most often, <code>init()</code> will just take its arguments and store them away for <code>run()</code> time. In the example, we take the <code>pitch</code> argument and attach it to the agent instance, as <code>self.pitch</code>. We do the same with <code>reptime</code>.
+</p>
 
-`Example2` requires two arguments, so you won't be surprised that this doesn't work:
+<p>
+<code>Example2</code> requires two arguments, so you won't be surprised that this doesn't work:
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example2
+<pre>
+boodler.py --extern bootest com.example.bootest/Example2
+</pre>
 
+<p>
 If you try it you'll see a "2 arguments required". Okay, that's easy to fix:
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+<pre>
+boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+</pre>
 
+<p>
 But that doesn't work either; the error says "TypeError: a float is required". What's going on?
+</p>
 
-The problem is that Boodler doesn't know how to interpret `1.2` or `0.5`. Strings? Floats? Integers (in which case it should be showing a different error)? Lacking any information about what `pitch` and `reptime` should be, it passes these values in as strings. `Example2` winds up calling `sched_note()` with a string for a pitch value, and that causes a Python error.
+<p>
+The problem is that Boodler doesn't know how to interpret <code>1.2</code> or <code>0.5</code>. Strings? Floats? Integers (in which case it should be showing a different error)? Lacking any information about what <code>pitch</code> and <code>reptime</code> should be, it passes these values in as strings. <code>Example2</code> winds up calling <code>sched_note()</code> with a string for a pitch value, and that causes a Python error.
+</p>
 
+<p>
 This is a sad state of affairs, but you can resolve it by letting Boodler know what types those arguments should be. The easiest way to do this is to provide default values:
+</p>
 
 <pre>
 class Example2(agent.Agent):
@@ -71,25 +101,45 @@ class Example2(agent.Agent):
         self.resched(self.reptime)
 </pre>
 
-This actually solves *two* problems. First, you can now say
+<p>
+This actually solves <em>two</em> problems. First, you can now say
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example2
+<pre>
+boodler.py --extern bootest com.example.bootest/Example2
+</pre>
 
-...and get a sensible result; the agent will run with a pitch of 1 and a repeat time of 1 second. And secondly, Boodler will see that those default values are floats, and deduce that `Example2` takes two float arguments. So when you say:
+<p>
+...and get a sensible result; the agent will run with a pitch of 1 and a repeat time of 1 second. And secondly, Boodler will see that those default values are floats, and deduce that <code>Example2</code> takes two float arguments. So when you say:
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+<pre>
+boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+</pre>
 
+<p>
 ...the values will be passed in correctly.
+</p>
 
+<p>
 Boodler can recognize string, int, float, and bool argument types. It can also recognize lists, tuples, sounds, and soundscapes -- but those take more thought, so we will get to them in a moment.
+</p>
 
-By the way, ints and floats are different types. You wouldn't want to write `Example2` with the line
+<p>
+By the way, ints and floats are different types. You wouldn't want to write <code>Example2</code> with the line
+</p>
 
-	def init(self, pitch=1, reptime=1):
+<pre>
+def init(self, pitch=1, reptime=1):
+</pre>
 
+<p>
 Even though 1 is the same numeric value as 1.0, Boodler would infer that these are integer arguments, and then it would reject values like 1.2 or 0.5 on the command line.
+</p>
 
+<p>
 On the other hand, you would want to use an integer for an argument like this:
+</p>
 
 <pre>
 class Example3(agent.Agent):
@@ -103,13 +153,19 @@ class Example3(agent.Agent):
                 delay=ix*self.reptime)
 </pre>
 
-In this case, `count` is a number of repetitions, so it should be integral.
+<p>
+In this case, <code>count</code> is a number of repetitions, so it should be integral.
+</p>
 
-## Specifying argument types explicitly
+<h2>Specifying argument types explicitly</h2>
 
-Boodler can infer a lot about your Agent's arguments, but not always everything. Perhaps you don't *want* to specify default values, but you want the correct types anyway.
+<p>
+Boodler can infer a lot about your Agent's arguments, but not always everything. Perhaps you don't <em>want</em> to specify default values, but you want the correct types anyway.
+</p>
 
-You can declare additional information about your arguments, or even override Boodler's assumptions, by creating an `_args` field in your Agent class.
+<p>
+You can declare additional information about your arguments, or even override Boodler's assumptions, by creating an <code>_args</code> field in your Agent class.
+</p>
 
 <pre>
 from boopak.package import *
@@ -129,29 +185,51 @@ class Example(agent.Agent):
         self.resched(self.reptime)
 </pre>
 
-The argument data structures are defined in the `argdef` module, so we must import its contents. That lets us create an `ArgList` object, which we store as `_args`.
+<p>
+The argument data structures are defined in the <code>argdef</code> module, so we must import its contents. That lets us create an <code>ArgList</code> object, which we store as <code>_args</code>.
+</p>
 
-The `ArgList` is set up with a sequence of `Arg` objects, each one representing one of the `init()` arguments. For each one, as you see, we can specify a type. Boodler consults both the `_args` and the `init()` function when deriving argument metadata.
+<p>
+The <code>ArgList</code> is set up with a sequence of <code>Arg</code> objects, each one representing one of the <code>init()</code> arguments. For each one, as you see, we can specify a type. Boodler consults both the <code>_args</code> and the <code>init()</code> function when deriving argument metadata.
+</p>
 
-You can actually specify all sorts of information in an `Arg`. For example, you could do this:
+<p>
+You can actually specify all sorts of information in an <code>Arg</code>. For example, you could do this:
+</p>
 
-	_args = ArgList(Arg(type=float, default=1), Arg(type=float, default=1))
+<pre>
+_args = ArgList(Arg(type=float, default=1), Arg(type=float, default=1))
+</pre>
 
-That defines the type *and* the default value for each argument. With that line in place, you can run
+<p>
+That defines the type <em>and</em> the default value for each argument. With that line in place, you can run
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example
+<pre>
+boodler.py --extern bootest com.example.bootest/Example
+</pre>
 
-...and the defaults will be picked up, even though they're not defined in the `init()` code.
+<p>
+...and the defaults will be picked up, even though they're not defined in the <code>init()</code> code.
+</p>
 
-The `_args` can also specify information about a *particular* argument. If you had this:
+<p>
+The <code>_args</code> can also specify information about a <em>particular</em> argument. If you had this:
+</p>
 
-	_args = ArgList(reptime=Arg(type=float))
+<pre>
+_args = ArgList(reptime=Arg(type=float))
+</pre>
 
-...it would provide information about `reptime`, but leave `pitch` alone.
+<p>
+...it would provide information about <code>reptime</code>, but leave <code>pitch</code> alone.
+</p>
 
-## List and tuple types
+<h2>List and tuple arguments</h2>
 
-Here's an Agent which takes a *list* of pitches, and schedules one note for each:
+<p>
+Here's an Agent which takes a <em>list</em> of pitches, and schedules one note for each:
+</p>
 
 <pre>
 class Example(agent.Agent):
@@ -164,27 +242,47 @@ class Example(agent.Agent):
             pos = pos+0.2
 </pre>
 
-This has one argument, and we even provide a default value (the empty list). Boodler can infer that the argument type is `list`, but it can't figure out what *kind* of list we mean. We can tell it, though:
+<p>
+This has one argument, and we even provide a default value (the empty list). Boodler can infer that the argument type is <code>list</code>, but it can't figure out what <em>kind</em> of list we mean. We can tell it, though:
+</p>
 
-	_args = ArgList(Arg(type=ListOf(float)))
+<pre>
+_args = ArgList(Arg(type=ListOf(float)))
+</pre>
 
-`ListOf` is another magic structure from the `argdef` module. `ListOf(float)` means just what it sounds like -- the argument will expect a list of floats. So you can say:
+<p>
+<code>ListOf</code> is another magic structure from the <code>argdef</code> module. <code>ListOf(float)</code> means just what it sounds like -- the argument will expect a list of floats. So you can say:
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example "(0.9 1.0 1.1 1.2)"
+<pre>
+boodler.py --extern bootest com.example.bootest/Example "(0.9 1.0 1.1 1.2)"
+</pre>
 
-(Lists are in paretheses, because there's a little Lisp in all of us. As usual, we have to quote parentheses to keep the Unix shell from eating them.)
+<p>
+(Lists are in parentheses, because there's a little Lisp in all of us. As usual, we have to quote parentheses to keep the Unix shell from eating them.)
+</p>
 
-`ListOf` offers a great deal of power. You can, of course, define types like `ListOf(int)` and `ListOf(str)`, or even `ListOf(ListOf(int))`. You could also say `ListOf(int, str)` -- this defines a list of *alternating* integers and strings. If you want the first entry to be an integer, but all the rest to be strings, you'd say `ListOf(int, str, repeat=1)` -- i.e., repeat the last (one) type to extend the sequence. `ListOf(int, str, float, repeat=2)` would come out as `[int, str, float, str, float, ...]`
+<p>
+<code>ListOf</code> offers a great deal of power. You can, of course, define types like <code>ListOf(int)</code> and <code>ListOf(str)</code>, or even <code>ListOf(ListOf(int))</code>. You could also say <code>ListOf(int, str)</code> -- this defines a list of <em>alternating</em> integers and strings. If you want the first entry to be an integer, but all the rest to be strings, you'd say <code>ListOf(int, str, repeat=1)</code> -- i.e., repeat the last (one) type to extend the sequence. <code>ListOf(int, str, float, repeat=2)</code> would come out as <code>[int, str, float, str, float, ...]</code>
+</p>
 
-All of the examples so far permit any number of *values* in the list; we've only been specifying what types they should be, if they show up. To require a list of a particular length, you can say something like `ListOf(int, min=1)` (a list of at least one integer), or `ListOf(int, min=1, max=5)` (at least one integer, but at most five). 
+<p>
+All of the examples so far permit any number of <em>values</em> in the list; we've only been specifying what types they should be, if they show up. To require a list of a particular length, you can say something like <code>ListOf(int, min=1)</code> (a list of at least one integer), or <code>ListOf(int, min=1, max=5)</code> (at least one integer, but at most five).
+</p>
 
-There's also a `TupleOf` type structure. It works almost the same way. The only difference is, a declaration like `TupleOf(int, str, float)` is interpreted as a tuple of *exactly* three elements (an integer, a string, and a float). This is a nod to the way tuples are commonly used. You can stick in `min`, `max`, and `repeat` values -- just as you can with `ListOf` -- for any length requirement that suits you. `TupleOf(int, min=0, max=None)` would be a tuple of integers of any length.
+<p>
+There's also a <code>TupleOf</code> type structure. It works almost the same way. The only difference is, a declaration like <code>TupleOf(int, str, float)</code> is interpreted as a tuple of <em>exactly</em> three elements (an integer, a string, and a float). This is a nod to the way tuples are commonly used. You can stick in <code>min</code>, <code>max</code>, and <code>repeat</code> values -- just as you can with <code>ListOf</code> -- for any length requirement that suits you. <code>TupleOf(int, min=0, max=None)</code> would be a tuple of integers of any length.
+</p>
 
-Just for completeness, you *can* say `Arg(type=list)` or `Arg(type=tuple)`. (Equivalently, `Arg(type=ListOf())` or `Arg(type=TupleOf())`.) These assume lists/tuples of any length, and indeterminate type -- meaning strings, by default. But parenthesized elements will be themselves interpreted as lists of indeterminate values. It is almost completely unlikely that you will ever care about this.
+<p>
+Just for completeness, you <em>can</em> say <code>Arg(type=list)</code> or <code>Arg(type=tuple)</code>. (Equivalently, <code>Arg(type=ListOf())</code> or <code>Arg(type=TupleOf())</code>.) These assume lists/tuples of any length, and indeterminate type -- meaning strings, by default. But parenthesized elements will be themselves interpreted as lists of indeterminate values. It is almost completely unlikely that you will ever care about this.
+</p>
 
-## Sound and soundscape types
+<h2>Sound arguments</h2>
 
-Boodler will recognize the type of a sound sample object.
+<p>
+Boodler will recognize the type of a sound sample argument.
+</p>
 
 <pre>
 class Example(agent.Agent):
@@ -194,12 +292,19 @@ class Example(agent.Agent):
         self.sched_note(self.sound)
 </pre>
 
-This plays one sound, with `org.boodler.old.water/droplet_plink` as the default. So:
+<p>
+This plays one sound, with <code>org.boodler.old.water/droplet_plink</code> as the default. So:
+</p>
 
-	boodler.py --extern bootest com.example.bootest/Example
-	boodler.py --extern bootest com.example.bootest/Example org.boodler.old.water/droplet_bloink
+<pre>
+boodler.py --extern bootest com.example.bootest/Example
+boodler.py --extern bootest com.example.bootest/Example
+    org.boodler.old.water/droplet_bloink
+</pre>
 
-And of course you can declare a list of sounds with an `_args` declaration, and the `Sample` class. (We haven't come across this before, because Boodler sets up sound objects before, but it lives in the `boodle.sample` module.)
+<p>
+And of course you can declare a list of sounds with an <code>_args</code> declaration, <code>ListOf</code>, and the <code>Sample</code> class. (We haven't come across this before, because Boodler sets up sound objects before, but it lives in the <code>boodle.sample</code> module.)
+</p>
 
 <pre>
 from boodle import sample
@@ -209,3 +314,190 @@ class Example(agent.Agent):
     def init(self, pitches):
         self.pitches = pitches
 </pre>
+
+<h2>Soundscape arguments</h2>
+
+<p>
+Arguments which take soundscapes are not any harder -- on the surface.
+</p>
+
+<pre>
+class Example2(agent.Agent):
+    def run(self):
+        self.sched_note(water.droplet_plink)
+
+class Example(agent.Agent):
+    def init(self, ag=Example2()):
+        self.ag = ag
+    def run(self):
+        self.sched_agent(self.ag)
+</pre>
+
+<p>
+<code>Example</code> is a simple Agent which accepts another Agent object as an argument, and runs it. (Not useful, but good enough for an example.) That's fine, and we can run it:
+</p>
+
+<pre>
+boodler.py --extern bootest com.example.bootest/Example
+boodler.py --extern bootest com.example.bootest/Example com.eblong.zarf.clock/Tick
+</pre>
+
+<p>
+But say we want to accept an Agent and play it <em>more than once</em>. Here's an attempt to play a soundscape twice, to the left and right, with a slight delay on one side:
+</p>
+
+<pre>
+from boodle import stereo
+
+class Example(agent.Agent):
+    def init(self, ag=Example2()):
+        self.ag = ag
+    def run(self):
+        chan = self.new_channel_pan(stereo.fixed(-1))
+        self.sched_agent(self.ag, chan=chan)
+        chan = self.new_channel_pan(stereo.fixed(1))
+        self.sched_agent(self.ag, chan=chan, delay=0.25)
+</pre>
+
+<p>
+One channel starts up, but then we see an "instance is already scheduled" error. That's because an Agent object can't run twice at the same time.
+</p>
+
+<p>
+We need <em>two</em> Agent objects. To do that, we'll pass the Agent <em>class</em> as the argument, and then instantiate it twice:
+</p>
+
+<pre>
+from boodle import stereo
+
+class Example(agent.Agent):
+    def init(self, clas=Example2):
+        self.clas = clas
+    def run(self):
+        chan = self.new_channel_pan(stereo.fixed(-1))
+        ag = self.clas()
+        self.sched_agent(ag, chan=chan)
+        chan = self.new_channel_pan(stereo.fixed(1))
+        ag = self.clas()
+        self.sched_agent(ag, chan=chan, delay=0.25)
+</pre>
+
+<p>
+Pleasantly, you don't have to worry about this change on the command line. You can use the same commands as before:
+</p>
+
+<pre>
+boodler.py --extern bootest com.example.bootest/Example
+boodler.py --extern bootest com.example.bootest/Example
+    com.eblong.zarf.clock/Tick
+</pre>
+
+<p>
+Boodler recognizes the difference between an Agent <em>instance</em> argument and an Agent <em>class</em> argument, and interprets <code>com.eblong.zarf.clock/Tick</code> appropriately.
+</p>
+
+<p>
+In fact, this is true even if you throw in complex soundscape arguments:
+</p>
+
+<pre>
+boodler.py --extern bootest com.example.bootest/Example
+    "(com.eblong.zarf.clock/Tick 1.25)"
+</pre>
+
+<p>
+In this case, the <code>clas</code> argument of <code>Example</code> isn't literally the <code>com.eblong.zarf.clock/Tick</code> class. It's a curried or "wrapped class", with the argument 1.25 already built in. You can instantiate it twice, and you'll get two separate instances, each with a pitch of 1.25.
+</p>
+
+<p>
+By the way, this way of multi-running soundscapes can lead to surprises, if you run a soundscape that includes random parameters. Try this:
+</p>
+
+<pre>
+boodler.py --extern bootest com.example.bootest/Example
+    com.eblong.zarf.clock/SteadyRandomChime
+</pre>
+
+<p>
+You'll hear two chime streams, left and right. But the <code>SteadyRandomChime</code> class chooses a random pitch in its <code>init()</code> method. So you won't hear two <em>identical</em> chime soundscapes. The left and right channels will be different.
+</p>
+
+<p>
+To specify an Agent instance or class in an <code>_args</code> declaration, use <code>Agent</code> or <code>Wrapped(Agent)</code>. The <code>Wrapped</code> structure creates the wrapped form of the type.
+</p>
+
+<p>
+So, this is a list of Agent instances:
+</p>
+
+<pre>
+_args = ArgList(Arg(type=ListOf(agent.Agent)))
+</pre>
+
+<p>
+And this is a list of Agent classes:
+</p>
+
+<pre>
+_args = ArgList(Arg(type=ListOf(Wrapped(agent.Agent))))
+</pre>
+
+<p>
+Really, you can apply <code>Wrapped</code> to any type. But there's no point in wrapping immutable types (like <code>int</code>, <code>bool</code>, <code>float</code>, or <code>str</code>). Getting a new integer every time is indistinguishable from getting the same integer over and over.
+</p>
+
+<p>
+On the other hand, you may find it useful to apply <code>Wrapped</code> to mutable types -- such as lists -- if you plan to mutate them as your Agent runs.
+</p>
+
+<h2>Extra arguments</h2>
+
+<p>
+Python lets you write a function where the arguments just get handed to you all in a list. Here's an attempt to accept several soundscape arguments, and start each one in its own channel:
+</p>
+
+<pre>
+class Example(agent.Agent):
+    def init(self, *agents):
+        self.agentlist = agents
+    def run(self):
+        for ag in self.agentlist:
+            chan = self.new_channel()
+            self.sched_agent(ag, chan=chan)
+</pre>
+
+<p>
+For this to work, we have to declare <code>_args</code>, using the special form <code>ArgExtra</code>:
+</p>
+
+<pre>
+_args = ArgList(ArgExtra(ListOf(agent.Agent)))
+</pre>
+
+<p>
+You include the <code>ArgExtra</code> instead of (or in addition to) the <code>Arg</code> entries of the <code>ArgList</code>. You can only specify the type (not <code>default</code> or anything else), and the type must be a list or tuple.
+</p>
+
+<p>
+(This example, once you throw in the <code>_args</code>, is essentially identical to <code>boodler.org.manage/Simultaneous</code>. As an exercise, implement <code>boodler.org.manage/Sequential</code>. Note that you'll have to use <code>Wrapped(agent.Agent)</code>, because <code>Sequential</code> runs each argument many times.)
+</p>
+
+<p>
+<em>(There is currently no <code>_args</code> notation for Python's <code>func(**dic)</code> syntax.)</em>
+</p>
+
+<h2>Next</h2>
+
+<p>
+<a href="design-events.html">Soundscapes that you can control</a> from the outside, and also that can control each other.
+</p>
+
+<hr/>
+<p>
+<em><a href="design.html">Designing Soundscapes</a></em>
+</p>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
+
+</body></html>
