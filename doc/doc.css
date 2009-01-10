@@ -31,16 +31,44 @@ pre {
 }
 
 h1 {
+  background-image: url(dot14.png);
+  background-repeat: repeat-x;
+  background-position: 0% 11px;
+
   font-weight: normal;
   color: #443;
-  margin-left: 20px;
+  padding-left: 14px;
+}
+
+h1:first-line {
+  background: #EFEBDC;
+}
+h1:before {
+  content: "\A0";
+}
+h1:after {
+  content: "\A0";
 }
 
 h2 {
+  background-image: url(dot10.png);
+  background-repeat: repeat-x;
+  background-position: 0% 7px;
+
   font-weight: normal;
   font-size: 17px;
   color: #443;
-  margin-left: 2px;
+  padding-left: 20px;
+}
+
+h2:first-line {
+  background: #EFEBDC;
+}
+h2:before {
+  content: "\A0";
+}
+h2:after {
+  content: "\A0";
 }
 
 h3 {
