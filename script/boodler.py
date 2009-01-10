@@ -364,8 +364,8 @@ try:
 			rootlogger.warning('invalid name for property: ' + key)
 
 	try:
-		wrap = agent.load_described(loader, args)
-		ag = wrap()
+		clas = agent.load_described(loader, args)
+		ag = clas()
 	except Exception, ex:
 		rootlogger.error(str(ex))
 		if (opts.verboseerrors):
