@@ -33,7 +33,25 @@ index_head = """
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>boodler contents</strong></big></big></font></td>
 </tr></table>
 
-<p>Boodler contains the following packages and modules.</p>
+<p>
+Boodler contains three main packages, each containing several modules.
+</p>
+
+<p>
+If your goal is to build soundscapes, you will mostly be interested in
+the <a href="boodle.agent.html#Agent">Agent</a> class,
+the <a href="boodle.generator.html#Channel">Channel</a> class,
+and (for argument types) the <a href="boopak.argdef.html">argdef</a> module.
+</p>
+
+<p>
+(This reference documentation is generated from the source code by
+<a href="http://www.python.org/doc/current/library/pydoc">pydoc</a>.
+That's why it's a little rough. You will see more information about
+the Exception classes than you really care about. Also,
+document sections may be listed in an unintuitive order, making it
+hard to read the pages top to bottom. We apologize.)
+</p>
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -154,7 +172,10 @@ fl.write(index_head)
 for ls in modsets:
     fl.write('<td width="25%" valign=top>\n')
     for mod in ls:
-        fl.write('<a href="%s.html">%s</a><br>\n' % (mod, mod))
+        if (not ('.' in mod)):
+            fl.write('<strong><a href="%s.html">%s</a></strong><br>\n' % (mod, mod))
+        else:
+            fl.write('<a href="%s.html">%s</a><br>\n' % (mod, mod))
     fl.write('</td>\n')
 fl.write(index_tail)
 fl.close()
