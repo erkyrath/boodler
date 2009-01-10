@@ -157,8 +157,7 @@ resolve_value() -- resolve a value or wrapped value
 # included, even though they're not listed as "internal" above.
 
 __all__ = [
-	'Arg', 'ArgClassWrapper', 'ArgDefError', 'ArgExtra',
-	'ArgList', 'ArgListWrapper', 'ArgTupleWrapper', 'ArgWrapper',
+	'Arg', 'ArgDefError', 'ArgExtra', 'ArgList', 
 	'ListOf', 'SequenceOf', 'TupleOf', 'Wrapped'
 ]
 

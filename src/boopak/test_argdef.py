@@ -14,6 +14,7 @@ from boodle import sample, agent, builtin
 from boopak.argdef import node_to_value, value_to_node
 from boopak.argdef import node_to_type, type_to_node
 from boopak.argdef import resolve_value
+from boopak.argdef import ArgListWrapper, ArgTupleWrapper
 
 class TestArgDef(unittest.TestCase):
 
