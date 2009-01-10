@@ -11,6 +11,10 @@ from boopak.argdef import *
 from boopak import sparse
 from boodle import sample, agent, builtin
 
+from boopak.argdef import node_to_value, value_to_node
+from boopak.argdef import node_to_type, type_to_node
+from boopak.argdef import resolve_value
+
 class TestArgDef(unittest.TestCase):
 
     def test_basic_arg(self):

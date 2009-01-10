@@ -151,6 +151,12 @@ find_resource_ref() -- work out the representation of a resource
 resolve_value() -- resolve a value or wrapped value
 """
 
+__all__ = [
+	'Arg', 'ArgClassWrapper', 'ArgDefError', 'ArgExtra',
+	'ArgList', 'ArgListWrapper', 'ArgTupleWrapper', 'ArgWrapper',
+	'ListOf', 'SequenceOf', 'TupleOf', 'Wrapped'
+]
+
 import sys
 import types
 
