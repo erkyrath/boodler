@@ -1,5 +1,5 @@
 /* Boodler: a programmable soundscape tool
-   Copyright 2001-9 by Andrew Plotkin <erkyrath@eblong.com>
+   Copyright 2002-9 by Andrew Plotkin <erkyrath@eblong.com>
    Boodler web site: <http://boodler.org/>
    The cboodle_macosx extension is distributed under the LGPL.
    See the LGPL document, or the above URL, for details.
