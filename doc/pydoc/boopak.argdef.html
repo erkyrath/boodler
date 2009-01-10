@@ -58,18 +58,18 @@ for&nbsp;Agent&nbsp;arguments.)<br>
 We&nbsp;have,&nbsp;therefore,&nbsp;two&nbsp;distinct&nbsp;unserialization&nbsp;operations.&nbsp;First,<br>
 the&nbsp;<a href="#ArgList">ArgList</a>&nbsp;itself&nbsp;is&nbsp;built&nbsp;from&nbsp;a&nbsp;metadata&nbsp;S-expression.&nbsp;(This&nbsp;is<br>
 the&nbsp;<a href="#ArgList">ArgList</a>.from_node()&nbsp;static&nbsp;method,&nbsp;which&nbsp;makes&nbsp;use&nbsp;of&nbsp;the<br>
-<a href="#-node_to_type">node_to_type</a>()&nbsp;helper&nbsp;function.)&nbsp;Then,&nbsp;this&nbsp;<a href="#ArgList">ArgList</a>&nbsp;turns&nbsp;the&nbsp;user's<br>
+node_to_type()&nbsp;helper&nbsp;function.)&nbsp;Then,&nbsp;this&nbsp;<a href="#ArgList">ArgList</a>&nbsp;turns&nbsp;the&nbsp;user's<br>
 command-line&nbsp;S-expression&nbsp;into&nbsp;a&nbsp;bunch&nbsp;of&nbsp;argument&nbsp;values.&nbsp;(This&nbsp;is<br>
-the&nbsp;<a href="#ArgList">ArgList</a>.resolve()&nbsp;method,&nbsp;which&nbsp;makes&nbsp;use&nbsp;of&nbsp;the&nbsp;<a href="#-node_to_value">node_to_value</a>()<br>
+the&nbsp;<a href="#ArgList">ArgList</a>.resolve()&nbsp;method,&nbsp;which&nbsp;makes&nbsp;use&nbsp;of&nbsp;the&nbsp;node_to_value()<br>
 helper&nbsp;function.)<br>
 &nbsp;<br>
 (It's&nbsp;actually&nbsp;a&nbsp;little&nbsp;more&nbsp;complex&nbsp;than&nbsp;that.&nbsp;The&nbsp;<a href="#ArgList">ArgList</a>&nbsp;contains<br>
 default&nbsp;values&nbsp;for&nbsp;arguments.&nbsp;So&nbsp;that&nbsp;first&nbsp;stage&nbsp;itself&nbsp;has&nbsp;to&nbsp;call<br>
-<a href="#-node_to_value">node_to_value</a>()&nbsp;to&nbsp;recreate&nbsp;those&nbsp;values.)<br>
+node_to_value()&nbsp;to&nbsp;recreate&nbsp;those&nbsp;values.)<br>
 &nbsp;<br>
 The&nbsp;two&nbsp;converse&nbsp;serialization&nbsp;operations&nbsp;are&nbsp;also&nbsp;available.<br>
 <a href="#ArgList">ArgList</a>.to_node()&nbsp;turns&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;into&nbsp;an&nbsp;S-expression&nbsp;tree,&nbsp;using<br>
-the&nbsp;<a href="#-type_to_node">type_to_node</a>()&nbsp;and&nbsp;<a href="#-value_to_node">value_to_node</a>()&nbsp;helper&nbsp;functions.<br>
+the&nbsp;type_to_node()&nbsp;and&nbsp;value_to_node()&nbsp;helper&nbsp;functions.<br>
 &nbsp;<br>
 --&nbsp;The&nbsp;wrapping&nbsp;problem<br>
 &nbsp;<br>
@@ -134,12 +134,12 @@ Classes:<br>
 &nbsp;<br>
 Utility&nbsp;functions:<br>
 &nbsp;<br>
-<a href="#-infer_type">infer_type</a>()&nbsp;--&nbsp;given&nbsp;a&nbsp;data&nbsp;value,&nbsp;return&nbsp;an&nbsp;object&nbsp;representing&nbsp;its&nbsp;type<br>
-<a href="#-check_valid_type">check_valid_type</a>()&nbsp;--&nbsp;make&nbsp;sure&nbsp;that&nbsp;type&nbsp;is&nbsp;a&nbsp;valid&nbsp;type&nbsp;for&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;entry<br>
-<a href="#-type_to_node">type_to_node</a>()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;type<br>
-<a href="#-node_to_type">node_to_type</a>()&nbsp;--&nbsp;construct&nbsp;a&nbsp;type&nbsp;from&nbsp;an&nbsp;S-expression<br>
-<a href="#-value_to_node">value_to_node</a>()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;value,&nbsp;matching&nbsp;a&nbsp;type<br>
-<a href="#-node_to_value">node_to_value</a>()&nbsp;--&nbsp;construct&nbsp;a&nbsp;value&nbsp;from&nbsp;an&nbsp;S-expression,&nbsp;matching&nbsp;a&nbsp;type<br>
+infer_type()&nbsp;--&nbsp;given&nbsp;a&nbsp;data&nbsp;value,&nbsp;return&nbsp;an&nbsp;object&nbsp;representing&nbsp;its&nbsp;type<br>
+check_valid_type()&nbsp;--&nbsp;make&nbsp;sure&nbsp;that&nbsp;type&nbsp;is&nbsp;a&nbsp;valid&nbsp;type&nbsp;for&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;entry<br>
+type_to_node()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;type<br>
+node_to_type()&nbsp;--&nbsp;construct&nbsp;a&nbsp;type&nbsp;from&nbsp;an&nbsp;S-expression<br>
+value_to_node()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;value,&nbsp;matching&nbsp;a&nbsp;type<br>
+node_to_value()&nbsp;--&nbsp;construct&nbsp;a&nbsp;value&nbsp;from&nbsp;an&nbsp;S-expression,&nbsp;matching&nbsp;a&nbsp;type<br>
 &nbsp;<br>
 Internal&nbsp;classes:<br>
 &nbsp;<br>
@@ -150,10 +150,10 @@ Internal&nbsp;classes:<br>
 &nbsp;<br>
 Internal&nbsp;functions:<br>
 &nbsp;<br>
-<a href="#-seq_value_to_node">seq_value_to_node</a>()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;sequence&nbsp;value<br>
-<a href="#-node_to_seq_value">node_to_seq_value</a>()&nbsp;--&nbsp;construct&nbsp;a&nbsp;sequence&nbsp;value&nbsp;from&nbsp;an&nbsp;S-expression<br>
-<a href="#-find_resource_ref">find_resource_ref</a>()&nbsp;--&nbsp;work&nbsp;out&nbsp;the&nbsp;representation&nbsp;of&nbsp;a&nbsp;resource<br>
-<a href="#-resolve_value">resolve_value</a>()&nbsp;--&nbsp;resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp;value</tt></p>
+seq_value_to_node()&nbsp;--&nbsp;construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;sequence&nbsp;value<br>
+node_to_seq_value()&nbsp;--&nbsp;construct&nbsp;a&nbsp;sequence&nbsp;value&nbsp;from&nbsp;an&nbsp;S-expression<br>
+find_resource_ref()&nbsp;--&nbsp;work&nbsp;out&nbsp;the&nbsp;representation&nbsp;of&nbsp;a&nbsp;resource<br>
+resolve_value()&nbsp;--&nbsp;resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp;value</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -220,7 +220,7 @@ All&nbsp;of&nbsp;these&nbsp;values&nbsp;are&nbsp;optional.&nbsp;Note&nbsp;that&n
 automatically.<br>
 &nbsp;<br>
 If&nbsp;you&nbsp;specify&nbsp;a&nbsp;default,&nbsp;that&nbsp;implies&nbsp;optional=True.&nbsp;It&nbsp;also&nbsp;implies<br>
-type=<a href="#-infer_type">infer_type</a>(defaultvalue).&nbsp;However,&nbsp;both&nbsp;of&nbsp;these&nbsp;may&nbsp;be<br>
+type=infer_type(defaultvalue).&nbsp;However,&nbsp;both&nbsp;of&nbsp;these&nbsp;may&nbsp;be<br>
 overridden&nbsp;by&nbsp;explicit&nbsp;values.<br>
 &nbsp;<br>
 Static&nbsp;methods:<br>
@@ -511,8 +511,8 @@ values.&nbsp;(See&nbsp;the&nbsp;<a href="#ArgWrapper">ArgWrapper</a>&nbsp;class.
 function&nbsp;this&nbsp;way:<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ls,&nbsp;dic)&nbsp;=&nbsp;arglist.<a href="#ArgList-resolve">resolve</a>(tree)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wrap&nbsp;=&nbsp;<a href="#ArgClassWrapper">ArgClassWrapper</a>(f,&nbsp;ls,&nbsp;dic)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wrap()</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas&nbsp;=&nbsp;<a href="#ArgClassWrapper">ArgClassWrapper</a>(f,&nbsp;ls,&nbsp;dic)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas()</tt></dd></dl>
 
 <dl><dt><a name="ArgList-sort_args"><strong>sort_args</strong></a>(self)</dt><dd><tt><a href="#ArgList-sort_args">sort_args</a>()&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -833,11 +833,11 @@ Let&nbsp;me&nbsp;explain&nbsp;further.&nbsp;The&nbsp;usual&nbsp;pattern&nbsp;for
 looks&nbsp;like:<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ls,&nbsp;dic)&nbsp;=&nbsp;arglist.resolve(tree)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wrap&nbsp;=&nbsp;<a href="#ArgClassWrapper">ArgClassWrapper</a>(f,&nbsp;ls,&nbsp;dic)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wrap()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas&nbsp;=&nbsp;<a href="#ArgClassWrapper">ArgClassWrapper</a>(f,&nbsp;ls,&nbsp;dic)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas()<br>
 &nbsp;<br>
 Plain&nbsp;types&nbsp;are&nbsp;instantiated&nbsp;in&nbsp;the&nbsp;resolve()&nbsp;method.&nbsp;<a href="#Wrapped">Wrapped</a>&nbsp;types<br>
-are&nbsp;instantiated&nbsp;in&nbsp;the&nbsp;wrap()&nbsp;invocation.&nbsp;If&nbsp;wrap()&nbsp;is&nbsp;invoked<br>
+are&nbsp;instantiated&nbsp;in&nbsp;the&nbsp;clas()&nbsp;invocation.&nbsp;If&nbsp;clas()&nbsp;is&nbsp;invoked<br>
 a&nbsp;second&nbsp;time,&nbsp;the&nbsp;wrapped&nbsp;types&nbsp;get&nbsp;a&nbsp;second&nbsp;instantiation,<br>
 independent&nbsp;of&nbsp;the&nbsp;first.<br>
 &nbsp;<br>
@@ -845,8 +845,8 @@ For&nbsp;immutable&nbsp;types&nbsp;(int,&nbsp;float,&nbsp;str,&nbsp;tuple)&nbsp;
 You&nbsp;never&nbsp;need&nbsp;to&nbsp;wrap&nbsp;those&nbsp;types.&nbsp;But&nbsp;for&nbsp;mutable&nbsp;types,&nbsp;the<br>
 difference&nbsp;is&nbsp;important.&nbsp;If&nbsp;the&nbsp;<a href="#ArgList">ArgList</a>&nbsp;contains&nbsp;an&nbsp;Agent&nbsp;type,<br>
 an&nbsp;Agent&nbsp;instance&nbsp;will&nbsp;be&nbsp;created&nbsp;at&nbsp;resolve()&nbsp;time,&nbsp;and&nbsp;*shared*<br>
-between&nbsp;all&nbsp;wrap()&nbsp;calls.&nbsp;If&nbsp;it&nbsp;instead&nbsp;contains&nbsp;a&nbsp;<a href="#Wrapped">Wrapped</a>(Agent)<br>
-type,&nbsp;each&nbsp;wrap()&nbsp;call&nbsp;will&nbsp;get&nbsp;a&nbsp;*new*&nbsp;Agent&nbsp;instance.<br>
+between&nbsp;all&nbsp;clas()&nbsp;calls.&nbsp;If&nbsp;it&nbsp;instead&nbsp;contains&nbsp;a&nbsp;<a href="#Wrapped">Wrapped</a>(Agent)<br>
+type,&nbsp;each&nbsp;clas()&nbsp;call&nbsp;will&nbsp;get&nbsp;a&nbsp;*new*&nbsp;Agent&nbsp;instance.<br>
 &nbsp;<br>
 <a href="#Wrapped">Wrapped</a>(type)&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
@@ -863,80 +863,10 @@ value&nbsp;or&nbsp;list&nbsp;of&nbsp;values.&nbsp;Any&nbsp;other&nbsp;type&nbsp;
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#eeaa77">
+<tr bgcolor="#55aa55">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
-<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-check_valid_type"><strong>check_valid_type</strong></a>(type)</dt><dd><tt><a href="#-check_valid_type">check_valid_type</a>(type)&nbsp;-&gt;&nbsp;None<br>
-&nbsp;<br>
-Make&nbsp;sure&nbsp;that&nbsp;type&nbsp;is&nbsp;a&nbsp;valid&nbsp;type&nbsp;for&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>&nbsp;entry.&nbsp;If&nbsp;it&nbsp;is&nbsp;not,<br>
-raise&nbsp;<a href="#ArgDefError">ArgDefError</a>.<br>
-&nbsp;<br>
-This&nbsp;accepts:&nbsp;None,&nbsp;bool,&nbsp;int,&nbsp;float,&nbsp;str,&nbsp;unicode,&nbsp;long,&nbsp;list,&nbsp;tuple;<br>
-<a href="#ListOf">ListOf</a>&nbsp;and&nbsp;<a href="#TupleOf">TupleOf</a>&nbsp;instances;&nbsp;Sample&nbsp;and&nbsp;Agent&nbsp;classes;&nbsp;and&nbsp;valid<br>
-<a href="#Wrapped">Wrapped</a>&nbsp;types.</tt></dd></dl>
- <dl><dt><a name="-find_resource_ref"><strong>find_resource_ref</strong></a>(loader, pkg, resname)</dt><dd><tt><a href="#-find_resource_ref">find_resource_ref</a>(loader,&nbsp;pkg,&nbsp;resname)&nbsp;-&gt;&nbsp;str<br>
-&nbsp;<br>
-Work&nbsp;out&nbsp;the&nbsp;representation&nbsp;of&nbsp;a&nbsp;resource&nbsp;in&nbsp;a&nbsp;particular&nbsp;package.<br>
-(This&nbsp;is&nbsp;used&nbsp;when&nbsp;serializing&nbsp;values.)<br>
-&nbsp;<br>
-The&nbsp;simple&nbsp;case&nbsp;looks&nbsp;like&nbsp;'package/resource'.&nbsp;However,&nbsp;if&nbsp;we're<br>
-in&nbsp;the&nbsp;middle&nbsp;of&nbsp;creating&nbsp;a&nbsp;package,&nbsp;and&nbsp;that&nbsp;package&nbsp;imported<br>
-pkg,&nbsp;then&nbsp;we&nbsp;want&nbsp;to&nbsp;give&nbsp;the&nbsp;same&nbsp;import&nbsp;spec&nbsp;used&nbsp;in&nbsp;the&nbsp;original<br>
-import.&nbsp;('package:spec/resource'&nbsp;for&nbsp;a&nbsp;version&nbsp;spec,&nbsp;or<br>
-'package::version/resource'&nbsp;for&nbsp;an&nbsp;exact&nbsp;version.)&nbsp;That&nbsp;way,&nbsp;we<br>
-know&nbsp;that&nbsp;any&nbsp;user&nbsp;of&nbsp;the&nbsp;resource&nbsp;value&nbsp;will&nbsp;get&nbsp;the&nbsp;same&nbsp;version<br>
-as&nbsp;the&nbsp;original&nbsp;importer&nbsp;got.<br>
-&nbsp;<br>
-If&nbsp;the&nbsp;resource&nbsp;package&nbsp;is&nbsp;the&nbsp;one&nbsp;currently&nbsp;being&nbsp;created,&nbsp;then<br>
-we&nbsp;use&nbsp;an&nbsp;exact-version&nbsp;reference.&nbsp;(A&nbsp;package&nbsp;that&nbsp;refers&nbsp;to&nbsp;its<br>
-own&nbsp;resource&nbsp;will&nbsp;stick&nbsp;to&nbsp;its&nbsp;own&nbsp;version.)</tt></dd></dl>
- <dl><dt><a name="-infer_type"><strong>infer_type</strong></a>(val)</dt><dd><tt><a href="#-infer_type">infer_type</a>(val)&nbsp;-&gt;&nbsp;type<br>
-&nbsp;<br>
-Given&nbsp;a&nbsp;data&nbsp;value,&nbsp;return&nbsp;an&nbsp;object&nbsp;representing&nbsp;its&nbsp;type.&nbsp;This<br>
-is&nbsp;run&nbsp;on&nbsp;the&nbsp;default&nbsp;values&nbsp;of&nbsp;<a href="#ArgList">ArgList</a>&nbsp;entries,&nbsp;to&nbsp;try&nbsp;to&nbsp;guess<br>
-their&nbsp;types.<br>
-&nbsp;<br>
-This&nbsp;will&nbsp;return&nbsp;bool,&nbsp;int,&nbsp;float,&nbsp;or&nbsp;str&nbsp;for&nbsp;simple&nbsp;values&nbsp;of&nbsp;those<br>
-types.&nbsp;Longs&nbsp;and&nbsp;unicode&nbsp;values&nbsp;will&nbsp;be&nbsp;represented&nbsp;as&nbsp;int&nbsp;and&nbsp;str<br>
-respectively.&nbsp;File&nbsp;and&nbsp;Sample&nbsp;instances&nbsp;will&nbsp;be&nbsp;represented&nbsp;as&nbsp;the<br>
-Sample&nbsp;class.&nbsp;Classes&nbsp;(as&nbsp;opposed&nbsp;to&nbsp;instances)&nbsp;will&nbsp;be&nbsp;represented<br>
-as&nbsp;<a href="#Wrapped">Wrapped</a>&nbsp;classes.</tt></dd></dl>
- <dl><dt><a name="-node_to_seq_value"><strong>node_to_seq_value</strong></a>(type, nodelist)</dt><dd><tt><a href="#-node_to_seq_value">node_to_seq_value</a>(type,&nbsp;nodelist)&nbsp;-&gt;&nbsp;value<br>
-&nbsp;<br>
-Construct&nbsp;a&nbsp;value&nbsp;from&nbsp;an&nbsp;S-expression,&nbsp;using&nbsp;a&nbsp;type&nbsp;as&nbsp;guidance.<br>
-This&nbsp;is&nbsp;the&nbsp;list/tuple&nbsp;case&nbsp;of&nbsp;<a href="#-node_to_value">node_to_value</a>(),&nbsp;broken&nbsp;out&nbsp;into&nbsp;a<br>
-separate&nbsp;function,&nbsp;for&nbsp;readability.</tt></dd></dl>
- <dl><dt><a name="-node_to_type"><strong>node_to_type</strong></a>(nod)</dt><dd><tt><a href="#-node_to_type">node_to_type</a>(nod)&nbsp;-&gt;&nbsp;type<br>
-&nbsp;<br>
-Construct&nbsp;a&nbsp;type&nbsp;from&nbsp;an&nbsp;S-expression.</tt></dd></dl>
- <dl><dt><a name="-node_to_value"><strong>node_to_value</strong></a>(type, node)</dt><dd><tt><a href="#-node_to_value">node_to_value</a>(type,&nbsp;node)&nbsp;-&gt;&nbsp;value<br>
-&nbsp;<br>
-Construct&nbsp;a&nbsp;value&nbsp;from&nbsp;an&nbsp;S-expression,&nbsp;using&nbsp;a&nbsp;type&nbsp;as&nbsp;guidance.<br>
-&nbsp;<br>
-The&nbsp;values&nbsp;returned&nbsp;by&nbsp;this&nbsp;function&nbsp;may&nbsp;be&nbsp;wrapped.&nbsp;(See&nbsp;the<br>
-<a href="#ArgWrapper">ArgWrapper</a>&nbsp;class.)</tt></dd></dl>
- <dl><dt><a name="-resolve_value"><strong>resolve_value</strong></a>(val)</dt><dd><tt><a href="#-resolve_value">resolve_value</a>(val)&nbsp;-&gt;&nbsp;value<br>
-&nbsp;<br>
-Resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp;value&nbsp;--&nbsp;something&nbsp;created&nbsp;by<br>
-<a href="#-node_to_value">node_to_value</a>().&nbsp;This&nbsp;is&nbsp;called&nbsp;at&nbsp;resolve()&nbsp;time,&nbsp;not&nbsp;at<br>
-instantiate&nbsp;time,&nbsp;so&nbsp;deliberately&nbsp;wrapped&nbsp;types&nbsp;(such&nbsp;as<br>
-<a href="#Wrapped">Wrapped</a>(Agent))&nbsp;are&nbsp;not&nbsp;unwrapped&nbsp;here.</tt></dd></dl>
- <dl><dt><a name="-seq_value_to_node"><strong>seq_value_to_node</strong></a>(type, vallist)</dt><dd><tt><a href="#-seq_value_to_node">seq_value_to_node</a>(type,&nbsp;vallist)&nbsp;-&gt;&nbsp;Tree<br>
-&nbsp;<br>
-Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;value,&nbsp;using&nbsp;a&nbsp;type&nbsp;as&nbsp;guidance.<br>
-This&nbsp;is&nbsp;the&nbsp;list/tuple&nbsp;case&nbsp;of&nbsp;<a href="#-value_to_node">value_to_node</a>(),&nbsp;broken&nbsp;out&nbsp;into&nbsp;a<br>
-separate&nbsp;function,&nbsp;for&nbsp;readability.</tt></dd></dl>
- <dl><dt><a name="-type_to_node"><strong>type_to_node</strong></a>(type)</dt><dd><tt><a href="#-type_to_node">type_to_node</a>(type)&nbsp;-&gt;&nbsp;Tree<br>
-&nbsp;<br>
-Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;type.&nbsp;If&nbsp;the&nbsp;type&nbsp;is&nbsp;not&nbsp;valid<br>
-(as&nbsp;per&nbsp;check_valid_type),&nbsp;this&nbsp;raises&nbsp;<a href="#ArgDefError">ArgDefError</a>.</tt></dd></dl>
- <dl><dt><a name="-value_to_node"><strong>value_to_node</strong></a>(type, val)</dt><dd><tt><a href="#-value_to_node">value_to_node</a>(type,&nbsp;val)&nbsp;-&gt;&nbsp;Tree<br>
-&nbsp;<br>
-Construct&nbsp;an&nbsp;S-expression&nbsp;from&nbsp;a&nbsp;value,&nbsp;using&nbsp;a&nbsp;type&nbsp;as&nbsp;guidance.<br>
-The&nbsp;value&nbsp;will&nbsp;be&nbsp;converted&nbsp;to&nbsp;the&nbsp;type&nbsp;if&nbsp;necessary&nbsp;(and&nbsp;possible).<br>
-For&nbsp;list&nbsp;types,&nbsp;the&nbsp;value&nbsp;must&nbsp;be&nbsp;a&nbsp;sequence;&nbsp;its&nbsp;entries&nbsp;will<br>
-be&nbsp;constructed&nbsp;recursively&nbsp;based&nbsp;on&nbsp;the&nbsp;list&nbsp;type's&nbsp;types.</tt></dd></dl>
-</td></tr></table>
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__all__</strong> = ['Arg', 'ArgClassWrapper', 'ArgDefError', 'ArgExtra', 'ArgList', 'ArgListWrapper', 'ArgTupleWrapper', 'ArgWrapper', 'ListOf', 'SequenceOf', 'TupleOf', 'Wrapped']</td></tr></table>
 </body></html>

@@ -129,7 +129,7 @@ for mod in modules:
     dat = fl.read()
     fl.close()
 
-    newdat = dat
+    newdat = dat + '\n'
     newdat = fileurl_regex.sub(fileurl_func, newdat)
     newdat = newdat.replace(buildpath+'/', '')
     newdat = sysmod_regex.sub(sysmod_func, newdat)
