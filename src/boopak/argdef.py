@@ -1248,12 +1248,17 @@ def value_to_node(type, val):
 		return sparse.ID(find_resource_ref(loader, pkg, resource.key))
 
 	if (_typeof(type) == types.ClassType and issubclass(type, Agent)):
-		loader = pload.PackageLoader.global_loader
-		if (not loader):
-			raise ArgDefError('cannot locate resource, because there is no loader')
 		cla = val
 		if (_typeof(cla) == types.InstanceType):
 			cla = cla.__class__
+		# check for builtin resources
+		modname = getattr(cla, '__module__', None)
+		if (modname and modname.startswith('boodle.')):
+			return sparse.ID('/' + modname + '.' + cla.__name__)
+		# check for package-loaded resource
+		loader = pload.PackageLoader.global_loader
+		if (not loader):
+			raise ArgDefError('cannot locate resource, because there is no loader')
 		(pkg, resource) = loader.find_item_resources(cla)
 		return sparse.ID(find_resource_ref(loader, pkg, resource.key))
 

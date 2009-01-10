@@ -574,6 +574,8 @@ class TestArgDef(unittest.TestCase):
             (list, None, '(no=value)'),
             (ListOf(), None, '(no=value)'),
             (None, None, '(no=value)'),
+            (agent.Agent, builtin.NullAgent(), '/boodle.builtin.NullAgent'),
+            (Wrapped(agent.Agent), builtin.NullAgent, '/boodle.builtin.NullAgent'),
         ]
 
         for (typ, val, res) in ls:
