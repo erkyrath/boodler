@@ -115,6 +115,7 @@ sysmod_regex = re.compile('href="([a-zA-Z_]*).html(#[a-zA-Z_]*)?"')
 testmod_regex = re.compile('<a href="[a-z]*.test_[a-z]*.html">([a-z_]*)</a>')
 cboodlemod_regex = re.compile('<a href="[a-z]*.cboodle_[a-z]*.html">([a-z_]*)</a>')
 agentinherit_regex = re.compile('Methods inherited from <a href="boodle.agent.html#Agent">boodle.agent.Agent</a>:.*?</td>', re.DOTALL)
+memaddress_regex = re.compile(' at 0x[a-f0-9]*&gt;')
 
 def fileurl_func(match):
     val = match.group(1)
@@ -156,6 +157,7 @@ for mod in modules:
     if (mod == 'boodle.builtin'):
         newdat = agentinherit_regex.sub('</td>', newdat)
     newdat = newdat.replace('href="."', 'href="index.html"')
+    newdat = memaddress_regex.sub('&gt;', newdat)
 
     fl = open(file, 'w')
     fl.write(newdat)
