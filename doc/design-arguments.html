@@ -3,8 +3,209 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
 <head>
 <title>Boodler: Soundscapes With Arguments</title>
+<link rel="stylesheet" href="doc.css" type="text/css" />
 </head>
 <body>
 
 <h1>Boodler: Soundscapes With Arguments</h1>
 
+You've passed arguments to soundscapes on the command line, and even run soundscapes (such as `OneSound`) that required an argument. Now let's write a soundscape that *accepts* arguments.
+
+To do this, add an `init()` method to your Agent class. This is called during construction, with any arguments (named or unnamed) that were provided.
+
+(Python devotees should note that this is an `init()` method, not `__init__()`. The Agent base class has an `__init__()` method, which you are unlikely to need to override or call. It passes along all its arguments to the `init()` that you write.)
+
+<pre>
+from boopak.package import *
+from boodle import agent
+
+water = bimport('org.boodler.old.water')
+
+class Example2(agent.Agent):
+    def init(self, pitch, reptime):
+        self.pitch = pitch
+        self.reptime = reptime
+    def run(self):
+        self.sched_note(water.droplet_plink, self.pitch)
+        self.resched(self.reptime)
+
+class Example(agent.Agent):
+    def run(self):
+        ag = Example2(1.5, 0.5)
+        self.sched_agent(ag)
+        ag = Example2(1, 1.21)
+        self.sched_agent(ag)
+</pre>
+
+The `Example2` soundscape plinks forever, and takes two arguments: the plinking pitch and the repeat time. `Example` creates two instances of `Example2`. The first has pitch 1.5 (high) and repeats every half-second, and the other has pitch 1 (normal) and repeats every 1.21 seconds. Both are scheduled to start immediately, so when you run `Example`...
+
+	boodler.py --extern bootest com.example.bootest/Example
+
+...you hear a quick high plinking interspersed with a low, slower sound.
+
+Your `init()` method can do anything you want.  But remember that it is called when the agent instance is created. This is *before* the agent is scheduled, placed in a channel, or set running. Therefore, the `init()` method cannot schedule notes or agents, or create channels, or do anything else that affects the stream of sound. (If you think you want to do these things, you probably really want to create a separate agent class that does them in its `run()` method.)
+
+Most often, `init()` will just take its arguments and store them away for `run()` time. In the example, we take the `pitch` argument and attach it to the agent instance, as `self.pitch`. We do the same with `reptime`.
+
+`Example2` requires two arguments, so you won't be surprised that this doesn't work:
+
+	boodler.py --extern bootest com.example.bootest/Example2
+
+If you try it you'll see a "2 arguments required". Okay, that's easy to fix:
+
+	boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+
+But that doesn't work either; the error says "TypeError: a float is required". What's going on?
+
+The problem is that Boodler doesn't know how to interpret `1.2` or `0.5`. Strings? Floats? Integers (in which case it should be showing a different error)? Lacking any information about what `pitch` and `reptime` should be, it passes these values in as strings. `Example2` winds up calling `sched_note()` with a string for a pitch value, and that causes a Python error.
+
+This is a sad state of affairs, but you can resolve it by letting Boodler know what types those arguments should be. The easiest way to do this is to provide default values:
+
+<pre>
+class Example2(agent.Agent):
+    def init(self, pitch=1.0, reptime=1.0):
+        self.pitch = pitch
+        self.reptime = reptime
+    def run(self):
+        self.sched_note(water.droplet_plink, self.pitch)
+        self.resched(self.reptime)
+</pre>
+
+This actually solves *two* problems. First, you can now say
+
+	boodler.py --extern bootest com.example.bootest/Example2
+
+...and get a sensible result; the agent will run with a pitch of 1 and a repeat time of 1 second. And secondly, Boodler will see that those default values are floats, and deduce that `Example2` takes two float arguments. So when you say:
+
+	boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+
+...the values will be passed in correctly.
+
+Boodler can recognize string, int, float, and bool argument types. It can also recognize lists, tuples, sounds, and soundscapes -- but those take more thought, so we will get to them in a moment.
+
+By the way, ints and floats are different types. You wouldn't want to write `Example2` with the line
+
+	def init(self, pitch=1, reptime=1):
+
+Even though 1 is the same numeric value as 1.0, Boodler would infer that these are integer arguments, and then it would reject values like 1.2 or 0.5 on the command line.
+
+On the other hand, you would want to use an integer for an argument like this:
+
+<pre>
+class Example3(agent.Agent):
+    def init(self, pitch=1.0, reptime=1.0, count=1):
+        self.pitch = pitch
+        self.reptime = reptime
+        self.count = count
+    def run(self):
+        for ix in range(self.count):
+            self.sched_note(water.droplet_plink, self.pitch,
+                delay=ix*self.reptime)
+</pre>
+
+In this case, `count` is a number of repetitions, so it should be integral.
+
+## Specifying argument types explicitly
+
+Boodler can infer a lot about your Agent's arguments, but not always everything. Perhaps you don't *want* to specify default values, but you want the correct types anyway.
+
+You can declare additional information about your arguments, or even override Boodler's assumptions, by creating an `_args` field in your Agent class.
+
+<pre>
+from boopak.package import *
+from boopak.argdef import *
+from boodle import agent
+
+water = bimport('org.boodler.old.water')
+
+class Example(agent.Agent):
+    _args = ArgList(Arg(type=float), Arg(type=float))
+
+    def init(self, pitch, reptime):
+        self.pitch = pitch
+        self.reptime = reptime
+    def run(self):
+        self.sched_note(water.droplet_plink, self.pitch)
+        self.resched(self.reptime)
+</pre>
+
+The argument data structures are defined in the `argdef` module, so we must import its contents. That lets us create an `ArgList` object, which we store as `_args`.
+
+The `ArgList` is set up with a sequence of `Arg` objects, each one representing one of the `init()` arguments. For each one, as you see, we can specify a type. Boodler consults both the `_args` and the `init()` function when deriving argument metadata.
+
+You can actually specify all sorts of information in an `Arg`. For example, you could do this:
+
+	_args = ArgList(Arg(type=float, default=1), Arg(type=float, default=1))
+
+That defines the type *and* the default value for each argument. With that line in place, you can run
+
+	boodler.py --extern bootest com.example.bootest/Example
+
+...and the defaults will be picked up, even though they're not defined in the `init()` code.
+
+The `_args` can also specify information about a *particular* argument. If you had this:
+
+	_args = ArgList(reptime=Arg(type=float))
+
+...it would provide information about `reptime`, but leave `pitch` alone.
+
+## List and tuple types
+
+Here's an Agent which takes a *list* of pitches, and schedules one note for each:
+
+<pre>
+class Example(agent.Agent):
+    def init(self, pitches=[]):
+        self.pitches = pitches
+    def run(self):
+        pos = 0.0
+        for val in self.pitches:
+            self.sched_note(water.droplet_plink, val, delay=pos)
+            pos = pos+0.2
+</pre>
+
+This has one argument, and we even provide a default value (the empty list). Boodler can infer that the argument type is `list`, but it can't figure out what *kind* of list we mean. We can tell it, though:
+
+	_args = ArgList(Arg(type=ListOf(float)))
+
+`ListOf` is another magic structure from the `argdef` module. `ListOf(float)` means just what it sounds like -- the argument will expect a list of floats. So you can say:
+
+	boodler.py --extern bootest com.example.bootest/Example "(0.9 1.0 1.1 1.2)"
+
+(Lists are in paretheses, because there's a little Lisp in all of us. As usual, we have to quote parentheses to keep the Unix shell from eating them.)
+
+`ListOf` offers a great deal of power. You can, of course, define types like `ListOf(int)` and `ListOf(str)`, or even `ListOf(ListOf(int))`. You could also say `ListOf(int, str)` -- this defines a list of *alternating* integers and strings. If you want the first entry to be an integer, but all the rest to be strings, you'd say `ListOf(int, str, repeat=1)` -- i.e., repeat the last (one) type to extend the sequence. `ListOf(int, str, float, repeat=2)` would come out as `[int, str, float, str, float, ...]`
+
+All of the examples so far permit any number of *values* in the list; we've only been specifying what types they should be, if they show up. To require a list of a particular length, you can say something like `ListOf(int, min=1)` (a list of at least one integer), or `ListOf(int, min=1, max=5)` (at least one integer, but at most five). 
+
+There's also a `TupleOf` type structure. It works almost the same way. The only difference is, a declaration like `TupleOf(int, str, float)` is interpreted as a tuple of *exactly* three elements (an integer, a string, and a float). This is a nod to the way tuples are commonly used. You can stick in `min`, `max`, and `repeat` values -- just as you can with `ListOf` -- for any length requirement that suits you. `TupleOf(int, min=0, max=None)` would be a tuple of integers of any length.
+
+Just for completeness, you *can* say `Arg(type=list)` or `Arg(type=tuple)`. (Equivalently, `Arg(type=ListOf())` or `Arg(type=TupleOf())`.) These assume lists/tuples of any length, and indeterminate type -- meaning strings, by default. But parenthesized elements will be themselves interpreted as lists of indeterminate values. It is almost completely unlikely that you will ever care about this.
+
+## Sound and soundscape types
+
+Boodler will recognize the type of a sound sample object.
+
+<pre>
+class Example(agent.Agent):
+    def init(self, sound=water.droplet_plink):
+        self.sound = sound
+    def run(self):
+        self.sched_note(self.sound)
+</pre>
+
+This plays one sound, with `org.boodler.old.water/droplet_plink` as the default. So:
+
+	boodler.py --extern bootest com.example.bootest/Example
+	boodler.py --extern bootest com.example.bootest/Example org.boodler.old.water/droplet_bloink
+
+And of course you can declare a list of sounds with an `_args` declaration, and the `Sample` class. (We haven't come across this before, because Boodler sets up sound objects before, but it lives in the `boodle.sample` module.)
+
+<pre>
+from boodle import sample
+
+class Example(agent.Agent):
+    _args = ArgList(Arg(type=ListOf(sample.Sample)))
+    def init(self, pitches):
+        self.pitches = pitches
+</pre>

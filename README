@@ -106,7 +106,7 @@ wish.
 ### The Python scripts included in the ./effects directory are in the
 public domain. They are intended to be used as code samples as well as
 soundscapes. You may modify, extend, combine, and pervert them as you
-wish.
+wish. ### copy to doc/license
 
 If you write your own soundscapes (sound agents), you may license them
 as you wish -- GPL, LGPL, some other license. Or you might choose to

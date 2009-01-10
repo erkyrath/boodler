@@ -296,7 +296,11 @@ The <code>FadeInOutAgent</code> does it all for you: creates a channel at zero v
 <h2>Changing the stereo pan</h2>
 
 <p>
-Channels have a <code>set_pan()</code> method, which is exactly analogous to <code>set_volume()</code>. Here's a sound that starts on the left, and then moves to the right over a five-second interval:
+Channels have a <code>set_pan()</code> method, which is exactly analogous to <code>set_volume()</code>. As described <a href="design-basics.html">earlier</a>, 0 means center, -1 means left, and 1 means right. For more clever tricks, such as compressing stereo soundscapes to a point or swapping channels, see the <a href="pydoc/boodle.stereo.html"><code>stereo</code> module reference</a>.
+</p>
+
+<p>
+Here's a sound that starts on the left, and then moves to the right over a five-second interval:
 </p>
 
 <pre>
