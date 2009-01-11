@@ -17,6 +17,21 @@ from boopak.pinfo import dict_accumulate, dict_all_values
 
 class TestPInfo(unittest.TestCase):
 
+    def test_memfile(self):
+        dat = 'xyzzy\nplugh\n'
+        mfile = pinfo.MemFile(dat, '.txt', 'Stuff')
+        self.assertEqual(mfile.suffix, '.txt')
+        
+        fl = mfile.open()
+        res = fl.read()
+        fl.close()
+        self.assertEqual(dat, res)
+        
+        fl = mfile.open()
+        res = fl.read()
+        fl.close()
+        self.assertEqual(dat, res)
+
     def test_metadata(self):
         source = """# Metadata test file
 

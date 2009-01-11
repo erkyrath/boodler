@@ -205,7 +205,10 @@ def get(sname):
 
 	suffix = None
 		
-	if (isinstance(sname, boopak.pinfo.File)):
+	if (isinstance(sname, boopak.pinfo.MemFile)):
+		filename = sname
+		suffix = sname.suffix
+	elif (isinstance(sname, boopak.pinfo.File)):
 		filename = sname
 		if (not os.access(sname.pathname, os.R_OK)):
 			raise SampleError('file not readable: ' + sname.pathname)

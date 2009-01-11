@@ -18,6 +18,7 @@ FadeInOutAgent -- creates a channel that fades up, holds, and fades out
 TestSoundAgent -- plays a little test melody
 """
 
+import cStringIO
 from boodle import agent
 
 # Declare the imports list, so that "from boodle.builtin import *"
@@ -179,21 +180,11 @@ class TestSoundAgent(agent.Agent):
 		get the same File.
 		"""
 		if (not TestSoundAgent.sound):
-			import cStringIO
 			fl = cStringIO.StringIO()
 			TestSoundAgent.makesound(fl)
 			dat = fl.getvalue()
 			fl.close()
-			class MemFile(pinfo.File):
-				def __init__(self, dat):
-					pinfo.File.__init__(self, None, '<StringIO>')
-					self.data = dat
-				def open(self, binary=False):
-					return cStringIO.StringIO(self.data)
-			mfile = MemFile(dat)
-			# For annoying technical reasons, we have to preload this into
-			# the sample cache.
-			sample.cache[mfile] = sample.aifc_loader.load(mfile, 'aiff')
+			mfile = pinfo.MemFile(dat, '.aiff', 'TestSound')
 			TestSoundAgent.sound = mfile
 		return TestSoundAgent.sound
 	getsound = staticmethod(getsound)
@@ -220,5 +211,5 @@ class TestSoundAgent(agent.Agent):
 
 # Late imports.
 
-from boodle import sample, stereo
+from boodle import stereo
 from boopak import pinfo

@@ -32,6 +32,7 @@ import types
 import re
 import sets
 import codecs
+import cStringIO
 
 from boopak import version
 
@@ -880,6 +881,36 @@ class File:
 		else:
 			mode = 'rU'
 		return open(self.pathname, mode)
+
+class MemFile(File):
+	"""MemFile: represents a file which exists only in memory.
+	This is a subclass of File.
+
+	MemFile(dat, suffix, label) -- constructor
+
+	Creates a file whose contents are the (byte) string dat. The label
+	is used for displaying the object. The suffix is available to any
+	user of the file who wants to know what type it is by filename.
+	(Bleah, Unix.) The suffix should begin with a dot (".aiff", etc.)
+
+	Publicly readable fields:
+
+	suffix -- the suffix passed in
+
+	Public method:
+
+	open() -- open the file for reading
+	"""
+	
+	def __init__(self, dat, suffix, label):
+		File.__init__(self, None, '<'+label+'>')
+		self.data = dat
+		self.suffix = suffix
+		self.label = label
+	def __repr__(self):
+		return '<MemFile <' + self.label + '>>'
+	def open(self, binary=False):
+		return cStringIO.StringIO(self.data)
 
 # Regular expression for valid Python identifiers: letters, digits, and
 # underscores. (But not starting with a digit.)
