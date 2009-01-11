@@ -64,7 +64,7 @@ class Command:
 	name = '<unknown>'
 	synonyms = []
 	description = '<unknown>'
-	help = None  ### fill out for commands
+	help = None
 
 	def __repr__(self):
 		return ('<Command \'' + self.name + '\'>')
@@ -95,6 +95,9 @@ class QuitCmd(Command):
 	name = 'quit'
 	synonyms = ['.', 'q']
 	description = 'Exit Boodle-Manager'
+	help = """
+Leave the interactive prompt and shut down boodle-mgr.py.
+"""
 
 	def perform(self, source):
 		self.assert_done(source)
@@ -104,6 +107,18 @@ class ContentsCmd(Command):
 	name = 'contents'
 	synonyms = ['resources']
 	description = 'List the resources in a package'
+	help = """
+"contents PACKAGE"
+"contents PACKAGE VERSION"
+"contents FILE"
+"contents URL"
+
+List the sounds and soundscapes contained in a package. (Soundscapes are
+labelled "agent", meaning a soundscape agent class.)
+
+You can specify the name of an installed package, a ".boop" file on disk,
+or a URL to download and inspect.
+"""
 
 	def perform(self, source):
 		tok = token.PackageFileURLToken()
@@ -132,6 +147,17 @@ class DescribeCmd(Command):
 	name = 'describe'
 	synonyms = ['metadata']
 	description = 'List the metadata of a package'
+	help = """
+"describe PACKAGE"
+"describe PACKAGE VERSION"
+
+Describe a package. This displays all its metadata, which can include the
+title, author, license, and so on. It also shows what other package this
+package requires in order to work.
+
+If you do not include the version number, this describes the most recent
+version of the package you have installed.
+"""
 
 	def perform(self, source):
 		tok = token.PackageFileURLToken()
@@ -162,6 +188,16 @@ class DescribeCmd(Command):
 class InstallCmd(Command):
 	name = 'install'
 	description = 'Install a package into your collection'
+	help = """
+"install URL"
+Download a package from that URL, and install it in your collection. 
+
+"install FILE"
+Install a package from a ".boop" file on disk. 
+
+"install PACKAGE VERSION"
+Install a package from the Boodler web site. 
+"""
 
 	def perform(self, source):
 		tok = token.PackageFileURLToken()
@@ -206,6 +242,11 @@ class InstallCmd(Command):
 class ListCmd(Command):
 	name = 'list'
 	description = 'List all the packages installed'
+	help = """
+List all the packages you have installed. If you have multiple versions of
+a package (which can happen), this ignores that, and just shows a single
+entry.
+"""
 
 	def perform(self, source):
 		self.assert_done(source)
@@ -219,6 +260,10 @@ class ListCmd(Command):
 class ListAllCmd(Command):
 	name = 'listall'
 	description = 'List all the packages installed, including versions'
+	help = """
+List all of the packages you have installed, showing version numbers. If
+you have multiple versions of a package, this displays that fact.
+"""
 
 	def perform(self, source):
 		self.assert_done(source)
@@ -239,6 +284,14 @@ class ListAllCmd(Command):
 class ObsoleteCmd(Command):
 	name = 'obsolete'
 	description = 'Find old versions which are not required by any current package'
+	help = """
+Search through your collection, and list all the package versions which can
+safely be deleted. A package version is considered obsolete if you have a
+newer one installed, and no current package requires the older version.
+
+After you install upgraded packages, you can use this command to see what
+can be deleted.
+"""
 
 	def perform(self, source):
 		self.assert_done(source)
@@ -275,6 +328,10 @@ class ObsoleteCmd(Command):
 class VersionsCmd(Command):
 	name = 'versions'
 	description = 'List all the installed versions of a package'
+	help = """
+"versions PACKAGE"
+List all the versions of package that are installed.
+"""
 
 	def perform(self, source):
 		tok = token.PackageToken()
@@ -297,6 +354,13 @@ class VersionsCmd(Command):
 class RequiresCmd(Command):
 	name = 'requires'
 	description = 'List what depends on a package'
+	help = """
+"requires PACKAGE"
+"requires PACKAGE VERSION"
+
+Search through your collection, and list all the packages which require the
+one you named.
+"""
 
 	def perform(self, source):
 		tok = token.PackageOptVersionToken()
@@ -338,6 +402,14 @@ class RequiresCmd(Command):
 class DeleteCmd(Command):
 	name = 'delete'
 	description = 'Delete a package from your collection'
+	help = """
+"delete PACKAGE"
+Delete a package from your collection. If you have multiple versions,
+delete all of them.
+
+"delete PACKAGE VERSION"
+Delete a particular version of a package from your collection.
+"""
 
 	def perform(self, source):
 		tok = token.PackageOptVersionToken()
@@ -389,6 +461,9 @@ class DeleteCmd(Command):
 class DeleteAllCmd(Command):
 	name = 'deleteall'
 	description = 'Delete your entire collection (all packages)'
+	help = """
+Delete every package in your collection.
+"""
 
 	def perform(self, source):
 		self.assert_done(source)
@@ -406,6 +481,23 @@ class DeleteAllCmd(Command):
 class CreateCmd(Command):
 	name = 'create'
 	description = 'Create a package file from a directory'
+	help = """
+"create DIRECTORY"
+"create DIRECTORY DESTFILE"
+
+Create a Boodler package. If you do not specify a destination ".boop" file,
+Boodler will create one with an appropriate name ("package.version.boop",
+in the usual convention).
+
+You must set up the source directory with valid metadata files, and the
+Python source or sound sample files that you want to include in your
+package. This requires a certain amount of care. See the Boodler manual for
+designing soundscapes.
+
+Note: the "create" command will only work if you have specified --import on
+the command line. You should only use --import when you intend to use the
+"create" command, packaging up a soundscape that you created yourself.
+"""
 
 	def perform(self, source):
 		tok = token.DirToken()
@@ -486,6 +578,11 @@ class CreateCmd(Command):
 class ReloadCmd(Command):
 	name = 'reload'
 	description = 'Force the manager to re-scan the collection directory.'
+	help = """
+Force boodle-mgr.py to re-scan your collection. You would only need to do
+this if some other process (or another copy of boodle-mgr.py) modified your
+collection directory while boodle-mgr.py was running.
+"""
 
 	def perform(self, source):
 		self.assert_done(source)
@@ -497,6 +594,13 @@ class HelpCmd(Command):
 	name = 'help'
 	synonyms = ['?']
 	description = 'Show this list'
+	help = """
+"help"
+List all available commands. 
+
+"help COMMAND"
+Show some help on the given command.
+"""
 
 	def perform(self, source):
 		if (not source.is_empty()):
@@ -512,19 +616,24 @@ class HelpCmd(Command):
 
 			helptext = cmd.help
 			if (not helptext):
-				helptext = cmd.description
-			print helptext
+				helptext = cmd.description + '.'
+			print
+			print helptext.strip()
 			return
 
 		self.assert_done(source)
 
-		### tidy
+		maxlen = 1 + max([ len(cmd.name) for cmd in command_list ])
 		for cmd in command_list:
-			print cmd.name+':', cmd.description
+			print (cmd.name+':').ljust(maxlen), cmd.description
 
 class LastErrorCmd(Command):
 	name = 'lasterror'
 	description = 'Display a debugging trace of the most recent error'
+	help = """
+Display a full Python stack trace of the last error that occurred. This
+exists to aid debugging of boodle-mgr.py.
+"""
 
 	def perform(self, source):
 		self.assert_done(source)
