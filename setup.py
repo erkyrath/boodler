@@ -350,6 +350,20 @@ class local_generate_source(Command):
             infl.close()
                 
 class local_generate_pydoc(Command):
+    """local_generate_pydoc: A special command to generate pydoc HTML files
+    for each module.
+
+    Pydoc is a wonderful thing, but its output is nonoptimal in a lot of
+    ways. This runs pydoc on each module (except cboodle), and then massages
+    the output. It also generates an index.html file for the doc/pydoc
+    directory.
+
+    The generate_pydoc command is not in the "build" or "install" pipeline,
+    because I ran it before I distributed the source. You should already
+    have a bunch of doc/pydoc/*.html files. If you run this command, they'll
+    be rewritten, but they won't be any different.
+    """
+    
     description = "generate pydoc HTML (not needed for build/install)"
     user_options = [
         ('build-dir=', 'b', "build directory (.py files)"),
