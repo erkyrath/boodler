@@ -157,6 +157,8 @@ Data and other attributes inherited from <a href="booman.token.html#Token">booma
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'List the resources in a package'</dl>
 
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"contents PACKAGE"<font color="#c040c0">\n</font>"contents PACKAGE VERSION"<font color="#c040c0">\n</font>"... file on disk,<font color="#c040c0">\n</font>or a URL to download and inspect.<font color="#c040c0">\n</font>'</dl>
+
 <dl><dt><strong>name</strong> = 'contents'</dl>
 
 <dl><dt><strong>synonyms</strong> = ['resources']</dl>
@@ -173,10 +175,6 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
-<hr>
-Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -190,6 +188,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Create a package file from a directory'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"create DIRECTORY"<font color="#c040c0">\n</font>"create DIRECTORY DESTFILE"<font color="#c040c0">\n</font>...aging up a soundscape that you created yourself.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'create'</dl>
 
@@ -207,8 +207,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -224,6 +222,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Delete your entire collection (all packages)'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>Delete every package in your collection.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'deleteall'</dl>
 
@@ -241,8 +241,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -258,6 +256,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Delete a package from your collection'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"delete PACKAGE"<font color="#c040c0">\n</font>Delete a package from your col...cular version of a package from your collection.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'delete'</dl>
 
@@ -275,8 +275,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -292,6 +290,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'List the metadata of a package'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"describe PACKAGE"<font color="#c040c0">\n</font>"describe PACKAGE VERSION"<font color="#c040c0">\n\n</font>...ecent<font color="#c040c0">\n</font>version of the package you have installed.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'describe'</dl>
 
@@ -309,10 +309,6 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
-<hr>
-Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -326,6 +322,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Show this list'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"help"<font color="#c040c0">\n</font>List all available commands. <font color="#c040c0">\n\n</font>"help COMMAND"<font color="#c040c0">\n</font>Show some help on the given command.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'help'</dl>
 
@@ -343,10 +341,6 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
-<hr>
-Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -360,6 +354,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Install a package into your collection'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"install URL"<font color="#c040c0">\n</font>Download a package from that URL,...N"<font color="#c040c0">\n</font>Install a package from the Boodler web site. <font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'install'</dl>
 
@@ -377,8 +373,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -394,6 +388,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Display a debugging trace of the most recent error'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>Display a full Python stack trace of the last e.... This<font color="#c040c0">\n</font>exists to aid debugging of boodle-mgr.py.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'lasterror'</dl>
 
@@ -411,8 +407,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -428,6 +422,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'List all the packages installed, including versions'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>List all of the packages you have installed, sh... versions of a package, this displays that fact.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'listall'</dl>
 
@@ -445,8 +441,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -462,6 +456,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'List all the packages installed'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>List all the packages you have installed. If yo...his ignores that, and just shows a single<font color="#c040c0">\n</font>entry.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'list'</dl>
 
@@ -479,8 +475,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -496,6 +490,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Find old versions which are not required by any current package'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>Search through your collection, and list all th...can use this command to see what<font color="#c040c0">\n</font>can be deleted.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'obsolete'</dl>
 
@@ -513,8 +509,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -530,6 +524,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Exit Boodle-Manager'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>Leave the interactive prompt and shut down boodle-mgr.py.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'quit'</dl>
 
@@ -547,10 +543,6 @@ CommandError.<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
-<hr>
-Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -564,6 +556,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'Force the manager to re-scan the collection directory.'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>Force boodle-mgr.py to re-scan your collection....ction directory while boodle-mgr.py was running.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'reload'</dl>
 
@@ -581,8 +575,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -598,6 +590,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'List what depends on a package'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"requires PACKAGE"<font color="#c040c0">\n</font>"requires PACKAGE VERSION"<font color="#c040c0">\n\n</font>...ll the packages which require the<font color="#c040c0">\n</font>one you named.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'requires'</dl>
 
@@ -615,8 +609,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table> <p>
@@ -632,6 +624,8 @@ Data and other attributes inherited from <a href="booman.command.html#Command">C
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>description</strong> = 'List all the installed versions of a package'</dl>
+
+<dl><dt><strong>help</strong> = '<font color="#c040c0">\n</font>"versions PACKAGE"<font color="#c040c0">\n</font>List all the versions of package that are installed.<font color="#c040c0">\n</font>'</dl>
 
 <dl><dt><strong>name</strong> = 'versions'</dl>
 
@@ -649,8 +643,6 @@ but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
-<dl><dt><strong>help</strong> = None</dl>
-
 <dl><dt><strong>synonyms</strong> = []</dl>
 
 </td></tr></table></td></tr></table><p>

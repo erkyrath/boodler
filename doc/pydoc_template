@@ -39,36 +39,6 @@ hard to read the pages top to bottom. We apologize.)
 
 <table width="100%" summary="list"><tr>
 
-<td width="25%" valign=top>
-<strong><a href="boodle.html">boodle</a></strong><br>
-<a href="boodle.agent.html">boodle.agent</a><br>
-<a href="boodle.builtin.html">boodle.builtin</a><br>
-<a href="boodle.generator.html">boodle.generator</a><br>
-<a href="boodle.listen.html">boodle.listen</a><br>
-<a href="boodle.music.html">boodle.music</a><br>
-<a href="boodle.sample.html">boodle.sample</a><br>
-<a href="boodle.stereo.html">boodle.stereo</a><br>
-</td>
-<td width="25%" valign=top>
-<strong><a href="boopak.html">boopak</a></strong><br>
-<a href="boopak.argdef.html">boopak.argdef</a><br>
-<a href="boopak.collect.html">boopak.collect</a><br>
-<a href="boopak.emptymodule.html">boopak.emptymodule</a><br>
-<a href="boopak.fetch.html">boopak.fetch</a><br>
-<a href="boopak.package.html">boopak.package</a><br>
-<a href="boopak.pinfo.html">boopak.pinfo</a><br>
-<a href="boopak.pload.html">boopak.pload</a><br>
-<a href="boopak.sparse.html">boopak.sparse</a><br>
-<a href="boopak.testing.html">boopak.testing</a><br>
-<a href="boopak.version.html">boopak.version</a><br>
-</td>
-<td width="25%" valign=top>
-<strong><a href="booman.html">booman</a></strong><br>
-<a href="booman.command.html">booman.command</a><br>
-<a href="booman.create.html">booman.create</a><br>
-<a href="booman.frame.html">booman.frame</a><br>
-<a href="booman.token.html">booman.token</a><br>
-</td>
 <!-- CONTENT -->
 
 </tr></table>

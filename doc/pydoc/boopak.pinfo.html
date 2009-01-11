@@ -36,13 +36,14 @@ Utility&nbsp;functions:<br>
 <font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/codecs.html">codecs</a><br>
-<a href="http://www.python.org/doc/current/library/os.html">os</a><br>
-</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/re.html">re</a><br>
-<a href="http://www.python.org/doc/current/library/sets.html">sets</a><br>
-</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
-<a href="http://www.python.org/doc/current/library/types.html">types</a><br>
-</td><td width="25%" valign=top><a href="boopak.version.html">boopak.version</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/stringio.html">cStringIO</a><br>
+<a href="http://www.python.org/doc/current/library/codecs.html">codecs</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+<a href="http://www.python.org/doc/current/library/re.html">re</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sets.html">sets</a><br>
+<a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/types.html">types</a><br>
+<a href="boopak.version.html">boopak.version</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -52,7 +53,12 @@ Utility&nbsp;functions:<br>
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
 <dt><font face="helvetica, arial"><a href="boopak.pinfo.html#File">File</a>
-</font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#Metadata">Metadata</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="boopak.pinfo.html#MemFile">MemFile</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="boopak.pinfo.html#Metadata">Metadata</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#PackageGroup">PackageGroup</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#PackageInfo">PackageInfo</a>
 </font></dt><dt><font face="helvetica, arial"><a href="boopak.pinfo.html#Resource">Resource</a>
@@ -96,6 +102,38 @@ Public&nbsp;method:<br>
 Open&nbsp;the&nbsp;file&nbsp;for&nbsp;reading.&nbsp;Returns&nbsp;a&nbsp;Python&nbsp;file&nbsp;object.<br>
 If&nbsp;binary&nbsp;is&nbsp;False,&nbsp;the&nbsp;file&nbsp;is&nbsp;opened&nbsp;with&nbsp;newline&nbsp;translation<br>
 ('rU');&nbsp;otherwise,&nbsp;in&nbsp;binary&nbsp;mode&nbsp;('rb').</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MemFile">class <strong>MemFile</strong></a>(<a href="boopak.pinfo.html#File">File</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#MemFile">MemFile</a>:&nbsp;represents&nbsp;a&nbsp;file&nbsp;which&nbsp;exists&nbsp;only&nbsp;in&nbsp;memory.<br>
+This&nbsp;is&nbsp;a&nbsp;subclass&nbsp;of&nbsp;<a href="#File">File</a>.<br>
+&nbsp;<br>
+<a href="#MemFile">MemFile</a>(dat,&nbsp;suffix,&nbsp;label)&nbsp;--&nbsp;constructor<br>
+&nbsp;<br>
+Creates&nbsp;a&nbsp;file&nbsp;whose&nbsp;contents&nbsp;are&nbsp;the&nbsp;(byte)&nbsp;string&nbsp;dat.&nbsp;The&nbsp;label<br>
+is&nbsp;used&nbsp;for&nbsp;displaying&nbsp;the&nbsp;object.&nbsp;The&nbsp;suffix&nbsp;is&nbsp;available&nbsp;to&nbsp;any<br>
+user&nbsp;of&nbsp;the&nbsp;file&nbsp;who&nbsp;wants&nbsp;to&nbsp;know&nbsp;what&nbsp;type&nbsp;it&nbsp;is&nbsp;by&nbsp;filename.<br>
+(Bleah,&nbsp;Unix.)&nbsp;The&nbsp;suffix&nbsp;should&nbsp;begin&nbsp;with&nbsp;a&nbsp;dot&nbsp;(".aiff",&nbsp;etc.)<br>
+&nbsp;<br>
+Publicly&nbsp;readable&nbsp;fields:<br>
+&nbsp;<br>
+suffix&nbsp;--&nbsp;the&nbsp;suffix&nbsp;passed&nbsp;in<br>
+&nbsp;<br>
+Public&nbsp;method:<br>
+&nbsp;<br>
+<a href="#MemFile-open">open</a>()&nbsp;--&nbsp;open&nbsp;the&nbsp;file&nbsp;for&nbsp;reading<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="MemFile-__init__"><strong>__init__</strong></a>(self, dat, suffix, label)</dt></dl>
+
+<dl><dt><a name="MemFile-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MemFile-open"><strong>open</strong></a>(self, binary<font color="#909090">=False</font>)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

@@ -9,6 +9,7 @@
 import sys
 import os.path
 import re
+import subprocess
 from distutils.core import setup, Command, Extension
 from distutils.command.build_ext import build_ext
 from distutils.command.build_scripts import build_scripts
@@ -348,6 +349,158 @@ class local_generate_source(Command):
             outfl.close()
             infl.close()
                 
+class local_generate_pydoc(Command):
+    description = "generate pydoc HTML (not needed for build/install)"
+    user_options = [
+        ('build-dir=', 'b', "build directory (.py files)"),
+        ('pydoc-dir=', 'd', "output directory"),
+        ('index-template=', None, "template for index.html"),
+    ]
+    
+    def initialize_options(self):
+        self.build_dir = None
+        self.index_template = None
+        self.pydoc_dir = None
+
+    def finalize_options(self):
+        self.set_undefined_options('build', ('build_lib', 'build_dir'))
+        if (self.index_template is None):
+            self.index_template = 'doc/pydoc_template'
+        if (self.pydoc_dir is None):
+            self.pydoc_dir = 'doc/pydoc'
+
+    def run(self):
+        abs_build_dir = os.path.abspath(self.build_dir)
+        abs_index_template = os.path.abspath(self.index_template)
+        
+        curdir = os.getcwd()
+        try:
+            os.chdir(self.pydoc_dir)
+            self._generate(abs_build_dir, abs_index_template)
+        finally:
+            os.chdir(curdir)
+
+    def _generate(self, buildpath, templatepath):
+        packages = ['boodle', 'boopak', 'booman']
+        PYTHON_DOC_URL = 'http://www.python.org/doc/current/library/'
+
+        sysmodules = [
+            '__builtin__', 'aifc', 'bisect', 'codecs',
+            'cStringIO', 'errno', 'exceptions',
+            'fcntl', 'fileinput',
+            'imp', 'inspect', 'keyword', 'logging', 'math',
+            'os', 're', 'readline', 'select', 'sets',
+            'socket', 'StringIO', 'struct', 'sunau',
+            'sys', 'tempfile', 'time', 'traceback', 'types', 'unittest',
+            'wave', 'zipfile',
+        ]
+        sysmodules = dict([ (key, True) for key in sysmodules])
+
+        fl = open(templatepath)
+        template = fl.read()
+        fl.close()
+
+        pos = template.find('<!-- CONTENT -->')
+        if (pos < 0):
+            raise Exception('template does not contain <!-- CONTENT --> line')
+        index_head = template[ : pos ]
+        index_tail = template[ pos : ]
+        
+        modules = []
+            
+        for pkg in packages:
+            path = os.path.join(buildpath, pkg)
+            if (not os.path.isdir(path)):
+                raise Exception('package does not exist: ' + path)
+                
+            modules.append(pkg)
+            
+            files = os.listdir(path)
+            files.sort()
+            for file in files:
+                if (file.startswith('_')):
+                    continue
+                if (file.startswith('test_')):
+                    continue
+                if (not file.endswith('.py')):
+                    continue
+                modules.append(pkg+'.'+file[:-3])
+
+        fileurl_regex = re.compile('href="file:([^"]*)"')
+        sysmod_regex = re.compile('href="([a-zA-Z_]*).html(#[a-zA-Z_]*)?"')
+        testmod_regex = re.compile('<a href="[a-z]*.test_[a-z]*.html">([a-z_]*)</a>')
+        cboodlemod_regex = re.compile('<a href="[a-z]*.cboodle_[a-z]*.html">([a-z_]*)</a>')
+        agentinherit_regex = re.compile('Methods inherited from <a href="boodle.agent.html#Agent">boodle.agent.Agent</a>:.*?</td>', re.DOTALL)
+        memaddress_regex = re.compile(' at 0x[a-f0-9]*&gt;')
+
+        def fileurl_func(match):
+            val = match.group(1)
+            pos = val.find(buildpath)
+            if (pos < 0):
+                raise Exception('buildpath not in fileurl')
+            srcname = val[ pos+len(buildpath) : ]
+            return 'href="../../src%s"' % (srcname,)
+        
+        def sysmod_func(match):
+            val = match.group(1)
+            if (not sysmodules.has_key(val)):
+                if (not (val in packages)):
+                    print 'Warning: link to "%s.html" unmunged.' % (val,)
+                return match.group(0)
+            val = val.lower()
+            if (val == 'cstringio'):
+                val = 'stringio'
+            fragment = match.group(2)
+            if (fragment is None):
+                fragment = ''
+            return 'href="%s%s.html%s"' % (PYTHON_DOC_URL, val, fragment)
+
+        for mod in modules:
+            ret = subprocess.call(['pydoc', '-w', mod])
+            if (ret):
+                print 'pydoc failed on', mod, ':', ret
+                sys.exit(1)
+                
+            file = mod+'.html'
+            fl = open(file)
+            dat = fl.read()
+            fl.close()
+        
+            newdat = dat + '\n'
+            newdat = fileurl_regex.sub(fileurl_func, newdat)
+            newdat = newdat.replace(buildpath+'/', '')
+            newdat = sysmod_regex.sub(sysmod_func, newdat)
+            newdat = testmod_regex.sub('\\1', newdat)
+            newdat = cboodlemod_regex.sub('\\1', newdat)
+            if (mod == 'boodle.builtin'):
+                newdat = agentinherit_regex.sub('</td>', newdat)
+            newdat = newdat.replace('href="."', 'href="index.html"')
+            newdat = memaddress_regex.sub('&gt;', newdat)
+        
+            fl = open(file, 'w')
+            fl.write(newdat)
+            fl.close()
+        
+        modsets = []
+        for mod in modules:
+            if (not ('.' in mod)):
+                modsets.append([])
+            modsets[-1].append(mod)
+        
+        fl = open('index.html', 'w')
+        fl.write(index_head)
+        for ls in modsets:
+            fl.write('<td width="25%" valign=top>\n')
+            for mod in ls:
+                if (not ('.' in mod)):
+                    fl.write('<strong><a href="%s.html">%s</a></strong><br>\n' % (mod, mod))
+                else:
+                    fl.write('<a href="%s.html">%s</a><br>\n' % (mod, mod))
+            fl.write('</td>\n')
+        fl.write(index_tail)
+        fl.close()
+        print 'build index.html'
+
 
 setup(name = 'Boodler',
     version = '2.0.0',
@@ -364,5 +517,6 @@ setup(name = 'Boodler',
         'build_ext': local_build_ext,
         'build_scripts': local_build_scripts,
         'generate_source': local_generate_source,
+        'generate_pydoc': local_generate_pydoc,
     },
 )
