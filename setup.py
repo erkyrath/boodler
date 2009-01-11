@@ -469,8 +469,14 @@ class local_generate_pydoc(Command):
                 fragment = ''
             return 'href="%s%s.html%s"' % (PYTHON_DOC_URL, val, fragment)
 
+        newenv = dict(os.environ)
+        val = buildpath
+        if (newenv.has_key('PYTHONPATH')):
+            val = val + ':' + newenv['PYTHONPATH']
+        newenv['PYTHONPATH'] = val
+        
         for mod in modules:
-            ret = subprocess.call(['pydoc', '-w', mod])
+            ret = subprocess.call(['pydoc', '-w', mod], env=newenv)
             if (ret):
                 print 'pydoc failed on', mod, ':', ret
                 sys.exit(1)
