@@ -149,6 +149,7 @@ class PackageOptVersionToken(Token):
     
     def accept(self, source):
         val = source.pop_word(self)
+        
         if (':' in val):
             try:
                 (pkgname, vers) = pinfo.parse_package_version_spec(val)
@@ -196,11 +197,23 @@ class PackageFileURLToken(Token):
     def accept(self, source):
         val = source.pop_word(self)
 
-        if (':' in val):
-            return (collect.Source_URL, val)
+        if (':' in val
+            and not (val.startswith('/') or val.startswith('\\') or val.startswith('.'))):
+            pos = val.find(':')
+            dotpos = val.find('.')
+            if (dotpos < 0 or dotpos > pos):
+                return (collect.Source_URL, val)
 
         if (val.endswith('.zip') or val.endswith(collect.Suffix_PackageArchive)):
             return (collect.Source_FILE, val)
+        
+        if (':' in val):
+            try:
+                (pkgname, vers) = pinfo.parse_package_version_spec(val)
+                return (collect.Source_PACKAGE, (pkgname, vers))
+            except:
+                pass
+        
         try:
             pinfo.parse_package_name(val)
         except:

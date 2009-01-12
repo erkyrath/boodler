@@ -206,6 +206,9 @@ Install a package from the Boodler web site.
 
         if (srctype == collect.Source_PACKAGE):
             (pkgname, vers) = loc
+            if (isinstance(vers, version.VersionSpec)):
+                ### really this should query boodler.org for matching version
+                raise CommandError('You must supply an exact version number')
             if (vers is None):
                 ### really this should query boodler.org for the latest version
                 raise CommandError('You must supply a version number')
@@ -707,6 +710,7 @@ def ensure_fetched(srctype, loc):
 # Late imports
 from boopak import pinfo
 from boopak import collect
+from boopak import version
 from booman import CommandError, CommandCancelled
 from booman import frame
 from booman import create

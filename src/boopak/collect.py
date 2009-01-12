@@ -151,11 +151,12 @@ class PackageCollection(pload.PackageLoader):
 
         Load a package given (srctype, loc) in one of the following forms:
 
-            (Source_PACKAGE, pkgname)
+            (Source_PACKAGE, (pkgname, vers))
             (Source_FILE, filename)
             (Source_URL, url)
 
         Source_PACKAGE will be found and loaded from the collection.
+        (The vers part may be a VersionNumber, VersionSpec, or None.)
         
         Source_FILE will be unzipped (in the temporary work directory)
         and then loaded. (However, the temporary directory will not be
@@ -224,7 +225,7 @@ class PackageCollection(pload.PackageLoader):
 
         Install a package given (srctype, loc) in one of the following forms:
 
-            (Source_PACKAGE, pkgname)
+            (Source_PACKAGE, (pkgname, vers))
             (Source_FILE, filename)
             (Source_URL, url)
 
