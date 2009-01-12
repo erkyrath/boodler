@@ -140,7 +140,7 @@ class PackageToken(Token):
 class PackageOptVersionToken(Token):
     """PackageOptVersionToken: Grab the name of a package, and also
     a version number (if one is provided). Returns (pkgname, vers)
-    where vers may be a VersionNumber or None.
+    where vers may be a VersionNumber, VersionSpec, or None.
     """
 
     prompt = 'package'
@@ -149,6 +149,13 @@ class PackageOptVersionToken(Token):
     
     def accept(self, source):
         val = source.pop_word(self)
+        if (':' in val):
+            try:
+                (pkgname, vers) = pinfo.parse_package_version_spec(val)
+                return (pkgname, vers)
+            except:
+                raise CommandError('Invalid package name: ' + val)
+            
         try:
             pinfo.parse_package_name(val)
         except:

@@ -932,6 +932,34 @@ capital_letter_regexp = re.compile('([A-Z])')
 # Regexp which matches a caret followed by one letter (as a group)
 caret_letter_regexp = re.compile('\\^([A-Za-z])')
 
+def parse_package_version_spec(val):
+    """parse_package_version_spec(val) -> (pkgname, VersionNumber)
+        or (pkgname, VersionSpec) or (pkgname, None)
+
+    Parse a package identifier together with its version spec 
+    (e.g., "org.boodler.sample:1.0") or exact version spec 
+    (e.g., "org.boodler.sample::1.0"). If neither is present,
+    the second value of the return tuple will be None.
+    
+    Raises a ValueError if the name was in any way invalid. (Thus,
+    this function can be used to ensure that a package name is valid.)
+    """
+
+    vers = None
+    
+    pos = val.find(':')
+    if (pos >= 0):
+        spec = val[ pos+1 : ]
+        val = val[ : pos ]
+        if (spec.startswith(':')):
+            vers = version.VersionNumber(spec[ 1 : ])
+        else:
+            vers = version.VersionSpec(spec)
+
+    parse_package_name(val)
+
+    return (val, vers)
+
 def parse_package_name(pkgname):
     """parse_package_name(pkgname) -> list of str
 

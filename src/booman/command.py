@@ -668,8 +668,10 @@ def format_package(val, full=True):
     """format_package(val, full=True) -> str
 
     Create a human-readable label for a package. The val may be a
-    PackageInfo object or a (pkgname, vers) pair. If full is false,
-    the version is ignored.
+    PackageInfo object or a (pkgname, vers) pair. In the latter case,
+    vers may be a VersionNumber or a VersionSpec.
+
+    If full is false, the version is ignored.
     """
     
     if (isinstance(val, pinfo.PackageInfo)):

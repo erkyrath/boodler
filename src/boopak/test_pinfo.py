@@ -12,6 +12,7 @@ from boopak import version
 from boopak import pinfo
 from boopak.pinfo import Metadata, Resources, PackageLoadError
 from boopak.pinfo import parse_package_name, parse_resource_name
+from boopak.pinfo import parse_package_version_spec
 from boopak.pinfo import build_safe_pathname, encode_package_name, deunicode
 from boopak.pinfo import dict_accumulate, dict_all_values
 
@@ -258,7 +259,37 @@ one: eleven
             
         ress.create('foo.four.bad')
         self.assertRaises(ValueError, ress.build_tree)
-    
+
+    def test_parse_package_version_spec(self):
+        valid_list = [
+            'foo:1.0', 'foo:2-', 'foo:-3.1', 'foo:2-4',
+            'foo::1.2.3', 'foo.bar::1.5.6a',
+        ]
+        invalid_list = [
+            '0x', ':foo', 'foo:0.1', 'foo:1.2.3',
+            'foo::0.1', 'foo:::1.0', 'foo:1:2',
+            'foo: 1.0', 'foo :1.0', 'foo: :1.0', 'foo:: 1.0',
+        ]
+        
+        (pkg, vers) = parse_package_version_spec('x.y.z')
+        self.assertEqual(pkg, 'x.y.z')
+        self.assertEqual(vers, None)
+        
+        (pkg, vers) = parse_package_version_spec('x.y.z:2.4')
+        self.assertEqual(pkg, 'x.y.z')
+        self.assert_(isinstance(vers, version.VersionSpec))
+        self.assertEqual(vers, version.VersionSpec('2.4'))
+        
+        (pkg, vers) = parse_package_version_spec('x.y.z::2.4.6')
+        self.assertEqual(pkg, 'x.y.z')
+        self.assert_(isinstance(vers, version.VersionNumber))
+        self.assertEqual(vers, version.VersionNumber('2.4.6'))
+
+        for val in valid_list:
+            parse_package_version_spec(val)
+        for val in invalid_list:
+            self.assertRaises(ValueError, parse_package_version_spec, val)
+        
     def test_parse_package_name(self):
         valid_list = [
             ('hello', ['hello']),
