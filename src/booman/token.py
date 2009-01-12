@@ -233,7 +233,38 @@ class PackageFileURLToken(Token):
                 if (not (val is None)):
                     source.push_word(val)
         return (collect.Source_PACKAGE, (pkgname, vers))
+
+class ResourceToken(Token):
+    """ResourceToken: Grab the name of a resource. This must be
+    pkgname/resource, pkgname:spec/resource, or pkgname::vers/resource.
+    Returns ((pkgname, vers), resource), where vers will be None,
+    a VersionSpec, or a VersionNumber.
+    """
+
+    prompt = 'resource'
+    
+    def accept(self, source):
+        val = source.pop_word(self)
+        pos = val.find('/')
+        if (pos < 0):
+            raise CommandError('Not of form package/resource: ' + val)
+
+        res = val[ pos+1 : ]
+        val = val[ : pos ]
+
+        try:
+            pinfo.parse_resource_name(res)
+        except:
+            raise CommandError('Invalid resource name: ' + res)
+            
+        try:
+            (pkg, vers) = pinfo.parse_package_version_spec(val)
+        except:
+            raise CommandError('Invalid package name: ' + val)
         
+        return ( (pkg, vers), res )
+
+
 class InputSource:
     """InputSource: represents the user's input (which may include command-
     line arguments and pieces of previously-typed commands). Various Tokens

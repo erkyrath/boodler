@@ -184,7 +184,20 @@ version of the package you have installed.
                 print '  ', key+':'
                 for val in vals:
                     print '    ', val
-        
+
+class ExamineCmd(Command):
+    name = 'examine'
+    synonyms = ['x']
+    description = 'Examine a resource in a package'
+    ### help
+    
+    def perform(self, source):
+        tok = token.ResourceToken()
+        ((pkgname, vers), res) = tok.accept(source)
+        self.assert_done(source)
+
+        ### not yet implemented
+                    
 class InstallCmd(Command):
     name = 'install'
     description = 'Install a package into your collection'
@@ -655,6 +668,7 @@ command_list = [
     ListAllCmd,
     DescribeCmd,
     ContentsCmd,
+    ###ExamineCmd,
     VersionsCmd,
     ObsoleteCmd,
     RequiresCmd,
