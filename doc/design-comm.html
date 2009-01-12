@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+<title>Boodler: Communicating with Soundscapes</title>
+<link rel="stylesheet" href="doc.css" type="text/css" />
+</head>
+<body>
+
+<h1>Boodler: Communicating with Soundscapes</h1>
+
+<p>
+You are now well familiar with the act of starting soundscapes. Any time your code creates an Agent, you can pass in arguments. And if you read the <a href="design-arguments.html">previous chapter</a>, you know more than you probably wish about the way command-line arguments are handled.
+</p>
+
+<p>
+At the other end of the spindle, you can <em>stop</em> a soundscape, by shutting down the channel it runs in. (Most often with <code><a href="pydoc/boodle.builtin.html#StopAgent">builtin.StopAgent</a></code> or <code><a href="pydoc/boodle.builtin.html#FadeOutAgent">builtin.FadeOutAgent</a></code>.)
+</p>
+
+<p>
+Is there anything in between? Is life a thread, spun out of straw at one end and brutally sheared at the other, hanging whither it will in between? Am I slightly giddy on too much holiday shortbread? Yes, no, and probably. But let us return to Boodler.
+</p>
+
+<h2>Python approaches</h2>
+
+<p>
+The simplest way to tweak a soundscape in flight is to call one of its methods. (Or set one of its fields.) A soundscape is a Python object, after all, and you can put in any code you want. Consider this pair of agents:
+</p>
+
+<pre>
+from boopak.package import *
+from boodle import agent
+
+water = bimport('org.boodler.old.water')
+
+class Example(agent.Agent):
+    def init(self):
+        self.agent = None
+    def run(self):
+        if (self.firsttime):
+            self.agent = Example2()
+            self.sched_agent(self.agent)
+            self.resched(2)
+        else:
+            self.agent.change_sound(water.droplet_bloink)
+
+class Example2(agent.Agent):
+    def init(self):
+        self.sound = water.droplet_plink
+    def run(self):
+        self.sched_note(self.sound)
+        self.resched(0.33)
+    def change_sound(self, sound):
+        self.sound = sound
+</pre>
+
+<p>
+The first time it runs, <code>Example</code> fires up an <code>Example2</code> soundscape. It stores a reference to the <code>Example2</code> agent for later use, and then it reschedules itself, with a two-second delay.
+</p>
+
+<p>
+(The <code>self.firsttime</code> flag is a convenience that Boodler offers to all Agents. It's <code>True</code> the first time the agent runs, and <code>False</code> every time after that.) 
+</p>
+
+<p>
+The second time <code>Example</code> runs, it calls the <code>change_sound()</code> method on the agent it started. What is this? It's not part of the Boodler API. It's a method invented purely for this example, and you can see it defined in <code>Example2</code>. That agent repeats a sound forever (three times a second), and its <code>change_sound()</code> method changes which sound it's repeating.
+</p>
+
+<p>
+So you hear repeated plinking, but after two seconds, it changes to bloinking. After that nothing changes; <code>Example</code> only runs twice, and even if it did run again, it would just keep <code>Example2</code> on the <code>droplet_bloink</code> sound.
+</p>
+
+<p>
+This is a straightforward means of soundscape-to-soundscape communication. But it isn't very flexible. You can only call methods on an Agent if you have a reference to it, which basically means "if you started it up". If you want to broadcast a message to <em>every</em> Agent, you will need another plan.
+</p>
+
+<p>
+(Calling methods can also lead to tricky scheduling issues. For example, it's legal to call a method that contains <code>sched_agent()</code> or <code>sched_note()</code> calls -- those aren't limited to the <code>run()</code> method. But then you have to be careful about whether the Agent is actually alive. If it hasn't been started up yet, or if its channel has been shut down, you'll see Python errors.)
+</p>
+
+<h2>Boodler events</h2>
+
+<p>
+To broadcast a message for other Agents to hear, you can use Boodler events.
+</p>
+
+<p>
+An event is just a string (with maybe some additional data tacked on) which is dropped into a channel. Any Agent which is listening for that event, in that channel, will receive it. Agents which are not listening will ignore it.
+</p>
+
+<p>
+An Agent doesn't necessarily listen for every event. An event name can be a dotted domain name, like a package name: "bird.owl.hoot", for example. An Agent listening for that specific string will receive the matching event. An Agent can also listen for a <em>group</em> of events -- that is, a first part of the name. If an Agent is listening for "bird", or for "bird.owl", it will receive the event "bird.owl.hoot".
+</p>
+
+<p>
+It also matters which channel you're listening on, and which channel the event was sent to. A channel event can be heard by Agents listening in that channel, and that channel's <em>parent channels</em> -- but <em>not</em> in channels <em>within</em> the given channel. In other words, events propagate upward, towards the root channel. If you listen in the root channel, you can hear every event that occurs. If you listen in a subchannel, you are effectively limiting your horizon to the events of that channel and the channels inside it.
+</p>
+
+<p>
+(Therefore, to receive <em>every single</em> event in the system, you'd have to listen on the root channel, for events named "". This probably isn't useful, but you might do it while debugging.)
+</p>
+
+<p>
+Here is an example that demonstrates sending and receiving events:
+</p>
+
+<pre>
+class Example(agent.Agent):
+    def run(self):
+        self.sched_agent(ExampleReceive())
+        self.sched_agent(ExampleSend(), delay=1)
+
+class ExampleReceive(agent.Agent):
+    def run(self):
+        self.listen('go')
+    def receive(self, event):
+        self.sched_note(water.droplet_plink)
+
+class ExampleSend(agent.Agent):
+    def run(self):
+        self.send_event('go')
+        self.resched(3)
+</pre>
+
+<p>
+<code>Example</code> starts up two other agents, <code>ExampleReceive</code> and <code>ExampleSend</code>. <code>ExampleReceive</code> runs immediately, but all it does is begin listening for the "go" event. Notice that it does not reschedule itself. It is no longer on the schedule at all; it is waiting around, listening for events.
+</p>
+
+<p>
+The <code>ExampleSend</code> agent runs every three seconds, in the usual way, but it doesn't play any sounds. All <em>it</em> does is to send out a "go" event. Since the <code>ExampleReceive</code> is listening for this, its <code>receive()</code> method is called, and you hear a plink.
+</p>
+
+<p>
+We're not specifying channels in this example. <code>Example</code> starts up the other two agents in its own channel, which is the root channel. The <code>listen()</code> and <code>send_event()</code> methods also work in the caller's channel unless you specify otherwise. So each "go" event hits the root channel, which is where <code>ExampleReceive</code> is listening, which is fine.
+</p>
+
+<p>
+The <code>run()</code> method of <code>ExampleReceive</code> has no purpose but to start listening. There's nothing wrong with that, but you can use a shortcut, which is a bit clearer to read:
+</p>
+
+<pre>
+class Example(agent.Agent):
+    def run(self):
+        self.post_listener_agent(ExampleReceive())
+        self.sched_agent(ExampleSend(), delay=1)
+
+class ExampleReceive(agent.Agent):
+    selected_event = 'go'
+    def receive(self, event):
+        self.sched_note(water.droplet_plink)
+</pre>
+
+<p>
+(<code>ExampleSend</code> is unchanged.) Rather than scheduling <code>ExampleReceive</code>, we call <code>post_listener_agent()</code>, which starts it listening directly. The event name it will listen for is defined in the class variable <code>selected_event</code>.
+</p>
+
+<p>
+The <code>post_listener_agent()</code>, <code>listen()</code>, and <code>send_event()</code> methods have the usual trail of options to specify channels, events, and so on. We won't try to go through them here; see the <a href="pydoc/boodle.agent.html#Agent">Agent class reference</a> for complete details.
+</p>
+
+<h2>External events</h2>
+
+<p>
+Boodler starts to get really interesting when it reacts to events from the outside world. This is the job of the <code><a href="boodle-event-ref.html">boodle-event.py</a></code> script.
+</p>
+
+<p>
+Begin with this soundscape:
+</p>
+
+<pre>
+class Example(agent.Agent):
+    selected_event = 'go'
+    def run(self):
+        self.listen(hold=True)
+    def receive(self, event):
+        self.sched_note(water.droplet_plink)
+</pre>
+
+<p>
+This is nearly the same as our first <code>ExampleReceive</code>. The only difference is the <code>listen()</code> call. It doesn't specify an event name, so that's pulled from the <code>selected_event</code> declaration -- we've seen that before.
+</p>
+
+<p>
+Then there's the <code>hold=True</code> argument, which we need because of a little problem we glossed over earlier. A Boodler channel exists for as long as it has any agents or sounds scheduled (or until it's explictly stopped). But a listening Agent <em>isn't</em> scheduled. So if <code>Example</code> just called <code>self.listen()</code>, then as soon as that invocation of <code>run()</code> was finished, it would leave the root channel -- in fact, all of Boodler -- with nothing on the schedule. Boodler would shut down immediately.
+</p>
+
+<p>
+This wasn't a problem before, because the <code>ExampleSend</code> agent kept running in the root channel, keeping it alive. But now there is no <code>ExampleSend</code>. So we have to set <code>hold=True</code> in the <code>listen()</code> call. The idea is that, really, a Boodler channel exists for as long as it has any agents or sounds scheduled, <em>or</em> any listening agents with the <code>hold</code> flag set.
+</p>
+
+<p>
+(Yes, it is possible for an agent to stop listening. Either call its <code>unlisten()</code> method, or call the <code>cancel()</code> method of the object which <code>listen()</code> returns. See the <a href="pydoc/boodle.agent.html#Agent">Agent class reference</a> for details.)
+</p>
+
+<p>
+Now that we've covered that, let's start up this soundscape. We need an extra option on the command line:
+</p>
+
+<pre>
+boodler.py --listen --external bootest com.example.bootest/Example
+</pre>
+
+<p>
+The <code>--listen</code> option tells Boodler to listen for events. It acts as a teeny little network server, which can receive events from other machines (or the same machine, of course).
+</p>
+
+<p>
+Network servers mean thinking about security, which is why this option isn't on by default -- you have to request it explicitly. Boodler uses TCP port 31863. You may have to open this port on the firewall of the machine you run Boodler on. On the other hand, you may want to <em>block</em> this port on the firewall of your broadband network device. Boodler event spam isn't a serious problem today, but who knows what will happen tomorrow?
+</p>
+
+<p>
+(To choose a different port number, use the <code>--port</code> option. Another possibility, if you want to avoid the whole network-server situation, is to give an absolute filename for the port "number" -- for example, <code>--port /tmp/boosocket</code>. This will create a named Unix domain socket, which can be used by other processes on the same machine, but not on any other machine.)
+</p>
+
+<p>
+Leave Boodler running. From a different command window, do this:
+</p>
+
+<pre>
+boodle-event.py go
+</pre>
+
+<p>
+(If you specified a different <code>--port</code> for <code>boodler.py</code>, use the same <code>--port</code> option for <code>boodle-event.py</code>. If you are running <code>boodle-event.py</code> on a different machine, use the <code>--hostname</code> option. The details are on the <code><a href="boodle-event-ref.html">boodle-event.py</a></code> reference page.)
+</p>
+
+<p>
+(If you see a "Connection refused" error, you forgot the <code>--listen</code> argument to <code>boodler.py</code>. Or else it isn't running.)
+</p>
+
+<p>
+<code>boodle-event.py</code> lets you send any message to Boodler's root channel. When you send the "go" event, the listening <code>Example</code> will hear it and play its plink. You can send the event repeatedly, if that amuses you.
+</p>
+
+<p>
+For other examples of listening soundscapes, download the <code>org.boodle.listen</code> package.
+</p>
+
+<p>
+A final note: You don't actually have to use <code>boodle-event.py</code> to send events. The protocol is simply a direct TCP/IP connection to port 31863. (<code>telnet</code> will work fine.) Each (nonempty) line sent is an event. The line is broken up into strings at whitespace; the resulting tuple becomes the event. You can keep the connection open, and send many messages in a row, if you want. Unix, Mac, or DOS linebreaks will all work.
+</p>
+
+<h2>Events with arguments</h2>
+
+<p>
+Events can come with arguments, much as soundscapes can.
+</p>
+
+<pre>
+class Example(agent.Agent):
+    selected_event = 'sound'
+    catalog = [
+        water.droplet_plink, 
+        water.droplet_bloink,
+        water.rain_med, 
+        water.water_rapids
+    ]
+    def run(self):
+        self.listen(hold=True)
+    def receive(self, event, val):
+        val = int(val) - 1
+        samp = self.catalog[val]
+        self.sched_note(samp)
+</pre>
+
+<p>
+When you run this, it will listen for events of the form "sound 1" through "sound 4". That is, you can say:
+</p>
+
+<pre>
+boodle-event.py sound 1
+</pre>
+
+<p>
+...to play the first sound in the catalog, and so on.
+</p>
+
+<p>
+Note that the extra values do not figure into the "bird.owl.hoot" naming scheme that was described above. Event name matching is only done on the first part of the event, which is this case is just "sound".
+</p>
+
+<p>
+The extra values in the event turn up as extra arguments to the <code>receive()</code> function. They always arrive as strings, which is why the <code>int(val)</code> call is in there -- the string must be converted to an integer. Of course, if the value is not numeric, you'll see a Python error.
+</p>
+
+<p>
+<em>(Sadly, the event argument system is not yet tied into Boodler's <a href="design-arguments.html">argument type system</a>. A future version of Boodler will let you declare event argument types, and the conversion will happen automatically.)</em>
+</p>
+
+<p>
+Not only does Boodler fail to check the argument types, it fails to check the <em>number</em> of arguments. If you run <code>boodle-event.py</code> with too few or too many arguments, Boodler will call your <code>receive()</code> method with too few or too many arguments, and again you'll see a Python error.
+</p>
+
+<p>
+On the other hand, Boodler guarantees that an exception in a <code>run()</code> or <code>receive()</code> method doesn't kill Boodler. It will just abort that call. Future calls -- in this case, future events -- will still work correctly.
+</p>
+
+<h2>Boodler properties</h2>
+
+<p>
+Properties are a channel communication mechanism which are rather the reverse of events. Properties are completely passive; you can set a property or examine its value, but you never receive a notification of it. A property has a name and exactly one associated value. Properties propagate down the channel tree, not up it.
+</p>
+
+<p>
+Let's rewrite the very first example on this page, using properties instead of a Python method call:
+</p>
+
+<pre>
+class Example(agent.Agent):
+    def init(self):
+        self.agent = None
+    def run(self):
+        if (self.firsttime):
+            self.set_prop('sound', water.droplet_plink)
+            self.agent = Example2()
+            self.sched_agent(self.agent)
+            self.resched(2)
+        else:
+            self.set_prop('sound', water.droplet_bloink)
+
+class Example2(agent.Agent):
+    def run(self):
+        sound = self.get_prop('sound')
+        self.sched_note(sound)
+        self.resched(0.33)
+</pre>
+
+<p>
+The <code>set_prop()</code> and <code>get_prop()</code> methods do the work here. On the first call, <code>Example</code> sets a property called "sound" on its own channel (the root channel). The value of this property is the sound <code>water.droplet_plink</code>. It then sets <code>Example2</code> running. That repeatedly plays whatever sound is the current "sound" property.
+</p>
+
+<p>
+Two seconds later, <code>Example</code> fires up and changes the "sound" property to <code>water.droplet_bloink</code>. So, as before, you hear two seconds of plinking followed by a switch to bloinking.
+</p>
+
+<p>
+When you call <code>get_prop()</code> on a channel, you'll see any property (of that name) which is set on that channel <em>or its parent channels</em>. This is what we mean by "properties propagate downward". A property set on the root channel will be visible to every agent in every channel. If you set a property on a subchannel, you are limiting its scope to the agents in that channel, and the channels inside it.
+</p>
+
+<h2>External properties</h2>
+
+<p>
+You can set Boodler properties when you start up Boodler. Try this:
+</p>
+
+<pre>
+class Example(agent.Agent):
+    catalog = [
+        water.droplet_plink, 
+        water.droplet_bloink,
+        water.rain_med, 
+        water.water_rapids
+    ]
+    def run(self):
+        val = self.get_prop('sound')
+        val = int(val) - 1
+        samp = self.catalog[val]
+        self.sched_note(samp)
+        self.resched(0.5)
+</pre>
+
+<p>
+If you run this straight up:
+</p>
+
+<pre>
+boodler.py --external bootest com.example.bootest/Example
+</pre>
+
+<p>
+...you'll see an error, because the "sound" property is unset. (When no property is set, <code>get_prop()</code> returns <code>None</code>.) But you can do this:
+</p>
+
+<pre>
+boodler.py --prop sound=2 --external bootest com.example.bootest/Example
+</pre>
+
+<p>
+The <code>--prop</code> option sets a property of the root channel; in this case, the "sound" property, to the string "2". Again, there is no type-checking, so we have to convert the string to an int ourselves.
+</p>
+
+<p>
+(You can also set properties with the <code>BOODLER_PROPERTIES</code> environment variable. Set this to `sound=2`, or a comma-separated list of properties of that form.)
+</p>
+
+<h2>Next</h2>
+
+<p>
+We've covered all the features you need to write soundscapes. Go to it.
+</p>
+
+<p>
+For excruciatingly detailed explanations of all of Boodler's packages, modules, and classes, see the <a href="pydoc/index.html">Boodler API reference.</a>
+</p>
+
+<hr/>
+<p>
+<em><a href="design.html">Designing Soundscapes</a></em>
+</p>
+<p>
+<em><a href="index.html">Return to Boodler docs index</a></em>
+</p>
+
+</body></html>
