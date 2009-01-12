@@ -14,7 +14,7 @@ You've passed arguments to soundscapes on the command line, and even run soundsc
 </p>
 
 <p>
-To do this, add an <code>init()</code> method to your Agent class. This is called during construction, with any arguments (named or unnamed) that were provided.
+To do this, add an <code><a href="pydoc/boodle.agent.html#Agent-init">init()</a></code> method to your Agent class. This is called during construction, with any arguments (named or unnamed) that were provided.
 </p>
 
 <p>
@@ -186,11 +186,11 @@ class Example(agent.Agent):
 </pre>
 
 <p>
-The argument data structures are defined in the <code>argdef</code> module, so we must import its contents. That lets us create an <code>ArgList</code> object, which we store as <code>_args</code>.
+The argument data structures are defined in the <code><a href="pydoc/boopak.argdef.html">argdef</a></code> module, so we must import its contents. That lets us create an <code><a href="pydoc/boopak.argdef.html#ArgList">ArgList</a></code> object, which we store as <code>_args</code>.
 </p>
 
 <p>
-The <code>ArgList</code> is set up with a sequence of <code>Arg</code> objects, each one representing one of the <code>init()</code> arguments. For each one, as you see, we can specify a type. Boodler consults both the <code>_args</code> and the <code>init()</code> function when deriving argument metadata.
+The <code>ArgList</code> is set up with a sequence of <code><a href="pydoc/boopak.argdef.html#Arg">Arg</a></code> objects, each one representing one of the <code>init()</code> arguments. For each one, as you see, we can specify a type. Boodler consults both the <code>_args</code> and the <code>init()</code> function when deriving argument metadata.
 </p>
 
 <p>
@@ -251,7 +251,7 @@ _args = ArgList(Arg(type=ListOf(float)))
 </pre>
 
 <p>
-<code>ListOf</code> is another magic structure from the <code>argdef</code> module. <code>ListOf(float)</code> means just what it sounds like -- the argument will expect a list of floats. So you can say:
+<code><a href="pydoc/boopak.argdef.html#ListOf">ListOf</a></code> is another magic structure from the <code>argdef</code> module. <code>ListOf(float)</code> means just what it sounds like -- the argument will expect a list of floats. So you can say:
 </p>
 
 <pre>
@@ -271,7 +271,7 @@ All of the examples so far permit any number of <em>values</em> in the list; we'
 </p>
 
 <p>
-There's also a <code>TupleOf</code> type structure. It works almost the same way. The only difference is, a declaration like <code>TupleOf(int, str, float)</code> is interpreted as a tuple of <em>exactly</em> three elements (an integer, a string, and a float). This is a nod to the way tuples are commonly used. You can stick in <code>min</code>, <code>max</code>, and <code>repeat</code> values -- just as you can with <code>ListOf</code> -- for any length requirement that suits you. <code>TupleOf(int, min=0, max=None)</code> would be a tuple of integers of any length.
+There's also a <code><a href="pydoc/boopak.argdef.html#TupleOf">TupleOf</a></code> type structure. It works almost the same way. The only difference is, a declaration like <code>TupleOf(int, str, float)</code> is interpreted as a tuple of <em>exactly</em> three elements (an integer, a string, and a float). This is a nod to the way tuples are commonly used. You can stick in <code>min</code>, <code>max</code>, and <code>repeat</code> values -- just as you can with <code>ListOf</code> -- for any length requirement that suits you. <code>TupleOf(int, min=0, max=None)</code> would be a tuple of integers of any length.
 </p>
 
 <p>
@@ -303,7 +303,7 @@ boodler.py --extern bootest com.example.bootest/Example
 </pre>
 
 <p>
-And of course you can declare a list of sounds with an <code>_args</code> declaration, <code>ListOf</code>, and the <code>Sample</code> class. (We haven't come across this before, because Boodler sets up sound objects before, but it lives in the <code>boodle.sample</code> module.)
+And of course you can declare a list of sounds with an <code>_args</code> declaration, <code><a href="pydoc/boopak.argdef.html#ListOf">ListOf</a></code>, and the <code><a href="pydoc/boodle.sample.html#Sample">Sample</a></code> class. (We haven't come across this before, because Boodler sets up sound objects before, but it lives in the <code><a href="pydoc/boodle.sample.html">boodle.sample</a></code> module.)
 </p>
 
 <pre>
@@ -423,7 +423,7 @@ You'll hear two chime streams, left and right. But the <code>SteadyRandomChime</
 </p>
 
 <p>
-To specify an Agent instance or class in an <code>_args</code> declaration, use <code>Agent</code> or <code>Wrapped(Agent)</code>. The <code>Wrapped</code> structure creates the wrapped form of the type.
+To specify an Agent instance or class in an <code>_args</code> declaration, use <code>Agent</code> or <code>Wrapped(Agent)</code>. The <code><a href="pydoc/boopak.argdef.html#Wrapped">Wrapped</a></code> structure creates the wrapped form of the type.
 </p>
 
 <p>
@@ -467,7 +467,7 @@ class Example(agent.Agent):
 </pre>
 
 <p>
-For this to work, we have to declare <code>_args</code>, using the special form <code>ArgExtra</code>:
+For this to work, we have to declare <code>_args</code>, using the special form <code><a href="pydoc/boopak.argdef.html#ArgExtra">ArgExtra</a></code>:
 </p>
 
 <pre>

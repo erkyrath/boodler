@@ -29,7 +29,7 @@ class Example(agent.Agent):
 </pre>
 
 <p>
-The <code>new_channel()</code> method creates a channel, which is contained inside the channel that the agent is running in -- that is, inside the root channel. We then call <code>sched_note()</code> with a named argument `chan`, passing in the channel we created. (The argument name and the variable name are the same -- sorry, you get used to it.)
+The <code><a href="pydoc/boodle.agent.html#Agent-new_channel">new_channel()</a></code> method creates a channel, which is contained inside the channel that the agent is running in -- that is, inside the root channel. We then call <code>sched_note()</code> with a named argument `chan`, passing in the channel we created. (The argument name and the variable name are the same -- sorry, you get used to it.)
 </p>
 
 <p>
@@ -124,7 +124,7 @@ class Example2(agent.Agent):
 
 <p>
 We create the channel with full volume, but we then call
-<code>chan.set_volume()</code>. (Note that this is a method of the
+<code>chan.<a href="pydoc/boodle.generator.html#Channel-set_volume">set_volume()</a></code>. (Note that this is a method of the
 channel, not of <code>self</code>.) The first argument is the volume
 to change to; the second is how long it takes to slide to that level.
 We are scheduling the volume to fade from 1 (full) to 0 (silent) over
@@ -191,9 +191,9 @@ agent does nothing but schedule a three-second fade-out, from volume
 
 <p>
 It would be nice if Boodler shut down after that nine-second sequence.
-The <code>chan.stop()</code> method will kill a channel, and all notes
+The <code>chan.<a href="pydoc/boodle.generator.html#Channel-stop">stop()</a></code> method will kill a channel, and all notes
 and agents running in it. (And also any channels inside that channel.)
-But this method, like <code>chan.set_volume()</code>, takes effect
+But this method, like <code>chan.<a href="pydoc/boodle.generator.html#Channel-set_volume">set_volume()</a></code>, takes effect
 immediately. To delay it, we must add another agent.
 </p>
 
@@ -261,7 +261,7 @@ class Example2(agent.Agent):
 </pre>
 
 <p>
-The <code>FadeOutAgent</code> class is defined in Boodler's <code>builtin</code>
+The <code><a href="pydoc/boodle.builtin.html#FadeOutAgent">FadeOutAgent</a></code> class is defined in Boodler's <code><a href="pydoc/boodle.builtin.html">builtin</a></code>
 module, which we import. We create an instance, passing the fade-out interval
 (three seconds) as an argument. Then we schedule it like any other agent.
 </p>
@@ -286,7 +286,7 @@ class Example2(agent.Agent):
 </pre>
 
 <p>
-The <code>FadeInOutAgent</code> does it all for you: creates a channel at zero volume, schedules the agent you pass in, fades the channel in, fades it out, and stops it. The arguments are the time of maximum volume (3 seconds) and the fade intervals (3 seconds each). If you wanted the sound to fade in over two seconds, live for five seconds, and then fade out over ten, you would say
+The <code><a href="pydoc/boodle.builtin.html#FadeInOutAgent">FadeInOutAgent</a></code> does it all for you: creates a channel at zero volume, schedules the agent you pass in, fades the channel in, fades it out, and stops it. The arguments are the time of maximum volume (3 seconds) and the fade intervals (3 seconds each). If you wanted the sound to fade in over two seconds, live for five seconds, and then fade out over ten, you would say
 </p>
 
 <pre>
@@ -296,7 +296,7 @@ The <code>FadeInOutAgent</code> does it all for you: creates a channel at zero v
 <h2>Changing the stereo pan</h2>
 
 <p>
-Channels have a <code>set_pan()</code> method, which is exactly analogous to <code>set_volume()</code>. As described <a href="design-basics.html">earlier</a>, 0 means center, -1 means left, and 1 means right. For more clever tricks, such as compressing stereo soundscapes to a point or swapping channels, see the <a href="pydoc/boodle.stereo.html"><code>stereo</code> module reference</a>.
+Channels have a <code><a href="pydoc/boodle.generator.html#Channel-set_pan">set_pan()</a></code> method, which is exactly analogous to <code>set_volume()</code>. As described <a href="design-basics.html">earlier</a>, 0 means center, -1 means left, and 1 means right. For more clever tricks, such as compressing stereo soundscapes to a point or swapping channels, see the <a href="pydoc/boodle.stereo.html"><code>stereo</code> module reference</a>.
 </p>
 
 <p>
@@ -319,7 +319,7 @@ class Example2(agent.Agent):
 </pre>
 
 <p>
-<code>new_channel_pan</code> is a variation of <code>new_channel</code> which lets you define the starting pan position as well as (optionally) the starting volume.
+<code><a href="pydoc/boodle.agent.html#Agent-new_channel_pan">new_channel_pan</a></code> is a variation of <code><a href="pydoc/boodle.agent.html#Agent-new_channel">new_channel</a></code> which lets you define the starting pan position as well as (optionally) the starting volume.
 </p>
 
 <p>
@@ -329,18 +329,18 @@ class Example2(agent.Agent):
 <h2>Channel limitations and rules</h2>
 
 <p>
-The <code>channel.stop()</code> method kills a channel instantaneously; any
+The <code>channel.<a href="pydoc/boodle.generator.html#Channel-stop">stop()</a></code> method kills a channel instantaneously; any
 sounds that are playing get cut off. This, like an instantaneous volume
 change, can cause clicks and pops. It is wise to fade the volume to zero
 before you stop the channel.
 </p>
 
 <p>
-(In fact, since <code>FadeOutAgent</code> and <code>FadeInOutAgent</code> do both these things, it's wise just to use one of them.)
+(In fact, since <code><a href="pydoc/boodle.builtin.html#FadeOutAgent">FadeOutAgent</a></code> and <code><a href="pydoc/boodle.builtin.html#FadeInOutAgent">FadeInOutAgent</a></code> do both these things, it's wise just to use one of them.)
 </p>
 
 <p>
-The <code>channel.set_volume()</code> system is somewhat limited. You cannot
+The <code>channel.<a href="pydoc/boodle.generator.html#Channel-set_volume">set_volume()</a></code> system is somewhat limited. You cannot
 schedule two volume changes on the same channel at the same time. 
 Overlapping volume changes will sound wrong, as the later change
 pre-empts the first. In fact, if a volume change even begins too soon after

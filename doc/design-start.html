@@ -126,13 +126,13 @@ Here is the meaning of <code>main.py</code>, line by line:
 <pre>from boopak.package import *</pre>
 
 <p>
-This loads a set of Boodler functions which allow you to import other packages. The <code>bimport</code> line below depends on this.
+This loads a <a href="pydoc/boopak.package.html">set of Boodler functions</a> which allow you to import other packages. The <code>bimport</code> line below depends on this.
 </p>
 
 <pre>from boodle import agent</pre>
 
 <p>
-This loads the Boodler <code>agent</code> module, which allows you to define Agent classes.
+This loads the Boodler <code><a href="pydoc/boodle.agent.html">agent</a></code> module, which allows you to define Agent classes.
 </p>
 
 <p>
@@ -143,17 +143,17 @@ file, but I will omit them in later examples.)
 <pre>water = bimport('org.boodler.old.water')</pre>
 
 <p>
-This imports the Boodler package named <code>org.boodler.old.water</code>. The variable <code>water</code> will refer to it. This is a package of sound samples; we will need its <code>droplet_plink</code> sound.
+This <a href="pydoc/boopak.package.html#-bimport">imports</a> the Boodler package named <code>org.boodler.old.water</code>. The variable <code>water</code> will refer to it. This is a package of sound samples; we will need its <code>droplet_plink</code> sound.
 </p>
 
 <pre>class Example(agent.Agent):</pre>
 
 <p>
-This begins the definition of an <code>Agent</code> class (from the <code>agent</code> module). It will be called <code>Example</code>. 
+This begins the definition of an <code><a href="pydoc/boodle.agent.html#Agent">Agent</a></code> class (from the <code>agent</code> module). It will be called <code>Example</code>. 
 </p>
 
 <p>
-<code>Agent</code> is a general Python class, defined by Boodler, which contains all the code an agent needs -- methods to schedule notes, create channels, and so on. You are creating a specialized class, the <code>Example</code> agent, which makes use of that code.
+<code><a href="pydoc/boodle.agent.html#Agent">Agent</a></code> is a general Python class, defined by Boodler, which contains all the code an agent needs -- methods to schedule notes, create channels, and so on. You are creating a specialized class, the <code>Example</code> agent, which makes use of that code.
 </p>
 
 <pre>    def run(self):</pre>
