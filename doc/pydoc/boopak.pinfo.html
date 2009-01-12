@@ -301,7 +301,7 @@ A&nbsp;<a href="#PackageInfo">PackageInfo</a>&nbsp;is&nbsp;not&nbsp;the&nbsp;imp
 sees&nbsp;from&nbsp;the&nbsp;inside.&nbsp;It's&nbsp;a&nbsp;wrapper&nbsp;around&nbsp;that.<br>
 &nbsp;<br>
 <a href="#PackageInfo">PackageInfo</a>(loader,&nbsp;name,&nbsp;vers,&nbsp;dir,&nbsp;metadata,&nbsp;resources,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;external)&nbsp;--&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;external)&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
 Publicly&nbsp;readable&nbsp;fields:<br>
 &nbsp;<br>
@@ -512,11 +512,11 @@ keys;&nbsp;groups&nbsp;are&nbsp;represented&nbsp;by&nbsp;dicts&nbsp;containing&n
 and&nbsp;resources.<br>
 &nbsp;<br>
 Example:&nbsp;if&nbsp;the&nbsp;resource&nbsp;keys&nbsp;are<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'one',&nbsp;'two',&nbsp;'grp.three',&nbsp;'grp.four'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'one',&nbsp;'two',&nbsp;'grp.three',&nbsp;'grp.four'<br>
 then&nbsp;<a href="#Resources-build_tree">build_tree</a>()&nbsp;will&nbsp;return&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'one':&nbsp;'one',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'two':&nbsp;'two',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'grp':&nbsp;{&nbsp;'three':&nbsp;'grp.three',&nbsp;'four':&nbsp;'grp.four'&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'one':&nbsp;'one',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'two':&nbsp;'two',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'grp':&nbsp;{&nbsp;'three':&nbsp;'grp.three',&nbsp;'four':&nbsp;'grp.four'&nbsp;}<br>
 }<br>
 &nbsp;<br>
 A&nbsp;single&nbsp;entry&nbsp;cannot&nbsp;be&nbsp;both&nbsp;a&nbsp;group&nbsp;and&nbsp;a&nbsp;resource.&nbsp;(That&nbsp;is,<br>

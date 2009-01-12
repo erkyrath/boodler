@@ -48,8 +48,8 @@ site,&nbsp;or&nbsp;some&nbsp;other&nbsp;source&nbsp;which&nbsp;potentially&nbsp;
 &nbsp;<br>
 The&nbsp;idea&nbsp;is&nbsp;to&nbsp;use&nbsp;this&nbsp;object&nbsp;in&nbsp;a&nbsp;loop:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(not&nbsp;fetcher.<a href="#Fetcher-is_done">is_done</a>()):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fetcher.<a href="#Fetcher-work">work</a>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(not&nbsp;fetcher.<a href="#Fetcher-is_done">is_done</a>()):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fetcher.<a href="#Fetcher-work">work</a>()<br>
 &nbsp;<br>
 One&nbsp;could&nbsp;equally&nbsp;well&nbsp;manage&nbsp;several&nbsp;fetchers&nbsp;in&nbsp;parallel.&nbsp;(But,&nbsp;see<br>
 the&nbsp;caveat&nbsp;in&nbsp;<a href="#URLFetcher">URLFetcher</a>.)<br>

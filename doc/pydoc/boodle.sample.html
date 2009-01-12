@@ -105,20 +105,20 @@ Data and other attributes inherited from <a href="boodle.sample.html#SampleLoade
 To&nbsp;use&nbsp;this,&nbsp;declare&nbsp;a&nbsp;construct:<br>
 &nbsp;<br>
 class&nbsp;your_sample_name(<a href="#MixIn">MixIn</a>):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ranges&nbsp;=&nbsp;[<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(...),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(...),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(...),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;=&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-default">default</a>(...)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ranges&nbsp;=&nbsp;[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(...),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(...),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(...),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;=&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-default">default</a>(...)<br>
 &nbsp;<br>
 A&nbsp;range&nbsp;declaration&nbsp;looks&nbsp;like<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(maxval,&nbsp;sample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(maxval,&nbsp;sample)<br>
 or<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(minval,&nbsp;maxval,&nbsp;sample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(minval,&nbsp;maxval,&nbsp;sample)<br>
 or<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(minval,&nbsp;maxval,&nbsp;sample,&nbsp;pitch=1.0,&nbsp;volume=1.0)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-range">range</a>(minval,&nbsp;maxval,&nbsp;sample,&nbsp;pitch=1.0,&nbsp;volume=1.0)<br>
 &nbsp;<br>
 If&nbsp;you&nbsp;don't&nbsp;give&nbsp;a&nbsp;minval,&nbsp;the&nbsp;maxval&nbsp;of&nbsp;the&nbsp;previous&nbsp;range&nbsp;is&nbsp;used.<br>
 You&nbsp;may&nbsp;use&nbsp;the&nbsp;constants&nbsp;<a href="#MixIn">MixIn</a>.MIN&nbsp;and&nbsp;<a href="#MixIn">MixIn</a>.MAX&nbsp;to&nbsp;represent&nbsp;the<br>
@@ -126,9 +126,9 @@ limits&nbsp;of&nbsp;the&nbsp;range.&nbsp;The&nbsp;pitch&nbsp;and&nbsp;volume&nbs
 &nbsp;<br>
 A&nbsp;default&nbsp;declaration&nbsp;looks&nbsp;like<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-default">default</a>(sample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-default">default</a>(sample)<br>
 or<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-default">default</a>(sample,&nbsp;pitch=1.0,&nbsp;volume=1.0)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MixIn">MixIn</a>.<a href="#MixIn-default">default</a>(sample,&nbsp;pitch=1.0,&nbsp;volume=1.0)<br>
 &nbsp;<br>
 The&nbsp;default&nbsp;declaration&nbsp;is&nbsp;option.&nbsp;(As&nbsp;are,&nbsp;again,&nbsp;the&nbsp;pitch&nbsp;and<br>
 volume&nbsp;arguments.)<br>

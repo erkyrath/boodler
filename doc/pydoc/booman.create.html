@@ -302,7 +302,7 @@ filesystems,&nbsp;which&nbsp;is&nbsp;a&nbsp;wrinkle,&nbsp;since&nbsp;version&nbs
 case-sensitive.&nbsp;We&nbsp;work&nbsp;around&nbsp;this&nbsp;by&nbsp;putting&nbsp;a&nbsp;"^"&nbsp;character<br>
 before&nbsp;each&nbsp;capital&nbsp;letter.</tt></dd></dl>
  <dl><dt><a name="-construct_zipfile"><strong>construct_zipfile</strong></a>(fl, tup, dirname, contents, metadatafile, resourcesfile<font color="#909090">=None</font>)</dt><dd><tt><a href="#-construct_zipfile">construct_zipfile</a>(fl,&nbsp;(pkgname,&nbsp;pkgvers),&nbsp;dirname,&nbsp;contents,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;metadatafile,&nbsp;resourcesfile=None)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;metadatafile,&nbsp;resourcesfile=None)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Write&nbsp;out&nbsp;a&nbsp;zip&nbsp;file&nbsp;containing&nbsp;the&nbsp;given&nbsp;package&nbsp;data.<br>
 The&nbsp;fl&nbsp;must&nbsp;be&nbsp;a&nbsp;ZipFile&nbsp;object,&nbsp;newly&nbsp;opened&nbsp;for&nbsp;writing.<br>
@@ -311,7 +311,7 @@ resourcesfile&nbsp;must&nbsp;be&nbsp;valid&nbsp;Metadata&nbsp;and&nbsp;Resources
 (Not&nbsp;Metadata&nbsp;and&nbsp;Resources&nbsp;objects,&nbsp;but&nbsp;rather&nbsp;the&nbsp;files<br>
 produced&nbsp;by&nbsp;dump()ing&nbsp;them.)</tt></dd></dl>
  <dl><dt><a name="-examine_directory"><strong>examine_directory</strong></a>(loader, dirname, destname<font color="#909090">=None</font>)</dt><dd><tt><a href="#-examine_directory">examine_directory</a>(loader,&nbsp;dirname,&nbsp;destname=None)&nbsp;-&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((pkgname,&nbsp;pkgvers),&nbsp;contents,&nbsp;metadata,&nbsp;resources)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;((pkgname,&nbsp;pkgvers),&nbsp;contents,&nbsp;metadata,&nbsp;resources)<br>
 &nbsp;<br>
 Look&nbsp;at&nbsp;a&nbsp;directory&nbsp;containing&nbsp;package&nbsp;data.&nbsp;Figure&nbsp;out&nbsp;its&nbsp;metadata<br>
 and&nbsp;resources,&nbsp;considering&nbsp;both&nbsp;the&nbsp;directory&nbsp;contents&nbsp;and&nbsp;the<br>
@@ -327,14 +327,14 @@ Any&nbsp;fatal&nbsp;errors&nbsp;will&nbsp;raise&nbsp;<a href="#ConstructError">C
 (non-fatal)&nbsp;warning&nbsp;messages.<br>
 &nbsp;<br>
 This&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;of&nbsp;four&nbsp;items:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;the&nbsp;package&nbsp;name&nbsp;and&nbsp;version:&nbsp;(str,&nbsp;VersionNumber)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;files&nbsp;(not&nbsp;subdirs)&nbsp;in&nbsp;the&nbsp;directory;&nbsp;each<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;tuple&nbsp;(realname,&nbsp;resourcename),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;realname&nbsp;is&nbsp;the&nbsp;current&nbsp;absolute&nbsp;path&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resourcename&nbsp;is&nbsp;the&nbsp;universal&nbsp;relative&nbsp;path&nbsp;in&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;Metadata&nbsp;object.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;Resources&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;the&nbsp;package&nbsp;name&nbsp;and&nbsp;version:&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;files&nbsp;(not&nbsp;subdirs)&nbsp;in&nbsp;the&nbsp;directory;&nbsp;each<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;tuple&nbsp;(realname,&nbsp;resourcename),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;realname&nbsp;is&nbsp;the&nbsp;current&nbsp;absolute&nbsp;path&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resourcename&nbsp;is&nbsp;the&nbsp;universal&nbsp;relative&nbsp;path&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;Metadata&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;a&nbsp;Resources&nbsp;object.<br>
 &nbsp;<br>
 ###&nbsp;ignore&nbsp;.pyc&nbsp;and&nbsp;~&nbsp;files&nbsp;in&nbsp;contents?&nbsp;Or&nbsp;warn&nbsp;about&nbsp;them?</tt></dd></dl>
  <dl><dt><a name="-parse_package_filename"><strong>parse_package_filename</strong></a>(val, assume_1<font color="#909090">=True</font>)</dt><dd><tt><a href="#-parse_package_filename">parse_package_filename</a>(val,&nbsp;assume_1)&nbsp;-&gt;&nbsp;(str,&nbsp;VersionNumber)<br>

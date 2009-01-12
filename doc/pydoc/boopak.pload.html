@@ -172,7 +172,7 @@ process&nbsp;will&nbsp;only&nbsp;call&nbsp;the&nbsp;<a href="#PackageLoader-load
 classes&nbsp;desired.<br>
 &nbsp;<br>
 <a href="#PackageLoader">PackageLoader</a>(dirname,&nbsp;boodler_api_vers=None,&nbsp;importing_ok=False)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
 Create&nbsp;a&nbsp;<a href="#PackageLoader">PackageLoader</a>,&nbsp;given&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;directory&nbsp;which&nbsp;contains<br>
 a&nbsp;collection&nbsp;of&nbsp;packages.<br>
@@ -200,7 +200,7 @@ Publicly&nbsp;readable&nbsp;fields:<br>
 &nbsp;<br>
 collecdir&nbsp;--&nbsp;the&nbsp;directory&nbsp;containing&nbsp;the&nbsp;package&nbsp;collection<br>
 currently_importing&nbsp;--&nbsp;during&nbsp;an&nbsp;import&nbsp;operation,&nbsp;the&nbsp;package&nbsp;which&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;being&nbsp;imported&nbsp;(at&nbsp;the&nbsp;moment)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;being&nbsp;imported&nbsp;(at&nbsp;the&nbsp;moment)<br>
 &nbsp;<br>
 Public&nbsp;methods:<br>
 &nbsp;<br>
@@ -230,14 +230,14 @@ Internal&nbsp;methods:<br>
 Class&nbsp;global&nbsp;field:<br>
 &nbsp;<br>
 global_loader&nbsp;--&nbsp;If&nbsp;a&nbsp;<a href="#PackageLoader">PackageLoader</a>&nbsp;can&nbsp;import&nbsp;packages,&nbsp;it&nbsp;needs&nbsp;to<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;accessible&nbsp;from&nbsp;a&nbsp;global&nbsp;context.&nbsp;(See&nbsp;the&nbsp;package&nbsp;module.)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#PackageLoader">PackageLoader</a>.global_loader&nbsp;is&nbsp;where&nbsp;to&nbsp;find&nbsp;it.<br>&nbsp;</tt></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;accessible&nbsp;from&nbsp;a&nbsp;global&nbsp;context.&nbsp;(See&nbsp;the&nbsp;package&nbsp;module.)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#PackageLoader">PackageLoader</a>.global_loader&nbsp;is&nbsp;where&nbsp;to&nbsp;find&nbsp;it.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="PackageLoader-__init__"><strong>__init__</strong></a>(self, collecdir, boodler_api_vers<font color="#909090">=None</font>, importing_ok<font color="#909090">=False</font>)</dt></dl>
 
 <dl><dt><a name="PackageLoader-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageLoader-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
 &nbsp;<br>
 Add&nbsp;an&nbsp;external&nbsp;directory&nbsp;to&nbsp;load&nbsp;a&nbsp;package&nbsp;from.&nbsp;The&nbsp;argument<br>
 must&nbsp;be&nbsp;a&nbsp;complete&nbsp;(unpacked)&nbsp;Boodler&nbsp;directory,&nbsp;with&nbsp;a<br>

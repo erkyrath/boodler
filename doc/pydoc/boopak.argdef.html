@@ -204,8 +204,8 @@ resolve_value()&nbsp;--&nbsp;resolve&nbsp;a&nbsp;value&nbsp;or&nbsp;wrapped&nbsp
 <td colspan=2><tt><a href="#Arg">Arg</a>:&nbsp;represents&nbsp;one&nbsp;argument&nbsp;in&nbsp;an&nbsp;<a href="#ArgList">ArgList</a>.<br>
 &nbsp;<br>
 <a href="#Arg">Arg</a>(name=...,&nbsp;index=...,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type=...,&nbsp;default=...,&nbsp;optional=...,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;description=...)&nbsp;--&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;type=...,&nbsp;default=...,&nbsp;optional=...,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;description=...)&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
 All&nbsp;of&nbsp;these&nbsp;values&nbsp;are&nbsp;optional.&nbsp;Note&nbsp;that&nbsp;if&nbsp;you&nbsp;construct&nbsp;an<br>
 <a href="#ArgList">ArgList</a>&nbsp;with&nbsp;Args&nbsp;in&nbsp;it,&nbsp;their&nbsp;index&nbsp;or&nbsp;name&nbsp;values&nbsp;will&nbsp;be&nbsp;set<br>
@@ -224,12 +224,12 @@ Fields:&nbsp;(any&nbsp;of&nbsp;these&nbsp;may&nbsp;be&nbsp;None&nbsp;to&nbsp;ind
 name&nbsp;--&nbsp;str&nbsp;or&nbsp;unicode<br>
 index&nbsp;--&nbsp;int<br>
 type&nbsp;--&nbsp;a&nbsp;type&nbsp;object&nbsp;(int,&nbsp;str,&nbsp;etc.),&nbsp;or&nbsp;a&nbsp;class&nbsp;object&nbsp;(Sample&nbsp;or<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Agent),&nbsp;or&nbsp;a&nbsp;<a href="#Wrapped">Wrapped</a>&nbsp;instance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Agent),&nbsp;or&nbsp;a&nbsp;<a href="#Wrapped">Wrapped</a>&nbsp;instance.<br>
 optional&nbsp;--&nbsp;bool<br>
 description&nbsp;--&nbsp;str&nbsp;or&nbsp;unicode<br>
 default&nbsp;--&nbsp;anything<br>
 hasdefault&nbsp;--&nbsp;bool;&nbsp;this&nbsp;exists&nbsp;to&nbsp;distinguish&nbsp;a&nbsp;None&nbsp;default&nbsp;from<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;unspecified&nbsp;one.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;unspecified&nbsp;one.<br>
 &nbsp;<br>
 Public&nbsp;methods:<br>
 &nbsp;<br>
@@ -367,18 +367,18 @@ syntax.&nbsp;(It&nbsp;cannot&nbsp;currently&nbsp;describe&nbsp;the&nbsp;f(**dic)
 &nbsp;<br>
 You&nbsp;can&nbsp;construct&nbsp;the&nbsp;<a href="#ArgList">ArgList</a>&nbsp;with&nbsp;positional&nbsp;arguments:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ArgList">ArgList</a>(<a href="#Arg">Arg</a>(...),&nbsp;<a href="#Arg">Arg</a>(...),&nbsp;...)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ArgList">ArgList</a>(<a href="#Arg">Arg</a>(...),&nbsp;<a href="#Arg">Arg</a>(...),&nbsp;...)<br>
 &nbsp;<br>
 ...or&nbsp;with&nbsp;named&nbsp;arguments:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ArgList">ArgList</a>(x=<a href="#Arg">Arg</a>(...),&nbsp;y=<a href="#Arg">Arg</a>(...),&nbsp;...)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ArgList">ArgList</a>(x=<a href="#Arg">Arg</a>(...),&nbsp;y=<a href="#Arg">Arg</a>(...),&nbsp;...)<br>
 &nbsp;<br>
 The&nbsp;former&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;specifying&nbsp;the&nbsp;index=&nbsp;value&nbsp;in&nbsp;the&nbsp;<a href="#Arg">Arg</a><br>
 constructor;&nbsp;the&nbsp;latter,&nbsp;the&nbsp;name=&nbsp;value.<br>
 &nbsp;<br>
 You&nbsp;can&nbsp;also&nbsp;include&nbsp;an&nbsp;<a href="#ArgExtra">ArgExtra</a>&nbsp;object&nbsp;in&nbsp;the&nbsp;arguments:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ArgList">ArgList</a>(<a href="#ArgExtra">ArgExtra</a>(...))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ArgList">ArgList</a>(<a href="#ArgExtra">ArgExtra</a>(...))<br>
 &nbsp;<br>
 This&nbsp;defines&nbsp;the&nbsp;type&nbsp;of&nbsp;extra&nbsp;positional&nbsp;arguments.&nbsp;Note&nbsp;that&nbsp;the<br>
 <a href="#ArgExtra">ArgExtra</a>&nbsp;must&nbsp;be&nbsp;included&nbsp;before&nbsp;any&nbsp;named&nbsp;arguments.<br>
@@ -465,9 +465,9 @@ do&nbsp;that,&nbsp;because&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;list&nbs
 values.&nbsp;(See&nbsp;the&nbsp;ArgWrapper&nbsp;class.)&nbsp;You&nbsp;could&nbsp;use&nbsp;the&nbsp;<a href="#ArgList-resolve">resolve</a>()<br>
 function&nbsp;this&nbsp;way:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ls,&nbsp;dic)&nbsp;=&nbsp;arglist.<a href="#ArgList-resolve">resolve</a>(tree)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas&nbsp;=&nbsp;ArgClassWrapper(f,&nbsp;ls,&nbsp;dic)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas()</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;(ls,&nbsp;dic)&nbsp;=&nbsp;arglist.<a href="#ArgList-resolve">resolve</a>(tree)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;clas&nbsp;=&nbsp;ArgClassWrapper(f,&nbsp;ls,&nbsp;dic)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;clas()</tt></dd></dl>
 
 <dl><dt><a name="ArgList-sort_args"><strong>sort_args</strong></a>(self)</dt><dd><tt><a href="#ArgList-sort_args">sort_args</a>()&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
@@ -681,9 +681,9 @@ be&nbsp;instantiated&nbsp;later&nbsp;--&nbsp;as&nbsp;many&nbsp;times&nbsp;as&nbs
 Let&nbsp;me&nbsp;explain&nbsp;further.&nbsp;The&nbsp;usual&nbsp;pattern&nbsp;for&nbsp;resolving&nbsp;an&nbsp;<a href="#ArgList">ArgList</a><br>
 looks&nbsp;like:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ls,&nbsp;dic)&nbsp;=&nbsp;arglist.resolve(tree)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas&nbsp;=&nbsp;ArgClassWrapper(f,&nbsp;ls,&nbsp;dic)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clas()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(ls,&nbsp;dic)&nbsp;=&nbsp;arglist.resolve(tree)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;clas&nbsp;=&nbsp;ArgClassWrapper(f,&nbsp;ls,&nbsp;dic)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;clas()<br>
 &nbsp;<br>
 Plain&nbsp;types&nbsp;are&nbsp;instantiated&nbsp;in&nbsp;the&nbsp;resolve()&nbsp;method.&nbsp;<a href="#Wrapped">Wrapped</a>&nbsp;types<br>
 are&nbsp;instantiated&nbsp;in&nbsp;the&nbsp;clas()&nbsp;invocation.&nbsp;If&nbsp;clas()&nbsp;is&nbsp;invoked<br>

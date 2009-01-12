@@ -125,7 +125,7 @@ this&nbsp;method;&nbsp;if&nbsp;it&nbsp;wants&nbsp;to&nbsp;accept&nbsp;constructo
 must&nbsp;override&nbsp;this.</tt></dd></dl>
 
 <dl><dt><a name="Agent-listen"><strong>listen</strong></a>(self, event<font color="#909090">=None</font>, handle<font color="#909090">=None</font>, hold<font color="#909090">=None</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-listen">listen</a>(event=self.<strong>selected_event</strong>,&nbsp;handle=self.<strong>receive</strong>,&nbsp;hold=None,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;<a href="#Handler">Handler</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;<a href="#Handler">Handler</a><br>
 &nbsp;<br>
 Begin&nbsp;listening&nbsp;for&nbsp;events.&nbsp;The&nbsp;event&nbsp;should&nbsp;be&nbsp;a&nbsp;string,&nbsp;or&nbsp;a<br>
 function&nbsp;which&nbsp;returns&nbsp;a&nbsp;string.&nbsp;(If&nbsp;no&nbsp;event&nbsp;is&nbsp;given,&nbsp;the<br>
@@ -159,18 +159,18 @@ listening.</tt></dd></dl>
 Load&nbsp;a&nbsp;named&nbsp;agent&nbsp;or&nbsp;module.&nbsp;The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;string&nbsp;(or<br>
 list&nbsp;of&nbsp;strings,&nbsp;or&nbsp;sparse&nbsp;Tree)&nbsp;giving&nbsp;a&nbsp;fully&nbsp;qualified&nbsp;name:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name:version.needed/AgentName<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name::exact.version.number/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name:version.needed/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name::exact.version.number/AgentName<br>
 &nbsp;<br>
 To&nbsp;load&nbsp;an&nbsp;agent&nbsp;with&nbsp;arguments,&nbsp;just&nbsp;append&nbsp;the&nbsp;arguments.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;0.5&nbsp;2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;0.5&nbsp;2<br>
 &nbsp;<br>
 Just&nbsp;as&nbsp;on&nbsp;the&nbsp;command&nbsp;line,&nbsp;arguments&nbsp;referring&nbsp;to&nbsp;more&nbsp;agents<br>
 go&nbsp;in&nbsp;parentheses:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;(package.name/AnotherAgent&nbsp;2)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;(package.name/AnotherAgent&nbsp;2)<br>
 &nbsp;<br>
 To&nbsp;get&nbsp;an&nbsp;entire&nbsp;module,&nbsp;pass&nbsp;wantmodule=True.&nbsp;(And&nbsp;leave&nbsp;off&nbsp;the<br>
 "/AgentName"&nbsp;part,&nbsp;and&nbsp;don't&nbsp;use&nbsp;any&nbsp;arguments.)<br>
@@ -198,11 +198,11 @@ of&nbsp;parent&nbsp;--&nbsp;if&nbsp;None&nbsp;or&nbsp;not&nbsp;supplied,&nbsp;it
 the&nbsp;channel&nbsp;that&nbsp;the&nbsp;agent&nbsp;(self)&nbsp;is&nbsp;running&nbsp;in.</tt></dd></dl>
 
 <dl><dt><a name="Agent-post_listener_agent"><strong>post_listener_agent</strong></a>(self, ag, chan<font color="#909090">=None</font>, event<font color="#909090">=None</font>, handle<font color="#909090">=None</font>, hold<font color="#909090">=None</font>, listenchan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-post_listener_agent">post_listener_agent</a>(agent,&nbsp;chan=self.<strong>channel</strong>,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;event=ag.selected_event,&nbsp;handle=ag.receive,&nbsp;hold=None,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listenchan=chan)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;event=ag.selected_event,&nbsp;handle=ag.receive,&nbsp;hold=None,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;listenchan=chan)<br>
 &nbsp;<br>
 Post&nbsp;an&nbsp;agent&nbsp;to&nbsp;listen&nbsp;for&nbsp;events.&nbsp;This&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Agent-sched_agent">sched_agent</a>(ag,&nbsp;handle=ag.<a href="#Agent-listen">listen</a>(...))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Agent-sched_agent">sched_agent</a>(ag,&nbsp;handle=ag.<a href="#Agent-listen">listen</a>(...))<br>
 &nbsp;<br>
 That&nbsp;is,&nbsp;the&nbsp;agent&nbsp;must&nbsp;not&nbsp;currently&nbsp;be&nbsp;scheduled.&nbsp;It&nbsp;runs<br>
 immediately,&nbsp;but&nbsp;only&nbsp;to&nbsp;call&nbsp;its&nbsp;<a href="#Agent-listen">listen</a>()&nbsp;method,&nbsp;with&nbsp;any<br>
@@ -246,7 +246,7 @@ defaults&nbsp;to&nbsp;the&nbsp;same&nbsp;channel&nbsp;that&nbsp;self&nbsp;is&nbs
 handle&nbsp;function.</tt></dd></dl>
 
 <dl><dt><a name="Agent-sched_note"><strong>sched_note</strong></a>(self, samp, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note">sched_note</a>(sample,&nbsp;pitch=1,&nbsp;volume=1,&nbsp;delay=0,&nbsp;chan=self.<strong>channel</strong>)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&gt;&nbsp;duration<br>
 &nbsp;<br>
 Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play.&nbsp;The&nbsp;sound&nbsp;is&nbsp;loaded&nbsp;from&nbsp;samp&nbsp;(which&nbsp;can<br>
 be&nbsp;a&nbsp;filename,&nbsp;File,&nbsp;or&nbsp;Sample&nbsp;object).&nbsp;The&nbsp;pitch&nbsp;is&nbsp;given&nbsp;as&nbsp;a<br>
@@ -259,7 +259,7 @@ running&nbsp;in.<br>
 This&nbsp;returns&nbsp;the&nbsp;expected&nbsp;duration&nbsp;of&nbsp;the&nbsp;sound,&nbsp;in&nbsp;seconds.</tt></dd></dl>
 
 <dl><dt><a name="Agent-sched_note_duration"><strong>sched_note_duration</strong></a>(self, samp, duration, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note_duration">sched_note_duration</a>(sample,&nbsp;duration,&nbsp;pitch=1,&nbsp;volume=1,&nbsp;delay=0,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
 &nbsp;<br>
 Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play,&nbsp;extending&nbsp;the&nbsp;original&nbsp;sound&nbsp;sample&nbsp;to&nbsp;a<br>
 longer&nbsp;period&nbsp;of&nbsp;time.&nbsp;The&nbsp;duration&nbsp;is&nbsp;given&nbsp;in&nbsp;seconds.&nbsp;<br>
@@ -276,7 +276,7 @@ the&nbsp;way&nbsp;sounds&nbsp;are&nbsp;looped,&nbsp;this&nbsp;may&nbsp;be&nbsp;s
 given&nbsp;duration.</tt></dd></dl>
 
 <dl><dt><a name="Agent-sched_note_duration_pan"><strong>sched_note_duration_pan</strong></a>(self, samp, duration, pan<font color="#909090">=None</font>, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note_duration_pan">sched_note_duration_pan</a>(sample,&nbsp;duration,&nbsp;pan=0,&nbsp;pitch=1,&nbsp;volume=1,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay=0,&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;delay=0,&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
 &nbsp;<br>
 Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play,&nbsp;panning&nbsp;the&nbsp;stereo&nbsp;origin&nbsp;of&nbsp;the&nbsp;sound.<br>
 The&nbsp;pan&nbsp;value&nbsp;defaults&nbsp;to&nbsp;0,&nbsp;meaning&nbsp;no&nbsp;shift&nbsp;in&nbsp;origin;<br>
@@ -296,7 +296,7 @@ of&nbsp;the&nbsp;sound,&nbsp;in&nbsp;seconds.&nbsp;Due&nbsp;to&nbsp;the&nbsp;way
 be&nbsp;slightly&nbsp;longer&nbsp;than&nbsp;the&nbsp;given&nbsp;duration.</tt></dd></dl>
 
 <dl><dt><a name="Agent-sched_note_pan"><strong>sched_note_pan</strong></a>(self, samp, pan<font color="#909090">=None</font>, pitch<font color="#909090">=1.0</font>, volume<font color="#909090">=1.0</font>, delay<font color="#909090">=0</font>, chan<font color="#909090">=None</font>)</dt><dd><tt><a href="#Agent-sched_note_pan">sched_note_pan</a>(sample,&nbsp;pan=0,&nbsp;pitch=1,&nbsp;volume=1,&nbsp;delay=0,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;chan=self.<strong>channel</strong>)&nbsp;-&gt;&nbsp;duration<br>
 &nbsp;<br>
 Schedule&nbsp;a&nbsp;note&nbsp;to&nbsp;play,&nbsp;panning&nbsp;the&nbsp;stereo&nbsp;origin&nbsp;of&nbsp;the&nbsp;sound.<br>
 The&nbsp;pan&nbsp;value&nbsp;defaults&nbsp;to&nbsp;0,&nbsp;meaning&nbsp;no&nbsp;shift&nbsp;in&nbsp;origin;<br>
@@ -320,12 +320,12 @@ named&nbsp;keywords.&nbsp;The&nbsp;arguments&nbsp;may&nbsp;be&nbsp;in&nbsp;any&n
 For&nbsp;example:&nbsp;"<a href="#Agent-sched_note_params">sched_note_params</a>(snd,&nbsp;volume=0.5,&nbsp;pitch=2)"<br>
 &nbsp;<br>
 The&nbsp;valid&nbsp;arguments,&nbsp;and&nbsp;their&nbsp;default&nbsp;values:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pitch&nbsp;=&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(original&nbsp;pitch)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;volume&nbsp;=&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;(full&nbsp;volume)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay&nbsp;=&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(play&nbsp;immediately)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pan&nbsp;=&nbsp;None&nbsp;&nbsp;&nbsp;&nbsp;(no&nbsp;stereo&nbsp;shift)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;=&nbsp;0&nbsp;&nbsp;(exactly&nbsp;once&nbsp;through&nbsp;the&nbsp;sound)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chan&nbsp;=&nbsp;None&nbsp;&nbsp;&nbsp;(play&nbsp;in&nbsp;agent's&nbsp;own&nbsp;channel)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;pitch&nbsp;=&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(original&nbsp;pitch)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;volume&nbsp;=&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;(full&nbsp;volume)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;delay&nbsp;=&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(play&nbsp;immediately)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pan&nbsp;=&nbsp;None&nbsp;&nbsp;&nbsp;&nbsp;(no&nbsp;stereo&nbsp;shift)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;=&nbsp;0&nbsp;&nbsp;(exactly&nbsp;once&nbsp;through&nbsp;the&nbsp;sound)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;chan&nbsp;=&nbsp;None&nbsp;&nbsp;&nbsp;(play&nbsp;in&nbsp;agent's&nbsp;own&nbsp;channel)</tt></dd></dl>
 
 <dl><dt><a name="Agent-send_event"><strong>send_event</strong></a>(self, evname, *args, **kwargs)</dt><dd><tt><a href="#Agent-send_event">send_event</a>(event,&nbsp;...,&nbsp;chan=self.<strong>channel</strong>)<br>
 &nbsp;<br>
@@ -424,18 +424,18 @@ cancelled.</tt></dd></dl>
 Load&nbsp;a&nbsp;named&nbsp;module&nbsp;or&nbsp;agent.&nbsp;The&nbsp;argument&nbsp;should&nbsp;be&nbsp;a&nbsp;string&nbsp;(or<br>
 list&nbsp;of&nbsp;strings,&nbsp;or&nbsp;sparse&nbsp;Tree)&nbsp;giving&nbsp;a&nbsp;fully&nbsp;qualified&nbsp;name:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name:version.needed/AgentName<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name::exact.version.number/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name:version.needed/AgentName<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name::exact.version.number/AgentName<br>
 &nbsp;<br>
 To&nbsp;load&nbsp;an&nbsp;agent&nbsp;with&nbsp;arguments,&nbsp;just&nbsp;append&nbsp;the&nbsp;arguments.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;0.5&nbsp;2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;0.5&nbsp;2<br>
 &nbsp;<br>
 Just&nbsp;as&nbsp;on&nbsp;the&nbsp;command&nbsp;line,&nbsp;arguments&nbsp;referring&nbsp;to&nbsp;more&nbsp;agents<br>
 go&nbsp;in&nbsp;parentheses:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;(package.name/AnotherAgent&nbsp;2)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;package.name/AgentName&nbsp;(package.name/AnotherAgent&nbsp;2)<br>
 &nbsp;<br>
 To&nbsp;get&nbsp;an&nbsp;entire&nbsp;module,&nbsp;pass&nbsp;wantmodule=True.&nbsp;(And&nbsp;leave&nbsp;off&nbsp;the<br>
 "/AgentName"&nbsp;part,&nbsp;and&nbsp;don't&nbsp;use&nbsp;any&nbsp;arguments.)<br>

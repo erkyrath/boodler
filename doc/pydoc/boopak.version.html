@@ -139,7 +139,7 @@ Constructors:<br>
 <a href="#VersionNumber">VersionNumber</a>(int)&nbsp;--&nbsp;construct&nbsp;"X.0"<br>
 <a href="#VersionNumber">VersionNumber</a>(int,&nbsp;int)&nbsp;--&nbsp;construct&nbsp;"X.Y"<br>
 <a href="#VersionNumber">VersionNumber</a>(int,&nbsp;int,&nbsp;val,&nbsp;val,&nbsp;...)&nbsp;--&nbsp;construct&nbsp;"X.Y.val.val..."<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(the&nbsp;release&nbsp;values&nbsp;may&nbsp;be&nbsp;int&nbsp;or&nbsp;str)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(the&nbsp;release&nbsp;values&nbsp;may&nbsp;be&nbsp;int&nbsp;or&nbsp;str)<br>
 <a href="#VersionNumber">VersionNumber</a>(str)&nbsp;--&nbsp;parse&nbsp;a&nbsp;string&nbsp;into&nbsp;a&nbsp;<a href="#VersionNumber">VersionNumber</a><br>
 &nbsp;<br>
 Publicly&nbsp;readable&nbsp;fields:<br>
@@ -270,15 +270,15 @@ A&nbsp;VERSION&nbsp;is&nbsp;"MAJOR"&nbsp;or&nbsp;"MAJOR.MINOR".<br>
 A&nbsp;<a href="#VersionSpec">VersionSpec</a>&nbsp;matches&nbsp;a&nbsp;version&nbsp;number&nbsp;if&nbsp;any&nbsp;of&nbsp;its&nbsp;PATTERNs&nbsp;match.<br>
 PATTERNs&nbsp;match&nbsp;as&nbsp;follows:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y"&nbsp;--&nbsp;major&nbsp;version&nbsp;must&nbsp;be&nbsp;X,&nbsp;minor&nbsp;version&nbsp;must&nbsp;be&nbsp;Y&nbsp;or&nbsp;higher<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y."&nbsp;--&nbsp;major&nbsp;version&nbsp;must&nbsp;be&nbsp;X,&nbsp;minor&nbsp;version&nbsp;must&nbsp;be&nbsp;Y<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y-"&nbsp;--&nbsp;major&nbsp;version&nbsp;is&nbsp;X,&nbsp;minor&nbsp;version&nbsp;is&nbsp;Y&nbsp;or&nbsp;higher&nbsp;*or*<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;major&nbsp;version&nbsp;is&nbsp;higher&nbsp;than&nbsp;X<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"-Z.W"&nbsp;--&nbsp;major&nbsp;version&nbsp;is&nbsp;Z,&nbsp;minor&nbsp;version&nbsp;is&nbsp;W&nbsp;is&nbsp;lower&nbsp;*or*<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;major&nbsp;version&nbsp;is&nbsp;lower&nbsp;than&nbsp;Z<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X.Y-Z.W"&nbsp;--&nbsp;both&nbsp;of&nbsp;the&nbsp;above<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"X.Y"&nbsp;--&nbsp;major&nbsp;version&nbsp;must&nbsp;be&nbsp;X,&nbsp;minor&nbsp;version&nbsp;must&nbsp;be&nbsp;Y&nbsp;or&nbsp;higher<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"X.Y."&nbsp;--&nbsp;major&nbsp;version&nbsp;must&nbsp;be&nbsp;X,&nbsp;minor&nbsp;version&nbsp;must&nbsp;be&nbsp;Y<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"X.Y-"&nbsp;--&nbsp;major&nbsp;version&nbsp;is&nbsp;X,&nbsp;minor&nbsp;version&nbsp;is&nbsp;Y&nbsp;or&nbsp;higher&nbsp;*or*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;major&nbsp;version&nbsp;is&nbsp;higher&nbsp;than&nbsp;X<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"-Z.W"&nbsp;--&nbsp;major&nbsp;version&nbsp;is&nbsp;Z,&nbsp;minor&nbsp;version&nbsp;is&nbsp;W&nbsp;is&nbsp;lower&nbsp;*or*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;major&nbsp;version&nbsp;is&nbsp;lower&nbsp;than&nbsp;Z<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"X.Y-Z.W"&nbsp;--&nbsp;both&nbsp;of&nbsp;the&nbsp;above<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;all&nbsp;cases,&nbsp;the&nbsp;release&nbsp;value&nbsp;of&nbsp;the&nbsp;version&nbsp;number&nbsp;is&nbsp;ignored.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;all&nbsp;cases,&nbsp;the&nbsp;release&nbsp;value&nbsp;of&nbsp;the&nbsp;version&nbsp;number&nbsp;is&nbsp;ignored.<br>
 &nbsp;<br>
 VersionSpecs&nbsp;are&nbsp;immutable,&nbsp;and&nbsp;may&nbsp;be&nbsp;used&nbsp;as&nbsp;dict&nbsp;keys.&nbsp;However,<br>
 they&nbsp;compare&nbsp;naively;&nbsp;they&nbsp;will&nbsp;only&nbsp;test&nbsp;as&nbsp;equal&nbsp;if&nbsp;they&nbsp;are<br>
@@ -286,7 +286,7 @@ visually&nbsp;identical.&nbsp;The&nbsp;specs&nbsp;"1-3,3-5"&nbsp;and&nbsp;"1-5"&
 equivalent,&nbsp;but&nbsp;they&nbsp;will&nbsp;compare&nbsp;unequal.<br>
 &nbsp;<br>
 VersionSpecs&nbsp;cannot&nbsp;be&nbsp;compared&nbsp;with&nbsp;&lt;,&nbsp;&gt;,&nbsp;&lt;=,&nbsp;&gt;=.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
 Constructors:<br>
 &nbsp;<br>
 <a href="#VersionSpec">VersionSpec</a>()&nbsp;--&nbsp;default&nbsp;spec&nbsp;"1.0-";&nbsp;this&nbsp;matches&nbsp;anything<br>

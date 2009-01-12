@@ -122,7 +122,7 @@ This&nbsp;is&nbsp;an&nbsp;internal&nbsp;class;&nbsp;it&nbsp;should&nbsp;not&nbsp
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#ID">ID</a>:&nbsp;represents&nbsp;a&nbsp;string&nbsp;expression.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ID">ID</a>(val)&nbsp;--&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ID">ID</a>(val)&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
 The&nbsp;value&nbsp;that&nbsp;you&nbsp;pass&nbsp;to&nbsp;the&nbsp;constructor&nbsp;may&nbsp;be&nbsp;str&nbsp;or&nbsp;unicode.<br>
 It&nbsp;becomes&nbsp;the&nbsp;<a href="#ID">ID</a>'s&nbsp;underlying&nbsp;string&nbsp;value,&nbsp;so&nbsp;it&nbsp;should&nbsp;not&nbsp;be<br>
@@ -130,7 +130,7 @@ quoted&nbsp;or&nbsp;escaped.<br>
 &nbsp;<br>
 For&nbsp;any&nbsp;str&nbsp;or&nbsp;unicode&nbsp;val,<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ID">ID</a>(val).<a href="#ID-as_string">as_string</a>()&nbsp;==&nbsp;val<br>&nbsp;</tt></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ID">ID</a>(val).<a href="#ID-as_string">as_string</a>()&nbsp;==&nbsp;val<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="ID-__cmp__"><strong>__cmp__</strong></a>(self, other)</dt></dl>
@@ -167,16 +167,16 @@ acts&nbsp;as&nbsp;both&nbsp;an&nbsp;array&nbsp;and&nbsp;a&nbsp;dict.<br>
 &nbsp;<br>
 Array-style&nbsp;operations:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;len(l)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l[int]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l[int:int]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-append">append</a>(tree)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;len(l)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;l[int]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;l[int:int]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-append">append</a>(tree)<br>
 &nbsp;<br>
 Dict-style&nbsp;operations:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-has_attr">has_attr</a>(key)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-get_attr">get_attr</a>(key)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-set_attr">set_attr</a>(key,&nbsp;tree)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-has_attr">has_attr</a>(key)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-get_attr">get_attr</a>(key)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;l.<a href="#List-set_attr">set_attr</a>(key,&nbsp;tree)<br>
 &nbsp;<br>
 (The&nbsp;keys&nbsp;in&nbsp;these&nbsp;operations&nbsp;must&nbsp;be&nbsp;strings.)<br>
 &nbsp;<br>
@@ -185,7 +185,7 @@ has&nbsp;no&nbsp;positional&nbsp;values,&nbsp;len(l)&nbsp;is&nbsp;zero,&nbsp;no&
 values&nbsp;it&nbsp;has.&nbsp;Contrariwise,&nbsp;l.<a href="#List-get_attr">get_attr</a>()&nbsp;will&nbsp;never&nbsp;retrieve&nbsp;a<br>
 positional&nbsp;value.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#List">List</a>(val,&nbsp;val,&nbsp;...&nbsp;key=val,&nbsp;key=val)&nbsp;--&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#List">List</a>(val,&nbsp;val,&nbsp;...&nbsp;key=val,&nbsp;key=val)&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
 Construct&nbsp;a&nbsp;<a href="#List">List</a>&nbsp;with&nbsp;the&nbsp;given&nbsp;named&nbsp;and/or&nbsp;positional&nbsp;values.&nbsp;All<br>
 values&nbsp;must&nbsp;be&nbsp;Trees.&nbsp;You&nbsp;can&nbsp;also&nbsp;construct&nbsp;a&nbsp;<a href="#List">List</a>&nbsp;from&nbsp;a&nbsp;Python<br>
@@ -270,13 +270,13 @@ the&nbsp;ability&nbsp;to&nbsp;push&nbsp;one&nbsp;character&nbsp;back&nbsp;onto&n
 &nbsp;<br>
 Fields:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fl&nbsp;--&nbsp;a&nbsp;file-like&nbsp;object,&nbsp;from&nbsp;which&nbsp;characters&nbsp;are&nbsp;read.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nextch&nbsp;--&nbsp;if&nbsp;a&nbsp;character&nbsp;has&nbsp;been&nbsp;pushed&nbsp;back,&nbsp;it&nbsp;is&nbsp;here;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not,&nbsp;this&nbsp;is&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fl&nbsp;--&nbsp;a&nbsp;file-like&nbsp;object,&nbsp;from&nbsp;which&nbsp;characters&nbsp;are&nbsp;read.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nextch&nbsp;--&nbsp;if&nbsp;a&nbsp;character&nbsp;has&nbsp;been&nbsp;pushed&nbsp;back,&nbsp;it&nbsp;is&nbsp;here;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not,&nbsp;this&nbsp;is&nbsp;None.<br>
 &nbsp;<br>
 Constructor:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ParseContext">ParseContext</a>(fl)&nbsp;--&nbsp;constructor<br>&nbsp;</tt></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ParseContext">ParseContext</a>(fl)&nbsp;--&nbsp;constructor<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="ParseContext-__init__"><strong>__init__</strong></a>(self, fl)</dt></dl>

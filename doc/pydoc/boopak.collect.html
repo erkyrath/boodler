@@ -61,7 +61,7 @@ dependency&nbsp;tree,&nbsp;which&nbsp;is&nbsp;part&nbsp;of&nbsp;what&nbsp;<a hre
 the&nbsp;cache&nbsp;entirely&nbsp;is&nbsp;somewhat&nbsp;crude,&nbsp;but&nbsp;it's&nbsp;simple&nbsp;and&nbsp;it&nbsp;works.<br>
 &nbsp;<br>
 <a href="#PackageCollection">PackageCollection</a>(basedir=None,&nbsp;coldir=None,&nbsp;dldir=None,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;boodler_api_vers=None,&nbsp;importing_ok=False)&nbsp;--&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;boodler_api_vers=None,&nbsp;importing_ok=False)&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
 Create&nbsp;a&nbsp;<a href="#PackageCollection">PackageCollection</a>.&nbsp;It&nbsp;requires&nbsp;two&nbsp;directory&nbsp;names:<br>
 coldir&nbsp;is&nbsp;the&nbsp;collection&nbsp;of&nbsp;packages,&nbsp;and&nbsp;dldir&nbsp;is&nbsp;a&nbsp;temporary<br>
@@ -72,7 +72,7 @@ and&nbsp;basedir/Download&nbsp;(respectively).<br>
 The&nbsp;coldir&nbsp;and&nbsp;dldir&nbsp;will&nbsp;be&nbsp;created,&nbsp;if&nbsp;necessary.&nbsp;When&nbsp;the<br>
 <a href="#PackageCollection">PackageCollection</a>&nbsp;shuts&nbsp;down,&nbsp;it&nbsp;will&nbsp;delete&nbsp;the&nbsp;files&nbsp;it&nbsp;has&nbsp;created<br>
 in&nbsp;the&nbsp;dldir.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
 If&nbsp;a&nbsp;version&nbsp;is&nbsp;provided&nbsp;(either&nbsp;as&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;a&nbsp;string&nbsp;which<br>
 converts&nbsp;to&nbsp;one),&nbsp;then&nbsp;this&nbsp;is&nbsp;noted&nbsp;as&nbsp;the&nbsp;Boodler&nbsp;version&nbsp;which<br>
 packages&nbsp;must&nbsp;be&nbsp;compatible&nbsp;with.&nbsp;(As&nbsp;noted&nbsp;in&nbsp;the&nbsp;boodler.api_required<br>
@@ -94,14 +94,14 @@ Publicly&nbsp;readable&nbsp;fields:<br>
 collecdir&nbsp;--&nbsp;the&nbsp;directory&nbsp;containing&nbsp;the&nbsp;package&nbsp;collection<br>
 downloaddir&nbsp;--&nbsp;the&nbsp;directory&nbsp;containing&nbsp;temporary&nbsp;files&nbsp;and&nbsp;directories<br>
 currently_creating&nbsp;--&nbsp;during&nbsp;a&nbsp;create&nbsp;operation,&nbsp;the&nbsp;package&nbsp;which&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;being&nbsp;created&nbsp;(at&nbsp;the&nbsp;moment)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;being&nbsp;created&nbsp;(at&nbsp;the&nbsp;moment)<br>
 &nbsp;<br>
 Public&nbsp;methods:<br>
 &nbsp;<br>
 <a href="#PackageCollection-find_source">find_source</a>()&nbsp;--&nbsp;load&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection,&nbsp;a&nbsp;.boop&nbsp;file,&nbsp;or<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;Internet<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;Internet<br>
 <a href="#PackageCollection-install_source">install_source</a>()&nbsp;--&nbsp;install&nbsp;a&nbsp;package&nbsp;into&nbsp;the&nbsp;collection&nbsp;from&nbsp;a&nbsp;file<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;the&nbsp;Internet<br>
+&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;the&nbsp;Internet<br>
 <a href="#PackageCollection-fetch_source">fetch_source</a>()&nbsp;--&nbsp;prepare&nbsp;to&nbsp;download&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;Internet<br>
 <a href="#PackageCollection-delete_package">delete_package</a>()&nbsp;--&nbsp;delete&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection<br>
 <a href="#PackageCollection-delete_group">delete_group</a>()&nbsp;--&nbsp;delete&nbsp;all&nbsp;versions&nbsp;of&nbsp;a&nbsp;package&nbsp;from&nbsp;the&nbsp;collection<br>
@@ -177,8 +177,8 @@ caller&nbsp;may&nbsp;proceed.<br>
 If&nbsp;the&nbsp;URL&nbsp;is&nbsp;*not*&nbsp;downloaded,&nbsp;this&nbsp;returns&nbsp;a&nbsp;Fetcher&nbsp;object.<br>
 This&nbsp;should&nbsp;be&nbsp;called&nbsp;in&nbsp;some&nbsp;wise&nbsp;like&nbsp;this:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(not&nbsp;fetcher.is_done()):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fetcher.work()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(not&nbsp;fetcher.is_done()):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fetcher.work()<br>
 &nbsp;<br>
 Once&nbsp;fetcher.is_done()&nbsp;returns&nbsp;true,&nbsp;the&nbsp;package&nbsp;is&nbsp;downloaded,<br>
 and&nbsp;the&nbsp;caller&nbsp;may&nbsp;proceed&nbsp;to&nbsp;<a href="#PackageCollection-find_source">find_source</a>()&nbsp;or&nbsp;<a href="#PackageCollection-install_source">install_source</a>().</tt></dd></dl>
@@ -187,9 +187,9 @@ and&nbsp;the&nbsp;caller&nbsp;may&nbsp;proceed&nbsp;to&nbsp;<a href="#PackageCol
 &nbsp;<br>
 Load&nbsp;a&nbsp;package&nbsp;given&nbsp;(srctype,&nbsp;loc)&nbsp;in&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;forms:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
 &nbsp;<br>
 Source_PACKAGE&nbsp;will&nbsp;be&nbsp;found&nbsp;and&nbsp;loaded&nbsp;from&nbsp;the&nbsp;collection.<br>
 &nbsp;<br>
@@ -209,9 +209,9 @@ set&nbsp;up&nbsp;for&nbsp;slow&nbsp;operations.</tt></dd></dl>
 &nbsp;<br>
 Install&nbsp;a&nbsp;package&nbsp;given&nbsp;(srctype,&nbsp;loc)&nbsp;in&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;forms:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
 &nbsp;<br>
 Source_PACKAGE&nbsp;is&nbsp;not&nbsp;a&nbsp;valid&nbsp;argument&nbsp;for&nbsp;this&nbsp;function,&nbsp;since<br>
 it&nbsp;refers&nbsp;to&nbsp;a&nbsp;package&nbsp;which&nbsp;is&nbsp;already&nbsp;installed.<br>
@@ -231,7 +231,7 @@ Note&nbsp;a&nbsp;bimport()&nbsp;call&nbsp;by&nbsp;a&nbsp;package&nbsp;being&nbsp
 only&nbsp;be&nbsp;called&nbsp;by&nbsp;bimport().</tt></dd></dl>
 
 <dl><dt><a name="PackageCollection-rewrite_versions_file"><strong>rewrite_versions_file</strong></a>(self, dirname, versionlist, pkgname<font color="#909090">='&lt;unknown&gt;'</font>)</dt><dd><tt><a href="#PackageCollection-rewrite_versions_file">rewrite_versions_file</a>(dirname,&nbsp;versionlist,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pkgname='&lt;unknown&gt;')&nbsp;-&gt;&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pkgname='&lt;unknown&gt;')&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Write&nbsp;(or&nbsp;overwrite)&nbsp;a&nbsp;new&nbsp;Versions&nbsp;file,&nbsp;in&nbsp;the&nbsp;given&nbsp;directory,<br>
 with&nbsp;the&nbsp;given&nbsp;list&nbsp;of&nbsp;VersionNumber&nbsp;objects.&nbsp;The&nbsp;pkgname&nbsp;is&nbsp;stored<br>
@@ -267,7 +267,7 @@ Data and other attributes defined here:<br>
 <hr>
 Methods inherited from <a href="boopak.pload.html#PackageLoader">boopak.pload.PackageLoader</a>:<br>
 <dl><dt><a name="PackageCollection-add_external_package"><strong>add_external_package</strong></a>(self, dirname, metadata<font color="#909090">=None</font>, resources<font color="#909090">=None</font>)</dt><dd><tt><a href="#PackageCollection-add_external_package">add_external_package</a>(dirname,&nbsp;metadata=None,&nbsp;resources=None)&nbsp;-&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(str,&nbsp;VersionNumber)<br>
 &nbsp;<br>
 Add&nbsp;an&nbsp;external&nbsp;directory&nbsp;to&nbsp;load&nbsp;a&nbsp;package&nbsp;from.&nbsp;The&nbsp;argument<br>
 must&nbsp;be&nbsp;a&nbsp;complete&nbsp;(unpacked)&nbsp;Boodler&nbsp;directory,&nbsp;with&nbsp;a<br>
