@@ -24,6 +24,10 @@ dl {
   margin-left: 20px;
 }
 
+dd {
+  margin-bottom: 8px;
+}
+
 pre {
   margin-left: 26px;
   border-left: 4px solid #D8D8C8;
