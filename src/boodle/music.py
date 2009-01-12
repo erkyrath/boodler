@@ -21,57 +21,57 @@ import math
 chromatic_octave = []
 
 for ix in range(12):
-	val = pow(2.0, ix/12.0)
-	chromatic_octave.append(val)
+    val = pow(2.0, ix/12.0)
+    chromatic_octave.append(val)
 
 octaves = []
 
 for ix in range(8):
-	val = pow(2, ix)
-	octaves.append(val)
+    val = pow(2, ix)
+    octaves.append(val)
 
 def get_pitch(semi):
-	"""get_pitch(semi) -> float
+    """get_pitch(semi) -> float
 
-	Return the pitch factor that corresponds to a given number of semitones.
-	The argument must be an integer.
+    Return the pitch factor that corresponds to a given number of semitones.
+    The argument must be an integer.
 
-	If val is zero, this returns 1. If val is negative, this returns a
-	value less than 1 (but greater than zero); this value will lower a
-	sound by the given number of semitones. If val is positive, this
-	returns a value greater than 1, which will raise a sound.
+    If val is zero, this returns 1. If val is negative, this returns a
+    value less than 1 (but greater than zero); this value will lower a
+    sound by the given number of semitones. If val is positive, this
+    returns a value greater than 1, which will raise a sound.
 
-	Example: Raising a sound by one octave (twelve semitones) will exactly
-	double its pitch; therefore, get_pitch(12) is 2.0.
-	"""
-	
-	pos = semi % 12
-	oct = (semi - pos) / 12
-	if (oct >= 0):
-		if (oct >= 8):
-			return chromatic_octave[pos] * pow(2.0, oct)
-		else:
-			return chromatic_octave[pos] * octaves[oct]
-	else:
-		if (oct <= -8):
-			return chromatic_octave[pos] / pow(2.0, -oct)
-		else:
-			return chromatic_octave[pos] / octaves[-oct]
+    Example: Raising a sound by one octave (twelve semitones) will exactly
+    double its pitch; therefore, get_pitch(12) is 2.0.
+    """
+    
+    pos = semi % 12
+    oct = (semi - pos) / 12
+    if (oct >= 0):
+        if (oct >= 8):
+            return chromatic_octave[pos] * pow(2.0, oct)
+        else:
+            return chromatic_octave[pos] * octaves[oct]
+    else:
+        if (oct <= -8):
+            return chromatic_octave[pos] / pow(2.0, -oct)
+        else:
+            return chromatic_octave[pos] / octaves[-oct]
 
 
 
 decibel_factor = 0.1 * math.log(10)
 def decibel(val=0):
-	"""decibel(val=0) -> float
+    """decibel(val=0) -> float
 
-	Return the volume factor that corresponds to a given number of decibels.
-	
-	If val is zero, this returns 1. If val is negative, this returns a
-	value less than 1 (but greater than zero); this value will reduce a
-	sound by the given number of decibels. If val is positive, this
-	returns a value greater than 1, which will amplify a sound.
+    Return the volume factor that corresponds to a given number of decibels.
+    
+    If val is zero, this returns 1. If val is negative, this returns a
+    value less than 1 (but greater than zero); this value will reduce a
+    sound by the given number of decibels. If val is positive, this
+    returns a value greater than 1, which will amplify a sound.
 
-	Example: Fading a sound by three decibels will approximately halve
-	its amplitude; therefore, decibel(-3) is approximately 0.5.
-	"""
-	return math.exp(val * decibel_factor)
+    Example: Fading a sound by three decibels will approximately halve
+    its amplitude; therefore, decibel(-3) is approximately 0.5.
+    """
+    return math.exp(val * decibel_factor)
