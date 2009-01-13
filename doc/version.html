@@ -11,10 +11,28 @@
 
 <ul>
 
-<li>2.0.0 (####, 2009)
+<li>2.0.0 (Jan 12, 2009)
 <p>
 Complete redesign of the module system. Soundscapes are now downloaded
 and installed as packages (.boop files) from the Boodler web site.
+Packages can import other packages, with full versioning capability.
+</p>
+<p>
+The Boodler sound library is divided up into packages. Agents deal with
+sounds as Python objects, not pathname strings.
+</p>
+<p>
+You no longer need to mess around with environment variables to run
+Boodler.
+</p>
+<p>
+Agents now provide metadata describing themselves and their command-line
+arguments. Arguments are parsed into appropriate types and classes
+automatically.
+</p>
+<p>
+Many other new features, including channel properties, better channel
+events, saner stereo pan logic.
 </p>
 </li>
 
