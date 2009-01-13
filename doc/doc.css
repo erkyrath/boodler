@@ -24,6 +24,16 @@ dl {
   margin-left: 20px;
 }
 
+ul > li {
+  list-style: none;
+}
+ul > li:before {
+  display: marker;
+  content: url(dot10dark.png);
+  marker-offset: 4px;
+  padding-right: 4px;
+}
+
 dd {
   margin-bottom: 8px;
 }
