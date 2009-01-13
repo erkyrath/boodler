@@ -1,27 +1,16 @@
-Optimize noteq loop for the case where volume ~= 0?
+Accept notes and agents scheduled more than one hour into the future.
 
-Temporal renormalization -- change time trim/offset to much larger values
+Put events and properties under the argdef type-checking system.
 
-Use CObject instead of sampstr/samplen?
+Add a "pan" argdef type. (Use in all soundscapes that take a pan
+argument.) Also a "package" type.
 
-Rename and regularize all scripts
+boodle-mgr.py: add "examine resource", "install with all dependencies",
+"check dependencies are installed".
 
-An exception in PyObject_CallFunction(removefunc) should be handled well -- at least an interrupt exception
+Package creation: skip garbage files and directories (.pyc, ~, .svn).
+(Based on regex in an environment variable?)
 
-Really need a config-file system, for stuff like timespeak. Configurations should be settable either for a module, or for a module in a particular channel... named channels? Network events could use this too.
-
-soundscape ideas:
-----------------
-
-Summer: crickets and katydids, a few birds (night)
-Spring: birds
-Winter: crystal noise, snow hiss
-Autumn: windstorm
-Caves: drips, skittering (lots of reverb)
-Cosmic sounds, bloop bloop bloop (fading echo)
-Vowel chanting (pentatonic)
-Crowd mutter (Elvish?)
-Drums (fifteen-beat pattern, mutating)
-Chimes or gongs (15-beat, pentatonic?)
-(Scales: pentatonic; major/minor (mutating by circle of fifths?))
+Agent: add chan= argument to get_prop, set_prop, etc. (For consistency
+with other methods.)
 
