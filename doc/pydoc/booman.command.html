@@ -31,6 +31,7 @@
 <a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
 <a href="http://www.python.org/doc/current/library/time.html">time</a><br>
 </td><td width="25%" valign=top><a href="booman.token.html">booman.token</a><br>
+<a href="boopak.version.html">boopak.version</a><br>
 <a href="http://www.python.org/doc/current/library/zipfile.html">zipfile</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -48,6 +49,7 @@
 </font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#DeleteAllCmd">DeleteAllCmd</a>
 </font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#DeleteCmd">DeleteCmd</a>
 </font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#DescribeCmd">DescribeCmd</a>
+</font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#ExamineCmd">ExamineCmd</a>
 </font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#HelpCmd">HelpCmd</a>
 </font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#InstallCmd">InstallCmd</a>
 </font></dt><dt><font face="helvetica, arial"><a href="booman.command.html#LastErrorCmd">LastErrorCmd</a>
@@ -308,6 +310,40 @@ CommandError.<br>
 &nbsp;<br>
 (This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
 but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ExamineCmd">class <strong>ExamineCmd</strong></a>(<a href="booman.command.html#Command">Command</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ExamineCmd-perform"><strong>perform</strong></a>(self, source)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>description</strong> = 'Examine a resource in a package'</dl>
+
+<dl><dt><strong>name</strong> = 'examine'</dl>
+
+<dl><dt><strong>synonyms</strong> = ['x']</dl>
+
+<hr>
+Methods inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><a name="ExamineCmd-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="ExamineCmd-assert_done"><strong>assert_done</strong></a>(self, source)</dt><dd><tt><a href="#ExamineCmd-assert_done">assert_done</a>(source)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Ensure&nbsp;that&nbsp;the&nbsp;input&nbsp;has&nbsp;been&nbsp;exhausted.&nbsp;If&nbsp;it&nbsp;has&nbsp;not,&nbsp;raise&nbsp;a<br>
+CommandError.<br>
+&nbsp;<br>
+(This&nbsp;should&nbsp;be&nbsp;called&nbsp;after&nbsp;all&nbsp;command&nbsp;arguments&nbsp;have&nbsp;been&nbsp;read,<br>
+but&nbsp;before&nbsp;execution&nbsp;begins.)</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="booman.command.html#Command">Command</a>:<br>
+<dl><dt><strong>help</strong> = None</dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -661,8 +697,10 @@ necessary&nbsp;before&nbsp;the&nbsp;command&nbsp;is&nbsp;executed.</tt></dd></dl
  <dl><dt><a name="-format_package"><strong>format_package</strong></a>(val, full<font color="#909090">=True</font>)</dt><dd><tt><a href="#-format_package">format_package</a>(val,&nbsp;full=True)&nbsp;-&gt;&nbsp;str<br>
 &nbsp;<br>
 Create&nbsp;a&nbsp;human-readable&nbsp;label&nbsp;for&nbsp;a&nbsp;package.&nbsp;The&nbsp;val&nbsp;may&nbsp;be&nbsp;a<br>
-PackageInfo&nbsp;object&nbsp;or&nbsp;a&nbsp;(pkgname,&nbsp;vers)&nbsp;pair.&nbsp;If&nbsp;full&nbsp;is&nbsp;false,<br>
-the&nbsp;version&nbsp;is&nbsp;ignored.</tt></dd></dl>
+PackageInfo&nbsp;object&nbsp;or&nbsp;a&nbsp;(pkgname,&nbsp;vers)&nbsp;pair.&nbsp;In&nbsp;the&nbsp;latter&nbsp;case,<br>
+vers&nbsp;may&nbsp;be&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;a&nbsp;VersionSpec.<br>
+&nbsp;<br>
+If&nbsp;full&nbsp;is&nbsp;false,&nbsp;the&nbsp;version&nbsp;is&nbsp;ignored.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

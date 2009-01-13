@@ -187,11 +187,12 @@ and&nbsp;the&nbsp;caller&nbsp;may&nbsp;proceed&nbsp;to&nbsp;<a href="#PackageCol
 &nbsp;<br>
 Load&nbsp;a&nbsp;package&nbsp;given&nbsp;(srctype,&nbsp;loc)&nbsp;in&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;forms:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;(pkgname,&nbsp;vers))<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
 &nbsp;<br>
 Source_PACKAGE&nbsp;will&nbsp;be&nbsp;found&nbsp;and&nbsp;loaded&nbsp;from&nbsp;the&nbsp;collection.<br>
+(The&nbsp;vers&nbsp;part&nbsp;may&nbsp;be&nbsp;a&nbsp;VersionNumber,&nbsp;VersionSpec,&nbsp;or&nbsp;None.)<br>
 &nbsp;<br>
 Source_FILE&nbsp;will&nbsp;be&nbsp;unzipped&nbsp;(in&nbsp;the&nbsp;temporary&nbsp;work&nbsp;directory)<br>
 and&nbsp;then&nbsp;loaded.&nbsp;(However,&nbsp;the&nbsp;temporary&nbsp;directory&nbsp;will&nbsp;not&nbsp;be<br>
@@ -209,7 +210,7 @@ set&nbsp;up&nbsp;for&nbsp;slow&nbsp;operations.</tt></dd></dl>
 &nbsp;<br>
 Install&nbsp;a&nbsp;package&nbsp;given&nbsp;(srctype,&nbsp;loc)&nbsp;in&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;forms:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;pkgname)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(Source_PACKAGE,&nbsp;(pkgname,&nbsp;vers))<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(Source_FILE,&nbsp;filename)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(Source_URL,&nbsp;url)<br>
 &nbsp;<br>

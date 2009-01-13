@@ -619,6 +619,16 @@ elements&nbsp;(["org",&nbsp;"boodler",&nbsp;"sample"]).<br>
 &nbsp;<br>
 Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;name&nbsp;was&nbsp;in&nbsp;any&nbsp;way&nbsp;invalid.&nbsp;(Thus,<br>
 this&nbsp;function&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;ensure&nbsp;that&nbsp;a&nbsp;package&nbsp;name&nbsp;is&nbsp;valid.)</tt></dd></dl>
+ <dl><dt><a name="-parse_package_version_spec"><strong>parse_package_version_spec</strong></a>(val)</dt><dd><tt><a href="#-parse_package_version_spec">parse_package_version_spec</a>(val)&nbsp;-&gt;&nbsp;(pkgname,&nbsp;VersionNumber)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;(pkgname,&nbsp;VersionSpec)&nbsp;or&nbsp;(pkgname,&nbsp;None)<br>
+&nbsp;<br>
+Parse&nbsp;a&nbsp;package&nbsp;identifier&nbsp;together&nbsp;with&nbsp;its&nbsp;version&nbsp;spec&nbsp;<br>
+(e.g.,&nbsp;"org.boodler.sample:1.0")&nbsp;or&nbsp;exact&nbsp;version&nbsp;spec&nbsp;<br>
+(e.g.,&nbsp;"org.boodler.sample::1.0").&nbsp;If&nbsp;neither&nbsp;is&nbsp;present,<br>
+the&nbsp;second&nbsp;value&nbsp;of&nbsp;the&nbsp;return&nbsp;tuple&nbsp;will&nbsp;be&nbsp;None.<br>
+&nbsp;<br>
+Raises&nbsp;a&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;name&nbsp;was&nbsp;in&nbsp;any&nbsp;way&nbsp;invalid.&nbsp;(Thus,<br>
+this&nbsp;function&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;ensure&nbsp;that&nbsp;a&nbsp;package&nbsp;name&nbsp;is&nbsp;valid.)</tt></dd></dl>
  <dl><dt><a name="-parse_resource_name"><strong>parse_resource_name</strong></a>(resname)</dt><dd><tt><a href="#-parse_resource_name">parse_resource_name</a>(resname)&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;str<br>
 &nbsp;<br>
 Parse&nbsp;a&nbsp;resource&nbsp;name&nbsp;(e.g.,&nbsp;"voice.Doh")&nbsp;into&nbsp;a&nbsp;list&nbsp;of&nbsp;elements<br>

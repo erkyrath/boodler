@@ -48,7 +48,8 @@
 </font></dt><dt><font face="helvetica, arial"><a href="booman.token.html#FileToken">FileToken</a>
 </font></dt></dl>
 </dd>
-<dt><font face="helvetica, arial"><a href="booman.token.html#YesNoToken">YesNoToken</a>
+<dt><font face="helvetica, arial"><a href="booman.token.html#ResourceToken">ResourceToken</a>
+</font></dt><dt><font face="helvetica, arial"><a href="booman.token.html#YesNoToken">YesNoToken</a>
 </font></dt></dl>
 </dd>
 </dl>
@@ -212,7 +213,7 @@ Data and other attributes defined here:<br>
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#PackageOptVersionToken">PackageOptVersionToken</a>:&nbsp;Grab&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;package,&nbsp;and&nbsp;also<br>
 a&nbsp;version&nbsp;number&nbsp;(if&nbsp;one&nbsp;is&nbsp;provided).&nbsp;Returns&nbsp;(pkgname,&nbsp;vers)<br>
-where&nbsp;vers&nbsp;may&nbsp;be&nbsp;a&nbsp;VersionNumber&nbsp;or&nbsp;None.<br>&nbsp;</tt></td></tr>
+where&nbsp;vers&nbsp;may&nbsp;be&nbsp;a&nbsp;VersionNumber,&nbsp;VersionSpec,&nbsp;or&nbsp;None.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="PackageOptVersionToken-accept"><strong>accept</strong></a>(self, source)</dt></dl>
@@ -261,6 +262,25 @@ which&nbsp;exists.<br>&nbsp;</tt></td></tr>
 <hr>
 Data and other attributes defined here:<br>
 <dl><dt><strong>prompt</strong> = 'path'</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ResourceToken">class <strong>ResourceToken</strong></a>(<a href="booman.token.html#Token">Token</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ResourceToken">ResourceToken</a>:&nbsp;Grab&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;resource.&nbsp;This&nbsp;must&nbsp;be<br>
+pkgname/resource,&nbsp;pkgname:spec/resource,&nbsp;or&nbsp;pkgname::vers/resource.<br>
+Returns&nbsp;((pkgname,&nbsp;vers),&nbsp;resource),&nbsp;where&nbsp;vers&nbsp;will&nbsp;be&nbsp;None,<br>
+a&nbsp;VersionSpec,&nbsp;or&nbsp;a&nbsp;VersionNumber.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ResourceToken-accept"><strong>accept</strong></a>(self, source)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>prompt</strong> = 'resource'</dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
