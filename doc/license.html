@@ -12,8 +12,9 @@
 <p>
 The licensing situation regarding Boodler is somewhat ornate, because
 there are many components involved. (The script <code>boodler.py</code>,
-####the Boodler library, the sounds in the Boodler sound library, the pieces
-of code that make up the soundscape agents.) 
+the Boodler sound engine, the sound files and pieces of code that make
+up a given soundscape. Not to mention the fact that soundscapes can
+include other soundscapes.) 
 </p>
 
 <p>
@@ -26,7 +27,8 @@ Boodler in some other project or program, you should read the following.
 
 <ul>
 <li><a href="#using">Running Boodler</a></li>
-<li><a href="#extending">Extending the effects</a></li>
+<li><a href="#extending">Creating new soundscapes</a></li>
+<li><a href="#contributing">Putting your work in the Boodler library</a></li>
 <li><a href="#deriving">Modifying Boodler and incorporating it into other software</a></li>
 <li><a href="#warranty">The lack of warranty</a></li>
 </ul>
@@ -44,68 +46,97 @@ you in any way from running the program.)
 </p>
 
 <p>
-However, there is another legal issue. Boodler operates by combining
-sound-sample files into a ongoing stream of sound -- a soundscape.
-Legally speaking, when you run it, you are creating a derivative work
-based on those sound files.
+However, there is another legal issue. Boodler operates by executing
+soundscape code, which combines sound-sample files into a ongoing
+stream of sound. Legally speaking, when you run Boodler, you are
+creating a derivative work based on those code fragments and sound
+files.
 </p>
 
 <p>
-The sound files in the Boodler sound library are <em>not</em> all in the
-public domain. Most of them are licensed "for private and
-non-commercial use only". Some were found by random searching around
-the web, and appear without any copyright statement at all.
+The soundscapes and sound files in the Boodler package library
+are <em>not</em> all in the public domain. Many are licensed "for
+non-commercial use only". Some of the sound files were found by random
+searching around the web, and appear without any copyright statement
+at all.
 </p>
 
 <p>
-It is my opinion (<em>not</em> backed by any legal advice) that if you run
-Boodler for your own private use, using the Boodler sound library, you
-are within the scope of fair use and the "non-commercial use" licenses
-of those sounds.
+It is my opinion (<em>not</em> backed by any legal advice) that if you
+run Boodler for your own private use, using packages downloaded from
+the Boodler library, then you are within the scope of fair use and the
+"non-commercial use" licenses of those sounds.
 </p>
 
 <p>
 However, if you play the sound output of Boodler (based on the Boodler
-sound library) as a commercial performance, or include it in a
+package library) as a commercial performance, or include it in a
 recording sold for profit, you may not be complying with the copyright
-restrictions on those sounds. You will have to look at the README
-files in the sound library and decide whether your performance is
+restrictions on those sounds. You will have to look at the license
+terms of the packages you use, and decide whether your performance is
 legal.
 </p>
 
 <p>
-Note that this legal issue is solely a problem of playing particular
-sounds from the Boodler sound library. If you create your own Boodler
-soundscape, based solely on <em>your own</em> sound-sample files, then that
-stream of sound is entirely your own work; you may do with it as you
-wish.
+Note that this legal issue is a problem of playing sounds and
+soundscapes from the Boodler package library. It is not a restriction
+of the Boodler software itself. If you create your own Boodler
+soundscape, based solely on <em>your own</em> sound-sample files and
+code, then that stream of sound is entirely your own work; you may do
+with it as you wish.
 </p>
 
 <h2><a name="extending">LICENSING FOR SOUNDSCAPE DESIGNERS</a></h2>
-<h4><em>(Extending the effects)</em></h4>
+<h4><em>(Creating new soundscapes)</em></h4>
 
 <p>
-The Python scripts included in the ./effects directory are in the
-public domain. They are intended to be used as code samples as well as
-soundscapes. You may modify, extend, combine, and pervert them as you
-wish.
+The sound and soundscape packages in the <code>org.boodler</code>
+section of the package library (excluding 
+<code>org.boodler.old</code>) are in the public domain.
+They are intended to be used as code samples as well as soundscapes.
+You may modify, extend, combine, and pervert them as you wish.
 </p>
 
 <p>
-If you write your own soundscapes (sound agents), you may license them
-as you wish -- GPL, LGPL, some other license. Or you might choose to
-not release them at all; you are not obligated to do so.
+The sound packages in the <code>org.boodler.old</code> section of the
+package library are copyrighted, but free for non-commercial use.
+They are not free for commercial use.
 </p>
 
 <p>
-If you write a particularly interesting soundscape, you are welcome to
-contribute it to the Boodler project. As a matter of consistency, I
-prefer that all soundscapes that I distribute in the ./effects
-directory of this package be public domain (uncopyrighted). If your
-soundscape uses sounds that are not in the Boodler sound library, you
-should contribute those as well. To maintain consistency (again), all
-sounds in the sound library should be either public domain, or
-licensed free for non-commercial use.
+Sound packages elsewhere in the library (not under 
+<code>org.boodler</code>) are free for non-commercial use. They may
+or may not be free for commercial use, modification, and other
+forms of derivative work. See the terms of each package for details.
+</p>
+
+<p>
+If you create sound files or soundscape code for use with Boodler, you
+may license them as you wish -- GPL, LGPL, Creative Commons, some
+other license. Or you might choose to not release them at all; you are
+not obligated to do so.
+</p>
+
+<h2><a name="contributing">LICENSING FOR SOUNDSCAPE CONTRIBUTORS</a></h2>
+<h4><em>(Putting your work in the Boodler library)</em></h4>
+
+<p>
+You are welcome to contribute your sounds and soundscapes to the
+Boodler project. Any properly-formatted package file will be accepted
+into the Boodler package library, as long as it is free for users to
+enjoy.
+</p>
+
+<p>
+You are also welcome to repackage and contribute other people's sounds,
+as long as their licenses permit you to do so.
+</p>
+
+<p>
+To be accepted, a package must be, at minimum, free for non-commercial
+use. The Boodler project strongly encourages contributions to either
+placed in the public domain, or licensed under an open-source or
+Creative Commons license.
 </p>
 
 <h2><a name="deriving">LICENSING FOR PROGRAMMERS</a></h2>
@@ -116,22 +147,22 @@ I consider Boodler to be more like a software component than a
 stand-alone program. Accordingly, I have released it under the 
 <a href="LGPL">GNU Library General Public License</a>
 (the LGPL). To be precise, the workhorse parts of Boodler -- the
-boodle Python package -- form a library, which is licensed under the
-LGPL.
+<code>boodle</code> and <code>boopak</code> Python packages -- form a
+library, which is licensed under the LGPL.
 </p>
 
 <p>
-The Python program boodler.py is simply a shell that starts up the
-Boodler library. I have released boodler.py into the public domain.
-You may do with it as you like. However, understand that if you write
-a program that is intended to link in the Boodler library (regardless
-of whether you use boodler.py), then your program is a work that uses
-the library, and must behave appropriately. See the LGPL document for
-details.
+The Python program <code>boodler.py</code> is simply a shell that
+starts up the Boodler library. I have released <code>boodler.py</code>
+into the public domain. You may do with it as you like. However,
+understand that if you write a program that is intended to link in the
+Boodler library (regardless of whether you use <code>boodler.py</code>), 
+then your program is a work that uses the library, and must behave
+appropriately. See the LGPL document for details.
 </p>
 
 <p>
-One detail: the C source code of the cboodle extensions is 
+One detail: the C source code of the <code>cboodle</code> extensions is 
 dual-licensed. You may use it under the terms of the 
 <a href="LGPL">LGPL</a>
 or the
@@ -142,8 +173,9 @@ native libraries, including
 <a href="http://xiph.org/">LibShout</a> (LGPL),
 and 
 <a href="http://lame.sourceforge.net/">LAME</a> (GPL). 
-The dynamically loadable cboodle_* driver modules are
-therefore all under the LGPL, except for cboodle_lame, which is GPL.
+The dynamically loadable <code>cboodle_*</code> driver modules are
+therefore all under the LGPL, except for <code>cboodle_lame</code>,
+which is GPL.
 </p>
 
 <h2><a name="warranty">WARRANTY</a></h2>
