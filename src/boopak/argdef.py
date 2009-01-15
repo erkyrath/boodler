@@ -1480,7 +1480,7 @@ class ArgClassWrapper(ArgWrapper):
         self.cla = cla
         self.argls = ls
         if (dic):
-            dic = dict([str(key),val] for (key,val) in dic.items())
+            dic = dict([ (str(key),val) for (key,val) in dic.items() ])
         self.argdic = dic
     def __call__(self):
         return self.unwrap()
