@@ -528,12 +528,35 @@ class local_generate_pydoc(Command):
 
 
 setup(name = 'Boodler',
-    version = '2.0.0',
-    description = 'Programmable soundscape tool',
+    version = '2.0.1',
+    description = 'A programmable soundscape tool',
     author = 'Andrew Plotkin',
     author_email = 'erkyrath@eblong.com',
     url = 'http://boodler.org/',
     license = 'GNU LGPL',
+    platforms = [ 'MacOS X', 'POSIX' ],
+    classifiers = [
+        'Topic :: Multimedia :: Sound/Audio :: Mixers',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        'Operating System :: POSIX',
+        'Operating System :: MacOS :: MacOS X',
+        'Programming Language :: Python :: 2',
+    ],
+    long_description = """
+Boodler is a tool for creating soundscapes -- continuous, infinitely
+varying streams of sound. Boodler is designed to run in the background
+on a computer, maintaining whatever sound environment you desire.
+
+Boodler is extensible, customizable, and modular. Each soundscape is a
+small piece of Python code -- typically less than a page. A soundscape
+can incorporate other soundscapes; it can combine other soundscapes,
+switch between them, fade them in and out. This package comes with
+many example soundscapes. You can use these, modify them, combine them
+to arbitrary levels of complexity, or write your own.
+""",
     packages = ['boodle', 'boopak', 'booman'],
     package_dir = {'': 'src'},
     scripts = ['script/boodler.py', 'script/boodle-mgr.py', 'script/boodle-event.py'],
