@@ -74,13 +74,13 @@ class TestArgDef(unittest.TestCase):
     def test_clone_arg(self):
         origarg = Arg()
         arg = origarg.clone()
-        self.assertFalse(arg is origarg)
+        self.assert_(not (arg is origarg))
         self.assert_args_identical(arg, origarg)
         
         origarg = Arg(name='foo', index=2, type=float, default=1.5,
             description='Argument')
         arg = origarg.clone()
-        self.assertFalse(arg is origarg)
+        self.assert_(not (arg is origarg))
         self.assert_args_identical(arg, origarg)
 
     def test_arg_unicode(self):
@@ -329,7 +329,7 @@ class TestArgDef(unittest.TestCase):
             Arg(default=11), Arg(default=22),
             foo=Arg(default=33), bar=Arg(default=44))
         arglist = arglist2.clone()
-        self.assertFalse(arglist is arglist2)
+        self.assert_(not (arglist is arglist2))
         
         self.assertEquals(len(arglist), 4)
 
