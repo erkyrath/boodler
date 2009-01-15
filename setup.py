@@ -9,7 +9,6 @@
 import sys
 import os.path
 import re
-import subprocess
 from distutils.core import setup, Command, Extension
 from distutils.command.build_ext import build_ext
 from distutils.command.build_scripts import build_scripts
@@ -395,6 +394,12 @@ class local_generate_pydoc(Command):
             os.chdir(curdir)
 
     def _generate(self, buildpath, templatepath):
+        try:
+            import subprocess
+        except:
+            print 'generate_pydoc requires Python 2.4 or later.'
+            return
+        
         packages = ['boodle', 'boopak', 'booman']
         PYTHON_DOC_URL = 'http://www.python.org/doc/current/library/'
 
