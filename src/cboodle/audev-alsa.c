@@ -330,6 +330,11 @@ void audev_close_device()
     return;
   }
 
+  res = snd_pcm_drain(device);
+  if (res) {
+    fprintf(stderr, "Error draining device: %s\n", snd_strerror(res));
+  }
+
   res = snd_pcm_close(device);
   if (res) {
     fprintf(stderr, "Error closing device: %s\n", snd_strerror(res));
