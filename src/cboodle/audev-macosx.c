@@ -34,6 +34,7 @@ static long sound_rate = 0; /* frames per second */
 static int sound_channels = 0;
 static long sound_buffersize = 0; /* bytes */
 
+static int started = FALSE;
 static int bufcount = 6;
 static long samplesperbuf = 0;
 static long framesperbuf = 0;
@@ -70,7 +71,7 @@ int audev_init_device(char *wantdevname, long ratewanted, int verbose, extraopt_
   char devicename[LEN_DEVICE_NAME];
 
   if (verbose) {
-    printf("Boodler: MACOSX sound driver.\n");
+    printf("Boodler: OSX CoreAudio sound driver.\n");
   }
 
   fragsize = 32768;
@@ -341,18 +342,15 @@ int audev_init_device(char *wantdevname, long ratewanted, int verbose, extraopt_
 
   }
 
-  /* ### AudioDeviceAddIOProc is deprecated as of OSX 10.5 */
+  /* AudioDeviceAddIOProc is deprecated as of OSX 10.5. Use the
+     osxaq driver instead. */
   status = AudioDeviceAddIOProc(audevice, PlaybackIOProc, (void *)1);
   if (status) {
     fprintf(stderr, "Could not add IOProc to device.\n");
     return FALSE;
   }
 
-  status = AudioDeviceStart(audevice, PlaybackIOProc);
-  if (status) {
-    fprintf(stderr, "Could not start audio device.\n");
-    return FALSE;
-  }
+  started = FALSE;
 
   return TRUE;
 }
@@ -369,6 +367,17 @@ void audev_close_device()
 
   bailing = TRUE;
 
+  if (!started) {
+    /* We never got to the point of starting playback. Do it now. */
+    started = TRUE;
+    status = AudioDeviceStart(audevice, PlaybackIOProc);
+    if (status) {
+      fprintf(stderr, "Could not late-start audio device.\n");
+      return;
+    }
+  }
+
+  /* Wait on each buffer to make sure they're all drained. */
   for (bx=0; bx<bufcount; bx++) {
     buffer_t *buffer = &rawbuffer[bx];
 
@@ -444,7 +453,6 @@ static OSStatus PlaybackIOProc(AudioDeviceID inDevice,
 
     pthread_mutex_unlock(&buffer->mutex);
     pthread_cond_signal(&buffer->cond);
-
   }
 
   return kAudioHardwareNoError;
@@ -488,8 +496,9 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
 
     pthread_mutex_lock(&buffer->mutex);
     
-    while (buffer->full)
+    while (buffer->full) {
       pthread_cond_wait(&buffer->cond, &buffer->mutex);
+    }
 
     srcptr = valbuffer;
     destptr = buffer->buf;
@@ -499,7 +508,7 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
       if (samp > 0x7FFF)
 	samp = 0x7FFF;
       else if (samp < -0x7FFF)
-	  samp = -0x7FFF;
+	samp = -0x7FFF;
       *destptr = ((float)samp) * (float)0.00003051757;
       /* that is, dest = (samp/32768) */
     }
@@ -511,6 +520,18 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
       filling = 0;
     
     pthread_mutex_unlock(&buffer->mutex);
+
+    if (!started && filling == 0) {
+      /* When all the buffers are filled for the first time, we can
+         start the device playback. */
+      OSStatus status;
+      started = TRUE;
+      status = AudioDeviceStart(audevice, PlaybackIOProc);
+      if (status) {
+        fprintf(stderr, "Could not start audio device.\n");
+        return FALSE;
+      }
+    }
   }
 }
 
