@@ -3,6 +3,8 @@
    Boodler web site: <http://boodler.org/>
    The cboodle_osxaq extension is distributed under the LGPL.
    See the LGPL document, or the above URL, for details.
+
+   AudioQueue driver based on code contributed by Aaron Griffith.
 */
 
 #include <stdio.h>
@@ -10,16 +12,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <pthread.h>
+
 #include <AudioToolbox/AudioQueue.h>
 /* "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/Headers/AudioQueue.h" */
-#include <pthread.h>
+#include <CoreAudio/CoreAudio.h>
+/* "/System/Library/Frameworks/CoreAudio.framework/Versions/A/Headers/CoreAudio.h" */
 
 #include "common.h"
 #include "audev.h"
 
 #define DEFAULT_SOUNDRATE (44100)
 #define NUM_BUFFERS (3)
-#define SIZE_BUFFERS (65536)
+#define SIZE_BUFFERS (32768)
 
 static int sound_big_endian = 0;
 static long sound_rate = 0; /* frames per second */
@@ -44,7 +49,7 @@ typedef struct buffer_struct {
 static AudioQueueRef aqueue = NULL;
 static buffer_t *buffers = NULL; /* array, len bufcount */
 
-static int device = FALSE; /* just a flag */
+static int running = FALSE;
 static int bailing = FALSE;
 static int filling = 0;
 static int started = FALSE;
@@ -52,10 +57,16 @@ static int started = FALSE;
 static void playCallback(void *user, AudioQueueRef queue, 
   AudioQueueBuffer *qbuf);
 
-int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
+int audev_init_device(char *wantdevname, long ratewanted, int verbose, extraopt_t *extra)
 {
   int channels, format, rate, ix, res;
   int fragsize;
+  int listdevices = FALSE;
+  AudioDeviceID wantdevid;
+  AudioDeviceID wantedaudev;
+#define LEN_DEVICE_NAME 128
+  char devicename[LEN_DEVICE_NAME];
+  CFStringRef deviceuid = NULL;
   extraopt_t *opt;
   char endtest[sizeof(unsigned int)];
   AudioStreamBasicDescription formataq;
@@ -65,7 +76,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     printf("Boodler: OSX AudioQueue driver.\n");
   }
 
-  if (device) {
+  if (running) {
     fprintf(stderr, "Sound device is already open.\n");
     return FALSE;
   }
@@ -99,14 +110,136 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
       bufcount = atoi(opt->val);
     }
     else if (!strcmp(opt->key, "listdevices")) {
-      printf("Device list: not yet supported.\n");
+      listdevices = TRUE;
     }
   }
 
   if (bufcount < 2)
     bufcount = 2;
 
-  /* ### device list */
+  wantedaudev = kAudioDeviceUnknown;
+
+  /* If the given device name is a string representation of an
+     integer, work out the integer. */
+  wantdevid = kAudioDeviceUnknown;
+  if (wantdevname) {
+    char *endptr = NULL;
+    wantdevid = strtol(wantdevname, &endptr, 10);
+    if (!endptr || endptr == wantdevname || (*endptr != '\0'))
+      wantdevid = kAudioDeviceUnknown;
+  }
+
+  if (listdevices || wantdevname) {
+    int ix, jx;
+    int device_count;
+    UInt32 propsize;
+#define LEN_DEVICE_LIST 16
+    AudioDeviceID devicelist[LEN_DEVICE_LIST];  
+
+    propsize = LEN_DEVICE_LIST * sizeof(AudioDeviceID);
+    status = AudioHardwareGetProperty(kAudioHardwarePropertyDevices,
+      &propsize, devicelist);
+    if (status) {
+      fprintf(stderr, "Could not get list of audio devices.\n");
+      return FALSE;
+    }
+    device_count = propsize / sizeof(AudioDeviceID);
+
+    for (ix=0; ix<device_count; ix++) {
+      AudioDeviceID tmpaudev = devicelist[ix];
+
+      /* Determine if this is an output device. */
+      status = AudioDeviceGetPropertyInfo(tmpaudev, 0, 0, 
+	kAudioDevicePropertyStreamConfiguration, &propsize, NULL);
+      if (status) {
+	fprintf(stderr, "Could not get audio property info.\n");
+	return FALSE;
+      }
+
+      AudioBufferList *buflist = (AudioBufferList *)malloc(propsize);
+      status = AudioDeviceGetProperty(tmpaudev, 0, 0, 
+	kAudioDevicePropertyStreamConfiguration, &propsize, buflist);
+      if (status) {
+	fprintf(stderr, "Could not get audio property info.\n");
+	return FALSE;
+      }
+
+      int hasoutput = FALSE;
+
+      for (jx=0; jx<buflist->mNumberBuffers; jx++) {
+	if (buflist->mBuffers[jx].mNumberChannels > 0) {
+	  hasoutput = TRUE;
+	}
+      }
+
+      free(buflist);
+      buflist = NULL;
+
+      if (!hasoutput) {
+	/* skip this device. */
+	continue;
+      }
+
+      /* Determine the device name. */
+
+      propsize = LEN_DEVICE_NAME * sizeof(char);
+      status = AudioDeviceGetProperty(tmpaudev, 1, 0,
+	kAudioDevicePropertyDeviceName, &propsize, devicename);
+      if (status) {
+	fprintf(stderr, "Could not get audio device name.\n");
+	return FALSE;
+      }
+
+      if (listdevices)
+	printf("Found device ID %d: \"%s\".\n", (int)tmpaudev, devicename);
+
+      /* Check if the desired name matches (a prefix of) the device name. */
+      if (wantdevname && !strncmp(wantdevname, devicename, 
+	    strlen(wantdevname))) {
+	wantedaudev = tmpaudev;
+      }
+
+      /* Check if the int version of the desired name matches the device ID. */
+      if (wantdevid != kAudioDeviceUnknown && wantdevid == tmpaudev) {
+	wantedaudev = tmpaudev;
+      }
+    }
+  }
+
+  if (wantdevname && wantedaudev == kAudioDeviceUnknown) {
+    fprintf(stderr, "Could not located requested device.\n");
+    return FALSE;
+  }
+
+  deviceuid = NULL;
+
+  if (wantedaudev == kAudioDeviceUnknown) {
+    if (verbose) {
+      fprintf(stderr, "Using default audio device.\n");
+    }
+  }
+  else {
+    UInt32 propsize;
+
+    propsize = sizeof(deviceuid);
+    status = AudioDeviceGetProperty(wantedaudev, 0, 0,
+      kAudioDevicePropertyDeviceUID, &propsize, &deviceuid);
+    if (status || !deviceuid) {
+      fprintf(stderr, "Could not get audio device UID.\n");
+      return FALSE;
+    }
+
+    if (verbose) {
+      propsize = LEN_DEVICE_NAME * sizeof(char);
+      status = AudioDeviceGetProperty(wantedaudev, 1, 0,
+        kAudioDevicePropertyDeviceName, &propsize, devicename);
+      if (status) {
+        fprintf(stderr, "Could not get audio device name.\n");
+        return FALSE;
+      }
+      printf("Got device ID %d: \"%s\".\n", (int)wantedaudev, devicename);
+    }
+  }
 
   if (format == -1) {
     format = sound_big_endian;
@@ -151,19 +284,18 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   status = AudioQueueNewOutput(&formataq, &playCallback, NULL, NULL, NULL, 0,
     &aqueue);
   if (status) {
-    fprintf(stderr, "Unable to allocate AudioQueue: %d\n", (int)status);
+    fprintf(stderr, "Unable to allocate AudioQueue.\n");
     return FALSE;
   }
-  
-  { /*###*/
-      UInt32 propsize = 0;
-      CFStringRef propval;
-      status = AudioQueueGetPropertySize(aqueue, kAudioQueueProperty_CurrentDevice, &propsize);
-      fprintf(stderr, "### (%ld) device propsize %ld\n", status, propsize);
-      status = AudioQueueGetProperty(aqueue, kAudioQueueProperty_CurrentDevice, &propval, &propsize);
-      fprintf(stderr, "### (%ld) device property %lx (%ld)\n", status, propval, propsize);
-  } /*###*/
 
+  if (deviceuid) {
+    status = AudioQueueSetProperty(aqueue, kAudioQueueProperty_CurrentDevice, &deviceuid, sizeof(deviceuid));
+    if (status) {
+      fprintf(stderr, "Unable to set requested audio device.\n");
+      return FALSE;
+    }
+  }
+  
   buffers = (buffer_t *)malloc(bufcount * sizeof(buffer_t));
   if (!buffers) {
     fprintf(stderr, "Unable to allocate buffer array\n");
@@ -211,7 +343,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     return FALSE;     
   }
 
-  device = TRUE;
+  running = TRUE;
   started = FALSE;
   filling = 0;
 
@@ -224,7 +356,7 @@ void audev_close_device()
   long sleep;
   OSStatus status;
 
-  if (!device) {
+  if (!running) {
     fprintf(stderr, "Unable to close sound device which was never opened.\n");
     return;
   }
@@ -234,15 +366,12 @@ void audev_close_device()
   if (!started) {
     /* We never got to the point of starting playback. Do it now. */
     started = TRUE;
-    fprintf(stderr, "### late-starting\n");
     status = AudioQueueStart(aqueue, NULL);
     if (status) {
       fprintf(stderr, "Could not late-start audio device.\n");
       return;
     }
   }
-
-  fprintf(stderr, "### flushing\n");
 
   status = AudioQueueFlush(aqueue);
   if (status) {
@@ -261,10 +390,7 @@ void audev_close_device()
   /* And wait one more buffer-duration. I'm not sure why this is necessary
      with all the flushing and stopping, but it is. */
   sleep = 1000 * ((1000*framesperbuf) / sound_rate); 
-  fprintf(stderr, "### final sleep is %ld microsec\n", sleep);
   usleep(sleep);
-
-  fprintf(stderr, "### stopping queue non-immediate\n");
 
   status = AudioQueueStop(aqueue, FALSE);
   if (status) {
@@ -276,7 +402,7 @@ void audev_close_device()
     fprintf(stderr, "Could not dispose audio device; continuing.\n");
   }
 
-  device = FALSE;
+  running = FALSE;
 
   if (valbuffer) {
     free(valbuffer);
@@ -316,8 +442,6 @@ static void playCallback(void *user, AudioQueueRef queue,
     }
   }
 
-  fprintf(stderr, "### Buffer %d called back\n", ix);
-  
   if (!buffer) {
     fprintf(stderr, "Unable to identify buffer in callback.\n");
     return;
@@ -339,7 +463,7 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
   char *ptr;
   int res;
 
-  if (!device) {
+  if (!running) {
     fprintf(stderr, "Sound device is not open.\n");
     return FALSE;
   }
@@ -353,20 +477,16 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
     
     res = mixfunc(valbuffer, genfunc, rock);
     if (res) {
-      fprintf(stderr, "### mixfunc says to stop.\n");
       bailing = TRUE;
       return TRUE;
     }
 
     buffer = &buffers[filling];
-    fprintf(stderr, "### filling buffer %d\n", filling);
 
     pthread_mutex_lock(&buffer->mutex);
     
     while (buffer->full) {
-      fprintf(stderr, "### but full, so blocking\n");
       pthread_cond_wait(&buffer->cond, &buffer->mutex);
-      fprintf(stderr, "### ...unblocking\n");
     }
     
     if (sound_format) {
@@ -413,7 +533,6 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
       /* When all the buffers are filled for the first time, we can
          start the device playback. */
       started = TRUE;
-      fprintf(stderr, "### starting device\n");
       status = AudioQueueStart(aqueue, NULL);
       if (status) {
         fprintf(stderr, "Could not start sound device.\n");
