@@ -50,7 +50,7 @@ Type <code>boodler.py --help</code> or <code>boodler.py -h</code> for a complete
 <dl>
 
 <dt><code>--output <em>driver</em></code></dt>
-<dd>Select one of the available driver modules. (See <a href="#drivers">below</a>.) The default is <code>oss</code> on Unix, or <code>macosx</code> on MacOSX.</dd>
+<dd>Select one of the available driver modules. (See <a href="#drivers">below</a>.) The default is <code>oss</code> on Unix, <code>osxaq</code> on MacOSX 10.5 or later, or <code>macosx</code> on MacOSX through 10.4.</dd>
 
 <dt><code>--list-drivers</code></dt>
 <dd>List the driver modules which are available. Any of the listed drivers may be used with the <code>--output</code> option.</dd>
@@ -258,10 +258,32 @@ If no ESD daemon is running, this will attempt to write directly to
 <code>/dev/dsp</code>.
 </p>
 
+<h4><code>osxaq</code> -- MacOSX AudioQueue</h4>
+
+<p>
+This is the default output driver on MacOSX 10.5 and later.
+It is also compatible with the iPhone OS.
+</p>
+
+<dl>
+<dt><code>--define buffercount=<em>count</em></code></dt>
+<dd>Create a queue of <em>count</em> buffers. If you find that the
+sound skips when the CPU is busy, increase this value. 
+The default is 3.</dd>
+<dt><code>--define buffersize=<em>size</em></code></dt>
+<dd>Set each AudioQueue buffer to be <em>size</em> bytes long.
+The default is 32768.</dd>
+<dt><code>--define end=big</code></dt>
+<dd>Force the sound output to be written big-endian.</dd>
+<dt><code>--define end=little</code></dt>
+<dd>Force the sound output to be written little-endian.</dd>
+</dl>
+
 <h4><code>macosx</code> -- MacOSX CoreAudio</h4>
 
 <p>
-This is the default output driver on MacOSX.
+This is the default output driver on MacOSX 10.4 and earlier.
+(It works on 10.5, but is deprecated.)
 </p>
 
 <dl>
@@ -271,8 +293,8 @@ sound skips when the CPU is busy (for example, when you're dragging
 or resizing windows), increase this value. The default is 6.</dd>
 <dt><code>--define buffersize=<em>size</em></code></dt>
 <dd>Set each CoreAudio buffer to be <em>size</em> bytes long.
-The default is 32768. (I have found that using a value of 65536
-or more causes clicking; I'm not sure why.)</dd>
+The default is 32768. (Values above 49152 may work poorly or 
+be rejected by the OS.)</dd>
 </dl>
 
 <h4><code>vorbis</code> -- write Ogg Vorbis file</h4>
