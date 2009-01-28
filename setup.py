@@ -7,6 +7,7 @@
 # driver if libmp3lame is installed, and so on.)
 
 import sys
+import os
 import os.path
 import re
 from distutils.core import setup, Command, Extension
@@ -159,7 +160,14 @@ all_extensions = [
     
     BooExtension('macosx',
         extra_link_args = ['-framework', 'CoreAudio', '-framework', 'Python'],
-        available = (lambda ls : (sys.platform == 'darwin')),
+        available = check_header_available('CoreAudio.framework/Headers/CoreAudio.h'),
+    ),
+    
+    BooExtension('osxaq',
+        extra_link_args = ['-framework', 'AudioToolbox'],
+        available = check_all_available(
+            check_header_available('CoreAudio.framework/Headers/CoreAudio.h'),
+            check_header_available('AudioToolbox.framework/Headers/AudioQueue.h')),
     ),
 ]
 
@@ -231,6 +239,8 @@ class local_build_ext(build_ext):
         # a list of include dirs.
         
         ls = [ '/usr/include', '/usr/local/include' ]
+        if (sys.platform == 'darwin'):
+            ls.append('/System/Library/Frameworks')
         ls = ls + self.include_dirs + ext.include_dirs
 
         if (ext.boodler_key in self.with_driver_set):
@@ -261,7 +271,8 @@ class local_build_scripts(build_scripts):
     on the command line, or modify setup.cfg.
 
     If you do not set --default-driver, the default default driver
-    will be 'macosx' (on MacOS) or 'oss' (otherwise).
+    will be 'osxaq' (on MacOS 10.5 or later), 'macosx' (on MacOS
+    through 10.4) or 'oss' (otherwise).
     """
 
     user_options = (build_scripts.user_options + [
@@ -280,7 +291,7 @@ class local_build_scripts(build_scripts):
         if (self.default_driver):
             # If a driver was configured in, modify the boodler.py script.
             for script in self.scripts:
-                if (script != 'boodler.py'):
+                if (not script.endswith('boodler.py')):
                     continue
                 script = convert_path(script)
                 outfile = os.path.join(self.build_dir, os.path.basename(script))

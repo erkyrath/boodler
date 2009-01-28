@@ -30,6 +30,16 @@ else:
 defaultdriver = 'oss'
 if (sys.platform == 'darwin'):
     defaultdriver = 'macosx'
+    try:
+        # default to AudioQueue driver if we can identify the OS as 10.5
+        # or iPhone.
+        val = os.uname()
+        if (val[0] == 'Darwin'):
+            ls = val[2].split('.')
+            if (int(ls[0]) >= 9):
+                defaultdriver = 'osxaq'
+    except:
+        pass
 
 # The next line may be modified during package installation.
 configfiledriver = '' # CONFIGUREDDRIVER
