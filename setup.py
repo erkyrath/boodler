@@ -539,7 +539,7 @@ class local_generate_pydoc(Command):
 
 
 setup(name = 'Boodler',
-    version = '2.0.1',
+    version = '2.0.2',
     description = 'A programmable soundscape tool',
     author = 'Andrew Plotkin',
     author_email = 'erkyrath@eblong.com',
