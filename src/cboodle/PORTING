@@ -107,7 +107,10 @@ option mechanism. They're not. Sorry.)
 
   void audev_close_device(void);
 
-This should close the sound channel.
+This should close the sound channel. If possible, you should pause
+until all the sound you've sent to the channel has actually been
+played. Many sound systems offer a "drain" or "flush" call for this
+purpose.
 
   long audev_get_soundrate(void);
 
@@ -171,10 +174,22 @@ shove them into your sound channel. Clipping is a bit slower, but
 truncating causes much louder static.)
 
 audev_loop() should continue looping and pushing sound samples until
-mixfunc() returns TRUE. You will probably need some code to check if
-your sound channel is full, and pause until it opens up again.
+mixfunc() returns TRUE.
 
-(Roddy the Rotifer says: "Give a pin -- don't busy-spin.")
+Timing and buffering can be tricky. The easiest case is when the sound
+channel supports a blocking write operation. (Many sound systems offer
+this, or even default to it.) If that's the case, you can simply write
+a while loop that calls mixfunc() and then writes the result, over and
+over again, with no delays. The write call will hold you up if the
+sound system's buffers fill, but you don't have to worry about that.
+See the 'oss' driver for an example of this model.
+
+If you don't have a simple blocking write operation, you'll have to do
+more work. Some sound APIs have a callback mechanism, which invokes a
+specified function when the sound device needs more data (or, perhaps,
+when it's finished with a lump of data). You will need to synchronize
+this with audev_loop(). See the 'macosx' and 'osxaq' drivers for
+examples of this.
 
 If you encounter an error and cannot continue generating sound, print
 a message to stderr and return FALSE.
