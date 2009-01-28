@@ -7,7 +7,7 @@
 __all__ = ['agent', 'builtin', 'generator', 'listen', 'sample', 'stereo', 'music']
 
 driver_list = [
-    'file', 'stdout', 'oss', 'esd', 'alsa', 'macosx',
+    'file', 'stdout', 'oss', 'esd', 'alsa', 'osxaq', 'macosx',
     'vorbis', 'shout', 'lame',
 ]
 
@@ -17,6 +17,7 @@ driver_map = {
     'oss': 'Open Sound System',
     'esd': 'Enlightened Sound Daemon',
     'alsa': 'Advanced Linux Sound Architecture',
+    'osxaq': 'MacOSX AudioQueue',
     'macosx': 'MacOSX CoreAudio',
     'vorbis': 'write Ogg Vorbis file',
     'shout': 'Shoutcast or Icecast source',
