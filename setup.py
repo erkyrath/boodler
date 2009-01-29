@@ -138,6 +138,11 @@ all_extensions = [
         available = check_header_available('alsa/asoundlib.h'),
     ),
     
+    BooExtension('pulse',
+        libraries = ['pulse-simple'],
+        available = check_header_available('pulse/simple.h'),
+    ),
+    
     BooExtension('vorbis',
         libraries = ['vorbis', 'vorbisenc'],
         available = check_all_available(
@@ -539,7 +544,7 @@ class local_generate_pydoc(Command):
 
 
 setup(name = 'Boodler',
-    version = '2.0.2',
+    version = '2.0.2a', ###
     description = 'A programmable soundscape tool',
     author = 'Andrew Plotkin',
     author_email = 'erkyrath@eblong.com',
