@@ -5,6 +5,11 @@
    See the LGPL document, or the above URL, for details.
 */
 
+/*
+   For information about the PulseAudio sound server, see
+   <http://www.pulseaudio.org/>.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -33,6 +38,7 @@ static long *valbuffer = NULL;
 
 int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *extra)
 {
+  extraopt_t *opt;
   int channels, rate;
   pa_sample_format_t format;
   int fragsize;
@@ -55,6 +61,21 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
   format = PA_SAMPLE_S16NE;
   fragsize = 32768;
 
+  for (opt=extra; opt->key; opt++) {
+    if (!strcmp(opt->key, "end") && opt->val) {
+      if (!strcmp(opt->val, "big"))
+        format = PA_SAMPLE_S16BE;
+      else if (!strcmp(opt->val, "little"))
+        format = PA_SAMPLE_S16LE;
+    }
+    else if (!strcmp(opt->key, "buffersize") && opt->val) {
+      fragsize = atol(opt->val);
+    }
+    else if (!strcmp(opt->key, "listdevices")) {
+      printf("PULSE driver is unable to list devices.\n");
+    }
+  }
+
   bzero(&spec, sizeof(spec));
   spec.format = format;
   spec.channels = channels;
@@ -64,7 +85,7 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     NULL,               /* Use the default server. */
     "Boodler",          /* Our application's name. */
     PA_STREAM_PLAYBACK,
-    NULL,               /* Use the default device. */
+    devname,            /* Pick a device (sink). */
     "Soundscape",       /* Description of our stream. */
     &spec,              /* Our sample format. */
     NULL,               /* Use default channel map. */

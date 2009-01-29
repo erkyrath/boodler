@@ -35,6 +35,8 @@ which is defined by a driver module:
     oss:    Open Sound System
     esd:    Enlightened Sound Daemon
     alsa:   Advanced Linux Sound Architecture
+    pulse:  PulseAudio
+    osxaq:  MacOSX AudioQueue
     macosx: MacOSX CoreAudio
     vorbis: write Ogg Vorbis file
     shout:  Shoutcast or Icecast source

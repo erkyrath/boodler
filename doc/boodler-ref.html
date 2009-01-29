@@ -258,6 +258,26 @@ If no ESD daemon is running, this will attempt to write directly to
 <code>/dev/dsp</code>.
 </p>
 
+<h4><code>pulse</code> --    PulseAudio</h4>
+
+<p>
+Yet <em>another</em> Unix sound framework. The <code>--device</code>
+option defines the device ("sink") to send sound to. 
+(<code>--list-devices</code> is not currently supported, but you can
+use Pulse's <code>pacmd</code> command-line tool to get a list of devices;
+try its <code>list-sinks</code> command.)
+</p>
+
+<dl>
+<dt><code>--define buffersize=<em>size</em></code></dt>
+<dd>Set each write buffer to be <em>size</em> bytes long.
+The default is 32768.</dd>
+<dt><code>--define end=big</code></dt>
+<dd>Force the sound output to be written big-endian.</dd>
+<dt><code>--define end=little</code></dt>
+<dd>Force the sound output to be written little-endian.</dd>
+</dl>
+
 <h4><code>osxaq</code> -- MacOSX AudioQueue</h4>
 
 <p>
