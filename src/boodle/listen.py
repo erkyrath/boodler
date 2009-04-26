@@ -18,7 +18,6 @@ import sys
 import socket
 import select
 import os
-import fcntl
 import errno
 
 class SocketListener:
@@ -104,6 +103,9 @@ class StdinListener:
     in some other program. The hosting program can write event data in
     to Boodler.
 
+    NOTE: This does not currently work on Windows, because the fcntl
+    module is not available.
+
     StdinListener(handler) -- constructor
 
     Events will be sent to the handler function.
@@ -115,6 +117,10 @@ class StdinListener:
     """
     
     def __init__(self, handler):
+        # We import fcntl only when needed, because it's not available on
+        # all platforms.
+        import fcntl
+        
         self.handler = handler
         
         self.blockerrors = [ errno.EAGAIN, errno.EWOULDBLOCK ]
@@ -124,6 +130,7 @@ class StdinListener:
         fcntl.fcntl(sys.stdin, fcntl.F_SETFL, os.O_NONBLOCK | self.origflags)
 
     def close(self):
+        import fcntl
         fcntl.fcntl(sys.stdin, fcntl.F_SETFL, self.origflags)
 
     def poll(self):
