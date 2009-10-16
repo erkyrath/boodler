@@ -441,6 +441,8 @@ class Metadata:
 
         Returns all metadata entries with the given key. If there are none,
         this returns an empty list.
+
+        This maintains the order of entries loaded (or added).
         """
         return self.map.get(key, [])
 
@@ -568,6 +570,8 @@ class Resources:
         
         # Map of str -> Resource.
         self.map = {}
+        # List of keys, in order added
+        self.keylist = []
 
         if (fl is None):
             return
@@ -600,6 +604,7 @@ class Resources:
                         'duplicate resource: ' + key)
                 curdata = Resource(key)
                 self.map[key] = curdata
+                self.keylist.append(key)
                 continue
 
             if (not curdata):
@@ -636,8 +641,10 @@ class Resources:
         """keys() -> list of str
 
         Get the keys contained in this Resources object.
+
+        This maintains the order of resources loaded (or created).
         """
-        return list(self.map.keys())
+        return list(self.keylist)
 
     def resources(self):
         """resources() -> list of Resource
@@ -739,6 +746,7 @@ class Resources:
             raise ValueError(self.pkgname + ': resource already exists: ' + key)
         res = Resource(key)
         self.map[key] = res
+        self.keylist.append(key)
         return res
 
 class Resource:
