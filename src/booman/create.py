@@ -449,6 +449,7 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers,
     resources, metadata, import_record, context):
 
     # Add the dependencies to the metadata.
+    ### Avoid adding identical copies?
     ls = import_record.get( (pkgname, pkgvers) )
     if (ls):
         for (reqname, reqspec) in ls:

@@ -8,7 +8,7 @@ __all__ = ['agent', 'builtin', 'generator', 'listen', 'sample', 'stereo', 'music
 
 driver_list = [
     'file', 'stdout',
-    'oss', 'esd', 'alsa', 'pulse',
+    'oss', 'esd', 'alsa', 'pulse', 'jackb',
     'osxaq', 'macosx',
     'vorbis', 'shout', 'lame',
 ]
@@ -20,6 +20,7 @@ driver_map = {
     'esd': 'Enlightened Sound Daemon',
     'alsa': 'Advanced Linux Sound Architecture',
     'pulse': 'PulseAudio',
+    'jackb': 'JACK via BIO2Jack',
     'osxaq': 'MacOSX AudioQueue',
     'macosx': 'MacOSX CoreAudio',
     'vorbis': 'write Ogg Vorbis file',

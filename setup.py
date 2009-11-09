@@ -143,6 +143,13 @@ all_extensions = [
         available = check_header_available('pulse/simple.h'),
     ),
     
+    BooExtension('jackb',
+        libraries = ['bio2jack'],
+        available = check_all_available(
+            check_header_available('bio2jack.h'),
+            check_header_available('jack/jack.h')),
+    ),
+    
     BooExtension('vorbis',
         libraries = ['vorbis', 'vorbisenc'],
         available = check_all_available(
