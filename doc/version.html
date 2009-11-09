@@ -14,6 +14,11 @@
 <dt>2.0.### (###)</dt>
 <dd>
 <p>
+Added a JACKB driver: the JACK audio system, using the Bio2JACK library.
+(I'm not convinced that Bio2JACK is the right way to go, which is why
+I didn't call this one "JACK".)
+</p>
+<p>
 Adjusted the <code>listen</code> module to work on Windows, unless the
 --stdinevents option is used. (That option requires <code>fcntl</code>,
 which is not available on Windows.)

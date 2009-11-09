@@ -36,6 +36,7 @@ which is defined by a driver module:
     esd:    Enlightened Sound Daemon
     alsa:   Advanced Linux Sound Architecture
     pulse:  PulseAudio
+    jackb:  JACK via BIO2Jack
     osxaq:  MacOSX AudioQueue
     macosx: MacOSX CoreAudio
     vorbis: write Ogg Vorbis file

@@ -279,6 +279,25 @@ The default is 32768.</dd>
 <dd>Force the sound output to be written little-endian.</dd>
 </dl>
 
+<h4><code>jackb</code> -- JACK via BIO2Jack</h4>
+
+<p>
+<em>Yet again another</em> Unix sound framework. The <code>--device</code>
+option defines the name of the JACK client which will generate sound.
+The default is "boodler".
+</p>
+
+<dl>
+<dt><code>--define buffersize=<em>size</em></code></dt>
+<dd>Generate sound in chunks of <em>size</em> bytes.
+The default is 32768. (This is not the same as JACK's write
+buffer size.)</dd>
+<dt><code>--define end=big</code></dt>
+<dd>Force the sound output to be written big-endian.</dd>
+<dt><code>--define end=little</code></dt>
+<dd>Force the sound output to be written little-endian.</dd>
+</dl>
+
 <h4><code>osxaq</code> -- MacOSX AudioQueue</h4>
 
 <p>
