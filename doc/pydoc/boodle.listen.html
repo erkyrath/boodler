@@ -26,12 +26,11 @@ implement&nbsp;it&nbsp;that&nbsp;way.)</tt></p>
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="boodle.html">boodle</a><br>
 <a href="http://www.python.org/doc/current/library/errno.html">errno</a><br>
-</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/fcntl.html">fcntl</a><br>
-<a href="http://www.python.org/doc/current/library/os.html">os</a><br>
-</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/select.html">select</a><br>
-<a href="http://www.python.org/doc/current/library/socket.html">socket</a><br>
-</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/os.html">os</a><br>
+<a href="http://www.python.org/doc/current/library/select.html">select</a><br>
+</td><td width="25%" valign=top><a href="http://www.python.org/doc/current/library/socket.html">socket</a><br>
+<a href="http://www.python.org/doc/current/library/sys.html">sys</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -93,6 +92,9 @@ Data and other attributes defined here:<br>
 This&nbsp;is&nbsp;intended&nbsp;for&nbsp;when&nbsp;Boodler&nbsp;is&nbsp;running&nbsp;as&nbsp;a&nbsp;subordinate&nbsp;process<br>
 in&nbsp;some&nbsp;other&nbsp;program.&nbsp;The&nbsp;hosting&nbsp;program&nbsp;can&nbsp;write&nbsp;event&nbsp;data&nbsp;in<br>
 to&nbsp;Boodler.<br>
+&nbsp;<br>
+NOTE:&nbsp;This&nbsp;does&nbsp;not&nbsp;currently&nbsp;work&nbsp;on&nbsp;Windows,&nbsp;because&nbsp;the&nbsp;fcntl<br>
+module&nbsp;is&nbsp;not&nbsp;available.<br>
 &nbsp;<br>
 <a href="#StdinListener">StdinListener</a>(handler)&nbsp;--&nbsp;constructor<br>
 &nbsp;<br>
