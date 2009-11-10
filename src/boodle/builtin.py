@@ -180,10 +180,10 @@ class TestSoundAgent(agent.Agent):
         get the same File.
         """
         if (not TestSoundAgent.sound):
-            fl = cStringIO.StringIO()
+            fl = SafeStringIO()
             TestSoundAgent.makesound(fl)
-            dat = fl.getvalue() #### fails on python 2.6
-            fl.close()
+            dat = fl.getvalue()
+            fl.realclose()
             mfile = pinfo.MemFile(dat, '.aiff', 'TestSound')
             TestSoundAgent.sound = mfile
         return TestSoundAgent.sound
@@ -208,6 +208,32 @@ class TestSoundAgent(agent.Agent):
     def get_title(self):
         return 'Boodler test sound'
 
+class SafeStringIO:
+    """SafeStringIO: a silly wrapper for cStringIO.
+
+    This class exists to work around a feature, or from my point of view
+    a bug, in Python 2.6: the aifc module now closes the underlying file
+    when you close an aifc object you were writing. Since I want to write
+    an AIFF to a cStringIO, which evaporates when closed, this makes my
+    life unduly difficult.
+
+    To work around this, we create a wrapper that behaves exactly like
+    cStringIO except that the close() method does nothing. Its functionality
+    is moved to realclose().
+    """
+    def __init__(self):
+        self.fl = cStringIO.StringIO()
+        self.read = self.fl.read
+        self.write = self.fl.write
+        self.seek = self.fl.seek
+        self.tell = self.fl.tell
+        self.flush = self.fl.flush
+        self.getvalue = self.fl.getvalue
+    def close(self):
+        pass
+    def realclose(self):
+        self.fl.close()
+        self.fl = None
 
 # Late imports.
 
