@@ -182,7 +182,7 @@ class TestSoundAgent(agent.Agent):
         if (not TestSoundAgent.sound):
             fl = cStringIO.StringIO()
             TestSoundAgent.makesound(fl)
-            dat = fl.getvalue()
+            dat = fl.getvalue() #### fails on python 2.6
             fl.close()
             mfile = pinfo.MemFile(dat, '.aiff', 'TestSound')
             TestSoundAgent.sound = mfile

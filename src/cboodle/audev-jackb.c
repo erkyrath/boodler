@@ -94,13 +94,13 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
 
   jbufsize = JACK_GetBytesFreeSpace(deviceid);
   jbufframes = jbufsize / JACK_GetBytesPerOutputFrame(deviceid);
-  if (jbufframes >= rate) {
+  if (jbufframes/2 >= rate) {
     sleeptime.tv_sec = 1;
     sleeptime.tv_usec = 0;
   }
   else {
     sleeptime.tv_sec = 0;
-    sleeptime.tv_usec = jbufframes * 1000000 / rate;
+    sleeptime.tv_usec = (jbufframes/2) * 1000000 / rate;
   }
 
   if (verbose) {
@@ -204,14 +204,15 @@ int audev_loop(mix_func_t mixfunc, generate_func_t genfunc, void *rock)
     while (pos < sound_buffersize) {
       long written;
       long towrite = JACK_GetBytesFreeSpace(deviceid);
-      if (towrite > sound_buffersize-pos)
-        towrite = sound_buffersize-pos;
 
-      if (towrite < 64) {
+      if (towrite <= 0) {
         struct timeval tv = sleeptime;
         select(0, 0, 0, 0, &tv);
         continue;
       }
+
+      if (towrite > sound_buffersize-pos)
+        towrite = sound_buffersize-pos;
 
       written = JACK_Write(deviceid, (unsigned char *)rawbuffer + pos, towrite);
       if (written != towrite) {
