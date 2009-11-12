@@ -6,7 +6,7 @@
 */
 
 /*
-   For information about Bio2JACK, see <http://bio2jack.sourceforge.net/>.
+   For information about Bio2Jack, see <http://bio2jack.sourceforge.net/>.
    For information about the JACK Audio Connection Kit, see
    <http://jackaudio.org/>.
 */
@@ -30,6 +30,7 @@ static long sound_rate = 0; /* frames per second */
 static int sound_channels = 0;
 static long sound_buffersize = 0; /* bytes */
 static int sound_format = 0; /* 0 small-end, 1 big-end */
+static enum JACK_PORT_CONNECTION_MODE connect_mode = CONNECT_NONE;
 
 static long samplesperbuf = 0;
 static long framesperbuf = 0;
@@ -74,16 +75,26 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
       else if (!strcmp(opt->val, "little"))
         format = 0;
     }
+    else if (!strcmp(opt->key, "connect") && opt->val) {
+      if (!strcmp(opt->val, "none"))
+        connect_mode = CONNECT_NONE;
+      else if (!strcmp(opt->val, "output"))
+        connect_mode = CONNECT_OUTPUT;
+      else if (!strcmp(opt->val, "all"))
+        connect_mode = CONNECT_ALL;
+      else
+        printf("JackB connect parameter must be none, output, or all.\n");
+    }
     else if (!strcmp(opt->key, "buffersize") && opt->val) {
       fragsize = atol(opt->val);
     }
     else if (!strcmp(opt->key, "listdevices")) {
-      printf("PULSE driver is unable to list devices.\n");
+      printf("JackB driver is unable to list devices.\n");
     }
   }
 
   JACK_Init();
-  JACK_SetPortConnectionMode(CONNECT_NONE);
+  JACK_SetPortConnectionMode(connect_mode);
   JACK_SetClientName(devname);
 
   res = JACK_Open(&deviceid, 16, &rate, 2);
@@ -109,6 +120,20 @@ int audev_init_device(char *devname, long ratewanted, int verbose, extraopt_t *e
     printf("Sample rate is %ld fps.\n", rate);
     printf("Boodler buffer size is %d.\n", fragsize);
     printf("Bio2Jack buffer size is %ld (%ld frames).\n", jbufsize, jbufframes);
+    switch (connect_mode) {
+    case CONNECT_NONE:
+      printf("Bio2Jack connect_mode=CONNECT_NONE.\n");
+      break;
+    case CONNECT_OUTPUT:
+      printf("Bio2Jack connect_mode=CONNECT_OUTPUT.\n");
+      break;
+    case CONNECT_ALL:
+      printf("Bio2Jack connect_mode=CONNECT_ALL.\n");
+      break;
+    default:
+      printf("Bio2Jack connect_mode=???.\n");
+      break;
+    }
   }
 
   sound_rate = rate;

@@ -20,7 +20,7 @@ driver_map = {
     'esd': 'Enlightened Sound Daemon',
     'alsa': 'Advanced Linux Sound Architecture',
     'pulse': 'PulseAudio',
-    'jackb': 'JACK via BIO2Jack',
+    'jackb': 'JACK via Bio2Jack',
     'osxaq': 'MacOSX AudioQueue',
     'macosx': 'MacOSX CoreAudio',
     'vorbis': 'write Ogg Vorbis file',

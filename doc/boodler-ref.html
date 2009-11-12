@@ -279,7 +279,7 @@ The default is 32768.</dd>
 <dd>Force the sound output to be written little-endian.</dd>
 </dl>
 
-<h4><code>jackb</code> -- JACK via BIO2Jack</h4>
+<h4><code>jackb</code> -- JACK via Bio2Jack</h4>
 
 <p>
 <em>Yet again another</em> Unix sound framework. The <code>--device</code>
@@ -292,6 +292,17 @@ The default is "boodler".
 <dd>Generate sound in chunks of <em>size</em> bytes.
 The default is 32768. (This is not the same as JACK's write
 buffer size.)</dd>
+<dt><code>--define connect=none</code></dt>
+<dd>Do not connect the JACK client to any output devices.
+(Default.)</dd>
+<dt><code>--define connect=output</code></dt>
+<dd>Connect the JACK client to the first two output channels found.
+(This is a Bio2Jack option; I'm not sure how well it works.)</dd>
+<dt><code>--define connect=all</code></dt>
+<dd>Connect the JACK client to every output channel.
+(This may cause problems if you have, say, a MIDI JACK device.
+Again, it is included because Bio2Jack offers it, not because
+it is a good idea.)</dd>
 <dt><code>--define end=big</code></dt>
 <dd>Force the sound output to be written big-endian.</dd>
 <dt><code>--define end=little</code></dt>
