@@ -464,17 +464,35 @@ def resolve_dependency_metadata(dirname, pkgname, pkgvers,
     resources, metadata, import_record, context):
 
     # Add the dependencies to the metadata.
-    ### Avoid adding identical copies?
     ls = import_record.get( (pkgname, pkgvers) )
     if (ls):
+        entls = []
         for (reqname, reqspec) in ls:
             if (reqspec is None):
-                metadata.add('boodler.requires', reqname)
+                entls.append( ('boodler.requires', reqname) )
             elif (isinstance(reqspec, version.VersionSpec)):
-                metadata.add('boodler.requires', reqname+' '+str(reqspec))
+                entls.append( ('boodler.requires', reqname+' '+str(reqspec)) )
             elif (isinstance(reqspec, version.VersionNumber)):
-                metadata.add('boodler.requires_exact', reqname+' '+str(reqspec))
+                entls.append( ('boodler.requires_exact', reqname+' '+str(reqspec)) )
+        for (key, val) in entls:
+            if (val in metadata.get_all(key)):
+                # This exact line is already present.
+                warning(dirname, 'skipping dependency which already exists in Metadata: "' + key + ': ' + val + '"')
+                continue
+            metadata.add(key, val)
 
+    # Warn about packages which appear in the dependencies twice.
+    dic = {}
+    for val in (metadata.get_all('boodler.requires') + metadata.get_all('boodler.requires_exact')):
+        ls = val.split()
+        if (ls):
+            pinfo.dict_accumulate(dic, ls[0], True)
+    for reqname in dic.keys():
+        val = len(dic[reqname])
+        if (val > 1):
+            warning(dirname, 'package dependency appears in ' + str(val)
+                + ' different forms: ' + reqname)
+            
     revmap = {}
         
     for key in context.agents:
