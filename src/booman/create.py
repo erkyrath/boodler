@@ -48,8 +48,6 @@ def examine_directory(loader, dirname, destname=None):
             package.
         - a Metadata object.
         - a Resources object.
-
-    ### ignore .pyc and ~ files in contents? Or warn about them?
     """
     
     # Read in the source Metadata file (which may be missing or
@@ -243,7 +241,24 @@ def examine_directory(loader, dirname, destname=None):
             if ((not mods) and (file in [pload.Filename_Metadata, pload.Filename_Resources])):
                 # Ignore Metadata and Resources entirely
                 continue
-                
+
+            filelow = file.lower()
+            if (filelow.endswith('.pyc')):
+                # Package directories always wind up with .pyc files;
+                # silently ignore
+                continue
+
+            if (filelow.endswith('.pyo')
+                or filelow.endswith('.so')
+                or filelow.endswith('.o')):
+                # Noisily ignore any code file that is not transparent
+                warning(dirname, 'skipping file which looks like compiled code: ' + file)
+                continue
+
+            if (filelow.endswith('~')):
+                # Print a warning, but allow it
+                warning(dirname, 'file looks temporary: ' + file)
+
             # Create the real filename (readable in dirname)
             realfilename = os.path.join(dirname, *(mods + [file]))
             # Create the canonical (forward-slash) filename.
