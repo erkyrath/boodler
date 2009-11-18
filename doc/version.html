@@ -11,7 +11,7 @@
 
 <dl>
 
-<dt>2.0.### (###)</dt>
+<dt>2.0.3 (Nov 18, 2009)</dt>
 <dd>
 <p>
 Fixed, or worked around, a bug that prevented --testsound from working
@@ -19,7 +19,9 @@ on Python 2.6.
 </p>
 <p>
 Adjusted the package creation tool to skip .pyc files, and anything that
-looks like compiled code.
+looks like compiled code. It will now also skip redundant package
+requirements, and warn about any package which is required in two different
+ways.
 </p>
 <p>
 Added a JACKB driver: the JACK audio system, using the Bio2Jack library.
