@@ -30,9 +30,14 @@ import sys
 import os.path
 import types
 import re
-import sets
 import codecs
 import cStringIO
+
+try:
+    set
+except:
+    import sets
+    set = sets.Set
 
 from boopak import version
 
@@ -81,7 +86,7 @@ class PackageInfo:
         self.resources = resources
         self.resource_tree = None
         self.external = external
-        self.dependencies = sets.Set()
+        self.dependencies = set()
         self.imported_pkg_specs = {}
 
     def __repr__(self):

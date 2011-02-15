@@ -6,7 +6,12 @@
 
 import StringIO
 import unittest
-import sets
+
+try:
+    set
+except:
+    import sets
+    set = sets.Set
 
 from boopak import version
 from boopak import pinfo
@@ -388,15 +393,15 @@ one: eleven
             ('x.y.z', '1.1.C'),
             ('x.y.z', '1.1.CU'),
         ]
-        set = sets.Set()
+        st = set()
 
         for (pkgname, vers) in ls:
             vers = version.VersionNumber(vers)
             val = encode_package_name(pkgname, vers)
             self.assert_(pinfo.ident_name_regexp.match(val))
-            set.add(val)
+            st.add(val)
 
-        self.assertEqual(len(set), len(ls))
+        self.assertEqual(len(st), len(ls))
 
     def test_build_safe_pathname(self):
         invalid_list = [

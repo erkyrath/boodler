@@ -5,11 +5,16 @@
 # See the LGPL document, or the above URL, for details.
 
 import sys
-import sets
 import os.path
 import zipfile
 import time
 import codecs
+
+try:
+    set
+except:
+    import sets
+    set = sets.Set
 
 from booman import token
 
@@ -314,8 +319,8 @@ can be deleted.
 
         (forward, backward, bad) = frame.loader.find_all_dependencies()
 
-        obsolete = sets.Set()
-        found_ok = sets.Set()
+        obsolete = set()
+        found_ok = set()
         to_check = frame.loader.list_all_current_packages()
         for key in to_check:
             found_ok.add(key)
@@ -395,7 +400,7 @@ one you named.
 
         (forward, backward, bad) = frame.loader.find_all_dependencies()
 
-        found_ok = sets.Set()
+        found_ok = set()
         to_check = [pkg.key]
         found_ok.add(pkg.key)
 

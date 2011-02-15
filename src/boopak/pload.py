@@ -17,7 +17,12 @@ import sys
 import os.path
 import imp
 import types
-import sets
+
+try:
+    set
+except:
+    import sets
+    set = sets.Set
 
 from boopak import version
 
@@ -679,7 +684,7 @@ class PackageLoader:
         package.
         """
         
-        found_ok = sets.Set()
+        found_ok = set()
         not_found = {}
         errors = 0
 

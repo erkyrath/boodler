@@ -8,7 +8,12 @@ import os.path
 import types
 import unittest
 import tempfile
-import sets
+
+try:
+    set
+except:
+    import sets
+    set = sets.Set
 
 from boopak import pload
 from boopak import collect
@@ -580,7 +585,7 @@ else two
 
     def packages_to_set(self, ls):
         ls = [ (name, version.VersionNumber(vers)) for (name, vers) in ls ]
-        return sets.Set(ls)
+        return set(ls)
 
     def subtest_dependencies(self):
         pkg21 = self.loader.load('depend.two', '1')
