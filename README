@@ -1,5 +1,5 @@
 Boodler: a programmable soundscape tool
-   Version 2.0.3
+   Version 2.0.4
 
 Designed by Andrew Plotkin <erkyrath@eblong.com>
    <http://boodler.org/>
@@ -156,13 +156,13 @@ Library General Public License (the LGPL). To be precise, the
 workhorse parts of Boodler -- the boodle and boopak Python packages --
 form a library, which is licensed under the LGPL.
 
-The Python program boodler.py is simply a shell that starts up the
-Boodler library. I have released boodler.py into the public domain.
+The Python program boodler is simply a shell that starts up the
+Boodler library. I have released this program into the public domain.
 You may do with it as you like. However, understand that if you write
 a program that is intended to link in the Boodler library (regardless
-of whether you use boodler.py), then your program is a work that uses
-the library, and must behave appropriately. See the LGPL document for
-details.
+of whether you use the boodler script), then your program is a work that
+uses the library, and must behave appropriately. See the LGPL document
+for details.
 
 One detail: the C source code of the cboodle extensions is
 dual-licensed. You may use it under the terms of the LGPL or the GPL,
