@@ -4,7 +4,7 @@
 # Copyright 2007-9 by Andrew Plotkin <erkyrath@eblong.com>
 # For more information, see <http://boodler.org/>
 #
-# This Python script ("boodle-mgr.py") and the Python modules that it
+# This Python script ("boodle-mgr") and the Python modules that it
 # uses (boodle, boopak, and booman) are licensed under the GNU
 # Library General Public License (LGPL).
 #
@@ -19,7 +19,7 @@ from optparse import OptionParser
 
 from booman import frame
 
-# same as in boodler.py
+# same as in boodler
 if ('darwin' in sys.platform.lower()):
     Default_Relative_Data_Dir = 'Library/Application Support/Boodler'
 else:
@@ -44,7 +44,7 @@ parser.add_option('--import', action='store_true', dest='importing_ok',
 if (options.force):
     frame.set_force_option()
 
-# same as in boodler.py
+# same as in boodler
 basedir = options.basedir
 if (not basedir):
     basedir = os.environ.get('BOODLER_DATA')

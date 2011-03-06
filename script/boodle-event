@@ -4,10 +4,10 @@
 # Designed by Andrew Plotkin <erkyrath@eblong.com>
 # For more information, see <http://boodler.org/>
 #
-# This Python script ("boodle-event.py") is in the public domain. 
+# This Python script ("boodle-event") is in the public domain. 
 
-"""boodle-event.py: send events to Boodler
-usage: boodle-event.py [--hostname host] [--port port] evname [ evdata ... ]
+"""boodle-event: send events to Boodler
+usage: boodle-event [--hostname host] [--port port] evname [ evdata ... ]
 
 Send an event to a listening Boodler process.
 

@@ -5,7 +5,7 @@ Sample ices configuration file for use with Boodler.
 
 To use this, you would run:
 
-  python boodler.py -o stdout -Dend=little AGENT | ices ices-boodler.xml
+  boodler -o stdout -Dend=little AGENT | ices ices-boodler.xml
 
 For full documentation of this config file, see
   http://icecast.org/docs/ices-2.0.0/

@@ -101,7 +101,7 @@ class QuitCmd(Command):
     synonyms = ['.', 'q']
     description = 'Exit Boodle-Manager'
     help = """
-Leave the interactive prompt and shut down boodle-mgr.py.
+Leave the interactive prompt and shut down boodle-mgr.
 """
 
     def perform(self, source):
@@ -600,9 +600,9 @@ class ReloadCmd(Command):
     name = 'reload'
     description = 'Force the manager to re-scan the collection directory.'
     help = """
-Force boodle-mgr.py to re-scan your collection. You would only need to do
-this if some other process (or another copy of boodle-mgr.py) modified your
-collection directory while boodle-mgr.py was running.
+Force boodle-mgr to re-scan your collection. You would only need to do
+this if some other process (or another copy of boodle-mgr) modified your
+collection directory while boodle-mgr was running.
 """
 
     def perform(self, source):
@@ -653,7 +653,7 @@ class LastErrorCmd(Command):
     description = 'Display a debugging trace of the most recent error'
     help = """
 Display a full Python stack trace of the last error that occurred. This
-exists to aid debugging of boodle-mgr.py.
+exists to aid debugging of boodle-mgr.
 """
 
     def perform(self, source):
