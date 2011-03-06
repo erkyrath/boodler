@@ -2,27 +2,27 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
 <head>
-<title>Boodler: The boodle-event.py Reference Manual</title>
+<title>Boodler: The boodle-event Reference Manual</title>
 <link rel="stylesheet" href="doc.css" type="text/css" />
 </head>
 <body>
 
-<h1>Boodler: The <code>boodle-event.py</code> Reference Manual</h1>
+<h1>Boodler: The <code>boodle-event</code> Reference Manual</h1>
 
 <p>
-The <code>boodle-event.py</code> script sends event messages to a listening Boodler process.
+The <code>boodle-event</code> script sends event messages to a listening Boodler process.
 </p>
 
 <pre>
-boodle-event.py [--hostname host] [--port port] evname [ evdata ... ]
+boodle-event [--hostname host] [--port port] evname [ evdata ... ]
 </pre>
 
 <p>
-Some soundscapes can receive events, or messages, sent by other programs. The <a href="boodler-ref.html">boodler.py</a> script listens on a network socket for these messages if you give the <code>--listen</code> argument. (If you do not, Boodler does <em>not</em> listen for events, and event-receiving agents will not work. This is the default behavior for reasons of security paranoia.)
+Some soundscapes can receive events, or messages, sent by other programs. The <a href="boodler-ref.html">boodler</a> script listens on a network socket for these messages if you give the <code>--listen</code> argument. (If you do not, Boodler does <em>not</em> listen for events, and event-receiving agents will not work. This is the default behavior for reasons of security paranoia.)
 </p>
 
 <pre>
-boomsg.py go
+boodle-event go
 </pre>
 
 <p>
@@ -30,7 +30,7 @@ This sends a simple message, <code>go</code>, to a listening Boodler process -- 
 </p>
 
 <pre>
-boomsg.py --hostname machine.addr.net go
+boodle-event --hostname machine.addr.net go
 </pre>
 
 <p>
@@ -38,7 +38,7 @@ You can also send a more complex message, with several words:
 </p>
 
 <pre>
-boomsg.py go 5.47 cheese
+boodle-event go 5.47 cheese
 </pre>
 
 <p>
@@ -50,7 +50,7 @@ The effect of an event depends on what agent has been posted to receive it. For 
 <dl>
 
 <dt><code>--hostname <em>host</em></code></dt>
-<dd>Specify the machine to send the event to. By default, the event goes to the same machine that <code>boodle-event.py</code> runs on.</dd>
+<dd>Specify the machine to send the event to. By default, the event goes to the same machine that <code>boodle-event</code> runs on.</dd>
 
 <dt><code>--port <em>port/pipe</em></code></dt>
 <dd>Send to the given port number (instead of the default port 31863). The port may also be an absolute pathname (beginning with "/"), in which case Boodler uses a Unix domain socket (on the same machine) instead of a network socket.</dd>

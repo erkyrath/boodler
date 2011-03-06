@@ -63,12 +63,12 @@ If you list the source directory, you will see the following arrangement:
 <dt>./setup.cfg</dt>
 <dd>If you want to modify the installation process, you can put changes
 here.</dd>
-<dt>./script/<a href="boodler-ref.html">boodler.py</a></dt>
+<dt>./script/<a href="boodler-ref.html">boodler</a></dt>
 <dd>The Boodler program itself. This Python script starts up the Boodler
 engine.</dd>
-<dt>./script/<a href="boodle-mgr-ref.html">boodle-mgr.py</a></dt>
+<dt>./script/<a href="boodle-mgr-ref.html">boodle-mgr</a></dt>
 <dd>A script for installing and managing Boodler soundscape components.</dd>
-<dt>./script/<a href="boodle-event-ref.html">boodle-event.py</a></dt>
+<dt>./script/<a href="boodle-event-ref.html">boodle-event</a></dt>
 <dd>A simple script for sending network events to Boodler.</dd>
 <dt>./src/...</dt>
 <dd>The source code for Boodler. This includes Python code, and also
@@ -119,7 +119,7 @@ Try this command:
 </p>
 
 <pre>
-boodler.py --testsound
+boodler --testsound
 </pre>
 
 <p>
@@ -152,14 +152,14 @@ that match your version of Python.</li>
 
 <li>
 You install successfully, but you get the error
-"boodler.py: Command not found."
+"boodler: Command not found."
 
 <ul>
 <li>
 You probably don't have the Python script directory in your 
-<code>PATH</code>. Try <code>/usr/local/bin/boodler.py</code>, or
+<code>PATH</code>. Try <code>/usr/local/bin/boodler</code>, or
 (on the Mac)
-<code>/System/Library/Frameworks/Python.framework/Versions/Current/bin/boodler.py</code>.</li>
+<code>/System/Library/Frameworks/Python.framework/Versions/Current/bin/boodler</code>.</li>
 <li>
 If you think you added one of those directories to your <code>PATH</code>,
 type <code>rehash</code>.</li>
@@ -174,7 +174,7 @@ The script aborts with the exception
 <ul>
 <li>
 The default output driver could not be built on your system. Type
-<code>boodler.py --list-drivers</code> to see a list, and then
+<code>boodler --list-drivers</code> to see a list, and then
 try adding <code>-o <em>driver</em></code> to your Boodler command
 line.
 </li>
@@ -205,7 +205,7 @@ in a different location. You can use the <code>--device</code> argument
 to indicate the correct location:
 
 <pre>
-boodler.py --device /dev/whatever --testsound
+boodler --device /dev/whatever --testsound
 </pre>
 </li>
 </ul>
@@ -256,7 +256,7 @@ of less accurate volume fading.</li>
 using the <code>--define buffercount=<em>count</em></code> option.
 The default is 6; increasing it to 12 or 16 should help:
 <pre>
-boodler.py --define buffercount=12 --testsound
+boodler --define buffercount=12 --testsound
 </pre>
 </li>
 <li>Get a beefier computer.</li>

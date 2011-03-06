@@ -2,19 +2,19 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
 <head>
-<title>Boodler: The boodler.py Reference Manual</title>
+<title>Boodler: The boodler Reference Manual</title>
 <link rel="stylesheet" href="doc.css" type="text/css" />
 </head>
 <body>
 
-<h1>Boodler: The <code>boodler.py</code> Reference Manual</h1>
+<h1>Boodler: The <code>boodler</code> Reference Manual</h1>
 
 <p>
-The <code>boodler.py</code> script plays soundscapes from your package collection. (To install soundscapes and data in your collection, see <a href="boodle-mgr-ref.html">boodle-mgr.py</a>.)
+The <code>boodler</code> script plays soundscapes from your package collection. (To install soundscapes and data in your collection, see <a href="boodle-mgr-ref.html">boodle-mgr</a>.)
 </p>
 
 <pre>
-boodler.py [ options ] package/Agent [ data ... ]
+boodler [ options ] package/Agent [ data ... ]
 </pre>
 
 <p>
@@ -34,7 +34,7 @@ This special form:
 </p>
 
 <pre>
-boodler.py --testsound
+boodler --testsound
 </pre>
 
 <p>
@@ -42,7 +42,7 @@ boodler.py --testsound
 </p>
 
 <p>
-Type <code>boodler.py --help</code> or <code>boodler.py -h</code> for a complete list of options.
+Type <code>boodler --help</code> or <code>boodler -h</code> for a complete list of options.
 </p>
 
 <h2>Options that control sound generation</h2>
@@ -428,7 +428,7 @@ Boodler soundscape arguments are specified in a slightly addled S-expression syn
 <h3>A word about parsing</h3>
 
 <p>
-The first thing to remember is that Boodler wants to parse all of the argument data itself. (We're not talking about the arguments to <code>boodler.py</code> itself -- those begin with dashes, and are handled in the usual Unix way. We're talking about the soundscape and the options passed to <em>it</em>.)
+The first thing to remember is that Boodler wants to parse all of the argument data itself. (We're not talking about the arguments to <code>boodler</code> itself -- those begin with dashes, and are handled in the usual Unix way. We're talking about the soundscape and the options passed to <em>it</em>.)
 </p>
 
 <p>
@@ -436,9 +436,9 @@ Unix command-line tools usually get their arguments pre-split into words, but Bo
 </p>
 
 <pre>
-boodler.py pkg/Agent arg
-boodler.py " pkg/Agent arg "
-boodler.py pkg/Agent  "  "  arg
+boodler pkg/Agent arg
+boodler " pkg/Agent arg "
+boodler pkg/Agent  "  "  arg
 </pre>
 
 <p>
@@ -496,7 +496,7 @@ Boodler interprets its soundscape and following arguments as a single S-expressi
 </p>
 
 <pre>
-boodler.py org.boodler.play/OneSound 
+boodler org.boodler.play/OneSound 
     org.boodler.old.clock/clock_cuckoo pitch=1.5 pan=1
 </pre>
 

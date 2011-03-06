@@ -161,7 +161,7 @@ The <code>post_listener_agent()</code>, <code>listen()</code>, and <code>send_ev
 <h2>External events</h2>
 
 <p>
-Boodler starts to get really interesting when it reacts to events from the outside world. This is the job of the <code><a href="boodle-event-ref.html">boodle-event.py</a></code> script.
+Boodler starts to get really interesting when it reacts to events from the outside world. This is the job of the <code><a href="boodle-event-ref.html">boodle-event</a></code> script.
 </p>
 
 <p>
@@ -198,7 +198,7 @@ Now that we've covered that, let's start up this soundscape. We need an extra op
 </p>
 
 <pre>
-boodler.py --listen --external bootest com.example.bootest/Example
+boodler --listen --external bootest com.example.bootest/Example
 </pre>
 
 <p>
@@ -218,19 +218,19 @@ Leave Boodler running. From a different command window, do this:
 </p>
 
 <pre>
-boodle-event.py go
+boodle-event go
 </pre>
 
 <p>
-(If you specified a different <code>--port</code> for <code>boodler.py</code>, use the same <code>--port</code> option for <code>boodle-event.py</code>. If you are running <code>boodle-event.py</code> on a different machine, use the <code>--hostname</code> option. The details are on the <code><a href="boodle-event-ref.html">boodle-event.py</a></code> reference page.)
+(If you specified a different <code>--port</code> for <code>boodler</code>, use the same <code>--port</code> option for <code>boodle-event</code>. If you are running <code>boodle-event</code> on a different machine, use the <code>--hostname</code> option. The details are on the <code><a href="boodle-event-ref.html">boodle-event</a></code> reference page.)
 </p>
 
 <p>
-(If you see a "Connection refused" error, you forgot the <code>--listen</code> argument to <code>boodler.py</code>. Or else it isn't running.)
+(If you see a "Connection refused" error, you forgot the <code>--listen</code> argument to <code>boodler</code>. Or else it isn't running.)
 </p>
 
 <p>
-<code>boodle-event.py</code> lets you send any message to Boodler's root channel. When you send the "go" event, the listening <code>Example</code> will hear it and play its plink. You can send the event repeatedly, if that amuses you.
+<code>boodle-event</code> lets you send any message to Boodler's root channel. When you send the "go" event, the listening <code>Example</code> will hear it and play its plink. You can send the event repeatedly, if that amuses you.
 </p>
 
 <p>
@@ -238,7 +238,7 @@ For other examples of listening soundscapes, download the <code>org.boodle.liste
 </p>
 
 <p>
-A final note: You don't actually have to use <code>boodle-event.py</code> to send events. The protocol is simply a direct TCP/IP connection to port 31863. (<code>telnet</code> will work fine.) Each (nonempty) line sent is an event. The line is broken up into strings at whitespace; the resulting tuple becomes the event. You can keep the connection open, and send many messages in a row, if you want. Unix, Mac, or DOS linebreaks will all work.
+A final note: You don't actually have to use <code>boodle-event</code> to send events. The protocol is simply a direct TCP/IP connection to port 31863. (<code>telnet</code> will work fine.) Each (nonempty) line sent is an event. The line is broken up into strings at whitespace; the resulting tuple becomes the event. You can keep the connection open, and send many messages in a row, if you want. Unix, Mac, or DOS linebreaks will all work.
 </p>
 
 <h2>Events with arguments</h2>
@@ -269,7 +269,7 @@ When you run this, it will listen for events of the form "sound 1" through "soun
 </p>
 
 <pre>
-boodle-event.py sound 1
+boodle-event sound 1
 </pre>
 
 <p>
@@ -289,7 +289,7 @@ The extra values in the event turn up as extra arguments to the <code>receive()<
 </p>
 
 <p>
-Not only does Boodler fail to check the argument types, it fails to check the <em>number</em> of arguments. If you run <code>boodle-event.py</code> with too few or too many arguments, Boodler will call your <code>receive()</code> method with too few or too many arguments, and again you'll see a Python error.
+Not only does Boodler fail to check the argument types, it fails to check the <em>number</em> of arguments. If you run <code>boodle-event</code> with too few or too many arguments, Boodler will call your <code>receive()</code> method with too few or too many arguments, and again you'll see a Python error.
 </p>
 
 <p>
@@ -365,7 +365,7 @@ If you run this straight up:
 </p>
 
 <pre>
-boodler.py --external bootest com.example.bootest/Example
+boodler --external bootest com.example.bootest/Example
 </pre>
 
 <p>
@@ -373,7 +373,7 @@ boodler.py --external bootest com.example.bootest/Example
 </p>
 
 <pre>
-boodler.py --prop sound=2 --external bootest com.example.bootest/Example
+boodler --prop sound=2 --external bootest com.example.bootest/Example
 </pre>
 
 <p>

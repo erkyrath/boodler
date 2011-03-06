@@ -14,7 +14,7 @@ First, make sure you have downloaded Boodler and installed it. (See <a href="ins
 </p>
 
 <pre>
-boodler.py --testsound
+boodler --testsound
 </pre>
 
 <p>
@@ -40,11 +40,11 @@ A package can contain sound samples, soundscapes, or both. But to facilitate sha
 </p>
 
 <p>
-You download packages using the <code>boodle-mgr.py</code> script. To begin with, try this:
+You download packages using the <code>boodle-mgr</code> script. To begin with, try this:
 </p>
 
 <pre>
-boodle-mgr.py install http://boodler.org/lib/org.boodler.old.crow.1.0.boop
+boodle-mgr install http://boodler.org/lib/org.boodler.old.crow.1.0.boop
 </pre>
 
 <p>
@@ -70,7 +70,7 @@ Now install the soundscape which uses these crow samples:
 </p>
 
 <pre>
-boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.crows.1.0.boop
+boodle-mgr install http://boodler.org/lib/com.eblong.zarf.crows.1.0.boop
 </pre>
 
 <p>
@@ -78,11 +78,11 @@ The <code>com.eblong.zarf.crows</code> package contains two soundscapes. Here's 
 </p>
 
 <pre>
-boodler.py com.eblong.zarf.crows/ParliamentOfCrows
+boodler com.eblong.zarf.crows/ParliamentOfCrows
 </pre>
 
 <p>
-You always run <code>boodler.py</code> by naming a package, followed by a slash, followed by the name of a soundscape in that package. You should hear a continual (and non-repeating!) stream of squawking noises. The soundscape will continue to play until you kill it, by hitting ctrl-C.
+You always run <code>boodler</code> by naming a package, followed by a slash, followed by the name of a soundscape in that package. You should hear a continual (and non-repeating!) stream of squawking noises. The soundscape will continue to play until you kill it, by hitting ctrl-C.
 </p>
 
 <p>
@@ -92,11 +92,11 @@ If you see a "package directory does not exist" error, then you didn't install o
 <h2>Managing your packages</h2>
 
 <p>
-The <code>boodle-mgr.py</code> script can do much more than download packages. It is a complete toolkit for managing your package collection. Try this:
+The <code>boodle-mgr</code> script can do much more than download packages. It is a complete toolkit for managing your package collection. Try this:
 </p>
 
 <pre>
-boodle-mgr.py list
+boodle-mgr list
 </pre>
 
 <p>
@@ -110,7 +110,7 @@ The "list" command shows all the packages you have installed. You should see:
 </pre>
 
 <p>
-See the <a href="boodle-mgr-ref.html"><code>boodle-mgr.py</code> reference</a> for complete documentation of <code>boodle-mgr.py</code>. But it's worth mentioning a few tricks here:
+See the <a href="boodle-mgr-ref.html"><code>boodle-mgr</code> reference</a> for complete documentation of <code>boodle-mgr</code>. But it's worth mentioning a few tricks here:
 </p>
 
 <p>
@@ -118,7 +118,7 @@ The "contents" command shows the contents of an installed package:
 </p>
 
 <pre>
-boodle-mgr.py contents com.eblong.zarf.crows
+boodle-mgr contents com.eblong.zarf.crows
 </pre>
 
 <p>
@@ -133,7 +133,7 @@ Resources: 2
 </pre>
 
 <p>
-The "describe" command shows metadata about a package: title, author, licensing, what packages it requires. The "delete" command, unsurprisingly, deletes a package. The "help" command lists all the available <code>boodle-mgr.py</code> commands.
+The "describe" command shows metadata about a package: title, author, licensing, what packages it requires. The "delete" command, unsurprisingly, deletes a package. The "help" command lists all the available <code>boodle-mgr</code> commands.
 </p>
 
 <p>
@@ -141,11 +141,11 @@ You can install a ".boop" file that you have saved locally, as well as installin
 </p>
 
 <pre>
-boodle-mgr.py install org.boodler.old.crow.1.0.boop
+boodle-mgr install org.boodler.old.crow.1.0.boop
 </pre>
 
 <p>
-Finally, <code>boodle-mgr.py</code> can be run as an interactive command-line tool. If you simply type <code>boodle-mgr.py</code> by itself, you will see a prompt, and you can type any of the above commands:
+Finally, <code>boodle-mgr</code> can be run as an interactive command-line tool. If you simply type <code>boodle-mgr</code> by itself, you will see a prompt, and you can type any of the above commands:
 </p>
 
 <pre>
@@ -186,8 +186,8 @@ Here's an example. Install these two packages:
 </p>
 
 <pre>
-boodle-mgr.py install http://boodler.org/lib/org.boodler.old.clock.1.0.boop
-boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.clock.1.0.boop
+boodle-mgr install http://boodler.org/lib/org.boodler.old.clock.1.0.boop
+boodle-mgr install http://boodler.org/lib/com.eblong.zarf.clock.1.0.boop
 </pre>
 
 <p>
@@ -195,7 +195,7 @@ boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.clock.1.0.boop
 </p>
 
 <pre>
-boodler.py com.eblong.zarf.clock/Tick
+boodler com.eblong.zarf.clock/Tick
 </pre>
 
 <p>
@@ -203,8 +203,8 @@ But this soundscape also accepts a numeric argument, which modifies the speed of
 </p>
 
 <pre>
-boodler.py com.eblong.zarf.clock/Tick 1.3
-boodler.py com.eblong.zarf.clock/Tick 0.7
+boodler com.eblong.zarf.clock/Tick 1.3
+boodler com.eblong.zarf.clock/Tick 0.7
 </pre>
 
 <p>
@@ -220,7 +220,7 @@ In fact the <code>Tick</code> soundscape accepts <em>two</em> options. The secon
 </p>
 
 <pre>
-boodler.py com.eblong.zarf.clock/Tick 1 0.75
+boodler com.eblong.zarf.clock/Tick 1 0.75
 </pre>
 
 <p>
@@ -232,8 +232,8 @@ You may notice that a negative value, for the left channel, doesn't actually wor
 </p>
 
 <pre>
-boodler.py -- com.eblong.zarf.clock/Tick 1 -0.75
-boodler.py "com.eblong.zarf.clock/Tick 1 -0.75"
+boodler -- com.eblong.zarf.clock/Tick 1 -0.75
+boodler "com.eblong.zarf.clock/Tick 1 -0.75"
 </pre>
 
 <p>
@@ -245,7 +245,7 @@ What if you want to specify just the pan value, rather than both numbers? You ca
 </p>
 
 <pre>
-boodler.py com.eblong.zarf.clock/Tick pan=0.75
+boodler com.eblong.zarf.clock/Tick pan=0.75
 </pre>
 
 <p>
@@ -253,7 +253,7 @@ This gives a rightward stereo shift, as described above, but leaves the speed at
 </p>
 
 <pre>
-boodler.py com.eblong.zarf.clock/Tick pitch=0.75
+boodler com.eblong.zarf.clock/Tick pitch=0.75
 </pre>
 
 <p>
@@ -261,7 +261,7 @@ boodler.py com.eblong.zarf.clock/Tick pitch=0.75
 </p>
 
 <p>
-<em>(How do you know what options a soundscape takes, and what they're named? The <code>Tick</code> soundscape accepts <code>pitch</code> and <code>pan</code>, but other soundscapes want different arguments, or none. Unfortunately, there is no current way to do this, except for examining the source code in your package collection. A future version of <code>boodle-mgr.py</code> will allow you to examine a soundscape and list its options.)</em>
+<em>(How do you know what options a soundscape takes, and what they're named? The <code>Tick</code> soundscape accepts <code>pitch</code> and <code>pan</code>, but other soundscapes want different arguments, or none. Unfortunately, there is no current way to do this, except for examining the source code in your package collection. A future version of <code>boodle-mgr</code> will allow you to examine a soundscape and list its options.)</em>
 </p>
 
 <h2>Passing sound arguments to soundscapes</h2>
@@ -271,7 +271,7 @@ We've seen soundscapes make use of sounds from other packages. Some soundscapes 
 </p>
 
 <pre>
-boodle-mgr.py install http://boodler.org/lib/org.boodler.play.1.0.boop
+boodle-mgr install http://boodler.org/lib/org.boodler.play.1.0.boop
 </pre>
 
 <p>
@@ -279,7 +279,7 @@ Then try:
 </p>
 
 <pre>
-boodler.py org.boodler.play/OneSound org.boodler.old.clock/clock_cuckoo
+boodler org.boodler.play/OneSound org.boodler.old.clock/clock_cuckoo
 </pre>
 
 <p>
@@ -287,11 +287,11 @@ This plays a "cuckoo" sample from the <code>org.boodler.old.clock</code> package
 </p>
 
 <p>
-The <code>OneSound</code> soundscape can play any sound file from any Boodler package you have installed. Use the "contents" command (in <code>boodle-mgr.py</code>) to list the packages you have, and explore the sounds that are available. <code>OneSound</code> also has <code>pitch</code>, <code>volume</code>, and <code>pan</code> arguments, so you can alter the sounds as you play them:
+The <code>OneSound</code> soundscape can play any sound file from any Boodler package you have installed. Use the "contents" command (in <code>boodle-mgr</code>) to list the packages you have, and explore the sounds that are available. <code>OneSound</code> also has <code>pitch</code>, <code>volume</code>, and <code>pan</code> arguments, so you can alter the sounds as you play them:
 </p>
 
 <pre>
-boodler.py org.boodler.play/OneSound org.boodler.old.clock/clock_cuckoo pitch=1.5 pan=1
+boodler org.boodler.play/OneSound org.boodler.old.clock/clock_cuckoo pitch=1.5 pan=1
 </pre>
 
 <p>
@@ -299,7 +299,7 @@ The <code>org.boodler.play</code> package has several tools for playing particul
 </p>
 
 <pre>
-boodler.py org.boodler.play/SoundSequence org.boodler.old.clock/clock_tick
+boodler org.boodler.play/SoundSequence org.boodler.old.clock/clock_tick
     org.boodler.old.clock/clock_chime org.boodler.old.clock/clock_cuckoo
 </pre>
 
@@ -312,7 +312,7 @@ boodler.py org.boodler.play/SoundSequence org.boodler.old.clock/clock_tick
 </p>
 
 <pre>
-boodler.py org.boodler.play/RepeatSound org.boodler.old.clock/clock_tick
+boodler org.boodler.play/RepeatSound org.boodler.old.clock/clock_tick
 </pre>
 
 <p>
@@ -330,11 +330,11 @@ Install these five packages. (You may have already installed the crows from the 
 </p>
 
 <pre>
-boodle-mgr.py install http://boodler.org/lib/org.boodler.old.crow.1.0.boop
-boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.crows.1.0.boop
-boodle-mgr.py install http://boodler.org/lib/org.boodler.old.weather.1.0.boop
-boodle-mgr.py install http://boodler.org/lib/com.eblong.zarf.basicwind.1.0.boop
-boodle-mgr.py install http://boodler.org/lib/org.boodler.manage.1.1.boop
+boodle-mgr install http://boodler.org/lib/org.boodler.old.crow.1.0.boop
+boodle-mgr install http://boodler.org/lib/com.eblong.zarf.crows.1.0.boop
+boodle-mgr install http://boodler.org/lib/org.boodler.old.weather.1.0.boop
+boodle-mgr install http://boodler.org/lib/com.eblong.zarf.basicwind.1.0.boop
+boodle-mgr install http://boodler.org/lib/org.boodler.manage.1.1.boop
 </pre>
 
 <p>
@@ -342,8 +342,8 @@ The <code>crows</code> and the <code>basicwind</code> give us a nice assortment 
 </p>
 
 <pre>
-boodler.py com.eblong.zarf.crows/ParliamentOfCrows
-boodler.py com.eblong.zarf.basicwind/Windstorm
+boodler com.eblong.zarf.crows/ParliamentOfCrows
+boodler com.eblong.zarf.basicwind/Windstorm
 </pre>
 
 <p>
@@ -351,7 +351,7 @@ It would be nice to play the crows and the wind simultaneously. You could <a hre
 </p>
 
 <pre>
-boodler.py org.boodler.manage/Simultaneous
+boodler org.boodler.manage/Simultaneous
     com.eblong.zarf.crows/ParliamentOfCrows
     com.eblong.zarf.basicwind/Windstorm
 </pre>
@@ -365,7 +365,7 @@ The <code>Simultaneous</code> soundscape takes a <em>list</em> of soundscapes as
 </p>
 
 <pre>
-boodler.py "org.boodler.manage/Simultaneous
+boodler "org.boodler.manage/Simultaneous
     com.eblong.zarf.crows/ParliamentOfCrows
     (com.eblong.zarf.basicwind/SteadyGale 0.8)"
 </pre>
@@ -379,7 +379,7 @@ Some other varied examples:
 </p>
 
 <pre>
-boodler.py org.boodler.manage/Sequential 6 8 2
+boodler org.boodler.manage/Sequential 6 8 2
     com.eblong.zarf.crows/ParliamentOfCrows
     com.eblong.zarf.basicwind/Windstorm
 </pre>
@@ -389,7 +389,7 @@ As you might expect, <code>Sequential</code> plays several soundscapes in sequen
 </p>
 
 <pre>
-boodler.py org.boodler.manage/Limit com.eblong.zarf.basicwind/Windstorm
+boodler org.boodler.manage/Limit com.eblong.zarf.basicwind/Windstorm
 </pre>
 
 <p>
@@ -397,7 +397,7 @@ boodler.py org.boodler.manage/Limit com.eblong.zarf.basicwind/Windstorm
 </p>
 
 <pre>
-boodler.py org.boodler.manage/Limit com.eblong.zarf.basicwind/Windstorm 10 5
+boodler org.boodler.manage/Limit com.eblong.zarf.basicwind/Windstorm 10 5
 </pre>
 
 <p>
@@ -405,7 +405,7 @@ The two arguments are the length of time to play, and a fadeout time (in seconds
 </p>
 
 <pre>
-boodler.py org.boodler.manage/VolumeModulateAgent com.eblong.zarf.crows/ParliamentOfCrows delta=0.6
+boodler org.boodler.manage/VolumeModulateAgent com.eblong.zarf.crows/ParliamentOfCrows delta=0.6
 </pre>
 
 <p>

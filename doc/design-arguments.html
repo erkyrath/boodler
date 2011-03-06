@@ -48,7 +48,7 @@ The <code>Example2</code> soundscape plinks forever, and takes two arguments: th
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
 </pre>
 
 <p>
@@ -68,7 +68,7 @@ Most often, <code>init()</code> will just take its arguments and store them away
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example2
+boodler --extern bootest com.example.bootest/Example2
 </pre>
 
 <p>
@@ -76,7 +76,7 @@ If you try it you'll see a "2 arguments required". Okay, that's easy to fix:
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+boodler --extern bootest com.example.bootest/Example2 1.2 0.5
 </pre>
 
 <p>
@@ -106,7 +106,7 @@ This actually solves <em>two</em> problems. First, you can now say
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example2
+boodler --extern bootest com.example.bootest/Example2
 </pre>
 
 <p>
@@ -114,7 +114,7 @@ boodler.py --extern bootest com.example.bootest/Example2
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example2 1.2 0.5
+boodler --extern bootest com.example.bootest/Example2 1.2 0.5
 </pre>
 
 <p>
@@ -206,7 +206,7 @@ That defines the type <em>and</em> the default value for each argument. With tha
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
 </pre>
 
 <p>
@@ -255,7 +255,7 @@ _args = ArgList(Arg(type=ListOf(float)))
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example "(0.9 1.0 1.1 1.2)"
+boodler --extern bootest com.example.bootest/Example "(0.9 1.0 1.1 1.2)"
 </pre>
 
 <p>
@@ -297,8 +297,8 @@ This plays one sound, with <code>org.boodler.old.water/droplet_plink</code> as t
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example
-boodler.py --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
     org.boodler.old.water/droplet_bloink
 </pre>
 
@@ -338,8 +338,8 @@ class Example(agent.Agent):
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example
-boodler.py --extern bootest com.example.bootest/Example com.eblong.zarf.clock/Tick
+boodler --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example com.eblong.zarf.clock/Tick
 </pre>
 
 <p>
@@ -387,8 +387,8 @@ Pleasantly, you don't have to worry about this change on the command line. You c
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example
-boodler.py --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
     com.eblong.zarf.clock/Tick
 </pre>
 
@@ -401,7 +401,7 @@ In fact, this is true even if you throw in complex soundscape arguments:
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
     "(com.eblong.zarf.clock/Tick 1.25)"
 </pre>
 
@@ -414,7 +414,7 @@ By the way, this way of multi-running soundscapes can lead to surprises, if you 
 </p>
 
 <pre>
-boodler.py --extern bootest com.example.bootest/Example
+boodler --extern bootest com.example.bootest/Example
     com.eblong.zarf.clock/SteadyRandomChime
 </pre>
 
