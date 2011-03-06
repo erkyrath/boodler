@@ -123,7 +123,10 @@ all_extensions = [
     BooExtension('stdout'),
     
     BooExtension('oss',
-        libraries = append_if(('bsd' in sys.platform.lower()),
+        # I think libossaudio is necessary in NetBSD and OpenBSD, but not
+        # FreeBSD.
+        libraries = append_if(('bsd' in sys.platform.lower()
+            and 'free' not in sys.platform.lower()),
             [], ['ossaudio']),
         available = check_header_available('sys/soundcard.h'),
     ),
