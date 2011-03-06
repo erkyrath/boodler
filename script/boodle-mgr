@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Boodler: a programmable soundscape tool
-# Copyright 2007-9 by Andrew Plotkin <erkyrath@eblong.com>
+# Copyright 2007-2011 by Andrew Plotkin <erkyrath@eblong.com>
 # For more information, see <http://boodler.org/>
 #
 # This Python script ("boodle-mgr") and the Python modules that it

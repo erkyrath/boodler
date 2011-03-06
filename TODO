@@ -5,7 +5,7 @@ Put events and properties under the argdef type-checking system.
 Add a "pan" argdef type. (Use in all soundscapes that take a pan
 argument.) Also a "package" type.
 
-boodle-mgr.py: add "examine resource", "install with all dependencies",
+boodle-mgr: add "examine resource", "install with all dependencies",
 "check dependencies are installed".
 
 Package creation: skip garbage files and directories (.pyc, ~, .svn).
