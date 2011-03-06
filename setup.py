@@ -477,6 +477,7 @@ class local_generate_pydoc(Command):
         cboodlemod_regex = re.compile('<a href="[a-z]*.cboodle_[a-z]*.html">([a-z_]*)</a>')
         agentinherit_regex = re.compile('Methods inherited from <a href="boodle.agent.html#Agent">boodle.agent.Agent</a>:.*?</td>', re.DOTALL)
         memaddress_regex = re.compile(' at 0x[a-f0-9]*&gt;')
+        whitecolor_regex = re.compile('"#fffff"')
 
         def fileurl_func(match):
             val = match.group(1)
@@ -527,6 +528,7 @@ class local_generate_pydoc(Command):
                 newdat = agentinherit_regex.sub('</td>', newdat)
             newdat = newdat.replace('href="."', 'href="index.html"')
             newdat = memaddress_regex.sub('&gt;', newdat)
+            newdat = whitecolor_regex.sub('"#ffffff"', newdat)
         
             fl = open(file, 'w')
             fl.write(newdat)
