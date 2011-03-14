@@ -2,7 +2,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
 <head>
-<title>Boodler: The boodle-mgr.py Reference Manual</title>
+<title>Boodler: The boodle-mgr Reference Manual</title>
 <link rel="stylesheet" href="doc.css" type="text/css" />
 <style type="text/css">
   h4 { margin-bottom: 0px; }
@@ -11,14 +11,14 @@
 </head>
 <body>
 
-<h1>Boodler: The <code>boodle-mgr.py</code> Reference Manual</h1>
+<h1>Boodler: The <code>boodle-mgr</code> Reference Manual</h1>
 
 <p>
-The <code>boodle-mgr.py</code> script downloads, installs, and manages the Boodler packages in your collection. (To play soundscapes, see <a href="boodler-ref.html">boodler.py</a>.)
+The <code>boodle-mgr</code> script downloads, installs, and manages the Boodler packages in your collection. (To play soundscapes, see <a href="boodler-ref.html">boodler</a>.)
 </p>
 
 <pre>
-boodle-mgr.py [ options ] [ command... ]
+boodle-mgr [ options ] [ command... ]
 </pre>
 
 <p>
@@ -26,7 +26,7 @@ The script offers many commands. For example, to list all the packages you curre
 </p>
 
 <pre>
-boodle-mgr.py list
+boodle-mgr list
 </pre>
 
 <p>
@@ -34,7 +34,7 @@ You can also use the script interactively. If you just type:
 </p>
 
 <pre>
-boodle-mgr.py
+boodle-mgr
 </pre>
 
 <p>
@@ -42,11 +42,11 @@ boodle-mgr.py
 </p>
 
 <p>
-In general, <code>boodle-mgr.py</code> prompts for any arguments you do not provide on the command line.
+In general, <code>boodle-mgr</code> prompts for any arguments you do not provide on the command line.
 </p>
 
 <p>
-Type <code>boodle-mgr.py help</code> for a complete list of commands. Type <code>boodle-mgr.py --help</code> or <code>boodle-mgr.py -h</code> for a complete list of options. 
+Type <code>boodle-mgr help</code> for a complete list of commands. Type <code>boodle-mgr --help</code> or <code>boodle-mgr -h</code> for a complete list of options. 
 </p>
 
 <h2>Options</h2>
@@ -54,7 +54,7 @@ Type <code>boodle-mgr.py help</code> for a complete list of commands. Type <code
 <dl>
 
 <dt><code>--force</code></dt>
-<dd>Skip "are you sure?" queries when deleting or overwriting package files. With this option, <code>boodle-mgr.py</code> will go ahead and do it without asking.</dd>
+<dd>Skip "are you sure?" queries when deleting or overwriting package files. With this option, <code>boodle-mgr</code> will go ahead and do it without asking.</dd>
 
 <dt><code>--import</code></dt>
 <dd>Permit the execution of Python code in Boodler packages. Only use this when you are packaging your own soundscapes for other people to use. (See the <a href="#create">create</a> command.)</dd>
@@ -139,7 +139,7 @@ Describe a package found at a URL. The package file is downloaded to a temporary
 </p>
 
 <p>
-(In interactive mode, <code>boodle-mgr.py</code> keeps temporary files cached until you quit. So if you do "describe <em>url</em>" followed by "install <em>url</em>", you won't download the file twice.) 
+(In interactive mode, <code>boodle-mgr</code> keeps temporary files cached until you quit. So if you do "describe <em>url</em>" followed by "install <em>url</em>", you won't download the file twice.) 
 </p>
 
 <h4><code>contents</code> <em>package</em></h4>
@@ -230,29 +230,29 @@ You must set up the source directory with valid metadata files, and the Python s
 </p>
 
 <p>
-Note: the "create" command will only work if you have specified <code>--import</code> on the command line. This awkward dance is intended to aid security. <code>boodle-mgr.py</code> will normally refuse to import Python code from packages. You should only use <code>--import</code> when you intend to use the "create" command, packaging up a soundscape that you created yourself.
+Note: the "create" command will only work if you have specified <code>--import</code> on the command line. This awkward dance is intended to aid security. <code>boodle-mgr</code> will normally refuse to import Python code from packages. You should only use <code>--import</code> when you intend to use the "create" command, packaging up a soundscape that you created yourself.
 </p>
 
 <p>
-<em>(This security is somewhat chimerical right now. While <code>boodle-mgr.py</code> is safe, <code>boodler.py</code> can import any package you have installed. So a package containing a Trojan horse would not be dangerous to install, but it could do damage when you tried to play soundscapes from it. Ideally, a future version of <code>boodler.py</code> would incorporate some kind of sandboxing, to safeguard against malicious packages. Unfortunately, the design of Python makes this difficult.)</em>
+<em>(This security is somewhat chimerical right now. While <code>boodle-mgr</code> is safe, <code>boodler</code> can import any package you have installed. So a package containing a Trojan horse would not be dangerous to install, but it could do damage when you tried to play soundscapes from it. Ideally, a future version of <code>boodler</code> would incorporate some kind of sandboxing, to safeguard against malicious packages. Unfortunately, the design of Python makes this difficult.)</em>
 </p>
 
 <h4><code>reload</code></h4>
 
 <p>
-Force <code>boodle-mgr.py</code> to re-scan your collection. You would only need to do this if some other process (or another copy of <code>boodle-mgr.py</code>) modified your collection directory while <code>boodle-mgr.py</code> was running.
+Force <code>boodle-mgr</code> to re-scan your collection. You would only need to do this if some other process (or another copy of <code>boodle-mgr</code>) modified your collection directory while <code>boodle-mgr</code> was running.
 </p>
 
 <h4><code>lasterror</code></h4>
 
 <p>
-Display a full Python stack trace of the last error that occurred. This exists to aid debugging of <code>boodle-mgr.py</code>.
+Display a full Python stack trace of the last error that occurred. This exists to aid debugging of <code>boodle-mgr</code>.
 </p>
 
 <h4><code>quit</code></h4>
 
 <p>
-Leave the interactive prompt and shut down <code>boodle-mgr.py</code>.
+Leave the interactive prompt and shut down <code>boodle-mgr</code>.
 </p>
 
 

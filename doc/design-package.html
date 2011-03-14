@@ -14,7 +14,7 @@ Say you've created a <code>bootest</code> directory which contains a working sou
 </p>
 
 <pre>
-boodle-mgr.py --import create bootest
+boodle-mgr --import create bootest
 </pre>
 
 <p>
@@ -30,7 +30,7 @@ Package created: /home/zarf/com.example.bootest.1.0.boop
 </p>
 
 <p>
-The <code><a href="boodle-mgr-ref.html">boodle-mgr.py</a></code> script is for package management, and its "create" command scans a package directory, figures out what's in it, and creates a .boop package.  
+The <code><a href="boodle-mgr-ref.html">boodle-mgr</a></code> script is for package management, and its "create" command scans a package directory, figures out what's in it, and creates a .boop package.  
 </p>
 
 <p>
@@ -42,7 +42,7 @@ This newly-created .boop file can be installed, same as any .boop that you downl
 </p>
 
 <pre>
-boodle-mgr.py install /home/zarf/com.example.bootest.1.0.boop
+boodle-mgr install /home/zarf/com.example.bootest.1.0.boop
 </pre>
 
 <p>
@@ -54,7 +54,7 @@ You can now play the <code>Example</code> soundscape without using the <code>--e
 </p>
 
 <pre>
-boodler.py com.example.bootest/Example
+boodler com.example.bootest/Example
 </pre>
 
 <p>
@@ -135,7 +135,7 @@ Try running the soundscape:
 </p>
 
 <pre>
-boodler.py --external bootest com.example.bootest/Example
+boodler --external bootest com.example.bootest/Example
 </pre>
 
 <p>
@@ -198,7 +198,7 @@ You now have a valid Boodler package directory. You can use the standard sound-p
 </p>
 
 <pre>
-boodler.py --external bootest2 org.boodler.play/OneSound
+boodler --external bootest2 org.boodler.play/OneSound
     com.example.bootest2/foop
 </pre>
 

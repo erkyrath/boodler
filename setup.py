@@ -123,7 +123,10 @@ all_extensions = [
     BooExtension('stdout'),
     
     BooExtension('oss',
-        libraries = append_if(('bsd' in sys.platform.lower()),
+        # I think libossaudio is necessary in NetBSD and OpenBSD, but not
+        # FreeBSD.
+        libraries = append_if(('bsd' in sys.platform.lower()
+            and 'free' not in sys.platform.lower()),
             [], ['ossaudio']),
         available = check_header_available('sys/soundcard.h'),
     ),
@@ -278,7 +281,7 @@ class local_build_scripts(build_scripts):
 
         --default-driver KEY (default Boodler output driver)
 
-    This modifies the boodler.py script as it is built, to use
+    This modifies the boodler script as it is built, to use
     the given value as a default driver. You can pass this argument 
     on the command line, or modify setup.cfg.
 
@@ -301,9 +304,9 @@ class local_build_scripts(build_scripts):
     def copy_scripts(self):
         build_scripts.copy_scripts(self)
         if (self.default_driver):
-            # If a driver was configured in, modify the boodler.py script.
+            # If a driver was configured in, modify the boodler script.
             for script in self.scripts:
-                if (not script.endswith('boodler.py')):
+                if (not script.endswith('boodler')):
                     continue
                 script = convert_path(script)
                 outfile = os.path.join(self.build_dir, os.path.basename(script))
@@ -474,6 +477,7 @@ class local_generate_pydoc(Command):
         cboodlemod_regex = re.compile('<a href="[a-z]*.cboodle_[a-z]*.html">([a-z_]*)</a>')
         agentinherit_regex = re.compile('Methods inherited from <a href="boodle.agent.html#Agent">boodle.agent.Agent</a>:.*?</td>', re.DOTALL)
         memaddress_regex = re.compile(' at 0x[a-f0-9]*&gt;')
+        whitecolor_regex = re.compile('"#fffff"')
 
         def fileurl_func(match):
             val = match.group(1)
@@ -524,6 +528,7 @@ class local_generate_pydoc(Command):
                 newdat = agentinherit_regex.sub('</td>', newdat)
             newdat = newdat.replace('href="."', 'href="index.html"')
             newdat = memaddress_regex.sub('&gt;', newdat)
+            newdat = whitecolor_regex.sub('"#ffffff"', newdat)
         
             fl = open(file, 'w')
             fl.write(newdat)
@@ -551,7 +556,7 @@ class local_generate_pydoc(Command):
 
 
 setup(name = 'Boodler',
-    version = '2.0.3',
+    version = '2.0.4',
     description = 'A programmable soundscape tool',
     author = 'Andrew Plotkin',
     author_email = 'erkyrath@eblong.com',
@@ -582,7 +587,7 @@ to arbitrary levels of complexity, or write your own.
 """,
     packages = ['boodle', 'boopak', 'booman'],
     package_dir = {'': 'src'},
-    scripts = ['script/boodler.py', 'script/boodle-mgr.py', 'script/boodle-event.py'],
+    scripts = ['script/boodler', 'script/boodle-mgr', 'script/boodle-event'],
     ext_modules = list(all_extensions),
     cmdclass = {
         'build_ext': local_build_ext,

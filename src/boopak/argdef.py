@@ -1,5 +1,5 @@
 # Boodler: a programmable soundscape tool
-# Copyright 2007-9 by Andrew Plotkin <erkyrath@eblong.com>
+# Copyright 2007-2011 by Andrew Plotkin <erkyrath@eblong.com>
 #   <http://boodler.org/>
 # This program is distributed under the LGPL.
 # See the LGPL document, or the above URL, for details.
@@ -10,7 +10,7 @@ Agent.
 Boodler allows you to start up a complex arrangement of soundscapes
 directly from the command line. For example:
 
-  boodler.py " org.boodler.manage/Simultaneous
+  boodler " org.boodler.manage/Simultaneous
     (com.eblong.zarf.heartbeat/OneBeat 1.5)
     (com.eblong.zarf.heartbeat/OneBeat 0.9) "
 
@@ -70,7 +70,7 @@ the type_to_node() and value_to_node() helper functions.
 
 One more wrinkle needs to be managed. In the example:
 
-  boodler.py " org.boodler.manage/Simultaneous
+  boodler " org.boodler.manage/Simultaneous
     (com.eblong.zarf.heartbeat/OneBeat 1.5)
     (com.eblong.zarf.heartbeat/OneBeat 0.9) "
 
@@ -80,7 +80,7 @@ straightforward.
 
 However, consider the example:
 
-  boodler.py " org.boodler.manage/Sequential
+  boodler " org.boodler.manage/Sequential
     30 60 2
     (com.eblong.zarf.heartbeat/OneBeat 1.5)
     (com.eblong.zarf.heartbeat/OneBeat 0.9) "

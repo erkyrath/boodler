@@ -4,7 +4,7 @@
 # Designed by Andrew Plotkin <erkyrath@eblong.com>
 # For more information, see <http://boodler.org/>
 #
-# This Python script ("boodler.py") is in the public domain. 
+# This Python script ("boodler") is in the public domain. 
 # The Python modules that it uses (boodle, boopak, and booman) are 
 # licensed under the GNU Library General Public License (LGPL). The 
 # cboodle extensions are licensed under either the LGPL or the GPL.
@@ -21,7 +21,7 @@ import logging
 import traceback
 import StringIO
 
-# same as in boodlemgr.py
+# same as in boodle-mgr
 if ('darwin' in sys.platform.lower()):
     Default_Relative_Data_Dir = 'Library/Application Support/Boodler'
 else:
@@ -135,7 +135,7 @@ popt.set_defaults(
 
 import boopak.collect
 
-# same as in boodlemgr.py
+# same as in boodle-mgr
 basedir = opts.basedir
 if (not basedir):
     basedir = os.environ.get('BOODLER_DATA')
